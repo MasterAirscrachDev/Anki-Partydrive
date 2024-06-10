@@ -21,10 +21,10 @@ namespace CarInterface
             };
             Bluetooth.AdvertisementReceived += OnAdvertisementReceived;
             StartBLEScan();
-            //await GetCars();
+            await GetCars();
             await Task.Delay(-1);
         }
-        static async void StartBLEScan(){
+        static void StartBLEScan(){
             var leScanOptions = new BluetoothLEScanOptions();
             leScanOptions.AcceptAllAdvertisements = true;
             var scan = Bluetooth.RequestLEScanAsync(leScanOptions);
@@ -82,10 +82,9 @@ namespace CarInterface
                         cars.Add(new Car{ name = name, id = args.Device.Id, device = args.Device });
                         ConnectToCarAsync(cars[cars.Count - 1]);
                     }
-                }
+                } 
             }
             catch{
-                if(args.Uuids.Length > 0 && advertisedServices.Contains(args.Uuids[0])) return;
                 advertisedServices.AddRange(args.Uuids);
                 Console.WriteLine($"Advertisement received, not car {args.Name}");
                 foreach(var data in args.ManufacturerData)
@@ -111,8 +110,10 @@ namespace CarInterface
                 characteristic.CharacteristicValueChanged += (sender, args) => {
                     CarCharacteristicChanged(sender, args, car);
                 };
-
-
+                await characteristic.StartNotificationsAsync();
+                await EnableSDKMode(car);
+                await Task.Delay(1000);
+                await SetCarSpeed(car, 500);
             }
             else{
                 Console.WriteLine($"Failed to connect to car {car.name}");
@@ -129,9 +130,23 @@ namespace CarInterface
         static async Task EnableSDKMode(Car car){
             //4 bytes 0x03 0x90 0x01 0x01
             byte[] data = new byte[]{0x03, 0x90, 0x01, 0x01};
-            await WriteToCarAsync(car.id, data);
+            await WriteToCarAsync(car.id, data, true);
         }
-        static async Task WriteToCarAsync(string carID, byte[] data){
+        static async Task SetCarSpeed(Car car, int speed){
+            //speed = 0-1000, rescale to 300 - 1200
+            speed = (int)(speed * 0.9 + 300);
+            byte[] data = new byte[7];
+            data[0] = 0x06;
+            data[1] = 0x24;
+            //speed as int16
+            data[2] = (byte)(speed & 0xFF);
+            data[3] = (byte)((speed >> 8) & 0xFF);
+            //1000 as int16
+            data[4] = 0xE8;
+            data[5] = 0x03;
+            await WriteToCarAsync(car.id, data, true);
+        }
+        static async Task WriteToCarAsync(string carID, byte[] data, bool response = false){
             var car = cars.Find(car => car.id == carID);
             if(car == null){
                 Console.WriteLine($"Car {carID} not found");
@@ -140,9 +155,38 @@ namespace CarInterface
             var service = await car.device.Gatt.GetPrimaryServiceAsync(ServiceID);
             var characteristic = await service.GetCharacteristicAsync(WriteID);
             //send someth
+            if(response){ await characteristic.WriteValueWithResponseAsync(data); }
+            else{ await characteristic.WriteValueWithoutResponseAsync(data); }
         }
         static void CarCharacteristicChanged(object sender, GattCharacteristicValueChangedEventArgs args, Car car){
-            Console.WriteLine($"Car {car.name} characteristic changed {args.Value}");
+            ParseMessage(args.Value, car);
+        }
+        static void ParseMessage(byte[] content, Car car){
+            byte id = content[1];
+            if(id == 0x17){//ping response
+                Console.WriteLine($"Ping response: {BytesToString(content)}");
+            } else if(id == 0x19){ //version response
+                int version = content[2];
+                Console.WriteLine($"Version response: {version}");
+            } else if(id == 0x1b){ //battery response
+                int battery = content[2];
+                int maxBattery = 3800;
+                Console.WriteLine($"Battery response: {battery} / {maxBattery}");
+            } else if(id == 0x27){ //where is the car
+                int trackLocation = content[2];
+                int trackID = content[3];
+                float offset = BitConverter.ToSingle(content, 4);
+                int speed = BitConverter.ToInt16(content, 8);
+                bool clockwise = content[10] == 0x57;
+
+                Console.WriteLine($"Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
+            }
+
+
+
+            else{
+                Console.WriteLine($"Unknown message {id}: {BytesToString(content)}");
+            }
         }
         static string BytesToString(byte[] bytes)
         {
