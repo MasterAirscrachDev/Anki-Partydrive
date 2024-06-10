@@ -24,18 +24,16 @@ namespace CarInterface
             //await GetCars();
             await Task.Delay(-1);
         }
-        static void StartBLEScan(){
+        static async void StartBLEScan(){
             var leScanOptions = new BluetoothLEScanOptions();
             leScanOptions.AcceptAllAdvertisements = true;
             var scan = Bluetooth.RequestLEScanAsync(leScanOptions);
             if(scan == null)
-            {
-                Console.WriteLine("Scan failed");
-                return;
-            }
+            { Console.WriteLine("Scan failed"); return; }
             Console.WriteLine("Scan started");
         }
-        static async Task GetCars(){
+        //maybe not needed?
+        static async Task GetCars(){ 
             // Use default request options for simplicity
             var requestOptions = new RequestDeviceOptions();
             requestOptions.AcceptAllDevices = true;
@@ -55,12 +53,11 @@ namespace CarInterface
                 Console.WriteLine($"name: {device.Name}, id: {device.Id}");
             }
         }
-        static void OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args)
-        {
+        static void OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args){
             try{
                 if(args.Name.Contains("Drive")){
-                    if(!cars.Exists(car => car.id == args.Device.Id))
-                    {
+                    if(!cars.Exists(car => car.id == args.Device.Id)){
+                        
                         Console.WriteLine($"Advertisement received for car");
                         Console.WriteLine($"Manufacturer data: {args.ManufacturerData.Count}, Service data: {args.ServiceData.Count}");
                         foreach(var data in args.ManufacturerData)
@@ -75,31 +72,15 @@ namespace CarInterface
                             }
                         }
                         foreach(var data in args.ServiceData)
-                        {
-                            Console.WriteLine($"{data.Key}: {BytesToString(data.Value)}");
-                        }
+                        { Console.WriteLine($"{data.Key}: {BytesToString(data.Value)}"); }
                         Console.WriteLine($"car name: {args.Name}, id {args.Device.Id}, strength {args.Rssi}");
-                        string name = args.Name;
+                        string name = args.Name; //give cars placeholder names until we can get the real name
                         if(args.Device.Id == "E7FFF13FD1FF"){ name = "Truck Sticker";}
                         else if(args.Device.Id == "E70E96A36CD3"){ name = "Sport Sticker";}
                         else if(args.Device.Id == "E6E40DEA6A75"){ name = "DeadShock";}
                         else if(args.Device.Id == "CD73BF704022"){ name = "Skull";}
                         cars.Add(new Car{ name = name, id = args.Device.Id, device = args.Device });
                         ConnectToCarAsync(cars[cars.Count - 1]);
-                    }else{
-                        foreach(var data in args.ManufacturerData)
-                        { // Assuming data.Value is the byte array containing the anki_vehicle_adv_mfg_t data
-                            if (data.Value.Length >= 6) // Ensure there are enough bytes
-                            {
-                                var identifier = BitConverter.ToUInt32(data.Value, 0);
-                                var model_id = data.Value[4];
-                                var product_id = BitConverter.ToUInt16(data.Value, 5);
-
-                                Console.WriteLine($"car info: Identifier: {identifier}, Model ID: {model_id}, Product ID: {product_id}");
-                            }
-                        }
-                        foreach(var data in args.ServiceData)
-                        { Console.WriteLine($"{data.Key}: {BytesToString(data.Value)}"); }
                     }
                 }
             }
@@ -115,6 +96,7 @@ namespace CarInterface
         }
         static async Task ConnectToCarAsync(Car car){
             Console.WriteLine($"Connecting to car {car.name}");
+
             await car.device.Gatt.ConnectAsync();
             if(car.device.Gatt.IsConnected){
                 Console.WriteLine($"Connected to car {car.name}");
