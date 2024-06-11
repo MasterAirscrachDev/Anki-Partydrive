@@ -58,13 +58,13 @@ Shader "Custom/OpacityNearEdges"
             float distToEdge = min(distToEdgeX, distToEdgeY);
 
             // Use an exponential function to make the edge detection more sensitive
-            float edgeOpacity = pow(distToEdge, 2.0); // Squaring to enhance edge effect
+            float edgeOpacity = smoothstep(0.2, 0.8, distToEdge);
             //for testing make the pixel white to black based on distance to edge
-            o.Albedo = float3(edgeOpacity, edgeOpacity, edgeOpacity);
-            o.Alpha = 1;
-
-            //o.Alpha = max(edgeOpacity, c.a); // Ensure we don't reduce the texture's inherent alpha
-            //o.Metallic = min(edgeOpacity, _Metallic); // Ensure we don't reduce the texture's inherent alpha
+            //o.Albedo = float3(edgeOpacity, edgeOpacity, edgeOpacity);
+            //o.Alpha = 1;
+            edgeOpacity = 1 - edgeOpacity;
+            o.Alpha = min(edgeOpacity, c.a); // Ensure we don't reduce the texture's inherent alpha
+            o.Metallic = min(edgeOpacity, _Metallic); // Ensure we don't reduce the texture's inherent alpha
 
         }
         ENDCG
