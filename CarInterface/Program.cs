@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace CarInterface
 {
@@ -18,7 +19,7 @@ namespace CarInterface
         static BluetoothUuid ReadID = BluetoothUuid.FromGuid(new Guid("BE15BEE0-6186-407E-8381-0BD89C4D8DF4"));
         static BluetoothUuid WriteID = BluetoothUuid.FromGuid(new Guid("BE15BEE1-6186-407E-8381-0BD89C4D8DF4"));
         static string SysLog = "";
-        static bool printLog = true;
+        static bool printLog = true, scanningForCars = false;
         static async Task Main(string[] args)
         {
             Bluetooth.AvailabilityChanged += (s, e) =>
@@ -26,11 +27,10 @@ namespace CarInterface
                 Log($"Bluetooth availability changed");
             };
             Bluetooth.AdvertisementReceived += OnAdvertisementReceived;
-            StartBLEScan();
-            await GetCars();
-            //specify the port to be 80085
             args = new string[]{"--urls", "http://localhost:7117"};
             CreateHostBuilder(args).Build().RunAsync();
+            StartBLEScan();
+            await GetCars();
             await Task.Delay(-1);
         }
         static void Log(string message){
@@ -45,26 +45,26 @@ namespace CarInterface
             { Log("Scan failed"); return; }
             Log("Scan started");
         }
-        //maybe not needed?
         static async Task GetCars(){ 
+            if(scanningForCars){ Log("Already scanning for cars"); return; }
+            scanningForCars = true;
             // Use default request options for simplicity
             var requestOptions = new RequestDeviceOptions();
             requestOptions.AcceptAllDevices = true;
             // Create a cancellation token source with a timeout of 5 seconds
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             var cancellationToken = cancellationTokenSource.Token;
             // Scan for devices
             var devices = await Bluetooth.ScanForDevicesAsync(requestOptions, cancellationToken);
             
             if(devices.Count == 0)
-            {
-                Log("No devices found");
-                return;
-            }
-            foreach(var device in devices)
-            {
-                Log($"name: {device.Name}, id: {device.Id}");
-            }
+            { Log("No devices found"); return; }
+            //we dont really car about the devices, we just want to wait for the scan to finish
+            // foreach(var device in devices)
+            // {
+            //     Log($"name: {device.Name}, id: {device.Id}");
+            // }
+            scanningForCars = false;
         }
         static void OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args){
             try{
@@ -92,7 +92,7 @@ namespace CarInterface
                         else if(args.Device.Id == "E70E96A36CD3"){ name = "Sport Sticker";}
                         else if(args.Device.Id == "E6E40DEA6A75"){ name = "DeadShock";}
                         else if(args.Device.Id == "CD73BF704022"){ name = "Skull";}
-                        cars.Add(new Car{ name = name, id = args.Device.Id, device = args.Device });
+                        cars.Add(new Car{ name = name, id = args.Device.Id, device = args.Device, data = new CarData{ name = name, id = args.Device.Id }});
                         ConnectToCarAsync(cars[cars.Count - 1]);
                     }
                 } 
@@ -126,7 +126,7 @@ namespace CarInterface
                 await characteristic.StartNotificationsAsync();
                 await EnableSDKMode(car);
                 await Task.Delay(1000);
-                await SetCarSpeed(car, 500);
+                await SetCarSpeed(car, 100);
             }
             else{
                 Log($"Failed to connect to car {car.name}");
@@ -177,31 +177,68 @@ namespace CarInterface
         static void ParseMessage(byte[] content, Car car){
             byte id = content[1];
             if(id == 0x17){//23 ping response
-                Log($"Ping response: {BytesToString(content)}");
+                Log($"[23] Ping response: {BytesToString(content)}");
             } else if(id == 0x19){ //25 version response
                 int version = content[2];
-                Log($"Version response: {version}");
+                Log($"[25] Version response: {version}");
             } else if(id == 0x1b){ //27 battery response
                 int battery = content[2];
                 int maxBattery = 3800;
-                Log($"Battery response: {battery} / {maxBattery}");
+                Log($"[27] Battery response: {battery} / {maxBattery}");
             } else if(id == 0x27){ //39 where is car
                 int trackLocation = content[2];
                 int trackID = content[3];
                 float offset = BitConverter.ToSingle(content, 4);
                 int speed = BitConverter.ToInt16(content, 8);
                 bool goingBackwards = content[10] == 0x40; //this might be wrong
+                //tf does location mean
+                Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, wrong way: {goingBackwards}");
+                //IDs
+                //39 FnF Straight 40 Straight
+                //17 FnF Curve 18 Curve
+                //57 FnF Powerup
+                //
+                car.data.trackPosition = trackLocation;
+                car.data.trackID = trackID;
+                car.data.laneOffset = offset;
+                car.data.speed = speed;
+            } else if(id == 0x29){ //41 car track pice update
+                try{
+                    if(content.Length < 18){ return; } //not enough data
+                    int leftWheelDistance = content[17];
+                    int rightWheelDistance = content[18];
 
-                Log($"{car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, wrong way: {goingBackwards}");
-            } else if(id == 0x2b){ //43 ONOH FALL
-                Log($"{car.name} fell off track");
+                    // There is a shorter segment for the starting line track.
+                    string crossedStartingLine = "";
+                    if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
+                        crossedStartingLine = " (Crossed Starting Line)";
+                    }
+                    Log($"[41] {car.name} status: Left wheel distance: {leftWheelDistance}, Right wheel distance: {rightWheelDistance}{crossedStartingLine}");
+                }
+                catch{
+                    Log($"Error parsing car status message: {BytesToString(content)}");
+                    return;
+                }
+                
+            } else if(id == 0x2a){ //42 car error
+                int error = content[2];
+                Log($"[42] {car.name} error: {error}");
+            } //43 ONOH FALL
+            else if(id == 0x2b){ //43 ONOH FALL
+                Log($"[43] {car.name} fell off track");
+            } else if(id == 0x53){ //83 FnF specialBlock
+                Log($"[83] {car.name} hit special block");
             }
-
 
 
             else{
-                Log($"Unknown message {id}: {BytesToString(content)}");
+                Log($"Unknown message {id} [{IntToByteString(id)}]: {BytesToString(content)}");
             }
+        }
+        static string IntToByteString(int number)
+        {
+            //as 0x00
+            return "0x" + number.ToString("X2");
         }
         static string BytesToString(byte[] bytes)
         {
@@ -209,18 +246,49 @@ namespace CarInterface
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+            Host.CreateDefaultBuilder(args).ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Warning);
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.Configure(app =>
                     {
-                        app.Run(async context =>
+                        app.UseRouting();
+                        app.UseEndpoints(endpoints =>
                         {
-                            if (context.Request.Path == "/")
+                            // Example of mapping a custom endpoint (similar to your scenario)
+                            endpoints.MapGet("/controlcar/{instruct}", async context =>
                             {
-                                await context.Response.WriteAsync("CarInterface");
-                            }
-                            else if (context.Request.Path == "/cars")
+                                var instruct = context.Request.RouteValues["instruct"];
+                                try{
+                                    string data = instruct.ToString();
+                                    string[] parts = data.Split(':');
+                                    string carID = parts[0];
+                                    int speed = int.Parse(parts[1]);
+                                    Car car = cars.Find(car => car.id == carID);
+                                    if(car == null){
+                                        context.Response.StatusCode = 404;
+                                        await context.Response.WriteAsync("Car not found");
+                                        return;
+                                    }
+                                    await SetCarSpeed(car, speed);
+                                    context.Response.StatusCode = 200;
+                                    await context.Response.WriteAsync("Speed set");
+                                }
+                                catch{
+                                    context.Response.StatusCode = 400;
+                                    await context.Response.WriteAsync("Bad Request");
+                                }
+                            });
+                            endpoints.MapGet("/scan", async context =>
+                            {
+                                await GetCars();
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Scanning for cars");
+                            });
+                            endpoints.MapGet("/cars", async context =>
                             {
                                 context.Response.ContentType = "application/json";
                                 //return the list of cars cardata
@@ -230,21 +298,28 @@ namespace CarInterface
                                 }
                                 string json = JsonConvert.SerializeObject(carData);
                                 await context.Response.WriteAsync(json);
-                            }
-                            else if (context.Request.Path == "/registerlogs"){
+                            });
+                            endpoints.MapGet("/registerlogs", async context =>
+                            {
+                                Log("Application Registered");
+                                SysLog = "";
                                 printLog = false;
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Logs registered, call /logs to get logs");
-                            }
-                            else if (context.Request.Path == "/logs"){
+                            });
+                            endpoints.MapGet("/logs", async context =>
+                            {
                                 await context.Response.WriteAsync(SysLog);
                                 SysLog = "";
-                            }
-
-
+                            });
+                        });
+                        app.Run(async context =>
+                        {
+                            if (context.Request.Path == "/")
+                            { await context.Response.WriteAsync("CarInterface"); }
                             else{
                                 context.Response.StatusCode = 404;
-                                await context.Response.WriteAsync("Not Found");
+                                await context.Response.WriteAsync($"Failed to find path {context.Request.Path}");
                             }
                         });
                     });
@@ -255,15 +330,15 @@ namespace CarInterface
         public string id;
         //bluetooth connection
         public BluetoothDevice device;
-        CarData data;
+        public CarData data;
     }
-    [Serializable]
+    [System.Serializable]
     class CarData{
         public string name;
         public string id;
-        int trackPosition;
-        int trackID;
-        int laneOffset;
-        int speed;
+        public int trackPosition;
+        public int trackID;
+        public float laneOffset;
+        public int speed;
     }
 }
