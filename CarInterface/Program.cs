@@ -2,7 +2,10 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace CarInterface
 {
@@ -13,24 +16,31 @@ namespace CarInterface
         static BluetoothUuid ServiceID = BluetoothUuid.FromGuid(new Guid("BE15BEEF-6186-407E-8381-0BD89C4D8DF4"));
         static BluetoothUuid ReadID = BluetoothUuid.FromGuid(new Guid("BE15BEE0-6186-407E-8381-0BD89C4D8DF4"));
         static BluetoothUuid WriteID = BluetoothUuid.FromGuid(new Guid("BE15BEE1-6186-407E-8381-0BD89C4D8DF4"));
+        static string SysLog = "";
+        static bool printLog = true;
         static async Task Main(string[] args)
         {
             Bluetooth.AvailabilityChanged += (s, e) =>
             {
-                Console.WriteLine($"Bluetooth availability changed");
+                Log($"Bluetooth availability changed");
             };
             Bluetooth.AdvertisementReceived += OnAdvertisementReceived;
             StartBLEScan();
             await GetCars();
+            CreateHostBuilder(args).Build().RunAsync();
             await Task.Delay(-1);
+        }
+        static void Log(string message){
+            SysLog += message + "\n";
+            if(printLog){ Console.WriteLine(message); }
         }
         static void StartBLEScan(){
             var leScanOptions = new BluetoothLEScanOptions();
             leScanOptions.AcceptAllAdvertisements = true;
             var scan = Bluetooth.RequestLEScanAsync(leScanOptions);
             if(scan == null)
-            { Console.WriteLine("Scan failed"); return; }
-            Console.WriteLine("Scan started");
+            { Log("Scan failed"); return; }
+            Log("Scan started");
         }
         //maybe not needed?
         static async Task GetCars(){ 
@@ -45,12 +55,12 @@ namespace CarInterface
             
             if(devices.Count == 0)
             {
-                Console.WriteLine("No devices found");
+                Log("No devices found");
                 return;
             }
             foreach(var device in devices)
             {
-                Console.WriteLine($"name: {device.Name}, id: {device.Id}");
+                Log($"name: {device.Name}, id: {device.Id}");
             }
         }
         static void OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args){
@@ -58,8 +68,8 @@ namespace CarInterface
                 if(args.Name.Contains("Drive")){
                     if(!cars.Exists(car => car.id == args.Device.Id)){
                         
-                        Console.WriteLine($"Advertisement received for car");
-                        Console.WriteLine($"Manufacturer data: {args.ManufacturerData.Count}, Service data: {args.ServiceData.Count}");
+                        Log($"Advertisement received for car");
+                        Log($"Manufacturer data: {args.ManufacturerData.Count}, Service data: {args.ServiceData.Count}");
                         foreach(var data in args.ManufacturerData)
                         { // Assuming data.Value is the byte array containing the anki_vehicle_adv_mfg_t data
                             if (data.Value.Length >= 6) // Ensure there are enough bytes
@@ -68,12 +78,12 @@ namespace CarInterface
                                 var model_id = data.Value[4];
                                 var product_id = BitConverter.ToUInt16(data.Value, 5);
 
-                                Console.WriteLine($"car info: Identifier: {identifier}, Model ID: {model_id}, Product ID: {product_id}");
+                                Log($"car info: Identifier: {identifier}, Model ID: {model_id}, Product ID: {product_id}");
                             }
                         }
                         foreach(var data in args.ServiceData)
-                        { Console.WriteLine($"{data.Key}: {BytesToString(data.Value)}"); }
-                        Console.WriteLine($"car name: {args.Name}, id {args.Device.Id}, strength {args.Rssi}");
+                        { Log($"{data.Key}: {BytesToString(data.Value)}"); }
+                        Log($"car name: {args.Name}, id {args.Device.Id}, strength {args.Rssi}");
                         string name = args.Name; //give cars placeholder names until we can get the real name
                         if(args.Device.Id == "E7FFF13FD1FF"){ name = "Truck Sticker";}
                         else if(args.Device.Id == "E70E96A36CD3"){ name = "Sport Sticker";}
@@ -86,19 +96,19 @@ namespace CarInterface
             }
             catch{
                 advertisedServices.AddRange(args.Uuids);
-                Console.WriteLine($"Advertisement received, not car {args.Name}");
+                Log($"Advertisement received, not car {args.Name}");
                 foreach(var data in args.ManufacturerData)
                 {
-                    Console.WriteLine($"{data.Key}: {BytesToString(data.Value)}");
+                    Log($"{data.Key}: {BytesToString(data.Value)}");
                 }
             }
         }
         static async Task ConnectToCarAsync(Car car){
-            Console.WriteLine($"Connecting to car {car.name}");
+            Log($"Connecting to car {car.name}");
 
             await car.device.Gatt.ConnectAsync();
             if(car.device.Gatt.IsConnected){
-                Console.WriteLine($"Connected to car {car.name}");
+                Log($"Connected to car {car.name}");
                 CheckCarConnection(car);
                 //Expected
                 //Service              "BE15BEEF-6186-407E-8381-0BD89C4D8DF4"
@@ -116,7 +126,7 @@ namespace CarInterface
                 await SetCarSpeed(car, 500);
             }
             else{
-                Console.WriteLine($"Failed to connect to car {car.name}");
+                Log($"Failed to connect to car {car.name}");
             }
         }
 
@@ -124,7 +134,7 @@ namespace CarInterface
             while(car.device.Gatt.IsConnected){
                 await Task.Delay(5000);
             }
-            Console.WriteLine($"Car disconnected {car.name}");
+            Log($"Car disconnected {car.name}");
             cars.Remove(car);
         }
         static async Task EnableSDKMode(Car car){
@@ -149,7 +159,7 @@ namespace CarInterface
         static async Task WriteToCarAsync(string carID, byte[] data, bool response = false){
             var car = cars.Find(car => car.id == carID);
             if(car == null){
-                Console.WriteLine($"Car {carID} not found");
+                Log($"Car {carID} not found");
                 return;
             }
             var service = await car.device.Gatt.GetPrimaryServiceAsync(ServiceID);
@@ -163,35 +173,63 @@ namespace CarInterface
         }
         static void ParseMessage(byte[] content, Car car){
             byte id = content[1];
-            if(id == 0x17){//ping response
-                Console.WriteLine($"Ping response: {BytesToString(content)}");
-            } else if(id == 0x19){ //version response
+            if(id == 0x17){//23 ping response
+                Log($"Ping response: {BytesToString(content)}");
+            } else if(id == 0x19){ //25 version response
                 int version = content[2];
-                Console.WriteLine($"Version response: {version}");
-            } else if(id == 0x1b){ //battery response
+                Log($"Version response: {version}");
+            } else if(id == 0x1b){ //27 battery response
                 int battery = content[2];
                 int maxBattery = 3800;
-                Console.WriteLine($"Battery response: {battery} / {maxBattery}");
-            } else if(id == 0x27){ //where is the car
+                Log($"Battery response: {battery} / {maxBattery}");
+            } else if(id == 0x27){ //39 where is car
                 int trackLocation = content[2];
                 int trackID = content[3];
                 float offset = BitConverter.ToSingle(content, 4);
                 int speed = BitConverter.ToInt16(content, 8);
-                bool clockwise = content[10] == 0x57;
+                bool goingBackwards = content[10] == 0x40; //this might be wrong
 
-                Console.WriteLine($"Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
+                Log($"{car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, wrong way: {goingBackwards}");
+            } else if(id == 0x2b){ //43 ONOH FALL
+                Log($"{car.name} fell off track");
             }
 
 
 
             else{
-                Console.WriteLine($"Unknown message {id}: {BytesToString(content)}");
+                Log($"Unknown message {id}: {BytesToString(content)}");
             }
         }
         static string BytesToString(byte[] bytes)
         {
             return BitConverter.ToString(bytes).Replace("-", "");
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.Configure(app =>
+                    {
+                        app.Run(async context =>
+                        {
+                            if (context.Request.Path == "/")
+                            {
+                                await context.Response.WriteAsync("CarInterface");
+                            }
+                            else if (context.Request.Path == "/data")
+                            {
+                                context.Response.ContentType = "application/json";
+                                await context.Response.WriteAsync("{ \"message\": \"Hello, Data!\" }");
+                            }
+                            else
+                            {
+                                context.Response.StatusCode = 404;
+                                await context.Response.WriteAsync("Not Found");
+                            }
+                        });
+                    });
+                });
     }
     class Car{
         public string name;
