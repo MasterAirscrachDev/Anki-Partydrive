@@ -72,9 +72,7 @@ public class CarInteraface : MonoBehaviour
                 string[] logs = responseString.Split('\n');
                 for (int i = 0; i < logs.Length; i++)
                 {
-                    if(!logs[i].StartsWith("[37]")){
-                        continue;
-                    }
+                    if(logs[i].StartsWith("[39]")){ continue; }
                     Debug.Log(logs[i]);
                 }  
             }

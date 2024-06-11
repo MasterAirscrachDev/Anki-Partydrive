@@ -18,7 +18,7 @@ namespace CarInterface
         static BluetoothUuid ServiceID = BluetoothUuid.FromGuid(new Guid("BE15BEEF-6186-407E-8381-0BD89C4D8DF4"));
         static BluetoothUuid ReadID = BluetoothUuid.FromGuid(new Guid("BE15BEE0-6186-407E-8381-0BD89C4D8DF4"));
         static BluetoothUuid WriteID = BluetoothUuid.FromGuid(new Guid("BE15BEE1-6186-407E-8381-0BD89C4D8DF4"));
-        static string SysLog = "";
+        static string SysLog = "", UtilityLog = "";
         static bool printLog = true, scanningForCars = false;
         static async Task Main(string[] args)
         {
@@ -36,6 +36,9 @@ namespace CarInterface
         static void Log(string message){
             SysLog += message + "\n";
             if(printLog){ Console.WriteLine(message); }
+        }
+        static void UtilLog(string message){
+            UtilityLog += message + "\n";
         }
         static void StartBLEScan(){
             var leScanOptions = new BluetoothLEScanOptions();
@@ -192,6 +195,7 @@ namespace CarInterface
                 int speed = BitConverter.ToInt16(content, 8);
                 bool goingBackwards = content[10] == 0x40; //this might be wrong
                 //tf does location mean
+                UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}:{goingBackwards}");
                 Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, wrong way: {goingBackwards}");
                 //IDs
                 //39 FnF Straight 40 Straight
@@ -311,6 +315,11 @@ namespace CarInterface
                             {
                                 await context.Response.WriteAsync(SysLog);
                                 SysLog = "";
+                            });
+                            endpoints.MapGet("/uitllogs", async context =>
+                            {
+                                await context.Response.WriteAsync(UtilityLog);
+                                UtilityLog = "";
                             });
                         });
                         app.Run(async context =>
