@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace CarInterface
 {
@@ -27,6 +28,8 @@ namespace CarInterface
             Bluetooth.AdvertisementReceived += OnAdvertisementReceived;
             StartBLEScan();
             await GetCars();
+            //specify the port to be 80085
+            args = new string[]{"--urls", "http://localhost:7117"};
             CreateHostBuilder(args).Build().RunAsync();
             await Task.Delay(-1);
         }
@@ -217,13 +220,29 @@ namespace CarInterface
                             {
                                 await context.Response.WriteAsync("CarInterface");
                             }
-                            else if (context.Request.Path == "/data")
+                            else if (context.Request.Path == "/cars")
                             {
                                 context.Response.ContentType = "application/json";
-                                await context.Response.WriteAsync("{ \"message\": \"Hello, Data!\" }");
+                                //return the list of cars cardata
+                                CarData[] carData = new CarData[cars.Count];
+                                for(int i = 0; i < cars.Count; i++){
+                                    carData[i] = cars[i].data;
+                                }
+                                string json = JsonConvert.SerializeObject(carData);
+                                await context.Response.WriteAsync(json);
                             }
-                            else
-                            {
+                            else if (context.Request.Path == "/registerlogs"){
+                                printLog = false;
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Logs registered, call /logs to get logs");
+                            }
+                            else if (context.Request.Path == "/logs"){
+                                await context.Response.WriteAsync(SysLog);
+                                SysLog = "";
+                            }
+
+
+                            else{
                                 context.Response.StatusCode = 404;
                                 await context.Response.WriteAsync("Not Found");
                             }
@@ -236,5 +255,15 @@ namespace CarInterface
         public string id;
         //bluetooth connection
         public BluetoothDevice device;
+        CarData data;
+    }
+    [Serializable]
+    class CarData{
+        public string name;
+        public string id;
+        int trackPosition;
+        int trackID;
+        int laneOffset;
+        int speed;
     }
 }
