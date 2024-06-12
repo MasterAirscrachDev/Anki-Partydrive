@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 public class CarInteraface : MonoBehaviour
 {
     [SerializeField] CarData[] cars;
+    [SerializeField] int[] track;
+    List<int> trackIDs = new List<int>();
     HttpClient client = new HttpClient();
     // Start is called before the first frame update
     void Start()
@@ -24,16 +26,16 @@ public class CarInteraface : MonoBehaviour
             GetCarInfo();
         }
         if(Input.GetKeyDown(KeyCode.Alpha1)){
-            ApiCall($"/controlcar/{cars[0].id}:100");
+            ApiCall($"/controlcar/{cars[0].id}:100:68");
         }
         if(Input.GetKeyDown(KeyCode.Alpha2)){
-            ApiCall($"/controlcar/{cars[0].id}:200");
+            ApiCall($"/controlcar/{cars[0].id}:200:23");
         }
         if(Input.GetKeyDown(KeyCode.Alpha3)){
-            ApiCall($"/controlcar/{cars[0].id}:300");
+            ApiCall($"/controlcar/{cars[0].id}:300:-23");
         }
         if(Input.GetKeyDown(KeyCode.Alpha4)){
-            ApiCall($"/controlcar/{cars[0].id}:400");
+            ApiCall($"/controlcar/{cars[0].id}:400:-68");
         }
         if(Input.GetKeyDown(KeyCode.Alpha5)){
             ApiCall($"/controlcar/{cars[0].id}:500");
@@ -72,12 +74,36 @@ public class CarInteraface : MonoBehaviour
                 string[] logs = responseString.Split('\n');
                 for (int i = 0; i < logs.Length; i++)
                 {
-                    if(logs[i].StartsWith("[39]")){ continue; }
+                    if(logs[i] == "" || logs[i].StartsWith("[39]")){ continue; }
                     Debug.Log(logs[i]);
                 }  
             }
-            //Debug.Log(responseString);
-            await Task.Delay(100);
+            var utils = await client.GetAsync("utillogs");
+            var utilsString = await utils.Content.ReadAsStringAsync();
+            if(utilsString != ""){ 
+                string[] logs = utilsString.Split('\n');
+                for (int i = 0; i < logs.Length; i++)
+                {
+                    string[] c = logs[i].Split(':');
+                    if (c[0] == "-1"){
+                        GetCarInfo();
+                    } else if(c[0] == "39"){
+                        //Debug.Log(logs[i]);
+                        int tracklocation = int.Parse(c[2]);
+                        int trackID = int.Parse(c[3]);
+                        float laneOffset = float.Parse(c[4]);
+                        int speed = int.Parse(c[5]);
+                        int index = GetCar(c[1]);
+                        if(index != -1){
+                            cars[index].trackPosition = tracklocation;
+                            cars[index].trackID = trackID;
+                            cars[index].laneOffset = laneOffset;
+                            cars[index].speed = speed;
+                        }
+                    }
+                }
+            }
+            await Task.Delay(80);
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){
                 return;
@@ -100,6 +126,11 @@ public class CarInteraface : MonoBehaviour
         // foreach(CarData car in cars){
         //     Debug.Log($"Car: {car.name} ID: {car.id}");
         // }
+    }
+    int GetCar(string id){
+        for (int i = 0; i < cars.Length; i++)
+        { if(cars[i].id == id){return i;} }
+        return -1;
     }
     [System.Serializable]
     class CarData{

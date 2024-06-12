@@ -128,14 +128,14 @@ namespace CarInterface
                 };
                 await characteristic.StartNotificationsAsync();
                 await EnableSDKMode(car);
-                await Task.Delay(1000);
-                await SetCarSpeed(car, 100);
+                await Task.Delay(500);
+                UtilLog($"-1:{car.id}");
+                //await SetCarSpeed(car, 100);
             }
             else{
                 Log($"Failed to connect to car {car.name}");
             }
         }
-
         static async Task CheckCarConnection(Car car){
             while(car.device.Gatt.IsConnected){
                 await Task.Delay(5000);
@@ -160,6 +160,20 @@ namespace CarInterface
             //1000 as int16
             data[4] = 0xE8;
             data[5] = 0x03;
+            await WriteToCarAsync(car.id, data, true);
+        }
+        static async Task SetCarLaneOffset(Car car, float offset){
+            // byte[] data = new byte[12];
+            // data[0] = 11;
+            // data[1] = 0x25;
+            // BitConverter.GetBytes((short)250).CopyTo(data, 2); // horizontal_speed_mm_per_sec
+            // BitConverter.GetBytes((short)1000).CopyTo(data, 4); // horizontal_accel_mm_per_sec2
+            // BitConverter.GetBytes((float)offset).CopyTo(data, 6); // offset_from_road_center_mm
+
+            byte[] data = new byte[6];
+            data[0] = 0x05;
+            data[1] = 0x2c;
+            BitConverter.GetBytes((float)offset).CopyTo(data, 2); // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
             await WriteToCarAsync(car.id, data, true);
         }
         static async Task WriteToCarAsync(string carID, byte[] data, bool response = false){
@@ -193,10 +207,9 @@ namespace CarInterface
                 int trackID = content[3];
                 float offset = BitConverter.ToSingle(content, 4);
                 int speed = BitConverter.ToInt16(content, 8);
-                bool goingBackwards = content[10] == 0x40; //this might be wrong
                 //tf does location mean
-                UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}:{goingBackwards}");
-                Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, wrong way: {goingBackwards}");
+                UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}");
+                Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}");
                 //IDs
                 //39 FnF Straight 40 Straight
                 //17 FnF Curve 18 Curve
@@ -209,18 +222,24 @@ namespace CarInterface
             } else if(id == 0x29){ //41 car track pice update
                 try{
                     if(content.Length < 18){ return; } //not enough data
-                    int leftWheelDistance = content[17];
-                    int rightWheelDistance = content[18];
+                    int trackPiece = (sbyte)content[2];
+                    int oldTrackPiece = (sbyte)content[3];
+                    float offset = BitConverter.ToSingle(content, 4);
+                    int uphillCounter = content[14];
+                    int downhillCounter = content[15];
+                    int leftWheelDistance = content[16];
+                    int rightWheelDistance = content[17];
 
                     // There is a shorter segment for the starting line track.
                     string crossedStartingLine = "";
                     if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
                         crossedStartingLine = " (Crossed Starting Line)";
                     }
-                    Log($"[41] {car.name} status: Left wheel distance: {leftWheelDistance}, Right wheel distance: {rightWheelDistance}{crossedStartingLine}");
+                    UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{!string.IsNullOrEmpty(crossedStartingLine)}");
+                    Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, up:{uphillCounter}down:{downhillCounter}, offest: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance} {crossedStartingLine}");
                 }
                 catch{
-                    Log($"Error parsing car status message: {BytesToString(content)}");
+                    Log($"[41] Error parsing car track update: {BytesToString(content)}");
                     return;
                 }
                 
@@ -271,6 +290,7 @@ namespace CarInterface
                                     string[] parts = data.Split(':');
                                     string carID = parts[0];
                                     int speed = int.Parse(parts[1]);
+                                    float offset = float.Parse(parts[2]);
                                     Car car = cars.Find(car => car.id == carID);
                                     if(car == null){
                                         context.Response.StatusCode = 404;
@@ -278,6 +298,7 @@ namespace CarInterface
                                         return;
                                     }
                                     await SetCarSpeed(car, speed);
+                                    await SetCarLaneOffset(car, offset);
                                     context.Response.StatusCode = 200;
                                     await context.Response.WriteAsync("Speed set");
                                 }
@@ -316,7 +337,7 @@ namespace CarInterface
                                 await context.Response.WriteAsync(SysLog);
                                 SysLog = "";
                             });
-                            endpoints.MapGet("/uitllogs", async context =>
+                            endpoints.MapGet("/utillogs", async context =>
                             {
                                 await context.Response.WriteAsync(UtilityLog);
                                 UtilityLog = "";
