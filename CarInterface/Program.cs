@@ -371,16 +371,16 @@ namespace CarInterface
                 });
     }
     class Car{
-        public string name;
-        public string id;
+        public required string name;
+        public required string id;
         //bluetooth connection
-        public BluetoothDevice device;
-        public CarData data;
+        public required BluetoothDevice device;
+        public required CarData data;
     }
     [System.Serializable]
     class CarData{
-        public string name;
-        public string id;
+        public required string name;
+        public required string id;
         public int trackPosition;
         public int trackID;
         public float laneOffset;
