@@ -162,20 +162,30 @@ namespace CarInterface
             data[5] = 0x03;
             await WriteToCarAsync(car.id, data, true);
         }
-        // static async Task SetCarLane(Car car, float offset){
-        //     // byte[] data = new byte[12];
-        //     // data[0] = 11;
-        //     // data[1] = 0x25;
-        //     // BitConverter.GetBytes((short)250).CopyTo(data, 2); // horizontal_speed_mm_per_sec
-        //     // BitConverter.GetBytes((short)1000).CopyTo(data, 4); // horizontal_accel_mm_per_sec2
-        //     // BitConverter.GetBytes((float)offset).CopyTo(data, 6); // offset_from_road_center_mm
+        static async Task SetCarTrackCenter(Car car, float offset){
+            byte[] data = new byte[6];
+            data[0] = 0x05;
+            data[1] = 0x2c;
+            BitConverter.GetBytes((float)offset).CopyTo(data, 2); // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
+            await WriteToCarAsync(car.id, data, true);
+        }
+        static async Task SetCarLane(Car car, float lane){
+            byte[] data = new byte[12];
+            data[0] = 11;
+            data[1] = 0x25;
+            int horizontalSpeedmm = 250, horizontalAccelmm = 1000;
+            //horizontal speed as int16
+            data[2] = (byte)(horizontalSpeedmm & 0xFF);
+            data[3] = (byte)((horizontalSpeedmm >> 8) & 0xFF);
+            //horizontal accel as int16
+            data[4] = (byte)(horizontalAccelmm & 0xFF);
+            data[5] = (byte)((horizontalAccelmm >> 8) & 0xFF);
+            //lane as float
+            BitConverter.GetBytes((float)lane).CopyTo(data, 6);
 
-        //     byte[] data = new byte[6];
-        //     data[0] = 0x05;
-        //     data[1] = 0x2c;
-        //     BitConverter.GetBytes((float)offset).CopyTo(data, 2); // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
-        //     await WriteToCarAsync(car.id, data, true);
-        // }
+            await WriteToCarAsync(car.id, data, true);
+        }
+
         static async Task RequestCarBattery(Car car){
             byte[] data = new byte[]{0x01, 0x1a};
             await WriteToCarAsync(car.id, data, true);
@@ -263,6 +273,8 @@ namespace CarInterface
 
             else{
                 Log($"Unknown message {id} [{IntToByteString(id)}]: {BytesToString(content)}");
+                //54
+                //77
             }
         }
         static string IntToByteString(int number)
@@ -306,6 +318,7 @@ namespace CarInterface
                                     }
                                     await SetCarSpeed(car, speed);
                                     //await SetCarLaneOffset(car, offset);
+                                    await SetCarLane(car, offset);
                                     context.Response.StatusCode = 200;
                                     await context.Response.WriteAsync("Speed set");
                                 }

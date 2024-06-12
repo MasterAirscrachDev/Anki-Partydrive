@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 public class CarInteraface : MonoBehaviour
 {
-    [SerializeField] CarData[] cars;
+    public CarData[] cars;
     [SerializeField] int[] track;
     List<int> trackIDs = new List<int>();
     HttpClient client = new HttpClient();
@@ -25,38 +25,9 @@ public class CarInteraface : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.C)){
             GetCarInfo();
         }
-        if(Input.GetKeyDown(KeyCode.Alpha1)){
-            ApiCall($"controlcar/{cars[0].id}:100:68");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha2)){
-            ApiCall($"controlcar/{cars[0].id}:200:23");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha3)){
-            ApiCall($"controlcar/{cars[0].id}:300:-23");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha4)){
-            ApiCall($"controlcar/{cars[0].id}:400:-68");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha5)){
-            ApiCall($"controlcar/{cars[0].id}:500");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha6)){
-            ApiCall($"controlcar/{cars[0].id}:600");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha7)){
-            ApiCall($"controlcar/{cars[0].id}:700");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha8)){
-            ApiCall($"controlcar/{cars[0].id}:800");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha9)){
-            ApiCall($"controlcar/{cars[0].id}:900");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha0)){
-            ApiCall($"controlcar/{cars[0].id}:0");
-        }
-
-
+    }
+    public void ControlCar(string id, int speed, int lane){
+        ApiCall($"controlcar/{id}:{speed}:{lane}");
     }
     async Task SetupListener(){
         var response = await client.GetAsync("registerlogs");
@@ -132,7 +103,7 @@ public class CarInteraface : MonoBehaviour
         return -1;
     }
     [System.Serializable]
-    class CarData{
+    public class CarData{
         public string name;
         public string id;
         public int trackPosition;
