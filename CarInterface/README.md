@@ -38,7 +38,7 @@ Commands have a variable byte length but follow the format
 - 4 bytes: 0x03
 - ID 144: 0x90
 - Data: 0x01 (SDK Mode) 0x00 (Normal Mode)
-- Flags: 0x01 //ANKI_VEHICLE_SDK_OPTION_OVERRIDE_LOCALIZATION unsure what this actually does
+- Flags: 0x01 `ANKI_VEHICLE_SDK_OPTION_OVERRIDE_LOCALIZATION` unsure what this actually does
 
 Example payload
 ```cs
@@ -87,6 +87,7 @@ The cars will send messages to the read characteristic. messages follow the same
 - integer Downhill [15] (returns a value indicating the car is decending)
 - integer Left Wheel Distance [16] (unsure what this is)
 - integer Right Wheel Distance [17] (unsure what this is)
+
 This comparison can detect the finish line, unsure how it works
 ```cs
 if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
