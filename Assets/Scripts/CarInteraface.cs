@@ -139,5 +139,6 @@ public class CarInteraface : MonoBehaviour
         public int trackID;
         public float laneOffset;
         public int speed;
+        public int battery;
     }
 }

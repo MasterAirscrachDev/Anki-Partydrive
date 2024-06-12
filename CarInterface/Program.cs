@@ -162,20 +162,25 @@ namespace CarInterface
             data[5] = 0x03;
             await WriteToCarAsync(car.id, data, true);
         }
-        static async Task SetCarLaneOffset(Car car, float offset){
-            // byte[] data = new byte[12];
-            // data[0] = 11;
-            // data[1] = 0x25;
-            // BitConverter.GetBytes((short)250).CopyTo(data, 2); // horizontal_speed_mm_per_sec
-            // BitConverter.GetBytes((short)1000).CopyTo(data, 4); // horizontal_accel_mm_per_sec2
-            // BitConverter.GetBytes((float)offset).CopyTo(data, 6); // offset_from_road_center_mm
+        // static async Task SetCarLane(Car car, float offset){
+        //     // byte[] data = new byte[12];
+        //     // data[0] = 11;
+        //     // data[1] = 0x25;
+        //     // BitConverter.GetBytes((short)250).CopyTo(data, 2); // horizontal_speed_mm_per_sec
+        //     // BitConverter.GetBytes((short)1000).CopyTo(data, 4); // horizontal_accel_mm_per_sec2
+        //     // BitConverter.GetBytes((float)offset).CopyTo(data, 6); // offset_from_road_center_mm
 
-            byte[] data = new byte[6];
-            data[0] = 0x05;
-            data[1] = 0x2c;
-            BitConverter.GetBytes((float)offset).CopyTo(data, 2); // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
+        //     byte[] data = new byte[6];
+        //     data[0] = 0x05;
+        //     data[1] = 0x2c;
+        //     BitConverter.GetBytes((float)offset).CopyTo(data, 2); // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
+        //     await WriteToCarAsync(car.id, data, true);
+        // }
+        static async Task RequestCarBattery(Car car){
+            byte[] data = new byte[]{0x01, 0x1a};
             await WriteToCarAsync(car.id, data, true);
         }
+
         static async Task WriteToCarAsync(string carID, byte[] data, bool response = false){
             var car = cars.Find(car => car.id == carID);
             if(car == null){
@@ -202,6 +207,8 @@ namespace CarInterface
                 int battery = content[2];
                 int maxBattery = 3800;
                 Log($"[27] Battery response: {battery} / {maxBattery}");
+                UtilLog($"27:{car.id}:{battery}");
+                car.data.battery = battery;
             } else if(id == 0x27){ //39 where is car
                 int trackLocation = content[2];
                 int trackID = content[3];
@@ -298,7 +305,7 @@ namespace CarInterface
                                         return;
                                     }
                                     await SetCarSpeed(car, speed);
-                                    await SetCarLaneOffset(car, offset);
+                                    //await SetCarLaneOffset(car, offset);
                                     context.Response.StatusCode = 200;
                                     await context.Response.WriteAsync("Speed set");
                                 }
@@ -323,6 +330,14 @@ namespace CarInterface
                                 }
                                 string json = JsonConvert.SerializeObject(carData);
                                 await context.Response.WriteAsync(json);
+                            });
+                            endpoints.MapGet("/batteries", async context =>
+                            {
+                                for(int i = 0; i < cars.Count; i++){
+                                    await RequestCarBattery(cars[i]);
+                                }
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Got battery levels, call /cars to get them");
                             });
                             endpoints.MapGet("/registerlogs", async context =>
                             {
@@ -370,5 +385,6 @@ namespace CarInterface
         public int trackID;
         public float laneOffset;
         public int speed;
+        public int battery;
     }
 }
