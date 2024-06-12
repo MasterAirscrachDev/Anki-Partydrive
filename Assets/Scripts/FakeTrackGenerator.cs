@@ -76,10 +76,15 @@ enum TrackType
     Straight,
     CurveLeft,
     CurveRight,
+    Jump,
+    CrissCross,
+    Finish,
+    Poweup
 }
 [System.Serializable]
 class Segment
 {
     public TrackType type;
     public int elevation;
+    public bool addPowerups;
 }

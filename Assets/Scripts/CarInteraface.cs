@@ -26,34 +26,34 @@ public class CarInteraface : MonoBehaviour
             GetCarInfo();
         }
         if(Input.GetKeyDown(KeyCode.Alpha1)){
-            ApiCall($"/controlcar/{cars[0].id}:100:68");
+            ApiCall($"controlcar/{cars[0].id}:100:68");
         }
         if(Input.GetKeyDown(KeyCode.Alpha2)){
-            ApiCall($"/controlcar/{cars[0].id}:200:23");
+            ApiCall($"controlcar/{cars[0].id}:200:23");
         }
         if(Input.GetKeyDown(KeyCode.Alpha3)){
-            ApiCall($"/controlcar/{cars[0].id}:300:-23");
+            ApiCall($"controlcar/{cars[0].id}:300:-23");
         }
         if(Input.GetKeyDown(KeyCode.Alpha4)){
-            ApiCall($"/controlcar/{cars[0].id}:400:-68");
+            ApiCall($"controlcar/{cars[0].id}:400:-68");
         }
         if(Input.GetKeyDown(KeyCode.Alpha5)){
-            ApiCall($"/controlcar/{cars[0].id}:500");
+            ApiCall($"controlcar/{cars[0].id}:500");
         }
         if(Input.GetKeyDown(KeyCode.Alpha6)){
-            ApiCall($"/controlcar/{cars[0].id}:600");
+            ApiCall($"controlcar/{cars[0].id}:600");
         }
         if(Input.GetKeyDown(KeyCode.Alpha7)){
-            ApiCall($"/controlcar/{cars[0].id}:700");
+            ApiCall($"controlcar/{cars[0].id}:700");
         }
         if(Input.GetKeyDown(KeyCode.Alpha8)){
-            ApiCall($"/controlcar/{cars[0].id}:800");
+            ApiCall($"controlcar/{cars[0].id}:800");
         }
         if(Input.GetKeyDown(KeyCode.Alpha9)){
-            ApiCall($"/controlcar/{cars[0].id}:900");
+            ApiCall($"controlcar/{cars[0].id}:900");
         }
         if(Input.GetKeyDown(KeyCode.Alpha0)){
-            ApiCall($"/controlcar/{cars[0].id}:0");
+            ApiCall($"controlcar/{cars[0].id}:0");
         }
 
 
@@ -76,7 +76,7 @@ public class CarInteraface : MonoBehaviour
                 {
                     if(logs[i] == "" || logs[i].StartsWith("[39]")){ continue; }
                     Debug.Log(logs[i]);
-                }  
+                }
             }
             var utils = await client.GetAsync("utillogs");
             var utilsString = await utils.Content.ReadAsStringAsync();
@@ -103,7 +103,6 @@ public class CarInteraface : MonoBehaviour
                     }
                 }
             }
-            await Task.Delay(80);
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){
                 return;
