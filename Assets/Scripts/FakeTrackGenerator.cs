@@ -18,12 +18,20 @@ public class FakeTrackGenerator : MonoBehaviour
             Vector3 currentPoint = new Vector3(0, 0, -0.5f);
             Vector3 forward = Vector3.forward;
             points.Add(currentPoint);
-            int lastSegmentHeight = 0;
+            float lastSegmentHeight = 0;
             for(int i = 0; i < segments.Length; i++){
                 Segment segment = segments[i];
+                //round elevation to the nearest 0.25
+                float elevation = Mathf.Round(segment.elevation * 4) / 4;
+                elevation *= 0.2f;
                 if(segment.type == TrackType.Straight){
                     currentPoint += forward;
-                    currentPoint.y = segment.elevation * 0.2f;
+                    currentPoint.y = elevation;
+                    points.Add(currentPoint);
+                }
+                else if(segment.type == TrackType.Finish){
+                    currentPoint += forward;
+                    currentPoint.y = elevation;
                     points.Add(currentPoint);
                 }
                 else{
@@ -40,7 +48,10 @@ public class FakeTrackGenerator : MonoBehaviour
                         float angle = initialAngle + angleIncrement * j;
                         Vector3 direction = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0, Mathf.Sin(angle * Mathf.Deg2Rad));
                         Vector3 nextPoint = circleCenter + direction * 0.5f; // Use the calculated direction for the next point
-                        points.Add(nextPoint);
+                        Vector3 newPoint = nextPoint + new Vector3(0, Mathf.Lerp(elevation, lastSegmentHeight,  (j == 0) ? 0f : j / 10f), 0);
+                        //Debug.Log($"at {j}: {Mathf.Lerp(elevation, lastSegmentHeight,  (9f == 0) ? 0f : j / 9f)}");
+                        Debug.DrawRay(newPoint, Vector3.up, Color.blue, 10);
+                        points.Add(newPoint);
                     }
                     //flip the order of the last 10 points to ensure the curve is smooth
                     points.RemoveAt(points.Count - 1);
@@ -57,14 +68,21 @@ public class FakeTrackGenerator : MonoBehaviour
                         forward = new Vector3(0, 0, Mathf.Sign(forward.z));
                     }
                 }
-                lastSegmentHeight = segment.elevation;
+                Debug.Log($"Segment {i} finished at {currentPoint} with elevation {elevation}");
+                if(elevation > lastSegmentHeight){
+                    lastSegmentHeight = elevation;
+                }
+                else{
+                    lastSegmentHeight = elevation;
+                }
+                
             }
 
 
             GetComponent<SmoothLineOnPoints>().Calculate(points.ToArray(), 1);
-            for(int i = 0; i < turnIndexes.Count; i++){
-                Debug.Log($"Turn at {turnIndexes[i]}");
-            }
+            // for(int i = 0; i < turnIndexes.Count; i++){
+            //     Debug.Log($"Turn at {turnIndexes[i]}");
+            // }
             GetComponent<TrackGenerator>().GenerateTrackFromComplexPoints(points.ToArray(), turnIndexes.ToArray(),0.5f);
 
         }
@@ -85,6 +103,6 @@ enum TrackType
 class Segment
 {
     public TrackType type;
-    public int elevation;
+    public float elevation;
     public bool addPowerups;
 }
