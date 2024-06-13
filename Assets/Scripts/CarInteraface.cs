@@ -48,7 +48,9 @@ public class CarInteraface : MonoBehaviour
                 string[] logs = responseString.Split('\n');
                 for (int i = 0; i < logs.Length; i++)
                 {
-                    if(logs[i] == "" || logs[i].StartsWith("[39]")){ continue; }
+                    if(logs[i] == ""){ continue; }
+                    if(logs[i].StartsWith("[41]")){ continue; }
+                    //if(logs[i] == "" || logs[i].StartsWith("[39]")){ continue; }
                     Debug.Log(logs[i]);
                 }
             }

@@ -64,7 +64,7 @@ public class FakeTrackGenerator : MonoBehaviour
                         forward = new Vector3(0, 0, Mathf.Sign(forward.z));
                     }
                 }
-                Debug.Log($"Segment {i} finished at {currentPoint} with elevation {elevation}");
+                //Debug.Log($"Segment {i} finished at {currentPoint} with elevation {elevation}");
                 if(elevation > lastSegmentHeight){
                     lastSegmentHeight = elevation;
                 }

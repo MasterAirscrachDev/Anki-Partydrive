@@ -127,7 +127,7 @@ namespace CarInterface
                     CarCharacteristicChanged(sender, args, car);
                 };
                 await characteristic.StartNotificationsAsync();
-                //await EnableSDKMode(car);
+                await EnableSDKMode(car);
                 await Task.Delay(500);
                 UtilLog($"-1:{car.id}");
             }
