@@ -127,10 +127,9 @@ namespace CarInterface
                     CarCharacteristicChanged(sender, args, car);
                 };
                 await characteristic.StartNotificationsAsync();
-                await EnableSDKMode(car);
+                //await EnableSDKMode(car);
                 await Task.Delay(500);
                 UtilLog($"-1:{car.id}");
-                //await SetCarSpeed(car, 100);
             }
             else{
                 Log($"Failed to connect to car {car.name}");
@@ -225,19 +224,22 @@ namespace CarInterface
                 UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}");
                 Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}");
                 //IDs
-                //39 FnF Straight 40 Straight
-                //17 FnF Curve 18 Curve
+                //36 ??? 39 FnF Straight 40 Straight
+                //17 18 20 23 FnF Curve / Curve
                 //57 FnF Powerup
-                //
+                //34 PreFinishLine
+                //33 Start/Finish
+
                 car.data.trackPosition = trackLocation;
                 car.data.trackID = trackID;
                 car.data.laneOffset = offset;
                 car.data.speed = speed;
-            } else if(id == 0x29){ //41 car track pice update
+            } else if(id == 0x29){ //41 car moved between track pieces
                 try{
                     if(content.Length < 18){ return; } //not enough data
-                    int trackPiece = (sbyte)content[2];
-                    int oldTrackPiece = (sbyte)content[3];
+                    //Console.WriteLine(BytesToString(content));
+                    int trackPiece = Convert.ToInt32((sbyte)content[2]);
+                    int oldTrackPiece = Convert.ToInt32((sbyte)content[3]);
                     float offset = BitConverter.ToSingle(content, 4);
                     int uphillCounter = content[14];
                     int downhillCounter = content[15];
@@ -262,8 +264,14 @@ namespace CarInterface
                 Log($"[42] {car.name} error: {error}");
             } //43 ONOH FALL
             else if(id == 0x2b){ //43 ONOH FALL
+                UtilLog($"43:{car.id}");
                 Log($"[43] {car.name} fell off track");
-            } else if(id == 0x53){ //83 FnF specialBlock
+            } else if(id == 0x3f){ //63 charging status changed
+                bool charging = content[3] == 1;
+                UtilLog($"63:{car.id}:{charging}");
+                Log($"[63] {car.name} charging: {charging}");
+            }else if(id == 0x53){ //83 FnF specialBlock
+                UtilLog($"83:{car.id}");
                 Log($"[83] {car.name} hit special block");
             }
 
@@ -272,7 +280,6 @@ namespace CarInterface
                 Log($"Unknown message {id} [{IntToByteString(id)}]: {BytesToString(content)}");
                 //45
                 //54
-                //63 charging maybe ??
                 //65
                 //77 charging maybe ??
                 //134
@@ -356,6 +363,14 @@ namespace CarInterface
                             {
                                 await context.Response.WriteAsync(UtilityLog);
                                 UtilityLog = "";
+                            });
+                            endpoints.MapGet("/clearcardata", async context =>
+                            {
+                                for(int i = 0; i < cars.Count; i++){
+                                    cars[i].data = new CarData{ name = cars[i].name, id = cars[i].id };
+                                }
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Cleared car data");
                             });
                         });
                         app.Run(async context =>

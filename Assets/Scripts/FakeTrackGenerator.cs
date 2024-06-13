@@ -24,15 +24,11 @@ public class FakeTrackGenerator : MonoBehaviour
                 //round elevation to the nearest 0.25
                 float elevation = Mathf.Round(segment.elevation * 4) / 4;
                 elevation *= 0.2f;
-                if(segment.type == TrackType.Straight){
+                if(segment.type == TrackType.Straight || segment.type == TrackType.Finish || segment.type == TrackType.Poweup){
                     currentPoint += forward;
                     currentPoint.y = elevation;
                     points.Add(currentPoint);
-                }
-                else if(segment.type == TrackType.Finish){
-                    currentPoint += forward;
-                    currentPoint.y = elevation;
-                    points.Add(currentPoint);
+                    //if powerup or finish, add relevent effect
                 }
                 else{
                     turnIndexes.Add(points.Count);
@@ -87,9 +83,18 @@ public class FakeTrackGenerator : MonoBehaviour
 
         }
     }
+    public void TestGen(TrackType[] tracks){
+        segments = new Segment[tracks.Length];
+        for(int i = 0; i < tracks.Length; i++){
+            segments[i] = new Segment();
+            segments[i].type = tracks[i];
+            segments[i].elevation = 0;
+        }
+        test = true;
+    }
 }
 [System.Serializable]
-enum TrackType
+public enum TrackType
 {
     Straight,
     CurveLeft,
@@ -97,7 +102,8 @@ enum TrackType
     Jump,
     CrissCross,
     Finish,
-    Poweup
+    Poweup,
+    Unknown
 }
 [System.Serializable]
 class Segment

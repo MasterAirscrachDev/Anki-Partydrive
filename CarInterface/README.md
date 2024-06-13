@@ -102,5 +102,9 @@ if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDista
 #### Car Off Track
 - ID 43: 0x2B
 
+#### Car Charging Status Changed (maybe incomplete)
+- ID 63: 0x3F
+- integer Charging [3] (returns a value indicating if the car is charging)
+
 #### Fast And Furious Special Track Section
 - ID 83: 0x53

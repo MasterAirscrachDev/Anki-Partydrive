@@ -8,17 +8,26 @@ using Newtonsoft.Json;
 public class CarInteraface : MonoBehaviour
 {
     public CarData[] cars;
-    [SerializeField] int[] track;
-    List<int> trackIDs = new List<int>();
+    [SerializeField] List<TrackSegment> trackSegments = new List<TrackSegment>();
     HttpClient client = new HttpClient();
+    bool trackScanning;
+    public int FinishBlocks = 1;
+    int passedFinishBlocks = 0;
     // Start is called before the first frame update
     void Start()
     {
         client.BaseAddress = new System.Uri("http://localhost:7117/");
         SetupListener();
     }
-    void Update(){
-        
+    public void ScanTrack(){
+        trackScanning = true;
+        passedFinishBlocks = 0;
+        trackSegments.Clear();
+        MapTrack();
+    }
+    async Task MapTrack(){
+        //await ApiCall("clearcardata");
+        ControlCar(cars[0].id, 300, 0);
     }
     public void ControlCar(string id, int speed, int lane){
         ApiCall($"controlcar/{id}:{speed}:{lane}");
@@ -65,12 +74,33 @@ public class CarInteraface : MonoBehaviour
                             cars[index].laneOffset = laneOffset;
                             cars[index].speed = speed;
                         }
+                    } else if (c[0] == "41"){
+                        int trackID = int.Parse(c[2]); //Why are these blank?
+                        int oldTrackID = int.Parse(c[3]); //Why are these blank?
+                        float laneOffset = float.Parse(c[4]);
+                        int uphill = int.Parse(c[5]);
+                        int downhill = int.Parse(c[6]);
+                        int leftWheelDistance = int.Parse(c[7]);
+                        int rightWheelDistance = int.Parse(c[8]);
+
+                        if(trackScanning && cars[0].trackID != 0 && cars[0].trackID != 34){
+                            trackSegments.Add(new TrackSegment(trackSegments.Count, cars[0].trackID, leftWheelDistance - rightWheelDistance));
+                            GenerateTrack();
+                        }
+                    } else if(c[0] == "43"){
+                        if(trackScanning){ trackScanning = false; }
                     }
                 }
             }
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){ return; }
         }
+    }
+    void GenerateTrack(){
+        TrackType[] tracks = new TrackType[trackSegments.Count];
+        for (int j = 0; j < trackSegments.Count; j++)
+        { tracks[j] = trackSegments[j].trackType; }
+        FindObjectOfType<FakeTrackGenerator>().TestGen(tracks);
     }
     public void Call(string call){
         ApiCall(call);
@@ -109,5 +139,31 @@ public class CarInteraface : MonoBehaviour
         public float laneOffset;
         public int speed;
         public int battery;
+    }
+    [System.Serializable]
+    public class TrackSegment{
+        public int position;
+        public int trackID;
+        public  TrackType trackType;
+        public TrackSegment(int position, int trackID, int wheelDiff = 0){
+            this.position = position;
+            this.trackID = trackID;
+            if(trackID == 36 || trackID == 39 || trackID == 40){
+                trackType = TrackType.Straight;
+            } else if(trackID == 33){
+                trackType = TrackType.Finish;
+            } else if(trackID == 57){
+                trackType = TrackType.Poweup;
+            } else if(trackID == 17 || trackID == 18 || trackID == 20 || trackID == 23){
+                if(wheelDiff < 0){
+                    trackType = TrackType.CurveLeft;
+                }else{
+                    trackType = TrackType.CurveRight;
+                }
+            }
+            else {
+                trackType = TrackType.Unknown;
+            }
+        }
     }
 }
