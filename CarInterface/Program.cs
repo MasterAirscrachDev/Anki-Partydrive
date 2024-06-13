@@ -148,18 +148,16 @@ namespace CarInterface
             byte[] data = new byte[]{0x03, 0x90, 0x01, 0x01};
             await WriteToCarAsync(car.id, data, true);
         }
-        static async Task SetCarSpeed(Car car, int speed){
-            //speed = 0-1000, rescale to 300 - 1200
-            speed = (int)(speed * 0.9 + 300);
+        static async Task SetCarSpeed(Car car, int speed, int accel = 1000){
             byte[] data = new byte[7];
             data[0] = 0x06;
             data[1] = 0x24;
             //speed as int16
             data[2] = (byte)(speed & 0xFF);
             data[3] = (byte)((speed >> 8) & 0xFF);
-            //1000 as int16
-            data[4] = 0xE8;
-            data[5] = 0x03;
+            //accel as int16
+            data[4] = (byte)(accel & 0xFF);
+            data[5] = (byte)((accel >> 8) & 0xFF);
             await WriteToCarAsync(car.id, data, true);
         }
         static async Task SetCarTrackCenter(Car car, float offset){
@@ -182,7 +180,6 @@ namespace CarInterface
             data[5] = (byte)((horizontalAccelmm >> 8) & 0xFF);
             //lane as float
             BitConverter.GetBytes((float)lane).CopyTo(data, 6);
-
             await WriteToCarAsync(car.id, data, true);
         }
 
@@ -274,35 +271,24 @@ namespace CarInterface
             else{
                 Log($"Unknown message {id} [{IntToByteString(id)}]: {BytesToString(content)}");
                 //54
-                //77
+                //63 charging maybe ??
+                //65
+                //77 charging maybe ??
+                //134
             }
         }
         static string IntToByteString(int number)
-        {
-            //as 0x00
-            return "0x" + number.ToString("X2");
-        }
+        { return "0x" + number.ToString("X2"); } //as 0x00
         static string BytesToString(byte[] bytes)
-        {
-            return BitConverter.ToString(bytes).Replace("-", "");
-        }
+        { return BitConverter.ToString(bytes).Replace("-", ""); }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args).ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.SetMinimumLevel(LogLevel.Warning);
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.Configure(app =>
-                    {
+                { logging.ClearProviders(); logging.SetMinimumLevel(LogLevel.Warning); }).ConfigureWebHostDefaults(webBuilder =>{
+                    webBuilder.Configure(app =>{
                         app.UseRouting();
-                        app.UseEndpoints(endpoints =>
-                        {
-                            // Example of mapping a custom endpoint (similar to your scenario)
-                            endpoints.MapGet("/controlcar/{instruct}", async context =>
-                            {
+                        app.UseEndpoints(endpoints =>{
+                            endpoints.MapGet("/controlcar/{instruct}", async context =>{
                                 var instruct = context.Request.RouteValues["instruct"];
                                 try{
                                     string data = instruct.ToString();
@@ -320,7 +306,7 @@ namespace CarInterface
                                     //await SetCarLaneOffset(car, offset);
                                     await SetCarLane(car, offset);
                                     context.Response.StatusCode = 200;
-                                    await context.Response.WriteAsync("Speed set");
+                                    await context.Response.WriteAsync("Controlled");
                                 }
                                 catch{
                                     context.Response.StatusCode = 400;

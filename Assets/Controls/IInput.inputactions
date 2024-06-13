@@ -85,6 +85,17 @@
                 },
                 {
                     "name": "",
+                    "id": "663e94c8-9b0d-4102-b014-c688e145928e",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Steer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "6d8912d9-2cc7-40cd-ba4a-91d21771e6a2",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",

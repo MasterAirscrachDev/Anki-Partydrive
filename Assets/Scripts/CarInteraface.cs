@@ -18,13 +18,7 @@ public class CarInteraface : MonoBehaviour
         SetupListener();
     }
     void Update(){
-        if(Input.GetKeyDown(KeyCode.Space)){
-            Debug.Log("Scanning");
-            ApiCall("scan");
-        }
-        if(Input.GetKeyDown(KeyCode.C)){
-            GetCarInfo();
-        }
+        
     }
     public void ControlCar(string id, int speed, int lane){
         ApiCall($"controlcar/{id}:{speed}:{lane}");
@@ -75,10 +69,14 @@ public class CarInteraface : MonoBehaviour
                 }
             }
             //if we exited play mode then we should stop the loop
-            if(!Application.isPlaying){
-                return;
-            }
+            if(!Application.isPlaying){ return; }
         }
+    }
+    public void Call(string call){
+        ApiCall(call);
+    }
+    public void GetCars(){
+        GetCarInfo();
     }
     async Task ApiCall(string call){
         var response = await client.GetAsync(call);
