@@ -270,6 +270,7 @@ namespace CarInterface
 
             else{
                 Log($"Unknown message {id} [{IntToByteString(id)}]: {BytesToString(content)}");
+                //45
                 //54
                 //63 charging maybe ??
                 //65

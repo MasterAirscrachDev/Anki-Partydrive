@@ -6,6 +6,8 @@ This project uses InTheHand.BluetoothLE to connect to the Anki Overdrive cars.
 The project aims to create a c# server that can manage and control the cars.
 And a Unity game client that will show a 3D representation of the cars and the track. as well as control the game flow (using controllers for local multiplayer)
 
+[Language Agnostic Overdrive API](https://github.com/MasterAirscrachDev/Anki-Partydrive/tree/main/CarInterface)
+
 # Where we're at:
 ## server
 - [x] Connect to the cars
