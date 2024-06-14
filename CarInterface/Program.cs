@@ -20,6 +20,7 @@ namespace CarInterface
         static BluetoothUuid WriteID = BluetoothUuid.FromGuid(new Guid("BE15BEE1-6186-407E-8381-0BD89C4D8DF4"));
         static string SysLog = "", UtilityLog = "";
         static bool printLog = true, scanningForCars = false;
+        static List<string> checkingIDs = new List<string>();
         static async Task Main(string[] args)
         {
             Bluetooth.AvailabilityChanged += (s, e) =>
@@ -72,10 +73,10 @@ namespace CarInterface
         static void OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args){
             try{
                 if(args.Name.Contains("Drive")){
-                    if(!cars.Exists(car => car.id == args.Device.Id)){
-                        
+                    if(!cars.Exists(car => car.id == args.Device.Id) && !checkingIDs.Contains(args.Device.Id)){
+                        checkingIDs.Add(args.Device.Id);
                         Log($"Advertisement received for car");
-                        Log($"Manufacturer data: {args.ManufacturerData.Count}, Service data: {args.ServiceData.Count}");
+                        //Log($"Manufacturer data: {args.ManufacturerData.Count}, Service data: {args.ServiceData.Count}");
                         foreach(var data in args.ManufacturerData)
                         { // Assuming data.Value is the byte array containing the anki_vehicle_adv_mfg_t data
                             if (data.Value.Length >= 6) // Ensure there are enough bytes
@@ -90,13 +91,7 @@ namespace CarInterface
                         foreach(var data in args.ServiceData)
                         { Log($"{data.Key}: {BytesToString(data.Value)}"); }
                         Log($"car name: {args.Name}, id {args.Device.Id}, strength {args.Rssi}");
-                        string name = args.Name; //give cars placeholder names until we can get the real name
-                        if(args.Device.Id == "E7FFF13FD1FF"){ name = "Truck Sticker";}
-                        else if(args.Device.Id == "E70E96A36CD3"){ name = "Sport Sticker";}
-                        else if(args.Device.Id == "E6E40DEA6A75"){ name = "DeadShock";}
-                        else if(args.Device.Id == "CD73BF704022"){ name = "Skull";}
-                        cars.Add(new Car{ name = name, id = args.Device.Id, device = args.Device, data = new CarData{ name = name, id = args.Device.Id }});
-                        ConnectToCarAsync(cars[cars.Count - 1]);
+                        ConnectToCarAsync(args.Device);
                     }
                 } 
             }
@@ -104,25 +99,44 @@ namespace CarInterface
                 advertisedServices.AddRange(args.Uuids);
                 Log($"Advertisement received, not car {args.Name}");
                 foreach(var data in args.ManufacturerData)
-                {
-                    Log($"{data.Key}: {BytesToString(data.Value)}");
-                }
+                { Log($"{data.Key}: {BytesToString(data.Value)}"); }
             }
         }
-        static async Task ConnectToCarAsync(Car car){
-            Log($"Connecting to car {car.name}");
+        static async Task ConnectToCarAsync(BluetoothDevice carDevice){
+            FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
+            Save s = await fs.LoadFile($"{carDevice.Id}.dat");
+            string name = carDevice.Name;
+            int speedBalance = 0;
+            bool hadConfig = false;
+            if(s != null){
+                hadConfig = true;
+                name = s.GetString("name");
+                speedBalance = (int)s.GetInt("speedBalance");
+            }
+            Log($"Connecting to car {name}");
 
-            await car.device.Gatt.ConnectAsync();
-            if(car.device.Gatt.IsConnected){
-                Log($"Connected to car {car.name}");
-                CheckCarConnection(car);
+            await carDevice.Gatt.ConnectAsync();
+            if(carDevice.Gatt.IsConnected){
+                Log($"Connected to car {name}");
+                Car car = new Car(name, carDevice.Id, carDevice, speedBalance);
+                if(!hadConfig){
+                    s = new Save();
+                    s.SetString("name", carDevice.Name);
+                    s.SetInt("speedBalance", 0);
+                    await fs.SaveFile($"{carDevice.Id}.dat", s);
+                }
                 //Expected
                 //Service              "BE15BEEF-6186-407E-8381-0BD89C4D8DF4"
                 //Characteristic Read  "BE15BEE0-6186-407E-8381-0BD89C4D8DF4"
                 //Characteristic Write "BE15BEE1-6186-407E-8381-0BD89C4D8DF4"
                 var service = await car.device.Gatt.GetPrimaryServiceAsync(ServiceID);
+                if(service == null){ return; }
                 //subscribe to characteristic changed event on read characteristic
                 var characteristic = await service.GetCharacteristicAsync(ReadID);
+                if(characteristic == null){ return; }
+                cars.Add(car);
+                checkingIDs.Remove(carDevice.Id);
+                CheckCarConnection(car);
                 characteristic.CharacteristicValueChanged += (sender, args) => {
                     CarCharacteristicChanged(sender, args, car);
                 };
@@ -132,7 +146,8 @@ namespace CarInterface
                 UtilLog($"-1:{car.id}");
             }
             else{
-                Log($"Failed to connect to car {car.name}");
+                Log($"Failed to connect to car {name}");
+                checkingIDs.Remove(carDevice.Id);
             }
         }
         static async Task CheckCarConnection(Car car){
@@ -140,14 +155,19 @@ namespace CarInterface
                 await Task.Delay(5000);
             }
             Log($"Car disconnected {car.name}");
+            UtilLog($"-2:{car.id}");
             cars.Remove(car);
         }
-        static async Task EnableSDKMode(Car car){
+        static async Task EnableSDKMode(Car car, bool enable = true){
             //4 bytes 0x03 0x90 0x01 0x01
-            byte[] data = new byte[]{0x03, 0x90, 0x01, 0x01};
+            byte enabled = enable ? (byte)0x01 : (byte)0x00;
+            byte[] data = new byte[]{0x03, 0x90, enabled, 0x01};
             await WriteToCarAsync(car.id, data, true);
         }
         static async Task SetCarSpeed(Car car, int speed, int accel = 1000){
+            if(car.speedBalance != 0){
+                speed = Math.Clamp(speed + car.speedBalance, 0, 1200);
+            }
             byte[] data = new byte[7];
             data[0] = 0x06;
             data[1] = 0x24;
@@ -163,10 +183,10 @@ namespace CarInterface
             byte[] data = new byte[6];
             data[0] = 0x05;
             data[1] = 0x2c;
-            BitConverter.GetBytes((float)offset).CopyTo(data, 2); // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
+            BitConverter.GetBytes((float)offset).CopyTo(data, 2); 
             await WriteToCarAsync(car.id, data, true);
         }
-        static async Task SetCarLane(Car car, float lane){
+        static async Task SetCarLane(Car car, float lane){ // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
             byte[] data = new byte[12];
             data[0] = 11;
             data[1] = 0x25;
@@ -367,7 +387,7 @@ namespace CarInterface
                             endpoints.MapGet("/clearcardata", async context =>
                             {
                                 for(int i = 0; i < cars.Count; i++){
-                                    cars[i].data = new CarData{ name = cars[i].name, id = cars[i].id };
+                                    cars[i].data = new CarData(cars[i].name, cars[i].id);
                                 }
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Cleared car data");
@@ -386,20 +406,32 @@ namespace CarInterface
                 });
     }
     class Car{
-        public required string name;
-        public required string id;
+        public string name;
+        public string id;
         //bluetooth connection
-        public required BluetoothDevice device;
-        public required CarData data;
+        public BluetoothDevice device;
+        public int speedBalance = 0;
+        public CarData data;
+        public Car(string name, string id, BluetoothDevice device, int speedBalance = 0){
+            this.name = name;
+            this.id = id;
+            this.device = device;
+            this.speedBalance = speedBalance;
+            this.data = new CarData(name, id);
+        }
     }
     [System.Serializable]
     class CarData{
-        public required string name;
-        public required string id;
+        public string name;
+        public string id;
         public int trackPosition;
         public int trackID;
         public float laneOffset;
         public int speed;
         public int battery;
+        public CarData(string name, string id){
+            this.name = name;
+            this.id = id;
+        }
     }
 }

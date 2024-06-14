@@ -25,9 +25,17 @@ public class CarInteraface : MonoBehaviour
         trackSegments.Clear();
         MapTrack();
     }
+    public void TestCars(int speed = 300){
+        int lane = -68;
+        for (int i = 0; i < cars.Length; i++)
+        {
+            ControlCar(cars[i].id, speed, lane);
+            lane += 44;
+        }
+    }
     async Task MapTrack(){
         //await ApiCall("clearcardata");
-        ControlCar(cars[0].id, 300, 0);
+        ControlCar(cars[0].id, 450, 0);
     }
     public void ControlCar(string id, int speed, int lane){
         ApiCall($"controlcar/{id}:{speed}:{lane}");
@@ -61,8 +69,14 @@ public class CarInteraface : MonoBehaviour
                 for (int i = 0; i < logs.Length; i++)
                 {
                     string[] c = logs[i].Split(':');
-                    if (c[0] == "-1"){
+                    if (c[0] == "-1" || c[0] == "-2"){
                         GetCarInfo();
+                    } else if(c[0] == "27"){
+                        int battery = int.Parse(c[2]);
+                        int index = GetCar(c[1]);
+                        if(index != -1){
+                            cars[index].battery = battery;
+                        }
                     } else if(c[0] == "39"){
                         //Debug.Log(logs[i]);
                         int tracklocation = int.Parse(c[2]);
@@ -77,8 +91,8 @@ public class CarInteraface : MonoBehaviour
                             cars[index].speed = speed;
                         }
                     } else if (c[0] == "41"){
-                        int trackID = int.Parse(c[2]); //Why are these blank?
-                        int oldTrackID = int.Parse(c[3]); //Why are these blank?
+                        int trackIDIndex = int.Parse(c[2]); //Why are these blank? (need roadinfo)
+                        int oldTrackIDIndex = int.Parse(c[3]); //Why are these blank?
                         float laneOffset = float.Parse(c[4]);
                         int uphill = int.Parse(c[5]);
                         int downhill = int.Parse(c[6]);
@@ -86,7 +100,7 @@ public class CarInteraface : MonoBehaviour
                         int rightWheelDistance = int.Parse(c[8]);
 
                         if(trackScanning && cars[0].trackID != 0 && cars[0].trackID != 34){
-                            trackSegments.Add(new TrackSegment(trackSegments.Count, cars[0].trackID, leftWheelDistance - rightWheelDistance));
+                            trackSegments.Add(new TrackSegment(cars[0].trackPosition, cars[0].trackID, leftWheelDistance - rightWheelDistance));
                             GenerateTrack();
                         }
                     } else if(c[0] == "43"){
@@ -168,4 +182,25 @@ public class CarInteraface : MonoBehaviour
             }
         }
     }
+    //Indexes of TrackIDs
+    //0
+    //1
+    //2
+    //3
+    //4
+    //5
+    //6
+    //7
+    //8
+    //9 = 33 (Finish Line)
+    //10
+    //11
+    //12 = 20 (Curve Right)
+    //13
+    //14
+    //15
+    //16
+    //17
+    //18 = 23 (Curve Left)
+    //19 = 17 (Straight)
 }
