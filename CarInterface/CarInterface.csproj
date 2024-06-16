@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.36" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Speech" Version="8.0.0" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

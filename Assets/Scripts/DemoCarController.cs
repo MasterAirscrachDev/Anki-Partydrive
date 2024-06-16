@@ -23,7 +23,7 @@ public class DemoCarController : MonoBehaviour
     async Task ControlTicker(){
         while(true){
             if(!Application.isPlaying){ return; }
-            await Task.Delay(1000); //approx 60 ticks per second
+            await Task.Delay(500); //approx 60 ticks per second
             if(speed != oldSpeed || lane != oldLane){
                 oldSpeed = speed;
                 oldLane = lane;
@@ -31,7 +31,7 @@ public class DemoCarController : MonoBehaviour
                 if(iinput.Racing.Boost.IsPressed()){
                     useSpeed += 200;
                 }
-                carInterface.ControlCar(carInterface.cars[0].id, useSpeed, lane);
+                carInterface.ControlCar(carInterface.cars[0], useSpeed, lane);
             }
         }
     }
@@ -49,9 +49,10 @@ public class DemoCarController : MonoBehaviour
         else if(accel > 0 && speed < 150){ speed = 150; }
 
         Vector2 move = iinput.Racing.Steer.ReadValue<Vector2>();
-        if(move.x != 0){
-            lane += (int)(move.x * 5);
-        }
-        lane = Mathf.Clamp(lane, -70, 70);
+        lane = (int)move.x * 10;
+        // if(move.x != 0){
+        //     lane += (int)(move.x * 5);
+        // }
+        // lane = Mathf.Clamp(lane, -70, 70);
     }
 }

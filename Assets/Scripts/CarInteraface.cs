@@ -29,16 +29,17 @@ public class CarInteraface : MonoBehaviour
         int lane = -68;
         for (int i = 0; i < cars.Length; i++)
         {
-            ControlCar(cars[i].id, speed, lane);
+            ControlCar(cars[i], speed, lane);
             lane += 44;
         }
     }
     async Task MapTrack(){
         //await ApiCall("clearcardata");
-        ControlCar(cars[0].id, 450, 0);
+        ControlCar(cars[0], 450, 0);
     }
-    public void ControlCar(string id, int speed, int lane){
-        ApiCall($"controlcar/{id}:{speed}:{lane}");
+    public void ControlCar(CarData car, int speed, int lane){
+        if(car.charging){ return; }
+        ApiCall($"controlcar/{car.id}:{speed}:{lane}");
     }
     async Task SetupListener(){
         var response = await client.GetAsync("registerlogs");
@@ -71,6 +72,9 @@ public class CarInteraface : MonoBehaviour
                     string[] c = logs[i].Split(':');
                     if (c[0] == "-1" || c[0] == "-2"){
                         GetCarInfo();
+                        if(c[0] == "-1"){
+                            ApiCall($"tts/Car {c[2]} has connected");
+                        }
                     } else if(c[0] == "27"){
                         int battery = int.Parse(c[2]);
                         int index = GetCar(c[1]);
@@ -98,13 +102,19 @@ public class CarInteraface : MonoBehaviour
                         int downhill = int.Parse(c[6]);
                         int leftWheelDistance = int.Parse(c[7]);
                         int rightWheelDistance = int.Parse(c[8]);
+                        bool crossedFinish = c[9] == "true";
 
                         if(trackScanning && cars[0].trackID != 0 && cars[0].trackID != 34){
                             trackSegments.Add(new TrackSegment(cars[0].trackPosition, cars[0].trackID, leftWheelDistance - rightWheelDistance));
                             GenerateTrack();
                         }
-                    } else if(c[0] == "43"){
+                    } else if(c[0] == "43"){ //fell off track
                         if(trackScanning){ trackScanning = false; }
+                    } else if(c[0] == "63"){ //charging status
+                        int index = GetCar(c[1]);
+                        if(index != -1){
+                            cars[index].charging = c[2] == "true";
+                        }
                     }
                 }
             }
@@ -116,7 +126,7 @@ public class CarInteraface : MonoBehaviour
         TrackType[] tracks = new TrackType[trackSegments.Count];
         for (int j = 0; j < trackSegments.Count; j++)
         { tracks[j] = trackSegments[j].trackType; }
-        FindObjectOfType<FakeTrackGenerator>().TestGen(tracks);
+        FindObjectOfType<TrackGenerator>().TestGen(tracks);
     }
     public void Call(string call){
         ApiCall(call);
@@ -124,10 +134,11 @@ public class CarInteraface : MonoBehaviour
     public void GetCars(){
         GetCarInfo();
     }
-    async Task ApiCall(string call){
+    async Task ApiCall(string call, bool printResult = true, bool safe = false){
+        if(safe){call = call.Replace(" ", "%20"); }
         var response = await client.GetAsync(call);
         string responseString = await response.Content.ReadAsStringAsync();
-        Debug.Log(responseString);
+        if(printResult){ Debug.Log(responseString); }
     }
     async Task GetCarInfo(){
         Debug.Log("Getting car info");
@@ -155,6 +166,7 @@ public class CarInteraface : MonoBehaviour
         public float laneOffset;
         public int speed;
         public int battery;
+        public bool charging;
     }
     [System.Serializable]
     public class TrackSegment{

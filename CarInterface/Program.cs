@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using System.Speech.Synthesis;
 
 namespace CarInterface
 {
@@ -40,6 +41,11 @@ namespace CarInterface
         }
         static void UtilLog(string message){
             UtilityLog += message + "\n";
+        }
+        static void TTS(string message){
+            SpeechSynthesizer synth = new SpeechSynthesizer();
+            synth.SetOutputToDefaultAudioDevice();
+            synth.Speak(message);
         }
         static void StartBLEScan(){
             var leScanOptions = new BluetoothLEScanOptions();
@@ -143,7 +149,7 @@ namespace CarInterface
                 await characteristic.StartNotificationsAsync();
                 await EnableSDKMode(car);
                 await Task.Delay(500);
-                UtilLog($"-1:{car.id}");
+                UtilLog($"-1:{car.id}:{car.name}");
             }
             else{
                 Log($"Failed to connect to car {name}");
@@ -190,7 +196,7 @@ namespace CarInterface
             byte[] data = new byte[12];
             data[0] = 11;
             data[1] = 0x25;
-            int horizontalSpeedmm = 250, horizontalAccelmm = 1000;
+            int horizontalSpeedmm = 100, horizontalAccelmm = 1000;
             //horizontal speed as int16
             data[2] = (byte)(horizontalSpeedmm & 0xFF);
             data[3] = (byte)((horizontalSpeedmm >> 8) & 0xFF);
@@ -282,27 +288,31 @@ namespace CarInterface
             } else if(id == 0x2a){ //42 car error
                 int error = content[2];
                 Log($"[42] {car.name} error: {error}");
-            } //43 ONOH FALL
-            else if(id == 0x2b){ //43 ONOH FALL
+            } else if(id == 0x2b){ //43 ONOH FALL
                 UtilLog($"43:{car.id}");
                 Log($"[43] {car.name} fell off track");
+            } else if(id == 0x36){ //54 car speed changed
+                Log($"[54] {car.name} speed changed");
+                UtilLog($"54:{car.id}");
             } else if(id == 0x3f){ //63 charging status changed
                 bool charging = content[3] == 1;
                 UtilLog($"63:{car.id}:{charging}");
                 Log($"[63] {car.name} charging: {charging}");
-            }else if(id == 0x53){ //83 FnF specialBlock
+                car.data.charging = charging;
+            } else if(id == 0x4d){ //77 Collision Detected
+                UtilLog($"77:{car.id}");
+                Log($"[77] {car.name} collision detected");
+            }
+            else if(id == 0x53){ //83 FnF specialBlock
                 UtilLog($"83:{car.id}");
                 Log($"[83] {car.name} hit special block");
             }
 
-
             else{
                 Log($"Unknown message {id} [{IntToByteString(id)}]: {BytesToString(content)}");
                 //45
-                //54
                 //65
-                //77 charging maybe ??
-                //134
+                //134 CarMsgCycleOvertime
             }
         }
         static string IntToByteString(int number)
@@ -331,7 +341,7 @@ namespace CarInterface
                                         return;
                                     }
                                     await SetCarSpeed(car, speed);
-                                    //await SetCarLaneOffset(car, offset);
+                                    await SetCarTrackCenter(car, 0);
                                     await SetCarLane(car, offset);
                                     context.Response.StatusCode = 200;
                                     await context.Response.WriteAsync("Controlled");
@@ -370,6 +380,7 @@ namespace CarInterface
                             {
                                 Log("Application Registered");
                                 SysLog = "";
+                                UtilityLog = "";
                                 printLog = false;
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Logs registered, call /logs to get logs");
@@ -391,6 +402,13 @@ namespace CarInterface
                                 }
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Cleared car data");
+                            });
+                            endpoints.MapGet("/tts/{message}", async context =>
+                            {
+                                var message = context.Request.RouteValues["message"];
+                                TTS(message.ToString());
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Spoke");
                             });
                         });
                         app.Run(async context =>
@@ -429,6 +447,7 @@ namespace CarInterface
         public float laneOffset;
         public int speed;
         public int battery;
+        public bool charging;
         public CarData(string name, string id){
             this.name = name;
             this.id = id;
