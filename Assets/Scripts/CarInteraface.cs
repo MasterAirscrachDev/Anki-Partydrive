@@ -41,6 +41,9 @@ public class CarInteraface : MonoBehaviour
         if(car.charging){ return; }
         ApiCall($"controlcar/{car.id}:{speed}:{lane}");
     }
+    public void SetCarColours(CarData car, float r, float g, float b){
+        ApiCall($"setlights/{car.id}:{r}:{g}:{b}");
+    }
     async Task SetupListener(){
         var response = await client.GetAsync("registerlogs");
         //if 200 then start ticking
@@ -148,9 +151,27 @@ public class CarInteraface : MonoBehaviour
         this.cars = cars;
         Debug.Log("Updated Cars");
         //we get the car info
-        // foreach(CarData car in cars){
-        //     Debug.Log($"Car: {car.name} ID: {car.id}");
-        // }
+        //col 1:  1, 0, 0
+        //col 2:  0, 1, 0
+        //col 3:  0, 0, 1
+        //col 4:  1, 1, 0
+        //col 5:  1, 0, 1
+        //col 6:  0, 1, 1
+        //col 7:  1, 1, 1
+        // Define color values in an array
+        var colors = new (float, float, float)[] {
+            (1, 0, 0), // Red
+            (0, 1, 0), // Green
+            (0, 0, 1), // Blue
+            (1, 1, 0), // Yellow
+            (1, 0, 1), // Magenta
+            (0, 1, 1), // Cyan
+            (1, 1, 1),  // White
+            (0, 0, 0)  // Black (not visible on the track) 8 cars = onoh for now
+        };
+        for(int i = 0; i < cars.Length; i++){
+            SetCarColours(cars[i], colors[i].Item1, colors[i].Item2, colors[i].Item3);
+        }
     }
     int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)

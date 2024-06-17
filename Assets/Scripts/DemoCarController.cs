@@ -2,21 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine.InputSystem;
 
 public class DemoCarController : MonoBehaviour
 {
     [SerializeField] int speed, lane;
+    [SerializeField] int index;
     int oldSpeed, oldLane;
     CarInteraface carInterface;
-
-    IInput iinput;
-    
+    PlayerInput iinput;
     // Start is called before the first frame update
     void Start()
     {
-        iinput = new IInput();
-        iinput.Racing.Enable();
-        carInterface = GetComponent<CarInteraface>();
+        iinput = GetComponent<PlayerInput>();
+        index = iinput.playerIndex;
+        carInterface = FindObjectOfType<CarInteraface>();
         ControlTicker();
     }
 
@@ -28,30 +28,25 @@ public class DemoCarController : MonoBehaviour
                 oldSpeed = speed;
                 oldLane = lane;
                 int useSpeed = speed;
-                if(iinput.Racing.Boost.IsPressed()){
+                if(iinput.currentActionMap.actions[2].IsPressed()){
                     useSpeed += 200;
                 }
-                carInterface.ControlCar(carInterface.cars[0], useSpeed, lane);
+                carInterface.ControlCar(carInterface.cars[iinput.playerIndex], useSpeed, lane);
             }
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     void FixedUpdate(){
-        float accel = iinput.Racing.Accelerate.ReadValue<float>();
+        float accel = iinput.currentActionMap.actions[0].ReadValue<float>();
         int targetSpeed = (int)Mathf.Lerp(0, 800, accel);
         speed = (int)Mathf.Lerp(speed, targetSpeed, (accel == 0) ? 0.05f : 0.007f);
         if(accel == 0 && speed < 150){ speed = 0; }
         else if(accel > 0 && speed < 150){ speed = 150; }
 
-        Vector2 move = iinput.Racing.Steer.ReadValue<Vector2>();
-        lane = (int)move.x * 10;
+        Vector2 move = iinput.currentActionMap.actions[1].ReadValue<Vector2>();
+        //lane = (int)move.x * 10;
+        lane = Mathf.RoundToInt(move.x * 5f);
         // if(move.x != 0){
-        //     lane += (int)(move.x * 5);
+            
         // }
         // lane = Mathf.Clamp(lane, -70, 70);
     }

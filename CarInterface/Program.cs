@@ -111,9 +111,9 @@ namespace CarInterface
         static async Task ConnectToCarAsync(BluetoothDevice carDevice){
             FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
             Save s = await fs.LoadFile($"{carDevice.Id}.dat");
-            string name = carDevice.Name;
+            string name = "Unknown Car";
             int speedBalance = 0;
-            bool hadConfig = false;
+            bool hadConfig = false; 
             if(s != null){
                 hadConfig = true;
                 name = s.GetString("name");
@@ -207,9 +207,33 @@ namespace CarInterface
             BitConverter.GetBytes((float)lane).CopyTo(data, 6);
             await WriteToCarAsync(car.id, data, true);
         }
-
         static async Task RequestCarBattery(Car car){
             byte[] data = new byte[]{0x01, 0x1a};
+            await WriteToCarAsync(car.id, data, true);
+        }
+        static async Task SetCarLights(Car car, float r, float g, float b){
+            byte[] data = new byte[18];
+            data[0] = 0x11; //size
+            data[1] = 0x33; //id (set lights) 51
+            data[2] = 0x03; //???
+            data[3] = 0x00; //???
+            data[4] = 0x00; //???
+            int rByte =  r == 1 ? 0x01 : 0x00;
+            int gByte =  g == 1 ? 0x01 : 0x00;
+            int bByte =  b == 1 ? 0x01 : 0x00;
+            data[5] = (byte)rByte; //red
+            data[6] = (byte)rByte; //red2??
+            data[7] = 0x00; //??
+            data[8] = 0x03; //??
+            data[9] = 0x00; //??
+            data[10] = (byte)gByte; //green
+            data[11] = (byte)gByte; //green2??
+            data[12] = 0x00; //??
+            data[13] = 0x02; // Solid ??
+            data[14] = 0x00; //??
+            data[15] = (byte)bByte; //blue
+            data[16] = (byte)bByte; //blue2??
+            data[17] = 0x00; //??
             await WriteToCarAsync(car.id, data, true);
         }
 
@@ -375,6 +399,31 @@ namespace CarInterface
                                 }
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Got battery levels, call /cars to get them");
+                            });
+                            endpoints.MapGet("/setlights/{instruct}", async context =>
+                            {
+                                var instruct = context.Request.RouteValues["instruct"];
+                                try{
+                                    string data = instruct.ToString();
+                                    string[] parts = data.Split(':');
+                                    string carID = parts[0];
+                                    float r = float.Parse(parts[1]);
+                                    float g = float.Parse(parts[2]);
+                                    float b = float.Parse(parts[3]);
+                                    Car car = cars.Find(car => car.id == carID);
+                                    if(car == null){
+                                        context.Response.StatusCode = 404;
+                                        await context.Response.WriteAsync("Car not found");
+                                        return;
+                                    }
+                                    await SetCarLights(car, r, g, b);
+                                    context.Response.StatusCode = 200;
+                                    await context.Response.WriteAsync("Lights set");
+                                }
+                                catch{
+                                    context.Response.StatusCode = 400;
+                                    await context.Response.WriteAsync("Bad Request");
+                                }
                             });
                             endpoints.MapGet("/registerlogs", async context =>
                             {
