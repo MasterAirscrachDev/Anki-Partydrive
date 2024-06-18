@@ -39,8 +39,9 @@ namespace CarInterface
             SysLog += message + "\n";
             if(printLog){ Console.WriteLine(message); }
         }
-        static void UtilLog(string message){
+        static string UtilLog(string message){
             UtilityLog += message + "\n";
+            return message;
         }
         static void TTS(string message){
             SpeechSynthesizer synth = new SpeechSynthesizer();
@@ -254,6 +255,7 @@ namespace CarInterface
         }
         static void ParseMessage(byte[] content, Car car){
             byte id = content[1];
+            string util = "";
             if(id == 0x17){//23 ping response
                 Log($"[23] Ping response: {BytesToString(content)}");
             } else if(id == 0x19){ //25 version response
@@ -263,7 +265,7 @@ namespace CarInterface
                 int battery = content[2];
                 int maxBattery = 3800;
                 Log($"[27] Battery response: {battery} / {maxBattery}");
-                UtilLog($"27:{car.id}:{battery}");
+                util = UtilLog($"27:{car.id}:{battery}");
                 car.data.battery = battery;
             } else if(id == 0x27){ //39 where is car
                 int trackLocation = content[2];
@@ -271,14 +273,14 @@ namespace CarInterface
                 float offset = BitConverter.ToSingle(content, 4);
                 int speed = BitConverter.ToInt16(content, 8);
                 //tf does location mean
-                UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}");
+                util = UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}");
                 Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}");
                 //IDs
                 //36 ??? 39 FnF Straight 40 Straight
                 //17 18 20 23 FnF Curve / Curve
-                //57 FnF Powerup
                 //34 PreFinishLine
                 //33 Start/Finish
+                //57 FnF Powerup
 
                 car.data.trackPosition = trackLocation;
                 car.data.trackID = trackID;
@@ -301,7 +303,7 @@ namespace CarInterface
                     if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
                         crossedStartingLine = " (Crossed Starting Line)";
                     }
-                    UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{!string.IsNullOrEmpty(crossedStartingLine)}");
+                    util = UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{!string.IsNullOrEmpty(crossedStartingLine)}");
                     Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, up:{uphillCounter}down:{downhillCounter}, offest: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance} {crossedStartingLine}");
                 }
                 catch{
@@ -313,14 +315,14 @@ namespace CarInterface
                 int error = content[2];
                 Log($"[42] {car.name} error: {error}");
             } else if(id == 0x2b){ //43 ONOH FALL
-                UtilLog($"43:{car.id}");
+                util = UtilLog($"43:{car.id}");
                 Log($"[43] {car.name} fell off track");
             } else if(id == 0x36){ //54 car speed changed
                 Log($"[54] {car.name} speed changed");
-                UtilLog($"54:{car.id}");
+                util = UtilLog($"54:{car.id}");
             } else if(id == 0x3f){ //63 charging status changed
                 bool charging = content[3] == 1;
-                UtilLog($"63:{car.id}:{charging}");
+                util = UtilLog($"63:{car.id}:{charging}");
                 Log($"[63] {car.name} charging: {charging}");
                 car.data.charging = charging;
             } else if(id == 0x4d){ //77 Collision Detected
@@ -331,14 +333,18 @@ namespace CarInterface
                 UtilLog($"83:{car.id}");
                 Log($"[83] {car.name} hit special block");
             }
-
             else{
                 Log($"Unknown message {id} [{IntToByteString(id)}]: {BytesToString(content)}");
                 //45
                 //65
                 //134 CarMsgCycleOvertime
             }
+            CarEvent?.Invoke(util);
         }
+        //subscribable event
+        public delegate void CarEventHandler(string message);
+        static event CarEventHandler CarEvent;
+        
         static string IntToByteString(int number)
         { return "0x" + number.ToString("X2"); } //as 0x00
         static string BytesToString(byte[] bytes)
