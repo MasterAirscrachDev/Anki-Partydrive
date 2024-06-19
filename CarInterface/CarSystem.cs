@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using InTheHand.Bluetooth;
 using Newtonsoft.Json;
+using static OverdriveServer.Definitions;
 
 namespace OverdriveServer
 {
@@ -116,7 +117,7 @@ namespace OverdriveServer
         public async Task EnableSDKMode(bool enable = true){
             //4 bytes 0x03 0x90 0x01 0x01
             byte enabled = enable ? (byte)0x01 : (byte)0x00;
-            byte[] data = new byte[]{0x03, 0x90, enabled, 0x01};
+            byte[] data = new byte[]{0x03, SEND_SDK_MODE, enabled, 0x01};
             await WriteToCarAsync(data, true);
         }
         public async Task SetCarSpeed(int speed, int accel = 1000){
@@ -125,7 +126,7 @@ namespace OverdriveServer
             }
             byte[] data = new byte[7];
             data[0] = 0x06;
-            data[1] = 0x24;
+            data[1] = SEND_CAR_SPEED_UPDATE;
             //speed as int16
             data[2] = (byte)(speed & 0xFF);
             data[3] = (byte)((speed >> 8) & 0xFF);
@@ -137,7 +138,7 @@ namespace OverdriveServer
         public async Task SetCarTrackCenter(float offset){
             byte[] data = new byte[6];
             data[0] = 0x05;
-            data[1] = 0x2c;
+            data[1] = SEND_TRACK_CENTER_UPDATE;
             BitConverter.GetBytes((float)offset).CopyTo(data, 2); 
             await WriteToCarAsync(data, true);
         }
