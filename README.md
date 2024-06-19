@@ -8,6 +8,14 @@ And a Unity game client that will show a 3D representation of the cars and the t
 
 [Language Agnostic Overdrive API](https://github.com/MasterAirscrachDev/Anki-Partydrive/tree/main/CarInterface)
 
+# What this is
+This is a project to create a full http server to interface with the cars
+
+And a unity game to control the cars and show the track with gameplay resembling mario kart
+
+# What this is not
+This is not a remake of the Anki Overdrive app, I am not making a campaign or upgradeable weapons.
+
 # Where we're at:
 ## Server
 - [x] Connect to the cars
