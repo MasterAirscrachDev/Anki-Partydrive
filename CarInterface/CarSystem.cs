@@ -114,6 +114,10 @@ namespace OverdriveServer
             this.speedBalance = speedBalance;
             this.data = new CarData(name, id);
         }
+        public async Task RequestCarDisconnect(){
+            byte[] data = new byte[]{0x01, SEND_CAR_DISCONNECT};
+            await WriteToCarAsync(data, true);
+        }
         public async Task EnableSDKMode(bool enable = true){
             //4 bytes 0x03 0x90 0x01 0x01
             byte enabled = enable ? (byte)0x01 : (byte)0x00;
@@ -133,6 +137,8 @@ namespace OverdriveServer
             //accel as int16
             data[4] = (byte)(accel & 0xFF);
             data[5] = (byte)((accel >> 8) & 0xFF);
+            //respect track piece speed limits
+            data[6] = 0x01;
             await WriteToCarAsync(data, true);
         }
         public async Task SetCarTrackCenter(float offset){
@@ -145,7 +151,7 @@ namespace OverdriveServer
         public async Task SetCarLane(float lane){ // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
             byte[] data = new byte[12];
             data[0] = 11;
-            data[1] = 0x25;
+            data[1] = SEND_CAR_LANE_CHANGE;
             int horizontalSpeedmm = 100, horizontalAccelmm = 1000;
             //horizontal speed as int16
             data[2] = (byte)(horizontalSpeedmm & 0xFF);
@@ -158,32 +164,32 @@ namespace OverdriveServer
             await WriteToCarAsync(data, true);
         }
         public async Task RequestCarBattery(){
-            byte[] data = new byte[]{0x01, 0x1a};
+            byte[] data = new byte[]{0x01, SEND_BATTERY_REQUEST};
             await WriteToCarAsync(data, true);
         }
-        public async Task SetCarLights(float r, float g, float b){
+        public async Task SetCarLightsPattern(float r, float g, float b){
             byte[] data = new byte[18];
             data[0] = 0x11; //size
-            data[1] = 0x33; //id (set lights) 51
-            data[2] = 0x03; //???
+            data[1] = SEND_LIGHTS_PATTERN_UPDATE; //id (set lights) 51
+            data[2] = 0x03; //ENGINE maybe ??? Headlights, Brakelights, Frontlights, Enginelights ??
             data[3] = 0x00; //???
             data[4] = 0x00; //???
             int rByte =  r == 1 ? 0x01 : 0x00;
             int gByte =  g == 1 ? 0x01 : 0x00;
             int bByte =  b == 1 ? 0x01 : 0x00;
-            data[5] = (byte)rByte; //red
-            data[6] = (byte)rByte; //red2??
+            data[5] = (byte)rByte; //red    maybe start 
+            data[6] = (byte)rByte; //red2?? maybe end
             data[7] = 0x00; //??
-            data[8] = 0x03; //??
+            data[8] = 0x03; //Also maybe engine ??
             data[9] = 0x00; //??
-            data[10] = (byte)gByte; //green
-            data[11] = (byte)gByte; //green2??
+            data[10] = (byte)gByte; //green    maybe start
+            data[11] = (byte)gByte; //green2?? maybe end
             data[12] = 0x00; //??
-            data[13] = 0x02; // Solid ??
+            data[13] = 0x02; //Effect ??  Steady,Fade,Throb,Flash,Random,Count ??
             data[14] = 0x00; //??
-            data[15] = (byte)bByte; //blue
-            data[16] = (byte)bByte; //blue2??
-            data[17] = 0x00; //??
+            data[15] = (byte)bByte; //blue    maybe start
+            data[16] = (byte)bByte; //blue2?? maybe end
+            data[17] = 0x00; //?? 
             await WriteToCarAsync(data, true);
         }
 

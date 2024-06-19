@@ -82,7 +82,7 @@ namespace OverdriveServer
                                         await context.Response.WriteAsync("Car not found");
                                         return;
                                     }
-                                    await car.SetCarLights(r, g, b);
+                                    await car.SetCarLightsPattern(r, g, b);
                                     context.Response.StatusCode = 200;
                                     await context.Response.WriteAsync("Lights set");
                                 }

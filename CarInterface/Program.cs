@@ -53,7 +53,10 @@ namespace OverdriveServer
         }
         public static string IntToByteString(int number)
         { return "0x" + number.ToString("X2"); } //as 0x00
-        public static string BytesToString(byte[] bytes)
-        { return BitConverter.ToString(bytes).Replace("-", ""); }
+        public static string BytesToString(byte[] bytes){ 
+            string content = "";
+            for(int i = 0; i < bytes.Length; i++){content += IntToByteString(bytes[i]) + " ";}
+            return content;
+        }
     }
 }
