@@ -101,6 +101,7 @@ namespace OverdriveServer
                                 await context.Response.WriteAsync("Logs registered, call /logs to get logs");
                             });
                             endpoints.MapGet("/logs", async context =>{
+                                linkCooldown = 5;
                                 await context.Response.WriteAsync(Program.GetLog());
                             });
                             endpoints.MapGet("/utillogs", async context =>{
@@ -116,6 +117,22 @@ namespace OverdriveServer
                                 Program.TTS(message.ToString());
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync($"Spoken: {message}");
+                            });
+                            endpoints.MapGet("/scantrack/{instruct}", async context =>{
+                                var instruct = context.Request.RouteValues["instruct"];
+                                string data = instruct.ToString();
+                                string[] parts = data.Split(':');
+                                string carID = parts[0];
+                                int finishlines = int.Parse(parts[1]);
+                                Car car = Program.carSystem.GetCar(carID);
+                                if(car == null){
+                                    context.Response.StatusCode = 404;
+                                    await context.Response.WriteAsync("Car not found");
+                                    return;
+                                }
+                                Program.ScanTrack(car, finishlines);
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Scanning track");
                             });
                         });
                         app.Run(async context =>{

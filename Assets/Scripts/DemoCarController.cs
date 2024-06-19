@@ -45,9 +45,5 @@ public class DemoCarController : MonoBehaviour
         Vector2 move = iinput.currentActionMap.actions[1].ReadValue<Vector2>();
         //lane = (int)move.x * 10;
         lane = Mathf.RoundToInt(move.x * 5f);
-        // if(move.x != 0){
-            
-        // }
-        // lane = Mathf.Clamp(lane, -70, 70);
     }
 }

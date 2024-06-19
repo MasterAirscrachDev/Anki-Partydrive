@@ -49,7 +49,7 @@ namespace OverdriveServer
                 if(args.Name.Contains("Drive")){
                     if(!Program.carSystem.CarExists(args.Device.Id) && !checkingIDs.Contains(args.Device.Id)){
                         checkingIDs.Add(args.Device.Id);
-                        Program.Log($"Advertisement received for car");
+                        //Program.Log($"Advertisement received for car");
                         //Log($"Manufacturer data: {args.ManufacturerData.Count}, Service data: {args.ServiceData.Count}");
                         foreach(var data in args.ManufacturerData)
                         { // Assuming data.Value is the byte array containing the anki_vehicle_adv_mfg_t data

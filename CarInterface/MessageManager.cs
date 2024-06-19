@@ -104,6 +104,6 @@ namespace OverdriveServer
         }
         //subscribable event
         public delegate void CarEventHandler(string message);
-        static event CarEventHandler CarEvent;
+        public event CarEventHandler CarEvent;
     }
 }
