@@ -11,8 +11,8 @@ namespace OverdriveServer
         List<TrackPiece> trackPieces;
         TrackPiece[] intialScan, confirmScan;
         int finishesPassed = 0, totalFinishes = 0;
-        bool tracking = false, checkingScan = false;
-        int retries = 0, maxRetries = 3;
+        bool tracking = false, checkingScan = false, successfulScan = false;
+        int retries = 0, maxRetries = 3, height = 0;
         bool awaitTurn = false, awaitPowerup = false;
         Car scanningCar;
         public async Task ScanTrack(Car car, int finishlines){
@@ -48,34 +48,53 @@ namespace OverdriveServer
                     bool matched = true;
                     for(int i = 0; i < intialScan.Length; i++){
                         if(intialScan[i].type != confirmScan[i].type){
-                            matched = false;
                             Program.Log($"Mismatch at {i} {intialScan[i].type} != {confirmScan[i].type}");
-                            break;
+                            matched = false; break;
                         }
                     }
                     if(matched){
                         Program.Log("Track scan successful");
-                        return true;
+                        successfulScan = true; return true;
                     }
                     else{
                         Program.Log("Track scan comparison failed");
-                        retries++;
-                        return !(retries < maxRetries);
+                        retries++; return !(retries < maxRetries);
                     }
                 }
             }
             return false;
         }
+        async Task SendFinishedTrack(){
+            while(scanningCar.data.speed > 0){
+                await Task.Delay(500);
+                await scanningCar.SetCarSpeed(0, 500);
+            }
+            string content = $"-4:{scanningCar.id}:{successfulScan}";
+            foreach(TrackPiece piece in confirmScan){
+                content += $":{(int)piece.type}:{piece.height}";
+            }
+            Program.UtilLog(content);
+        }
         void OnCarEvent(string content){
             string[] data = content.Split(':');
             if(data[0] == "41"){ //Track transition
                 tracking = true;
+                int incline = int.Parse(data[5]);
+                int decline = int.Parse(data[6]);
                 int lWheel = int.Parse(data[7]);
                 int rWheel = int.Parse(data[8]);
                 if(awaitTurn){
                     trackPieces.Add(new TrackPiece((lWheel - rWheel) < 0 ? TrackPieceType.CurveLeft : TrackPieceType.CurveRight, 0));
                     SendCurrentTrack();
                     awaitTurn = false;
+                }
+                int change = incline - decline;
+                if(change > 200){ height += 2;}
+                else if(change < -200){ height -= 2;}
+                else if(change > 100){ height += 1;}
+                else if(change < -100){ height -= 1;}
+                if(trackPieces.Count > 0){
+                    trackPieces[trackPieces.Count - 1].height = height;
                 }
             }
             else if(data[0] == "39"){ //Track location
@@ -96,8 +115,9 @@ namespace OverdriveServer
                             if(finishesPassed > totalFinishes){
                                 bool stop = ScanLoopDone();
                                 if(stop){
-                                    scanningCar.SetCarSpeed(0, 0);
+                                    scanningCar.SetCarSpeed(0, 500);
                                     Program.messageManager.CarEvent -= OnCarEvent;
+                                    SendFinishedTrack();
                                     return;
                                 }
                             }

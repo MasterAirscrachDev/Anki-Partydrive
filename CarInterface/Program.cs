@@ -16,6 +16,7 @@ namespace OverdriveServer
         public static BluetoothInterface bluetoothInterface = new BluetoothInterface();
         public static CarSystem carSystem = new CarSystem();
         public static MessageManager messageManager = new MessageManager();
+        public static TrackManager trackManager = new TrackManager();
         static async Task Main(string[] args)
         {
             Console.WriteLine("Overdrive Server By MasterAirscrach");

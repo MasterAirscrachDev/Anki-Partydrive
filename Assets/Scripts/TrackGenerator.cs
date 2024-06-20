@@ -63,13 +63,8 @@ public class TrackGenerator : MonoBehaviour
             lastPos = pos;
         }
     }
-    public void TestGen(TrackType[] tracks){
-        segments = new Segment[tracks.Length];
-        for(int i = 0; i < tracks.Length; i++){
-            segments[i] = new Segment();
-            segments[i].type = tracks[i];
-            segments[i].elevation = 0;
-        }
+    public void Generate(Segment[] segments){
+        this.segments = segments;
         GenerateTrackPls();
         trackCamera.TrackUpdated();
     }
@@ -87,9 +82,9 @@ public enum TrackType
     Unknown
 }
 [System.Serializable]
-class Segment
+public class Segment
 {
     public TrackType type;
-    public float elevation;
-    public bool addPowerups;
+    public int elevation;
+    public bool addPowerups, flipped;
 }

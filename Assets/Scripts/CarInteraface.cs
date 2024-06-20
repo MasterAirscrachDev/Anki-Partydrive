@@ -9,7 +9,6 @@ public class CarInteraface : MonoBehaviour
 {
     public CarData[] cars;
     HttpClient client = new HttpClient();
-    public int FinishBlocks = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +29,8 @@ public class CarInteraface : MonoBehaviour
         //get the first car that isnt on charge
         int index = 0;
         while(cars[index].charging){ index++; }
-        ApiCall($"scantrack/{cars[index].id}:{FinishBlocks}");
+        int fins = FindObjectOfType<UIManager>().GetFinishCounter();
+        ApiCall($"scantrack/{cars[index].id}:{fins}");
     }
     public void ControlCar(CarData car, int speed, int lane){
         if(car.charging){ return; }
@@ -46,6 +46,8 @@ public class CarInteraface : MonoBehaviour
         if(response.StatusCode == System.Net.HttpStatusCode.OK){
             TickServer();
         }
+        ApiCall("scan", false);
+        GetCars();
     }
     async Task TickServer(){
         while(true){
@@ -56,7 +58,7 @@ public class CarInteraface : MonoBehaviour
                 for (int i = 0; i < logs.Length; i++)
                 {
                     if(logs[i] == ""){ continue; }
-                    if(logs[i].StartsWith("[41]") || logs[i].StartsWith("[39]") || logs[i].StartsWith("[77]")  || logs[i].StartsWith("[83]")){ continue; }
+                    if(logs[i].StartsWith("[39]") || logs[i].StartsWith("[77]")  || logs[i].StartsWith("[83]")){ continue; }
                     Debug.Log(logs[i]);
                 }
             }
@@ -84,6 +86,22 @@ public class CarInteraface : MonoBehaviour
                             index+= 2;
                         }
                         FindObjectOfType<TrackGenerator>().TestGen(tracks.ToArray());
+                    }
+                    else if(c[0] == "-4"){
+                        bool success = c[2] == "true";
+                        if(!success){ Debug.Log("Failed to scan track"); continue; }
+                        Debug.Log(logs[i]);
+                        // int index = 3;
+                        // List<TrackType> tracks = new List<TrackType>();
+                        // while(index < c.Length){
+                        //     if(c[index] == "0"){ tracks.Add(TrackType.Straight); }
+                        //     if(c[index] == "1"){ tracks.Add(TrackType.CurveLeft); }
+                        //     if(c[index] == "2"){ tracks.Add(TrackType.CurveRight); }
+                        //     if(c[index] == "3"){ tracks.Add(TrackType.Poweup); }
+                        //     if(c[index] == "4"){ tracks.Add(TrackType.Finish); }
+                        //     index+= 2;
+                        // }
+                        // FindObjectOfType<TrackGenerator>().TestGen(tracks.ToArray());
                     }
                     else if(c[0] == "27"){
                         int battery = int.Parse(c[2]);
@@ -169,6 +187,7 @@ public class CarInteraface : MonoBehaviour
             SetCarColours(cars[i], colors[i].Item1, colors[i].Item2, colors[i].Item3);
         }
         ApiCall("batteries");
+        FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
     }
     int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)

@@ -64,7 +64,7 @@ namespace OverdriveServer
                         }
                         foreach(var data in args.ServiceData)
                         { Program.Log($"{data.Key}: {Program.BytesToString(data.Value)}"); }
-                        Program.Log($"car name: {args.Name}, id {args.Device.Id}, strength {args.Rssi}");
+                        Program.Log($"[0] car name: {args.Name}, id {args.Device.Id}, strength {args.Rssi}");
                         Program.carSystem.ConnectToCarAsync(args.Device);
                     }
                 } 

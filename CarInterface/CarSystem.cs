@@ -32,11 +32,11 @@ namespace OverdriveServer
                 name = s.GetString("name");
                 speedBalance = (int)s.GetInt("speedBalance");
             }
-            Program.Log($"Connecting to car {name}");
+            Program.Log($"[0] Connecting to car {name}");
 
             await carDevice.Gatt.ConnectAsync();
             if(carDevice.Gatt.IsConnected){
-                Program.Log($"Connected to car {name}");
+                Program.Log($"[0] Connected to car {name}");
                 Car car = new Car(name, carDevice.Id, carDevice, speedBalance);
                 if(!hadConfig){
                     s = new Save();
@@ -65,7 +65,7 @@ namespace OverdriveServer
                 Program.UtilLog($"-1:{car.id}:{car.name}");
             }
             else{
-                Program.Log($"Failed to connect to car {name}");
+                Program.Log($"[0] Failed to connect to car {name}");
                 Program.bluetoothInterface.RemoveCarCheck(carDevice.Id);
             }
         }
@@ -73,7 +73,7 @@ namespace OverdriveServer
             while(car.device.Gatt.IsConnected){
                 await Task.Delay(5000);
             }
-            Program.Log($"Car disconnected {car.name}");
+            Program.Log($"[0] Car disconnected {car.name}");
             Program.UtilLog($"-2:{car.id}");
             cars.Remove(car);
         }
