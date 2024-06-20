@@ -11,9 +11,10 @@ namespace OverdriveServer
         List<TrackPiece> trackPieces;
         TrackPiece[] intialScan, confirmScan;
         int finishesPassed = 0, totalFinishes = 0;
-        bool tracking = false, checkingScan = false, successfulScan = false;
-        int retries = 0, maxRetries = 3, height = 0;
+        bool tracking = false, checkingScan = false, successfulScan = false, firstTick = true, finishedScan = false;
+        int retries = 0, maxRetries = 3, height = 0, nextHeightForced = 0;
         bool awaitTurn = false, awaitPowerup = false;
+
         Car scanningCar;
         public async Task ScanTrack(Car car, int finishlines){
             scanningCar = car;
@@ -21,6 +22,9 @@ namespace OverdriveServer
             totalFinishes = finishlines;
             Program.messageManager.CarEvent += OnCarEvent;
             await car.SetCarSpeed(300, 500);
+            while (!finishedScan){
+                await Task.Delay(500);
+            }
         }
         bool ScanLoopDone(){
             if(!checkingScan){
@@ -74,6 +78,7 @@ namespace OverdriveServer
                 content += $":{(int)piece.type}:{piece.height}";
             }
             Program.UtilLog(content);
+            finishedScan = true;
         }
         void OnCarEvent(string content){
             string[] data = content.Split(':');
@@ -88,12 +93,26 @@ namespace OverdriveServer
                     SendCurrentTrack();
                     awaitTurn = false;
                 }
+                if(firstTick){ firstTick = false; return; }
                 int change = incline - decline;
-                if(change > 200){ height += 2;}
-                else if(change < -200){ height -= 2;}
-                else if(change > 100){ height += 1;}
-                else if(change < -100){ height -= 1;}
+                // 2, 1, 0, -1, -2
+                int heightChange = change > 200 ? 2 : change < -200 ? -2 : change > 0 ? 1 : change < 0 ? -1 : 0;
+                
                 if(trackPieces.Count > 0){
+                    TrackPieceType lastType = trackPieces[trackPieces.Count - 1].type;
+                    TrackPieceType[] validFor2 = {TrackPieceType.Straight, TrackPieceType.PowerupL, TrackPieceType.PowerupR, TrackPieceType.CurveLeft, TrackPieceType.CurveRight};
+                    if(validFor2.Contains(lastType) && Math.Abs(heightChange) == 2){
+                        height += heightChange;
+                    }
+                    else if((lastType == TrackPieceType.CurveLeft || lastType == TrackPieceType.CurveRight) && Math.Abs(heightChange) == 1){
+                        height += heightChange;
+                        if(nextHeightForced != 0){ nextHeightForced = 0; }
+                        else if(nextHeightForced == 0){ nextHeightForced = heightChange; }
+                    }
+                    else if((lastType == TrackPieceType.CurveLeft || lastType == TrackPieceType.CurveRight) && heightChange == 0 && nextHeightForced != 0){
+                        height += nextHeightForced;
+                        nextHeightForced = 0;
+                    }
                     trackPieces[trackPieces.Count - 1].height = height;
                 }
             }
@@ -102,6 +121,7 @@ namespace OverdriveServer
                     tracking = false;
                     int trackID = int.Parse(data[3]);
                     if(finishesPassed <= 0){
+                        height = 0;
                         if(trackID == 33){
                             finishesPassed++;
                             if(finishesPassed == 1){

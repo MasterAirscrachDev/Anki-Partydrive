@@ -75,33 +75,12 @@ public class CarInteraface : MonoBehaviour
                             ApiCall($"tts/Car {c[2]} has connected");
                         }
                     } else if(c[0] == "-3"){
-                        int index = 2;
-                        List<TrackType> tracks = new List<TrackType>();
-                        while(index < c.Length){
-                            if(c[index] == "0"){ tracks.Add(TrackType.Straight); }
-                            if(c[index] == "1"){ tracks.Add(TrackType.CurveLeft); }
-                            if(c[index] == "2"){ tracks.Add(TrackType.CurveRight); }
-                            if(c[index] == "3"){ tracks.Add(TrackType.Poweup); }
-                            if(c[index] == "4"){ tracks.Add(TrackType.Finish); }
-                            index+= 2;
-                        }
-                        FindObjectOfType<TrackGenerator>().TestGen(tracks.ToArray());
+                        TrackFromData(c, 2);
                     }
                     else if(c[0] == "-4"){
                         bool success = c[2] == "true";
                         if(!success){ Debug.Log("Failed to scan track"); continue; }
-                        Debug.Log(logs[i]);
-                        // int index = 3;
-                        // List<TrackType> tracks = new List<TrackType>();
-                        // while(index < c.Length){
-                        //     if(c[index] == "0"){ tracks.Add(TrackType.Straight); }
-                        //     if(c[index] == "1"){ tracks.Add(TrackType.CurveLeft); }
-                        //     if(c[index] == "2"){ tracks.Add(TrackType.CurveRight); }
-                        //     if(c[index] == "3"){ tracks.Add(TrackType.Poweup); }
-                        //     if(c[index] == "4"){ tracks.Add(TrackType.Finish); }
-                        //     index+= 2;
-                        // }
-                        // FindObjectOfType<TrackGenerator>().TestGen(tracks.ToArray());
+                        TrackFromData(c, 3);
                     }
                     else if(c[0] == "27"){
                         int battery = int.Parse(c[2]);
@@ -144,6 +123,25 @@ public class CarInteraface : MonoBehaviour
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){ return; }
         }
+    }
+    void TrackFromData(string[] data, int offset){
+        List<Segment> segments = new List<Segment>();
+        while(offset < data.Length){
+            TrackType type = TrackType.Unknown; bool flipped = false;
+            int height;
+            if(data[offset] == "0"){ type = TrackType.Straight; }
+            if(data[offset] == "1"){ type = TrackType.CurveLeft; }
+            if(data[offset] == "2"){ type = TrackType.CurveRight; }
+            if(data[offset] == "3"){ type = TrackType.Poweup; }
+            if(data[offset] == "4"){ type = TrackType.Finish; }
+            if(data[offset] == "6"){ type = TrackType.Poweup; flipped = true; }
+            offset++;
+            height = int.Parse(data[offset]);
+            offset++;
+            segments.Add(new Segment(type, height, false, flipped));
+
+        }
+        FindObjectOfType<TrackGenerator>().Generate(segments.ToArray());
     }
     public void Call(string call){
         ApiCall(call);
