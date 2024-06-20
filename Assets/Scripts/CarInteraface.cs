@@ -73,7 +73,7 @@ public class CarInteraface : MonoBehaviour
                             ApiCall($"tts/Car {c[2]} has connected");
                         }
                     } else if(c[0] == "-3"){
-                        int index = 1;
+                        int index = 2;
                         List<TrackType> tracks = new List<TrackType>();
                         while(index < c.Length){
                             if(c[index] == "0"){ tracks.Add(TrackType.Straight); }
@@ -168,6 +168,7 @@ public class CarInteraface : MonoBehaviour
         for(int i = 0; i < cars.Length; i++){
             SetCarColours(cars[i], colors[i].Item1, colors[i].Item2, colors[i].Item3);
         }
+        ApiCall("batteries");
     }
     int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)

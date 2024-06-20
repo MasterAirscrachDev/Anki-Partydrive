@@ -6,6 +6,7 @@ using UnityEngine;
 public class TrackGenerator : MonoBehaviour
 {
     [SerializeField] bool test;
+    [SerializeField] TrackCamera trackCamera;
     [SerializeField] Segment[] segments;
     [SerializeField] GameObject[] trackPrefabs;
     //
@@ -70,6 +71,7 @@ public class TrackGenerator : MonoBehaviour
             segments[i].elevation = 0;
         }
         GenerateTrackPls();
+        trackCamera.TrackUpdated();
     }
 }
 [System.Serializable]
