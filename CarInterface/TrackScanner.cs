@@ -22,6 +22,8 @@ namespace OverdriveServer
             totalFinishes = finishlines;
             Program.messageManager.CarEvent += OnCarEvent;
             await car.SetCarSpeed(300, 500);
+            await car.SetCarTrackCenter(0);
+            await car.SetCarLane(40);
             while (!finishedScan){
                 await Task.Delay(500);
             }

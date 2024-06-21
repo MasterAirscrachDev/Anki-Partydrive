@@ -140,6 +140,7 @@ namespace OverdriveServer
             //respect track piece speed limits
             data[6] = 0x01;
             await WriteToCarAsync(data, true);
+            this.data.speed = speed;
         }
         public async Task SetCarTrackCenter(float offset){
             byte[] data = new byte[6];
@@ -148,11 +149,10 @@ namespace OverdriveServer
             BitConverter.GetBytes((float)offset).CopyTo(data, 2); 
             await WriteToCarAsync(data, true);
         }
-        public async Task SetCarLane(float lane){ // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
+        public async Task SetCarLane(float lane, int horizontalSpeedmm = 100, int horizontalAccelmm = 1000){ // Offset value (?? 68,23,-23,68 seem to be lane values 1-4)
             byte[] data = new byte[12];
             data[0] = 11;
             data[1] = SEND_CAR_LANE_CHANGE;
-            int horizontalSpeedmm = 100, horizontalAccelmm = 1000;
             //horizontal speed as int16
             data[2] = (byte)(horizontalSpeedmm & 0xFF);
             data[3] = (byte)((horizontalSpeedmm >> 8) & 0xFF);
@@ -194,11 +194,13 @@ namespace OverdriveServer
         }
 
         async Task WriteToCarAsync(byte[] data, bool response = false){
-            var service = await device.Gatt.GetPrimaryServiceAsync(CarSystem.ServiceID);
-            var characteristic = await service.GetCharacteristicAsync(CarSystem.WriteID);
-            //send someth
-            if(response){ await characteristic.WriteValueWithResponseAsync(data); }
-            else{ await characteristic.WriteValueWithoutResponseAsync(data); }
+            try{
+                var service = await device.Gatt.GetPrimaryServiceAsync(CarSystem.ServiceID);
+                var characteristic = await service.GetCharacteristicAsync(CarSystem.WriteID);
+                //send someth
+                if(response){ await characteristic.WriteValueWithResponseAsync(data); }
+                else{ await characteristic.WriteValueWithoutResponseAsync(data); }
+            }catch{}
         }
     }
     [System.Serializable]

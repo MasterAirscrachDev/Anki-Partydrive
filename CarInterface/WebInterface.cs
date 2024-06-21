@@ -134,6 +134,27 @@ namespace OverdriveServer
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Scanning track");
                             });
+                            endpoints.MapGet("/disconnectcar/{instruct}", async context =>{
+                                var instruct = context.Request.RouteValues["instruct"];
+                                string carID = instruct.ToString();
+                                if(carID == "all"){
+                                    for(int i = 0; i < Program.carSystem.CarCount(); i++){
+                                        await Program.carSystem.GetCar(i).RequestCarDisconnect();
+                                    }
+                                    context.Response.StatusCode = 200;
+                                    await context.Response.WriteAsync("Disconnected all cars");
+                                    return;
+                                }
+                                Car car = Program.carSystem.GetCar(carID);
+                                if(car == null){
+                                    context.Response.StatusCode = 404;
+                                    await context.Response.WriteAsync("Car not found");
+                                    return;
+                                }
+                                await car.RequestCarDisconnect();
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Disconnected");
+                            });
                         });
                         app.Run(async context =>{
                             if (context.Request.Path == "/")

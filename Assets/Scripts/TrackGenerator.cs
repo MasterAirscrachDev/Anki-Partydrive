@@ -81,7 +81,7 @@ public class TrackGenerator : MonoBehaviour
                 else if(heightDiff == -1){
                     pos += Vector3.down * 0.1f;
                     track.transform.Translate(0, -0.1f, 0);
-                    track.transform.Rotate(0, -90, 0);
+                    track.transform.Rotate(0, 90, 0);
                     //track.transform.localScale = new Vector3(right ? 1 : -1, 1, 1);
                 }
             }
