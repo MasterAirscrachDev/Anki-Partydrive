@@ -58,7 +58,7 @@ public class CarInteraface : MonoBehaviour
                 for (int i = 0; i < logs.Length; i++)
                 {
                     if(logs[i] == ""){ continue; }
-                    if(logs[i].StartsWith("[39]") || logs[i].StartsWith("[77]")  || logs[i].StartsWith("[83]")){ continue; }
+                    if(logs[i].StartsWith("[39]") || logs[i].StartsWith("[77]")  || logs[i].StartsWith("[83]") || logs[i].StartsWith("[41]")){ continue; }
                     Debug.Log(logs[i]);
                 }
             }
@@ -78,8 +78,8 @@ public class CarInteraface : MonoBehaviour
                         TrackFromData(c, 2);
                     }
                     else if(c[0] == "-4"){
-                        bool success = c[2] == "true";
-                        if(!success){ Debug.Log("Failed to scan track"); continue; }
+                        bool success = c[2] == "True";
+                        if(!success){ Debug.Log($"Failed to scan track: {c[2]}"); continue; }
                         TrackFromData(c, 3);
                     }
                     else if(c[0] == "27"){

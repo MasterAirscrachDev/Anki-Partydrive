@@ -5370,7 +5370,99 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   test: 0
   trackCamera: {fileID: 1229594995}
-  segments: []
+  segments:
+  - type: 5
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 7
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 5
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 0
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 7
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 5
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 0
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 0
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 1
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 1
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 2
+    addPowerups: 0
+    flipped: 0
+  - type: 1
+    elevation: 1
+    addPowerups: 0
+    flipped: 0
+  - type: 1
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 1
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
+  - type: 0
+    elevation: 2
+    addPowerups: 0
+    flipped: 0
+  - type: 1
+    elevation: 3
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 4
+    addPowerups: 0
+    flipped: 0
+  - type: 0
+    elevation: 2
+    addPowerups: 0
+    flipped: 0
+  - type: 2
+    elevation: 0
+    addPowerups: 0
+    flipped: 0
   trackPrefabs:
   - {fileID: 8254316182376960447, guid: f35717277450502458a22f2fd6739479, type: 3}
   - {fileID: 2253291087745149315, guid: 11338035dcc803949a28766c9279ecb9, type: 3}

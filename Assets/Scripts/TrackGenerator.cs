@@ -82,11 +82,12 @@ public class TrackGenerator : MonoBehaviour
                     pos += Vector3.down * 0.1f;
                     track.transform.Translate(0, -0.1f, 0);
                     track.transform.Rotate(0, 90, 0);
-                    //track.transform.localScale = new Vector3(right ? 1 : -1, 1, 1);
+                    track.transform.localScale = new Vector3(-1, 1, right ? -1 : 1);
                 }
             }
             if(track != null){
                 trackPieces.Add(track);
+                track.name = $"{i} ({segments[i].type})";
             }
             Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
             lastPos = pos;

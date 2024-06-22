@@ -21,9 +21,9 @@ namespace OverdriveServer
             trackPieces = new List<TrackPiece>();
             totalFinishes = finishlines;
             Program.messageManager.CarEvent += OnCarEvent;
-            await car.SetCarSpeed(300, 500);
+            await car.SetCarSpeed(450, 500);
             await car.SetCarTrackCenter(0);
-            await car.SetCarLane(40);
+            await car.SetCarLane(24);
             while (!finishedScan){
                 await Task.Delay(500);
             }
@@ -34,15 +34,24 @@ namespace OverdriveServer
                 intialScan = trackPieces.ToArray();
                 trackPieces.Clear();
                 finishesPassed = 1;
-                scanningCar.SetCarSpeed(400, 500);
+                //scanningCar.SetCarSpeed(500, 500);
             }else{
                 confirmScan = trackPieces.ToArray();
                 trackPieces.Clear();
+                finishesPassed = 1;
                 //compare the two track scans
                 if(intialScan.Length != confirmScan.Length){
                     Program.Log($"lengths do not match {intialScan.Length} != {confirmScan.Length}");
+                    for(int i = 0; i < intialScan.Length; i++){
+                        TrackPieceType hopeful = TrackPieceType.Unknown;
+                        TrackPieceType compare = TrackPieceType.Unknown;
+                        if(i < confirmScan.Length){ compare = confirmScan[i].type; }
+                        if(i < intialScan.Length){ hopeful = intialScan[i].type; }
+                        Console.WriteLine($"Track {i} hopeful: {hopeful} compare: {compare}");
+                        //Program.Log($"Track {i} hopeful: {hopeful} compare: {compare}");
+                    }
                     retries++;
-                    if(retries < maxRetries){
+                    if(retries <= maxRetries){
                         Program.Log("Retrying track scan");
                     }
                     else{
@@ -64,7 +73,7 @@ namespace OverdriveServer
                     }
                     else{
                         Program.Log("Track scan comparison failed");
-                        retries++; return !(retries < maxRetries);
+                        retries++; return !(retries <= maxRetries);
                     }
                 }
             }
@@ -76,7 +85,7 @@ namespace OverdriveServer
                 await scanningCar.SetCarSpeed(0, 500);
             }
             string content = $"-4:{scanningCar.id}:{successfulScan}";
-            foreach(TrackPiece piece in confirmScan){
+            foreach(TrackPiece piece in intialScan){
                 content += $":{(int)piece.type}:{piece.height}";
             }
             Program.UtilLog(content);
@@ -164,6 +173,9 @@ namespace OverdriveServer
                     }
                 }
             }
+            else if(data[0] == "45"){
+                //scanningCar.SetCarLane(24);
+            }
         }
         void SendCurrentTrack(){
             if(checkingScan){ return; }
@@ -188,7 +200,8 @@ namespace OverdriveServer
             PowerupL,
             StartFinish,
             PreFinishLine,
-            PowerupR
+            PowerupR,
+            Unknown
         }
     }
 }
