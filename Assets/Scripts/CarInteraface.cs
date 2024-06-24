@@ -7,17 +7,18 @@ using Newtonsoft.Json;
 
 public class CarInteraface : MonoBehaviour
 {
+    public bool connected = false;
     public CarData[] cars;
     HttpClient client = new HttpClient();
     // Start is called before the first frame update
     void Start()
     {
         client.BaseAddress = new System.Uri("http://localhost:7117/");
-        SetupListener();
+        ReconnectToServer();
     }
     public void ScanTrack(){
         MapTrack();
-    }
+    } 
     public void TestCars(int speed = 300){
         int lane = -68;
         for (int i = 0; i < cars.Length; i++) {
@@ -39,19 +40,35 @@ public class CarInteraface : MonoBehaviour
     public void SetCarColours(CarData car, float r, float g, float b){
         ApiCall($"setlights/{car.id}:{r}:{g}:{b}");
     }
-    async Task SetupListener(){
+    async Task<bool> SetupListener(){
         var response = await client.GetAsync("registerlogs");
         //if 200 then start ticking
         Debug.Log(response.Content.ReadAsStringAsync().Result);
         if(response.StatusCode == System.Net.HttpStatusCode.OK){
             TickServer();
         }
+        else{
+            return false;
+        }
         ApiCall("scan", false);
         GetCars();
+        connected = true;
+        return true;
+    }
+    async Task ReconnectToServer(){
+        connected = false;
+
+        bool reconnnected = false;
+        while(!reconnnected && Application.isPlaying){
+            reconnnected = await SetupListener();
+            await Task.Delay(3000);
+
+        }
     }
     async Task TickServer(){
         while(true){
             var response = await client.GetAsync("logs");
+            if(response.StatusCode != System.Net.HttpStatusCode.OK){ ReconnectToServer(); return; }
             var responseString = await response.Content.ReadAsStringAsync();
             if(responseString != ""){ 
                 string[] logs = responseString.Split('\n');
@@ -79,8 +96,8 @@ public class CarInteraface : MonoBehaviour
                     }
                     else if(c[0] == "-4"){
                         bool success = c[2] == "True";
-                        if(!success){ Debug.Log($"Failed to scan track: {c[2]}"); continue; }
-                        TrackFromData(c, 3);
+                        if(!success){ Debug.Log($"Failed to scan track"); continue; }
+                        TrackFromData(c, 3, true);
                     }
                     else if(c[0] == "27"){
                         int battery = int.Parse(c[2]);
@@ -124,11 +141,11 @@ public class CarInteraface : MonoBehaviour
             if(!Application.isPlaying){ return; }
         }
     }
-    void TrackFromData(string[] data, int offset){
+    void TrackFromData(string[] data, int offset, bool getHeight = false){
         List<Segment> segments = new List<Segment>();
         while(offset < data.Length){
             TrackType type = TrackType.Unknown; bool flipped = false;
-            int height;
+            int height = 0;
             if(data[offset] == "0"){ type = TrackType.Straight; }
             if(data[offset] == "1"){ type = TrackType.CurveLeft; }
             if(data[offset] == "2"){ type = TrackType.CurveRight; }
@@ -136,12 +153,14 @@ public class CarInteraface : MonoBehaviour
             if(data[offset] == "4"){ type = TrackType.Finish; }
             if(data[offset] == "6"){ type = TrackType.Poweup; flipped = true; }
             offset++;
-            height = int.Parse(data[offset]);
-            offset++;
+            if(getHeight){
+                height = int.Parse(data[offset]);
+                offset++;
+            }
             segments.Add(new Segment(type, height, false, flipped));
-
         }
         FindObjectOfType<TrackGenerator>().Generate(segments.ToArray());
+        
     }
     public void Call(string call){
         ApiCall(call);

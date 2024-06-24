@@ -30,9 +30,10 @@ namespace OverdriveServer
                 int trackID = content[3];
                 float offset = BitConverter.ToSingle(content, 4);
                 int speed = BitConverter.ToInt16(content, 8);
-                //tf does location mean
-                util = Program.UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}");
-                Program.Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}");
+                bool clockwise = content[10] == 0x47; //this is a secret parsing flag, we can use it to decphier turn directions
+                //tf does location mean (index in the internal array?)
+                util = Program.UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}:{clockwise}");
+                Program.Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
                 //IDs
                 //36 ??? 39 FnF Straight 40 Straight
                 //17 18 20 23 FnF Curve / Curve
@@ -95,9 +96,9 @@ namespace OverdriveServer
                 Program.Log($"[83] {car.name} hit special block");
             }
             else{
-                Program.Log($"Unknown message {id} [{Program.IntToByteString(id)}]: {Program.BytesToString(content)}");
+                Program.Log($"???({id})[{Program.IntToByteString(id)}]:{Program.BytesToString(content)}");
                 //45
-                //65
+                //65 slip ? car on track ?
                 //134 CarMsgCycleOvertime
             }
             CarEvent?.Invoke(util);

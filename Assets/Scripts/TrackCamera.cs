@@ -36,6 +36,6 @@ public class TrackCamera : MonoBehaviour
                 maxDist = dist;
             }
         }
-        camSize = Mathf.Max(2, maxDist / 2);
+        camSize = Mathf.Max(2, maxDist / 2.6f);
     }
 }
