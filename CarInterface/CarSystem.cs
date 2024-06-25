@@ -139,7 +139,7 @@ namespace OverdriveServer
             data[5] = (byte)((accel >> 8) & 0xFF);
             //respect track piece speed limits
             data[6] = 0x01;
-            await WriteToCarAsync(data, true);
+            await WriteToCarAsync(data);
             this.data.speed = speed;
         }
         public async Task SetCarTrackCenter(float offset){

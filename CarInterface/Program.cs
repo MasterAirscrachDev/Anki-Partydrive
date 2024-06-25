@@ -17,6 +17,7 @@ namespace OverdriveServer
         public static CarSystem carSystem = new CarSystem();
         public static MessageManager messageManager = new MessageManager();
         public static TrackManager trackManager = new TrackManager();
+        public static List<TrackScanner> scansInProgress = new List<TrackScanner>();
         static async Task Main(string[] args)
         {
             Console.WriteLine("Overdrive Server By MasterAirscrach");
@@ -30,9 +31,8 @@ namespace OverdriveServer
             SysLog += message + "\n";
             if(printLog){ Console.WriteLine(message); }
         }
-        public static string UtilLog(string message){
+        public static void UtilLog(string message){
             UtilityLog += message + "\n";
-            return message;
         }
         public static string GetLog(){
             string content = SysLog;
@@ -54,8 +54,18 @@ namespace OverdriveServer
         }
         public static async Task ScanTrack(Car car, int finishlines){
             TrackScanner scanner = new TrackScanner();
+            scansInProgress.Add(scanner);
             await scanner.ScanTrack(car, finishlines);
-            scanner = null;
+        }
+        public static async Task CancelScan(Car car){
+            foreach(TrackScanner scanner in scansInProgress){
+                if(await scanner.CancelScan(car)){
+                    scansInProgress.Remove(scanner); return;
+                }
+            }
+        }
+        public static void RemoveScan(TrackScanner scanner){
+            scansInProgress.Remove(scanner);
         }
         public static string IntToByteString(int number)
         { return "0x" + number.ToString("X2"); } //as 0x00
