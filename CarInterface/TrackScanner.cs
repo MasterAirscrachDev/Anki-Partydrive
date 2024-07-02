@@ -84,9 +84,10 @@ namespace OverdriveServer
                 await scanningCar.SetCarSpeed(0, 500);
             }
             string content = $"-4:{scanningCar.id}:{successfulScan}";
-            TrackPiece[] solvedPieces = HeightSolver();
+            //TrackPiece[] solvedPieces = HeightSolver();
+            TrackPiece[] solvedPieces = intialScan;
             foreach(TrackPiece piece in solvedPieces){
-                content += $":{(int)piece.type}:{piece.height}";
+                content += $":{(int)piece.type}:{piece.up}:{piece.down}";
             }
             Program.UtilLog(content);
             if(successfulScan){
@@ -96,6 +97,7 @@ namespace OverdriveServer
         }
         void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
             tracking = true;
+            if(trackPieces.Count > 0){ trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);}
         }
         void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise){
             if(tracking){
@@ -103,7 +105,7 @@ namespace OverdriveServer
                 if(trackID == 33){
                     finishesPassed++;
                     if(finishesPassed <= 1){
-                        if(finishesPassed == 1){ trackPieces.Add(new TrackPiece(TrackPieceType.StartFinish, 0)); SendCurrentTrack();}
+                        if(finishesPassed == 1){ trackPieces.Add(new TrackPiece(TrackPieceType.StartFinish)); SendCurrentTrack();}
                     }else{
                         if(finishesPassed > totalFinishes){
                             bool stop = ScanLoopDone();
@@ -111,12 +113,12 @@ namespace OverdriveServer
                                 scanningCar.SetCarSpeed(0, 500);
                                 SetEventsSub(false);
                                 SendFinishedTrack(); return;
-                            }else{ scanningCar.SetCarSpeed(scanSpeed, 500); trackPieces.Add(new TrackPiece(TrackPieceType.StartFinish, 0));  } //slow down a bit if we failed
+                            }else{ scanningCar.SetCarSpeed(scanSpeed, 500); trackPieces.Add(new TrackPiece(TrackPieceType.StartFinish));  } //slow down a bit if we failed
                         }
                     }
                 }else if(finishesPassed >= 1){
                     TrackPieceType pt = PeiceFromID(trackID, clockwise);
-                    trackPieces.Add(new TrackPiece(pt, 0));
+                    trackPieces.Add(new TrackPiece(pt));
                     if(pt != TrackPieceType.Unknown || pt != TrackPieceType.PreFinishLine){
                         SendCurrentTrack();
                     }
@@ -183,15 +185,16 @@ namespace OverdriveServer
                         if(points[i].piece.type == TrackPieceType.CurveLeft || points[i].piece.type == TrackPieceType.CurveRight){
                             if(points[lowerIndex].piece.type == TrackPieceType.CurveLeft || points[lowerIndex].piece.type == TrackPieceType.CurveRight){
                                 //if there are no matches in the tStart and tEnd values
+                                Console.WriteLine($"checking turns: ({i}) {points[i].tStart}, {points[i].tEnd} ({lowerIndex}) {points[lowerIndex].tStart}, {points[lowerIndex].tEnd}");
                                 int[] dirs = {points[i].tStart, points[i].tEnd, points[lowerIndex].tStart, points[lowerIndex].tEnd};
                                 //if dir has no matching elements, then the two points are not connected
                                 if(dirs.Distinct().Count() == dirs.Length){ continue; }
                             }
                         }
-                        int height = points[lowerIndex].piece.height + 2;
-                        points[i].piece.height = height;
-                        points[i + 1].piece.height = height;
-                        Console.WriteLine($"Height at {points[i].x}, {points[i].y} for {points[i].piece.type}({i}) is {height}");
+                        // int height = points[lowerIndex].piece.height + 2;
+                        // points[i].piece.height = height;
+                        // points[i + 1].piece.height = height;
+                        Console.WriteLine($"Height at {points[i].x}, {points[i].y} for {points[i].piece.type}({i}) is UNSET");
                     }
                 }
             }

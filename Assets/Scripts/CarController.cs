@@ -4,9 +4,10 @@ using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.InputSystem;
 
-public class DemoCarController : MonoBehaviour
+public class CarController : MonoBehaviour
 {
     [SerializeField] int speed, lane;
+    [SerializeField] string carID;
     [SerializeField] int index;
     int oldSpeed, oldLane;
     CarInteraface carInterface;
@@ -45,5 +46,8 @@ public class DemoCarController : MonoBehaviour
         Vector2 move = iinput.currentActionMap.actions[1].ReadValue<Vector2>();
         //lane = (int)move.x * 10;
         lane = Mathf.RoundToInt(move.x * 5f);
+    }
+    public void GetCarIndex(){
+        index = carInterface.GetCar(carID);
     }
 }

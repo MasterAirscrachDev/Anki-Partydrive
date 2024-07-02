@@ -21,6 +21,7 @@ public class TrackCamera : MonoBehaviour
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, camSize, Time.deltaTime * 2);
     }
     public void TrackUpdated(){
+        if(!Application.isPlaying){ return; }
         //get the average position of all track pieces
         Vector3 pos = Vector3.zero;
         for(int i = 0; i < trackManager.childCount; i++){
@@ -30,12 +31,33 @@ public class TrackCamera : MonoBehaviour
         targetPos.y = 10;
         //the diagonal bounds of the track
         float maxDist = 0;
+        float heighestX = 0, heighestZ = 0, lowestX = 0, lowestZ = 0;
         for(int i = 0; i < trackManager.childCount; i++){
             float dist = Vector3.Distance(trackManager.GetChild(i).position, targetPos);
             if(dist > maxDist){
                 maxDist = dist;
             }
+            if(trackManager.GetChild(i).position.x > heighestX){
+                heighestX = trackManager.GetChild(i).position.x;
+            }
+            if(trackManager.GetChild(i).position.x < lowestX){
+                lowestX = trackManager.GetChild(i).position.x;
+            }
+            if(trackManager.GetChild(i).position.z > heighestZ){
+                heighestZ = trackManager.GetChild(i).position.z;
+            }
+            if(trackManager.GetChild(i).position.z < lowestZ){
+                lowestZ = trackManager.GetChild(i).position.z;
+            }
         }
-        camSize = Mathf.Max(2, maxDist / 2.6f);
+        //if its taller than it is wide, rotate the camera 90 degrees
+        if(heighestX - lowestX < heighestZ - lowestZ){
+            camSize = Mathf.Max(2, (heighestZ - lowestZ) / 2.4f);
+            cam.transform.rotation = Quaternion.Euler(90, 90, 0);
+        }
+        else{
+            camSize = Mathf.Max(2, maxDist / 2.4f);
+            cam.transform.rotation = Quaternion.Euler(90, 0, 0);
+        }
     }
 }

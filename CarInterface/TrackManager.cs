@@ -9,6 +9,7 @@ namespace OverdriveServer
 {
     class TrackManager
     {
+        public int totalStarts = 1;
         TrackPiece[]? track;
         List<TrackCarLocation> carLocations;
         public void SetTrack(TrackPiece[] track){ this.track = track; }
@@ -38,10 +39,20 @@ namespace OverdriveServer
     public class Tracks{
         public class TrackPiece{
             public TrackPieceType type;
-            public int height;
-            public TrackPiece(TrackPieceType type, int height){
+            public int up, down;
+            public TrackPiece(TrackPieceType type, int up, int down){
                 this.type = type;
-                this.height = height;
+                this.up = up;
+                this.down = down;
+            }
+            public TrackPiece(TrackPieceType type){
+                this.type = type;
+                this.up = 0;
+                this.down = 0;
+            }
+            public void SetUpDown(int up, int down){
+                this.up = up;
+                this.down = down;
             }
         }
         public enum TrackPieceType{
