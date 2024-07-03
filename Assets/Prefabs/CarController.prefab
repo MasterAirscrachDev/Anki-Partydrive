@@ -42,11 +42,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3576805191090509986}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9927d622561d4c4ead72d469bb94c97, type: 3}
+  m_Script: {fileID: 11500000, guid: a548977f0a8f790459ed32042241dc7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0
   lane: 0
+  carID: 
+  index: 0
+  energy: 75
 --- !u!114 &3576805191090509982
 MonoBehaviour:
   m_ObjectHideFlags: 0

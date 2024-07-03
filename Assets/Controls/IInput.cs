@@ -80,6 +80,15 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ResetCenter"",
+                    ""type"": ""Button"",
+                    ""id"": ""f050b106-33ff-4830-a43e-70fe2b749787"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -225,6 +234,17 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""action"": ""Boost"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ef73f246-5916-4284-aea9-c12749d1610d"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetCenter"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -239,6 +259,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         m_Racing_UseItem = m_Racing.FindAction("UseItem", throwIfNotFound: true);
         m_Racing_ActivateItem = m_Racing.FindAction("ActivateItem", throwIfNotFound: true);
         m_Racing_Boost = m_Racing.FindAction("Boost", throwIfNotFound: true);
+        m_Racing_ResetCenter = m_Racing.FindAction("ResetCenter", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -306,6 +327,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Racing_UseItem;
     private readonly InputAction m_Racing_ActivateItem;
     private readonly InputAction m_Racing_Boost;
+    private readonly InputAction m_Racing_ResetCenter;
     public struct RacingActions
     {
         private @IInput m_Wrapper;
@@ -316,6 +338,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         public InputAction @UseItem => m_Wrapper.m_Racing_UseItem;
         public InputAction @ActivateItem => m_Wrapper.m_Racing_ActivateItem;
         public InputAction @Boost => m_Wrapper.m_Racing_Boost;
+        public InputAction @ResetCenter => m_Wrapper.m_Racing_ResetCenter;
         public InputActionMap Get() { return m_Wrapper.m_Racing; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -343,6 +366,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Boost.started += instance.OnBoost;
             @Boost.performed += instance.OnBoost;
             @Boost.canceled += instance.OnBoost;
+            @ResetCenter.started += instance.OnResetCenter;
+            @ResetCenter.performed += instance.OnResetCenter;
+            @ResetCenter.canceled += instance.OnResetCenter;
         }
 
         private void UnregisterCallbacks(IRacingActions instance)
@@ -365,6 +391,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Boost.started -= instance.OnBoost;
             @Boost.performed -= instance.OnBoost;
             @Boost.canceled -= instance.OnBoost;
+            @ResetCenter.started -= instance.OnResetCenter;
+            @ResetCenter.performed -= instance.OnResetCenter;
+            @ResetCenter.canceled -= instance.OnResetCenter;
         }
 
         public void RemoveCallbacks(IRacingActions instance)
@@ -390,5 +419,6 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         void OnUseItem(InputAction.CallbackContext context);
         void OnActivateItem(InputAction.CallbackContext context);
         void OnBoost(InputAction.CallbackContext context);
+        void OnResetCenter(InputAction.CallbackContext context);
     }
 }

@@ -184,14 +184,6 @@ public class CarInteraface : MonoBehaviour
         CarData[] cars = JsonConvert.DeserializeObject<CarData[]>(responseString);
         this.cars = cars;
         Debug.Log("Updated Cars");
-        //we get the car info
-        //col 1:  1, 0, 0
-        //col 2:  0, 1, 0
-        //col 3:  0, 0, 1
-        //col 4:  1, 1, 0
-        //col 5:  1, 0, 1
-        //col 6:  0, 1, 1
-        //col 7:  1, 1, 1
         // Define color values in an array
         var colors = new (float, float, float)[] {
             (1, 0, 0), // Red
@@ -228,25 +220,4 @@ public class CarInteraface : MonoBehaviour
         public int battery;
         public bool charging;
     }
-    //Indexes of TrackIDs
-    //0
-    //1
-    //2
-    //3
-    //4
-    //5
-    //6
-    //7
-    //8
-    //9 = 33 (Finish Line)
-    //10
-    //11
-    //12 = 20 (Curve Right)
-    //13
-    //14
-    //15
-    //16
-    //17
-    //18 = 23 (Curve Left)
-    //19 = 17 (Straight)
 }

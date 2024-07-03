@@ -38,8 +38,8 @@ namespace OverdriveServer
                                         await context.Response.WriteAsync("Car not found");
                                         return;
                                     }
+
                                     await car.SetCarSpeed(speed);
-                                    await car.SetCarTrackCenter(0);
                                     await car.SetCarLane(offset);
 
                                     context.Response.StatusCode = 200;
@@ -49,6 +49,18 @@ namespace OverdriveServer
                                     context.Response.StatusCode = 400;
                                     await context.Response.WriteAsync("Bad Request");
                                 }
+                            });
+                            endpoints.MapGet("/resetcenter/{car}", async context =>{
+                                var car = context.Request.RouteValues["car"];
+                                Car c = Program.carSystem.GetCar(car.ToString());
+                                if(c == null){
+                                    context.Response.StatusCode = 404;
+                                    await context.Response.WriteAsync("Car not found");
+                                    return;
+                                }
+                                await c.SetCarTrackCenter(0);
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync("Centered");
                             });
                             endpoints.MapGet("/scan", async context =>{
                                 Program.bluetoothInterface.ScanForCars();
