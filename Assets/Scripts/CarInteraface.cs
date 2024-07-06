@@ -10,6 +10,7 @@ public class CarInteraface : MonoBehaviour
     public bool connected = false;
     public CarData[] cars;
     HttpClient client = new HttpClient();
+    public CarBalanceTesting balanceTesting;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,13 +19,6 @@ public class CarInteraface : MonoBehaviour
     }
     public void ScanTrack(){
         MapTrack();
-    } 
-    public void TestCars(int speed = 300){
-        int lane = -68;
-        for (int i = 0; i < cars.Length; i++) {
-            ControlCar(cars[i], speed, lane);
-            lane += 44;
-        }
     }
     async Task MapTrack(){
         //get the first car that isnt on charge
@@ -98,6 +92,13 @@ public class CarInteraface : MonoBehaviour
                         bool success = c[2] == "True";
                         if(!success){ Debug.Log($"Failed to scan track"); continue; }
                         TrackFromData(c, 3, true);
+                    } 
+                    else if(c[0] == "-5"){
+                        Debug.Log("Fin was crossed");
+                        string carID = c[1];
+                        if(balanceTesting != null){
+                            balanceTesting.CrossedFinish();
+                        }
                     }
                     else if(c[0] == "27"){
                         int battery = int.Parse(c[2]);
@@ -132,7 +133,7 @@ public class CarInteraface : MonoBehaviour
                     } else if(c[0] == "63"){ //charging status
                         int index = GetCar(c[1]);
                         if(index != -1){
-                            cars[index].charging = c[2] == "true";
+                            cars[index].charging = c[2] == "True";
                         }
                     }
                 }

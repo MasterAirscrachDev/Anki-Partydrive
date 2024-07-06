@@ -8,23 +8,28 @@ public class CarController : MonoBehaviour
 {
     [SerializeField] int speed, lane;
     [SerializeField] string carID;
-    [SerializeField] int index;
+    [SerializeField] int carIndex = -1;
     public float energy = 75;
     float maxEnergy = 100;
-    int oldSpeed, oldLane;
+    int oldSpeed, oldLane,
+    internalControlIndex;
     bool locked = true;
     CarInteraface carInterface;
+    CMS cms;
     PlayerInput iinput;
     // Start is called before the first frame update
     void Start()
     {
         iinput = GetComponent<PlayerInput>();
-        index = iinput.playerIndex;
         carInterface = FindObjectOfType<CarInteraface>();
+        cms = FindObjectOfType<CMS>();
+        cms.AddController(this);
         ControlTicker();
         FindObjectOfType<PlayerCardmanager>().UpdateCardCount();
     }
-
+    public void SetControlIndex(int index){
+        internalControlIndex = index;
+    }
     async Task ControlTicker(){
         while(true){
             if(!Application.isPlaying){ return; }
@@ -37,7 +42,7 @@ public class CarController : MonoBehaviour
                     useSpeed += 200;
                     energy -= 0.5f;
                 }
-                carInterface.ControlCar(carInterface.cars[iinput.playerIndex], useSpeed, lane);
+                carInterface.ControlCar(carInterface.cars[carIndex], useSpeed, lane);
             }
             if(energy < maxEnergy){
                 energy += 0.3f;
@@ -57,12 +62,15 @@ public class CarController : MonoBehaviour
         lane = Mathf.RoundToInt(move.x * 5f);
     }
     public void GetCarIndex(){
-        index = carInterface.GetCar(carID);
-        if(index == -1){
+        carIndex = carInterface.GetCar(carID);
+        if(carIndex == -1){
             Debug.LogError($"Car {carID} has disconnected!");
         }
     }
     public void SetLocked(bool state){
         locked = state;
+    }
+    public bool isId(string id){
+        return carID == id;
     }
 }

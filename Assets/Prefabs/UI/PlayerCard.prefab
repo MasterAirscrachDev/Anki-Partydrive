@@ -142,7 +142,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CarName
+  m_text: Sitting Out
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
   m_sharedMaterial: {fileID: -7548483605016708549, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 5266791392652495242}
   - component: {fileID: 2888358006066828800}
   m_Layer: 5
-  m_Name: Image
+  m_Name: BG2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -353,7 +353,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CharName
+  m_text: ???
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
   m_sharedMaterial: {fileID: -7548483605016708549, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 5377957180383301085}
   - component: {fileID: 891317611961037215}
   m_Layer: 5
-  m_Name: CharText (TMP) (1)
+  m_Name: PosText (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -646,7 +646,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1st
+  m_text: ---
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
   m_sharedMaterial: {fileID: -7548483605016708549, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
@@ -673,7 +673,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.7
+  m_fontSize: 41.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -726,6 +726,7 @@ GameObject:
   - component: {fileID: 7308360179982223486}
   - component: {fileID: 3520654020024930540}
   - component: {fileID: 1249777785773265067}
+  - component: {fileID: 7624117292714352596}
   m_Layer: 5
   m_Name: PlayerCard
   m_TagString: Untagged
@@ -793,6 +794,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7624117292714352596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4344234726210117220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a4fe060866eeb40a0ae915d26202c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterName: {fileID: 7668438000843196928}
+  carName: {fileID: 4272681303129961407}
+  positionText: {fileID: 891317611961037215}
+  energyBar: {fileID: 141332946559120754}
 --- !u!1 &6167518796921782730
 GameObject:
   m_ObjectHideFlags: 0
@@ -805,7 +822,7 @@ GameObject:
   - component: {fileID: 6301616257881522860}
   - component: {fileID: 5492791392196168129}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: BG3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

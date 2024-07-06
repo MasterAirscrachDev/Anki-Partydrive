@@ -52,6 +52,7 @@ namespace OverdriveServer
                     string crossedStartingLine = "";
                     if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
                         crossedStartingLine = " (Crossed Starting Line)";
+                        Program.UtilLog($"-5:{car.id}"); //UPGRADE TO WORK WITH MULTI FINISH LINES
                     }
                     Program.UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{!string.IsNullOrEmpty(crossedStartingLine)}");
                     Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, up:{uphillCounter}down:{downhillCounter}, offest: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance} {crossedStartingLine}");
