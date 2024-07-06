@@ -22,10 +22,10 @@ namespace OverdriveServer
         {
             Console.WriteLine("Overdrive Server By MasterAirscrach");
             Console.WriteLine("Starting server...");
-            await bluetoothInterface.InitaliseBletooth();
-            bluetoothInterface.ScanForCars();
-            webInterface.Start();
-            await Task.Delay(-1);
+            await bluetoothInterface.InitaliseBletooth(); //Start the bluetooth subsystem
+            bluetoothInterface.ScanForCars(); //Start scanning for cars
+            webInterface.Start(); //Start the web interface
+            await Task.Delay(-1); //dont close the program
         }
         public static void Log(string message){
             SysLog += message + "\n";

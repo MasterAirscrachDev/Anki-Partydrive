@@ -170,7 +170,75 @@ namespace OverdriveServer
                         });
                         app.Run(async context =>{
                             if (context.Request.Path == "/")
-                            { await context.Response.WriteAsync("CarInterface"); }
+                            { 
+                                //simple html page that lists the cars and has buttons to control them
+                                string carElements = "";
+                                for(int i = 0; i < Program.carSystem.CarCount(); i++){
+                                    Car car = Program.carSystem.GetCar(i);
+                                    carElements += $"<div><h2>{car.id}</h2><p>{car.name}</p></div>";
+                                }
+//i should probably be beaten to death with mallets for this
+string page = $@"<!DOCTYPE html>
+<html>
+<head>
+    <title>Overdrive Server</title>
+</head>
+<body>
+    <h1>Overdrive Server</h1>
+    <h2>Cars</h2>
+    {carElements}
+    <form action='/scan'>
+        <button type='submit'>Scan for cars</button>
+    </form>
+    <form action='/setlights/'>
+        <input type='text' name='instruct' placeholder='CarID:R:G:B'>
+        <button type='submit'>Set Lights</button>
+    </form>
+    <form action='/controlcar/'>
+        <input type='text' name='instruct' placeholder='CarID:Speed:Offset'>
+        <button type='submit'>Control Car</button>
+    </form>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() "+@"{
+        // Select all forms
+        const forms = document.querySelectorAll('form');
+
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                let actionUrl = form.getAttribute('action'); // Get the form's action URL
+                const formData = new FormData(form); // Collect form data
+
+                // Construct query string
+                data = '';
+                //if formdata has 1 entry, set data to that entry
+                if(formData.entries().next().value){
+                    data = formData.entries().next().value[1];
+                }
+                actionUrl += data; // Append data to action URL
+                console.log(actionUrl);
+                // Send the request asynchronously
+                fetch(actionUrl, {
+                    method: 'GET',
+                })
+                .then(response => response.text()) // Convert response to text (or JSON if expected)
+                .then(data => {
+                    console.log('Success:', data); // Handle success
+                })
+                .catch((error) => {
+                    console.error('Error:', error); // Handle errors
+                });
+            });
+        });
+    });
+    </script>
+</body>
+</html>";
+                                context.Response.ContentType = "text/html";
+                                await context.Response.WriteAsync(page);
+                            }
                             else{
                                 context.Response.StatusCode = 404;
                                 await context.Response.WriteAsync($"Failed to find path {context.Request.Path}");
