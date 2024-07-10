@@ -28,7 +28,7 @@ public class HeightTesting : MonoBehaviour
         int dir = 0; //north = 0, east = 1, south = 2, west = 3
         int x = 0, y = 0;
         for (int i = 0; i < SourceSegments.Length; i++){
-            TrackType piece = SourceSegments[i].type;
+            TrackPieceType piece = SourceSegments[i].type;
             calcSegments[i] = new CalculationSegment(){
                 type = piece,
                 elevation = SourceSegments[i].elevation,
@@ -36,14 +36,14 @@ public class HeightTesting : MonoBehaviour
                 X = x,
                 Y = y,
                 up = SourceSegments[i].up,
-                down = SourceSegments[i].down
+                down = SourceSegments[i].down,
+                flipped = SourceSegments[i].flipped
             };
             //Debug.Log($"Segment {i}: {piece}({x}, {y})");
             int startDir = dir;
-            if(piece == TrackType.CurveLeft){ dir = leftTurn[dir];  } // Update direction for left curve
-            else if(piece == TrackType.CurveRight){ dir = rightTurn[dir];  } // Update direction for right curve
+            if(piece == TrackPieceType.Turn){ dir = SourceSegments[i].flipped ? leftTurn[dir] : rightTurn[dir]; }
             // For straight pieces or any piece that is not Unknown or PreFinishLine, update coordinates directly
-            if(piece != TrackType.Unknown){
+            if(piece != TrackPieceType.Unknown){
                 x += movement[dir].dx;
                 y += movement[dir].dy;
             }
@@ -71,7 +71,7 @@ public class HeightTesting : MonoBehaviour
                     int indexOfThis = segmentsAtXY[0].index == i ? 0 : 1;
                     int indexOfOther = indexOfThis == 0 ? 1 : 0;
                     //check if we went 0ver 240 up and over 70 down
-                    if(segmentsAtXY[indexOfThis].up > 200 && segmentsAtXY[indexOfThis].down > 70 && (segmentsAtXY[indexOfThis].type != TrackType.CurveLeft || segmentsAtXY[indexOfThis].type != TrackType.CurveRight)){
+                    if(segmentsAtXY[indexOfThis].up > 200 && segmentsAtXY[indexOfThis].down > 70 && (segmentsAtXY[indexOfThis].type != TrackPieceType.Turn)){
                         calculatedSegments[i].elevation = -1;
                     }
                     else if(segmentsAtXY[indexOfThis].up > 200 && segmentsAtXY[indexOfThis].down == 0){
@@ -98,7 +98,7 @@ public class HeightTesting : MonoBehaviour
                         }
                     }
                     if(calculatedSegments[i].elevation < 0){
-                        if(calculatedSegments[i].type == TrackType.CurveLeft || calculatedSegments[i].type == TrackType.CurveRight){
+                        if(calculatedSegments[i].type == TrackPieceType.Turn){
                             calculatedSegments[i].elevation = 0;
                         }
                         else if(calculatedSegments[i].elevation != -1){
@@ -127,12 +127,13 @@ public class HeightTesting : MonoBehaviour
         return segmentsAtXY.ToArray();
     }
     class CalculationSegment{
-        public TrackType type;
+        public TrackPieceType type;
         public int elevation, up, down;
+        public bool flipped;
         public int index, X, Y;
         public bool heightSet = false;
         public bool atXY(CalculationSegment other){
-            if(type == TrackType.Unknown || other.type == TrackType.Unknown){ return false; }
+            if(type == TrackPieceType.Unknown || other.type == TrackPieceType.Unknown){ return false; }
             return X == other.X && Y == other.Y;
         }
     }

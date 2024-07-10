@@ -167,6 +167,10 @@ namespace OverdriveServer
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Disconnected");
                             });
+                            endpoints.MapGet("/track", async context =>{
+                                context.Response.ContentType = "application/json";
+                                await context.Response.WriteAsync(Program.trackManager.TrackDataAsJson());
+                            });
                         });
                         app.Run(async context =>{
                             if (context.Request.Path == "/")

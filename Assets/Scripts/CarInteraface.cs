@@ -92,12 +92,12 @@ public class CarInteraface : MonoBehaviour
                             ApiCall($"tts/Car {c[2]} has connected");
                         }
                     } else if(c[0] == "-3"){
-                        TrackFromData(c, 2);
+                        //TrackFromData(c, 2);
                     }
                     else if(c[0] == "-4"){
                         bool success = c[2] == "True";
                         if(!success){ Debug.Log($"Failed to scan track"); continue; }
-                        TrackFromData(c, 3, true);
+                        //TrackFromData(c, 3, true);
                     } 
                     else if(c[0] == "-5"){
                         //Debug.Log("Fin was crossed");
@@ -149,30 +149,6 @@ public class CarInteraface : MonoBehaviour
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){ return; }
         }
-    }
-    void TrackFromData(string[] data, int offset, bool getHeight = false){
-        List<Segment> segments = new List<Segment>();
-        while(offset < data.Length){
-            TrackType type = TrackType.Unknown; bool flipped = false;
-            int up = 0, down = 0;
-            if(data[offset] == "0"){ type = TrackType.Straight; }
-            if(data[offset] == "1"){ type = TrackType.CurveLeft; }
-            if(data[offset] == "2"){ type = TrackType.CurveRight; }
-            if(data[offset] == "3"){ type = TrackType.Poweup; }
-            if(data[offset] == "4"){ type = TrackType.Finish; }
-            if(data[offset] == "6"){ type = TrackType.Poweup; flipped = true; }
-            offset++;
-            segments.Add(new Segment(type, 0, false, flipped));
-            if(getHeight){
-                up = int.Parse(data[offset]);
-                offset++;
-                down = int.Parse(data[offset]);
-                offset++;
-                segments[segments.Count - 1].SetHeight(up, down);
-            }
-        }
-        FindObjectOfType<TrackGenerator>().Generate(segments.ToArray());
-        
     }
     public void Call(string call){
         ApiCall(call);

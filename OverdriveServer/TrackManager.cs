@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using static OverdriveServer.Tracks;
 
 namespace OverdriveServer
@@ -35,35 +36,31 @@ namespace OverdriveServer
         void OnCarTransition(string id, int trackPiece, int oldTrackPiece, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
             
         }
+
+        public string TrackDataAsJson(){
+            return JsonConvert.SerializeObject(track);
+        }   
     }
     public class Tracks{
+        [System.Serializable]
         public class TrackPiece{
-            public TrackPieceType type;
+            public readonly TrackPieceType type;
+            public readonly int internalID;
+            public readonly bool flipped;
             public int up, down;
-            public TrackPiece(TrackPieceType type, int up, int down){
+            public TrackPiece(TrackPieceType type, int id, bool flipped){
                 this.type = type;
-                this.up = up;
-                this.down = down;
-            }
-            public TrackPiece(TrackPieceType type){
-                this.type = type;
-                this.up = 0;
-                this.down = 0;
+                this.flipped = flipped;
+                internalID = id;
+                up = 0; down = 0;
             }
             public void SetUpDown(int up, int down){
-                this.up = up;
-                this.down = down;
+                this.up = up; this.down = down;
             }
         }
+        [System.Serializable]
         public enum TrackPieceType{
-            Straight,
-            CurveLeft,
-            CurveRight,
-            PowerupL,
-            StartFinish,
-            PreFinishLine,
-            PowerupR,
-            Unknown
+            Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, Jump
         }
         public class TrackCarLocation{
             public int trackIndex;
