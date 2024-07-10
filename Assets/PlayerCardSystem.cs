@@ -8,7 +8,9 @@ public class PlayerCardSystem : MonoBehaviour
 {
     [SerializeField] TMP_Text characterName, carName, positionText;
     [SerializeField] Image energyBar;
+    [SerializeField] GameObject[] attachments;
     float energyPercent = 0.75f;
+    int attachmentIndex = -1;
     public void SetCharacterName(string name){
         characterName.text = name;
     }
@@ -31,5 +33,32 @@ public class PlayerCardSystem : MonoBehaviour
         //set the energyPercent using the energy value and maxEnergy
         energyPercent = (float)energy / (float)maxEnergy;
         energyBar.fillAmount = energyPercent;
+    }
+    public void SetAttachment(int index){
+        //set the attachment active state using the index
+        if(index == -1){
+            if(gameObject.transform.childCount > 2){
+                Destroy(gameObject.transform.GetChild(2).gameObject);
+            }
+        }
+        else{
+            if(attachmentIndex != -1){
+                Destroy(gameObject.transform.GetChild(2).gameObject);
+            }
+            Instantiate(attachments[index], gameObject.transform);
+            attachmentIndex = index;
+        }
+    }
+    public void SetTimeTrialTime(float time){
+        //set the time trial time using the time value
+        int mins = 0;
+        while(time >= 60){
+            time -= 60;
+            mins++;
+        }
+        if(attachmentIndex != 0){
+            SetAttachment(0);
+        }
+        gameObject.transform.GetChild(2).GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
     }
 }

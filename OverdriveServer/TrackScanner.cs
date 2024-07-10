@@ -140,67 +140,67 @@ namespace OverdriveServer
             else{ return TrackPieceType.Unknown; }
         }
 
-        TrackPiece[] HeightSolver(){
-            TrackPiece[] solvedPieces = new TrackPiece[intialScan.Length];
-            List<solvePoint> points = new List<solvePoint>();
-            // Define direction changes for left and right curves
-            int[] leftTurn = {3, 0, 1, 2}; // Maps current direction to new direction for left turn
-            int[] rightTurn = {1, 2, 3, 0}; // Maps current direction to new direction for right turn
-            // Define movement deltas for each direction: 0 = up, 1 = right, 2 = down, 3 = left
-            (int dx, int dy)[] movement = { (0, 1), (1, 0), (0, -1), (-1, 0) };
-            int dir = 0; //north = 0, east = 1, south = 2, west = 3
-            int x = 0, y = 0;
-            for (int i = 0; i < intialScan.Length; i++){
-                TrackPiece piece = intialScan[i];
-                int startDir = dir;
-                if(piece.type == TrackPieceType.CurveLeft){ dir = leftTurn[dir];  } // Update direction for left curve
-                else if(piece.type == TrackPieceType.CurveRight){ dir = rightTurn[dir];  } // Update direction for right curve
-                // For straight pieces or any piece that is not Unknown or PreFinishLine, update coordinates directly
-                if(piece.type != TrackPieceType.Unknown && piece.type != TrackPieceType.PreFinishLine){
-                    x += movement[dir].dx;
-                    y += movement[dir].dy;
-                }
-                points.Add(new solvePoint(piece, x, y, points.Count));
-                if(piece.type == TrackPieceType.CurveLeft || piece.type == TrackPieceType.CurveRight){
-                    points[points.Count - 1].SetCurvePoints(startDir, dir);
-                }
-            }
-            Console.WriteLine($"Solving for heights, source: {intialScan.Length} points, {points.Count} solve points");
-            // Solve for heights
-            for(int i = 1; i < points.Count - 2; i++){
-                //go through all points and check if there are any with the same position
-                int pointsAtPos = 0;
-                List<solvePoint> pointsAtPosition = new List<solvePoint>();
-                for(int j = 0; j < points.Count; j++){
-                    if(j != i && points[j].x == points[i].x && points[j].y == points[i].y){
-                        pointsAtPos++; pointsAtPosition.Add(points[j]);
-                    }
-                }
-                if(pointsAtPos > 0){
-                    //if there are point at this positon with a lower index
-                    int lowerIndex = pointsAtPosition.Where(point => point.solvingIndex < points[i].solvingIndex)
-                        .Select(point => (int?)point.solvingIndex).Min() ?? -1;
-                    if(lowerIndex != -1){
-                        //if this is a turn and the other point is a turn
-                        if(points[i].piece.type == TrackPieceType.CurveLeft || points[i].piece.type == TrackPieceType.CurveRight){
-                            if(points[lowerIndex].piece.type == TrackPieceType.CurveLeft || points[lowerIndex].piece.type == TrackPieceType.CurveRight){
-                                //if there are no matches in the tStart and tEnd values
-                                Console.WriteLine($"checking turns: ({i}) {points[i].tStart}, {points[i].tEnd} ({lowerIndex}) {points[lowerIndex].tStart}, {points[lowerIndex].tEnd}");
-                                int[] dirs = {points[i].tStart, points[i].tEnd, points[lowerIndex].tStart, points[lowerIndex].tEnd};
-                                //if dir has no matching elements, then the two points are not connected
-                                if(dirs.Distinct().Count() == dirs.Length){ continue; }
-                            }
-                        }
-                        // int height = points[lowerIndex].piece.height + 2;
-                        // points[i].piece.height = height;
-                        // points[i + 1].piece.height = height;
-                        Console.WriteLine($"Height at {points[i].x}, {points[i].y} for {points[i].piece.type}({i}) is UNSET");
-                    }
-                }
-            }
-            for(int i = 0; i < points.Count; i++){ solvedPieces[i] = points[i].piece; }
-            return solvedPieces;
-        }
+        // TrackPiece[] HeightSolver(){
+        //     TrackPiece[] solvedPieces = new TrackPiece[intialScan.Length];
+        //     List<solvePoint> points = new List<solvePoint>();
+        //     // Define direction changes for left and right curves
+        //     int[] leftTurn = {3, 0, 1, 2}; // Maps current direction to new direction for left turn
+        //     int[] rightTurn = {1, 2, 3, 0}; // Maps current direction to new direction for right turn
+        //     // Define movement deltas for each direction: 0 = up, 1 = right, 2 = down, 3 = left
+        //     (int dx, int dy)[] movement = { (0, 1), (1, 0), (0, -1), (-1, 0) };
+        //     int dir = 0; //north = 0, east = 1, south = 2, west = 3
+        //     int x = 0, y = 0;
+        //     for (int i = 0; i < intialScan.Length; i++){
+        //         TrackPiece piece = intialScan[i];
+        //         int startDir = dir;
+        //         if(piece.type == TrackPieceType.CurveLeft){ dir = leftTurn[dir];  } // Update direction for left curve
+        //         else if(piece.type == TrackPieceType.CurveRight){ dir = rightTurn[dir];  } // Update direction for right curve
+        //         // For straight pieces or any piece that is not Unknown or PreFinishLine, update coordinates directly
+        //         if(piece.type != TrackPieceType.Unknown && piece.type != TrackPieceType.PreFinishLine){
+        //             x += movement[dir].dx;
+        //             y += movement[dir].dy;
+        //         }
+        //         points.Add(new solvePoint(piece, x, y, points.Count));
+        //         if(piece.type == TrackPieceType.CurveLeft || piece.type == TrackPieceType.CurveRight){
+        //             points[points.Count - 1].SetCurvePoints(startDir, dir);
+        //         }
+        //     }
+        //     Console.WriteLine($"Solving for heights, source: {intialScan.Length} points, {points.Count} solve points");
+        //     // Solve for heights
+        //     for(int i = 1; i < points.Count - 2; i++){
+        //         //go through all points and check if there are any with the same position
+        //         int pointsAtPos = 0;
+        //         List<solvePoint> pointsAtPosition = new List<solvePoint>();
+        //         for(int j = 0; j < points.Count; j++){
+        //             if(j != i && points[j].x == points[i].x && points[j].y == points[i].y){
+        //                 pointsAtPos++; pointsAtPosition.Add(points[j]);
+        //             }
+        //         }
+        //         if(pointsAtPos > 0){
+        //             //if there are point at this positon with a lower index
+        //             int lowerIndex = pointsAtPosition.Where(point => point.solvingIndex < points[i].solvingIndex)
+        //                 .Select(point => (int?)point.solvingIndex).Min() ?? -1;
+        //             if(lowerIndex != -1){
+        //                 //if this is a turn and the other point is a turn
+        //                 if(points[i].piece.type == TrackPieceType.CurveLeft || points[i].piece.type == TrackPieceType.CurveRight){
+        //                     if(points[lowerIndex].piece.type == TrackPieceType.CurveLeft || points[lowerIndex].piece.type == TrackPieceType.CurveRight){
+        //                         //if there are no matches in the tStart and tEnd values
+        //                         Console.WriteLine($"checking turns: ({i}) {points[i].tStart}, {points[i].tEnd} ({lowerIndex}) {points[lowerIndex].tStart}, {points[lowerIndex].tEnd}");
+        //                         int[] dirs = {points[i].tStart, points[i].tEnd, points[lowerIndex].tStart, points[lowerIndex].tEnd};
+        //                         //if dir has no matching elements, then the two points are not connected
+        //                         if(dirs.Distinct().Count() == dirs.Length){ continue; }
+        //                     }
+        //                 }
+        //                 // int height = points[lowerIndex].piece.height + 2;
+        //                 // points[i].piece.height = height;
+        //                 // points[i + 1].piece.height = height;
+        //                 Console.WriteLine($"Height at {points[i].x}, {points[i].y} for {points[i].piece.type}({i}) is UNSET");
+        //             }
+        //         }
+        //     }
+        //     for(int i = 0; i < points.Count; i++){ solvedPieces[i] = points[i].piece; }
+        //     return solvedPieces;
+        // }
         class solvePoint{
             public TrackPiece piece;
             public int x, y, tStart, tEnd;

@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject[] UILayers;
     [SerializeField] TMP_Text devCarCount, menuCarCount, finishCounterText;
     int finishCounter = 1;
+    int UIlayer = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +29,10 @@ public class UIManager : MonoBehaviour
     public void SetUILayer(int layer){
         for (int i = 0; i < UILayers.Length; i++)
         { UILayers[i].SetActive(i == layer); }
+        UIlayer = layer;
+    }
+    public int GetUILayer(){
+        return UIlayer;
     }
     public void SetCarsCount(int count){
         devCarCount.text = count.ToString();

@@ -237,6 +237,17 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""89daa449-155e-45c1-b206-ff42978a4425"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""ef73f246-5916-4284-aea9-c12749d1610d"",
                     ""path"": ""<Gamepad>/leftStickPress"",
                     ""interactions"": """",

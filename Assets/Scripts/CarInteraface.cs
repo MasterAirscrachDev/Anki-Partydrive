@@ -11,10 +11,13 @@ public class CarInteraface : MonoBehaviour
     public CarData[] cars;
     HttpClient client = new HttpClient();
     public CarBalanceTesting balanceTesting;
+    public TimeTrialMode timeTrialMode;
+    CMS cms;
     // Start is called before the first frame update
     void Start()
     {
         client.BaseAddress = new System.Uri("http://localhost:7117/");
+        cms = FindObjectOfType<CMS>();
         ReconnectToServer();
     }
     public void ScanTrack(){
@@ -59,6 +62,9 @@ public class CarInteraface : MonoBehaviour
 
         }
     }
+    public void TTSCall(string text){
+        ApiCall($"tts/{text}", false, true);
+    }
     async Task TickServer(){
         while(true){
             var response = await client.GetAsync("logs");
@@ -94,10 +100,12 @@ public class CarInteraface : MonoBehaviour
                         TrackFromData(c, 3, true);
                     } 
                     else if(c[0] == "-5"){
-                        Debug.Log("Fin was crossed");
-                        string carID = c[1];
+                        //Debug.Log("Fin was crossed");
                         if(balanceTesting != null){
                             balanceTesting.CrossedFinish();
+                        }
+                        if(timeTrialMode != null){
+                            timeTrialMode.CarCrossedFinish(c);
                         }
                     }
                     else if(c[0] == "27"){
@@ -201,9 +209,8 @@ public class CarInteraface : MonoBehaviour
         }
         ApiCall("batteries");
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
-        CarController[] controllers = FindObjectsOfType<CarController>();
-        for (int i = 0; i < controllers.Length; i++)
-        { controllers[i].GetCarIndex(); }
+        for (int i = 0; i < cms.controllers.Count; i++)
+        { cms.controllers[i].RefreshCarIndex(); }
     }
     public int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)
