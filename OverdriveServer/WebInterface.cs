@@ -146,6 +146,19 @@ namespace OverdriveServer
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Scanning track");
                             });
+                            endpoints.MapGet("/canceltrackscan/{car}", async context =>{
+                                var car = context.Request.RouteValues["car"];
+                                Car c = Program.carSystem.GetCar(car.ToString());
+                                if(c == null){
+                                    context.Response.StatusCode = 404;
+                                    await context.Response.WriteAsync("Car not found");
+                                    return;
+                                }
+                                await Program.CancelScan(c);
+                                context.Response.StatusCode = 200;
+                                //Console.WriteLine("Cancelled scan");
+                                await context.Response.WriteAsync("Cancelled scan");
+                            });
                             endpoints.MapGet("/disconnectcar/{instruct}", async context =>{
                                 var instruct = context.Request.RouteValues["instruct"];
                                 string carID = instruct.ToString();

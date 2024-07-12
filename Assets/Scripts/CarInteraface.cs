@@ -13,6 +13,7 @@ public class CarInteraface : MonoBehaviour
     public CarBalanceTesting balanceTesting;
     public TimeTrialMode timeTrialMode;
     CMS cms;
+    string scanningCar;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +29,16 @@ public class CarInteraface : MonoBehaviour
         int index = 0;
         while(cars[index].charging){ index++; }
         int fins = FindObjectOfType<UIManager>().GetFinishCounter();
+        scanningCar = cars[index].id;
         ApiCall($"scantrack/{cars[index].id}:{fins}");
+    }
+    public void CancelScan(){
+        CancelTrackMap();
+    }
+    async Task CancelTrackMap(){
+        if(scanningCar == null){ return; }
+        ApiCall($"canceltrackscan/{scanningCar}");
+        scanningCar = null;
     }
     public void ControlCar(CarData car, int speed, int lane){
         if(car.charging){ return; }
@@ -92,12 +102,12 @@ public class CarInteraface : MonoBehaviour
                             ApiCall($"tts/Car {c[2]} has connected");
                         }
                     } else if(c[0] == "-3"){
-                        //TrackFromData(c, 2);
+                        TrackFromData(c);
                     }
                     else if(c[0] == "-4"){
                         bool success = c[2] == "True";
                         if(!success){ Debug.Log($"Failed to scan track"); continue; }
-                        //TrackFromData(c, 3, true);
+                        
                     } 
                     else if(c[0] == "-5"){
                         //Debug.Log("Fin was crossed");
@@ -149,6 +159,16 @@ public class CarInteraface : MonoBehaviour
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){ return; }
         }
+    }
+    void TrackFromData(string[] data){
+        List<TrackPiece> trackPieces = new List<TrackPiece>();
+        int index = 2;
+        while(index < data.Length){
+            TrackPiece tp = new TrackPiece((TrackPieceType)int.Parse(data[index]), data[index + 1] == "True");
+            trackPieces.Add(tp);
+            index += 2;
+        }
+        FindObjectOfType<TrackGenerator>().Generate(trackPieces.ToArray());
     }
     public void Call(string call){
         ApiCall(call);

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OverdriveServer": {
+      "commandName": "Project",
+      "hotReloadEnabled": false
+    }
+  }
+}

@@ -7,6 +7,8 @@ namespace OverdriveServer
         int finishesPassed = 0, totalFinishes = 0;
         bool tracking = false, checkingScan = false, successfulScan = false, finishedScan = false;
         int retries = 0, maxRetries = 3;
+        int crossedPieces = 0;
+        bool slowingForFinish = false;
         int scanSpeed = 530;
         Car scanningCar;
         public async Task<bool> CancelScan(Car cancelThis){
@@ -34,7 +36,7 @@ namespace OverdriveServer
             SetEventsSub(true);
             await car.SetCarSpeed(480, 500);
             //await car.SetCarTrackCenter(0);
-            await car.SetCarLane(24);
+            await car.SetCarLane(0);
             while (!finishedScan){
                 await Task.Delay(500);
             }
@@ -47,6 +49,7 @@ namespace OverdriveServer
                 finishesPassed = 1;
                 scanningCar.SetCarSpeed(scanSpeed, 500);
                 scanSpeed -= 10;
+                Program.trackManager.SetTrack(intialScan);
             }else{
                 scanSpeed -= 10;
                 confirmScan = trackPieces.ToArray();
@@ -61,8 +64,8 @@ namespace OverdriveServer
                         else if(intialScan[i].type != confirmScan[i].type){ Program.Log($"Mismatch at {i} {intialScan[i].type} != {confirmScan[i].type}"); }
                     }
                     retries++;
-                    if(retries <= maxRetries){ Program.Log("Retrying track scan"); }
-                    else{ Program.Log("Track scan failed"); return true; }
+                    if(retries <= maxRetries){ Program.Log("[0] Retrying track scan"); }
+                    else{ Program.Log("[0] Track scan failed"); return true; }
                 }
                 else{
                     bool matched = true;
@@ -72,8 +75,8 @@ namespace OverdriveServer
                             matched = false; break;
                         }
                     }
-                    if(matched){ Program.Log("Track scan successful"); successfulScan = true; return true; }
-                    Program.Log("Track scan comparison failed"); retries++; return !(retries <= maxRetries);
+                    if(matched){ Program.Log("[0] Track scan successful"); successfulScan = true; return true; }
+                    Program.Log("[0] Track scan comparison failed"); retries++; return !(retries <= maxRetries);
                 }
             }
             return false;
@@ -95,7 +98,34 @@ namespace OverdriveServer
         }
         void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
             tracking = true;
+            crossedPieces++;
             if(trackPieces.Count > 0){ trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);}
+            //if we are on the second last track piece, we can assume the last one is the finish line
+            if(intialScan != null){
+                //Console.WriteLine($"Crossed {crossedPieces}/{intialScan.Length}");
+                if(crossedPieces == intialScan.Length - 2){
+                    //does our confirmScan match the intialScan thus far?
+                    bool matched = true;
+                    for(int i = 0; i < trackPieces.Count; i++){
+                        if(intialScan[i].type != trackPieces[i].type || intialScan[i].flipped != trackPieces[i].flipped){
+                            matched = false; break;
+                        }
+                    }
+                    if(matched){
+                        Console.WriteLine("Matched, slowing down for finish");
+                        slowingForFinish = true;
+                        scanningCar.SetCarSpeed(100, 500);
+                    }
+                    else{
+                        Console.WriteLine("Did not match, dont slow down");
+                        
+                    }
+                }
+                else if(crossedPieces == intialScan.Length - 1 && slowingForFinish){
+                    scanningCar.SetCarSpeed(50, 500);
+                }
+            }
+
         }
         void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise){
             if(tracking){
@@ -107,6 +137,7 @@ namespace OverdriveServer
                     }else{
                         if(finishesPassed > totalFinishes){
                             bool stop = ScanLoopDone();
+                            crossedPieces = 0;
                             if(stop){
                                 scanningCar.SetCarSpeed(0, 500);
                                 SetEventsSub(false);
@@ -126,7 +157,7 @@ namespace OverdriveServer
         void SendCurrentTrack(){
             if(checkingScan){ return; }
             string content = $"-3:{scanningCar.id}";
-            foreach(TrackPiece piece in trackPieces){ content += $":{(int)piece.type}"; }
+            foreach(TrackPiece piece in trackPieces){ content += $":{(int)piece.type}:{piece.flipped}"; }
             Program.UtilLog(content);
         }
         public static TrackPieceType PeiceFromID(int id){

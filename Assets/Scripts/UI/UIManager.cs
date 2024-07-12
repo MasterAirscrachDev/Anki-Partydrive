@@ -5,7 +5,7 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] GameObject MainCamera, TrackCamera, CarsLoadingIcon;
+    [SerializeField] GameObject MainCamera, TrackCamera, CarsLoadingIcon, TrackScan, TrackCancelScan;
     [SerializeField] GameObject[] UILayers;
     [SerializeField] TMP_Text devCarCount, menuCarCount, finishCounterText;
     int finishCounter = 1;
@@ -46,6 +46,10 @@ public class UIManager : MonoBehaviour
     }
     public int GetFinishCounter(){
         return finishCounter;
+    }
+    public void SetIsScanningTrack(bool scan){
+        TrackScan.SetActive(!scan);
+        TrackCancelScan.SetActive(scan);
     }
 
 }
