@@ -30,7 +30,7 @@ public class CarInteraface : MonoBehaviour
         while(cars[index].charging){ index++; }
         int fins = FindObjectOfType<UIManager>().GetFinishCounter();
         scanningCar = cars[index].id;
-        ApiCall($"scantrack/{cars[index].id}:{fins}");
+        ApiCall($"scantrack/{cars[index].id}");
     }
     public void CancelScan(){
         CancelTrackMap();
@@ -102,7 +102,7 @@ public class CarInteraface : MonoBehaviour
                             ApiCall($"tts/Car {c[2]} has connected");
                         }
                     } else if(c[0] == "-3"){
-                        TrackFromData(c);
+                        //TrackFromData(c);
                     }
                     else if(c[0] == "-4"){
                         bool success = c[2] == "True";
@@ -159,16 +159,6 @@ public class CarInteraface : MonoBehaviour
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){ return; }
         }
-    }
-    void TrackFromData(string[] data){
-        List<TrackPiece> trackPieces = new List<TrackPiece>();
-        int index = 2;
-        while(index < data.Length){
-            TrackPiece tp = new TrackPiece((TrackPieceType)int.Parse(data[index]), data[index + 1] == "True");
-            trackPieces.Add(tp);
-            index += 2;
-        }
-        FindObjectOfType<TrackGenerator>().Generate(trackPieces.ToArray());
     }
     public void Call(string call){
         ApiCall(call);

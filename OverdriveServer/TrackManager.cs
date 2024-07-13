@@ -71,15 +71,30 @@ namespace OverdriveServer
             public readonly TrackPieceType type;
             public readonly int internalID;
             public readonly bool flipped;
-            public int up, down;
-            public TrackPiece(TrackPieceType type, int id, bool flipped){
+            public readonly int X, Y;
+            public int up, down, elevation;
+            public bool validated = false;
+            public TrackPiece(TrackPieceType type, int id, bool flipped, int X, int Y){
                 this.type = type;
                 this.flipped = flipped;
                 internalID = id;
                 up = 0; down = 0;
+                this.X = X; this.Y = Y;
             }
             public void SetUpDown(int up, int down){
                 this.up = up; this.down = down;
+            }
+            public bool IsAt(int x, int y){
+                return X == x && Y == y;
+            }
+            public override bool Equals(object obj) {
+                // Check for null and compare run-time types.
+                if (obj == null || !GetType().Equals(obj.GetType())) {
+                    return false;
+                } else {
+                    TrackPiece p = (TrackPiece)obj;
+                    return (type == p.type) && (internalID == p.internalID) && (flipped == p.flipped) && (X == p.X) && (Y == p.Y);
+                }
             }
         }
         [System.Serializable]

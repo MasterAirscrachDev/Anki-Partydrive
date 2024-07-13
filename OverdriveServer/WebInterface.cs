@@ -132,17 +132,14 @@ namespace OverdriveServer
                             });
                             endpoints.MapGet("/scantrack/{instruct}", async context =>{
                                 var instruct = context.Request.RouteValues["instruct"];
-                                string data = instruct.ToString();
-                                string[] parts = data.Split(':');
-                                string carID = parts[0];
-                                int finishlines = int.Parse(parts[1]);
+                                string carID = instruct.ToString();
                                 Car car = Program.carSystem.GetCar(carID);
                                 if(car == null){
                                     context.Response.StatusCode = 404;
                                     await context.Response.WriteAsync("Car not found");
                                     return;
                                 }
-                                Program.ScanTrack(car, finishlines);
+                                Program.ScanTrack(car);
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Scanning track");
                             });

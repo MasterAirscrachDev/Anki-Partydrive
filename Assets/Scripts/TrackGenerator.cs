@@ -107,12 +107,16 @@ public class TrackGenerator : MonoBehaviour
 }
 [System.Serializable]
 public class TrackPiece{
-    public TrackPieceType type;
+    public readonly TrackPieceType type;
+    public readonly int internalID;
     public readonly bool flipped;
-    public int up, down;
-    public TrackPiece(TrackPieceType type, bool flipped){
+    public readonly int X, Y;
+    public int up, down, elevation;
+    public bool validated = false;
+    public TrackPiece(TrackPieceType type, int id, bool flipped){
         this.type = type;
         this.flipped = flipped;
+        internalID = id;
         up = 0; down = 0;
     }
     public void SetUpDown(int up, int down){

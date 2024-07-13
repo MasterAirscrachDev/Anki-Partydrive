@@ -52,10 +52,10 @@ namespace OverdriveServer
             synth.SetOutputToDefaultAudioDevice();
             synth.Speak(message);
         }
-        public static async Task ScanTrack(Car car, int finishlines){
+        public static async Task ScanTrack(Car car){
             TrackScanner scanner = new TrackScanner();
             scansInProgress.Add(scanner);
-            await scanner.ScanTrack(car, finishlines);
+            await scanner.ScanTrack(car);
         }
         public static async Task CancelScan(Car car){
             foreach(TrackScanner scanner in scansInProgress){
