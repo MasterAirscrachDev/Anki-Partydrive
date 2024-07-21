@@ -93,8 +93,13 @@ namespace OverdriveServer
                     return false;
                 } else {
                     TrackPiece p = (TrackPiece)obj;
-                    return (type == p.type) && (internalID == p.internalID) && (flipped == p.flipped) && (X == p.X) && (Y == p.Y);
+                    //return (type == p.type) && (internalID == p.internalID) && (flipped == p.flipped) && (X == p.X) && (Y == p.Y);
+                    return (type == p.type) && (internalID == p.internalID) && (flipped == p.flipped);
                 }
+            }
+            public override string ToString()
+            {
+                return $"({type}|{internalID}|[{X},{Y}])";
             }
         }
         [System.Serializable]

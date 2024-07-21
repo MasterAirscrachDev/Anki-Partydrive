@@ -40,6 +40,11 @@ namespace OverdriveServer
                 await Task.Delay(500);
             }
         }
+        void ResetScan(){
+            trackPieces.Clear();
+            X = 0; Y = 0; direction = 0;
+            currentPieceIndex = 0;
+        }
         async Task SendFinishedTrack(){
             await scanningCar.SetCarSpeed(0, 500);
             string content = $"-4:{scanningCar.id}:{successfulScan}";
@@ -58,25 +63,29 @@ namespace OverdriveServer
                 tracking = false;
                 TrackPieceType type = PeiceFromID(trackID);
                 TrackPiece piece = new TrackPiece(type, trackID, clockwise, X, Y);
+                if(type == TrackPieceType.PreFinishLine && trackPieces.Count == 0){ return; } //we cant start with a prefinish line for some reason
+                int oldX = X, oldY = Y;
                 if(checkingScan){
                     //if this piece is the same as the piece at the same index in the trackPieces list, we are on the right track
                     if(!trackPieces[currentPieceIndex].Equals(piece)){
-                        Console.WriteLine($"Mismatch at {currentPieceIndex}, expected: {trackPieces[currentPieceIndex].type} ({trackPieces[currentPieceIndex].internalID}), got {type} ({trackID})");
+                        Console.WriteLine($"Mismatch at {currentPieceIndex}, expected: {trackPieces[currentPieceIndex]}, got {piece}");
                         retries++;
-                        if(retries >= maxRetries){
+                        if(retries >= maxRetries){ //if we have retried too many times, we have failed the scan
                             finishedScan = true;
                             SendFinishedTrack();
                         }
                         else{
-                            trackPieces.Clear();
-                            X = 0; Y = 0; direction = 0;
-                            currentPieceIndex = -1;
                             checkingScan = false;
+                            ResetScan(); return;
                         }
                     }else{
                         if(currentPieceIndex == trackPieces.Count - 1){
                             successfulScan = true;
                             finishedScan = true;
+                            Console.WriteLine("Scan successful");
+                            for(int i = 0; i < trackPieces.Count; i++){
+                                Console.WriteLine($"{i}: ({trackPieces[i].type}|{trackPieces[i].internalID}|[{trackPieces[i].X},{trackPieces[i].Y}])");
+                            }
                             SendFinishedTrack();
                         }
                     }
@@ -87,22 +96,29 @@ namespace OverdriveServer
                         if(direction == 4){ direction = 0; }
                         else if(direction == -1){ direction = 3; }
                     }
-                    if(direction == 0){ Y++; }
-                    else if(direction == 1){ X++; }
-                    else if(direction == 2){ Y--; }
-                    else if(direction == 3){ X--; }
+                    
+                    if(type != TrackPieceType.Unknown && type != TrackPieceType.PreFinishLine){
+                        if(direction == 0){ Y++; }
+                        else if(direction == 1){ X++; }
+                        else if(direction == 2){ Y--; }
+                        else if(direction == 3){ X--; }
+                    }
 
                     if(trackPieces.Count > 4){
                         //if our current position is the same as the start position, set checkingScan to true
                         if(trackPieces[0].IsAt(X, Y)){
-                            Console.WriteLine("reached assumed scan start");
+                            Console.WriteLine($"reached assumed scan start at {piece}");
+                            //print the first 3 pieces
+                            for(int i = 0; i < 3; i++){
+                                Console.WriteLine($"{i}: {trackPieces[i]}");
+                            }
                             checkingScan = true;
                             currentPieceIndex = -1;
                         }
                     }
                 }
                 SendCurrentTrack();
-                Console.WriteLine($"index: {currentPieceIndex}/{trackPieces.Count} is ({type}), checking: {checkingScan}, retries: {retries}");
+                Console.WriteLine($"index: {currentPieceIndex}/{trackPieces.Count} is ({type}|{trackID}|[{oldX},{oldY}]), checking: {checkingScan}, retries: {retries}");
                 currentPieceIndex++;
             }
         }
