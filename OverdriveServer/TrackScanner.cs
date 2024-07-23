@@ -63,7 +63,7 @@ namespace OverdriveServer
                 tracking = false;
                 TrackPieceType type = PeiceFromID(trackID);
                 TrackPiece piece = new TrackPiece(type, trackID, clockwise, X, Y);
-                if(type == TrackPieceType.PreFinishLine && trackPieces.Count == 0){ return; } //we cant start with a prefinish line for some reason
+                //if(type == TrackPieceType.PreFinishLine && trackPieces.Count == 0){ return; } //we cant start with a prefinish line for some reason
                 int oldX = X, oldY = Y;
                 if(checkingScan){
                     //if this piece is the same as the piece at the same index in the trackPieces list, we are on the right track
