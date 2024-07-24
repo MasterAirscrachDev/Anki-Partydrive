@@ -26,7 +26,7 @@ namespace OverdriveServer
             Save s = await fs.LoadFile($"{carDevice.Id}.dat");
             string name = "Unknown Car";
             int speedBalance = 0;
-            bool hadConfig = false; 
+            bool hadConfig = false;
             if(s != null){
                 hadConfig = true;
                 name = s.GetString("name");

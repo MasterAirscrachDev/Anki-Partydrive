@@ -52,11 +52,11 @@ public class TrackCamera : MonoBehaviour
         }
         //if its taller than it is wide, rotate the camera 90 degrees
         if(heighestX - lowestX < heighestZ - lowestZ){
-            camSize = Mathf.Max(2, (heighestZ - lowestZ) / 2.4f);
+            camSize = Mathf.Max(2, (heighestZ - lowestZ) / 2.3f);
             cam.transform.rotation = Quaternion.Euler(90, 90, 0);
         }
         else{
-            camSize = Mathf.Max(2, maxDist / 2.4f);
+            camSize = Mathf.Max(2, maxDist / 2.3f);
             cam.transform.rotation = Quaternion.Euler(90, 0, 0);
         }
     }

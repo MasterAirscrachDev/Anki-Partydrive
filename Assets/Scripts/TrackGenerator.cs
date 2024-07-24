@@ -9,6 +9,7 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] TrackCamera trackCamera;
     [SerializeField] TrackPiece[] segments;
     [SerializeField] GameObject[] trackPrefabs;
+    [SerializeField] GameObject[] scannningPrefabs;
     //
     List<GameObject> trackPieces;
     // Update is called once per frame
@@ -38,7 +39,7 @@ public class TrackGenerator : MonoBehaviour
             //round position to 1 decimal place
             pos = new Vector3(Mathf.Round(pos.x * 10) / 10, Mathf.Round(pos.y * 10) / 10, Mathf.Round(pos.z * 10) / 10);
             if(segments[i].type == TrackPieceType.FinishLine){
-                track = Instantiate(trackPrefabs[0], pos, rot, transform);
+                track = Instantiate(segments[i].validated ? trackPrefabs[0] : scannningPrefabs[0], pos, rot, transform);
                 pos += forward;
             } if(segments[i].type == TrackPieceType.Straight){
                 //if the abs of height diff is 2, use the 4th prefab, if height diff is -1 use the 7th prefab otherwise use the 1st prefab
@@ -46,7 +47,7 @@ public class TrackGenerator : MonoBehaviour
                 int heightDiff = 0;
                 if(segments[i].up == 255 && segments[i].down == 255){ prefIndex = 7; }
                 else if(segments[i].up == 255 || segments[i].down == 255){ prefIndex = 4;heightDiff = segments[i].up == 255 ? 2 : -2;}
-                track = Instantiate(trackPrefabs[prefIndex], pos, rot, transform);
+                track = Instantiate(segments[i].validated ? trackPrefabs[prefIndex] : scannningPrefabs[1], pos, rot, transform);
                 pos += forward;
                 if(heightDiff == 2){
                     track.transform.Rotate(0, 180, 0);
@@ -57,7 +58,7 @@ public class TrackGenerator : MonoBehaviour
                     track.transform.Translate(0, -0.2f, 0);
                 }
             } if(segments[i].type == TrackPieceType.FnFSpecial){
-                track = Instantiate(trackPrefabs[2], pos, rot, transform);
+                track = Instantiate(segments[i].validated ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
                 if(segments[i].flipped){
                     track.transform.localScale = new Vector3(-1, 1, 1);
                 }
@@ -65,7 +66,7 @@ public class TrackGenerator : MonoBehaviour
             } if(segments[i].type == TrackPieceType.Turn){
                 //int useIndex = Mathf.Abs(heightDiff) == 0 ? 3 : (Mathf.Abs(heightDiff) == 2 ? 5 : 6);
                 int useIndex = 3;
-                track = Instantiate(trackPrefabs[useIndex], pos, rot, transform);
+                track = Instantiate(segments[i].validated ? trackPrefabs[useIndex] : scannningPrefabs[3], pos, rot, transform);
                 //if curve right set scale to x -1
                 track.transform.localScale = new Vector3(segments[i].flipped ? -1 : 1, 1, 1);
                 //pos += forward;

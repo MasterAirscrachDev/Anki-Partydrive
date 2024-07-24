@@ -102,13 +102,8 @@ public class CarInteraface : MonoBehaviour
                             ApiCall($"tts/Car {c[2]} has connected");
                         }
                     } else if(c[0] == "-3"){
-                        //TrackFromData(c);
+                        GetTrackAndGenerate();
                     }
-                    else if(c[0] == "-4"){
-                        bool success = c[2] == "True";
-                        if(!success){ Debug.Log($"Failed to scan track"); continue; }
-                        
-                    } 
                     else if(c[0] == "-5"){
                         //Debug.Log("Fin was crossed");
                         if(balanceTesting != null){
@@ -159,6 +154,12 @@ public class CarInteraface : MonoBehaviour
             //if we exited play mode then we should stop the loop
             if(!Application.isPlaying){ return; }
         }
+    }
+    async Task GetTrackAndGenerate(){
+        var track = await client.GetAsync("track");
+        string trackString = await track.Content.ReadAsStringAsync();
+        TrackPiece[] trackPieces = JsonConvert.DeserializeObject<TrackPiece[]>(trackString);
+        FindObjectOfType<TrackGenerator>().Generate(trackPieces);
     }
     public void Call(string call){
         ApiCall(call);
