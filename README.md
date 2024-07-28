@@ -22,8 +22,10 @@ This is not a remake of the Anki Overdrive app, I am not making a campaign or up
 - [x] Read the cars' state
 - [x] Control the cars speed
 - [x] Basic lane control
-- [ ] Acurate lane tracking
-- [ ] Track Scanning
+- [x] Track Scanning
+- [x] Basic Car Tracking
+- [ ] Full Car Tracking
+- [ ] Accurate lane tracking
 - [ ] Race Mode support
 ## Game
 - [x] Cool map

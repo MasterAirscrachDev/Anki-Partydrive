@@ -35,7 +35,7 @@ namespace OverdriveServer
             SetEventsSub(true);
             await car.SetCarSpeed(450, 500);
             //await car.SetCarTrackCenter(0);
-            await car.SetCarLane(0);
+            await car.SetCarLane(1);
             while (!finishedScan){
                 await Task.Delay(500);
             }
@@ -52,7 +52,7 @@ namespace OverdriveServer
             //TrackPiece[] solvedPieces = HeightSolver();
             TrackPiece[] solvedPieces = trackPieces.ToArray();
             Program.UtilLog(content);
-            Program.trackManager.SetTrack(successfulScan ? solvedPieces : null);
+            Program.trackManager.SetTrack(successfulScan ? solvedPieces : null, successfulScan);
             finishedScan = true;
         }
         void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
@@ -128,7 +128,7 @@ namespace OverdriveServer
             }
         }
         void SendCurrentTrack(){
-            Program.trackManager.SetTrack(trackPieces.ToArray());
+            Program.trackManager.SetTrack(trackPieces.ToArray(), false);
             Program.UtilLog($"-3:{scanningCar.id}");
         }
         public static TrackPieceType PeiceFromID(int id){

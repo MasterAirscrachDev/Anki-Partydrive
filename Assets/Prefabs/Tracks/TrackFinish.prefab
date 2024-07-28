@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 8774956531187059461}
   - component: {fileID: 5650104298213278880}
   - component: {fileID: 7605951561280909418}
+  - component: {fileID: 7747010427504793864}
   m_Layer: 0
   m_Name: TrackFinish
   m_TagString: Untagged
@@ -182,3 +183,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7747010427504793864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8254316182376960447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 0, y: 0, z: -0.5}
+  - {x: 0, y: 0, z: 0.5}

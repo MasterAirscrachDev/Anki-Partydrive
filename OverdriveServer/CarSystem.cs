@@ -106,6 +106,7 @@ namespace OverdriveServer
         //bluetooth connection
         public BluetoothDevice device;
         public int speedBalance = 0;
+        float requestedOffset = 0;
         public CarData data;
         public Car(string name, string id, BluetoothDevice device, int speedBalance = 0){
             this.name = name;
@@ -162,6 +163,12 @@ namespace OverdriveServer
             //lane as float
             BitConverter.GetBytes((float)lane).CopyTo(data, 6);
             await WriteToCarAsync(data, true);
+            requestedOffset = (int)lane;
+        }
+        public void LaneCheck(){
+            if((Math.Abs(requestedOffset - data.laneOffset) > 0.3) && data.speed > 0){
+                SetCarLane(requestedOffset);
+            }
         }
         public async Task RequestCarBattery(){
             byte[] data = new byte[]{0x01, SEND_BATTERY_REQUEST};

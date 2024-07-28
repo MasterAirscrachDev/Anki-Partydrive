@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3780649881333077840}
   - component: {fileID: 277053411142408437}
   - component: {fileID: 2611170610266827839}
+  - component: {fileID: 3497201729220901314}
   m_Layer: 0
   m_Name: TrackTurn
   m_TagString: Untagged
@@ -83,3 +84,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3497201729220901314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4556589103512767978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 0, y: 0.01, z: -0.5}
+  - {x: -0.029468365, y: 0.01, z: -0.33969778}
+  - {x: -0.05956122, y: 0.010000001, z: -0.2721602}
+  - {x: -0.12517978, y: 0.010000001, z: -0.16681111}
+  - {x: -0.16681112, y: 0.01, z: -0.12517977}
+  - {x: -0.27216023, y: 0.01, z: -0.05956121}
+  - {x: -0.33969778, y: 0.01, z: -0.029468361}
+  - {x: -0.50000006, y: 0.010000001, z: 0}

@@ -12,6 +12,13 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] GameObject[] scannningPrefabs;
     //
     List<GameObject> trackPieces;
+
+    public TrackSpline GetTrackPiece(int index){
+        return trackPieces[index].GetComponent<TrackSpline>();
+    }
+    public TrackPieceType GetTrackPieceType(int index){
+        return segments[index].type;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -92,8 +99,8 @@ public class TrackGenerator : MonoBehaviour
                 //     track.transform.localScale = new Vector3(-1, 1, segments[i].flipped ? -1 : 1);
                 // }
             }
+            trackPieces.Add(track);
             if(track != null){
-                trackPieces.Add(track);
                 track.name = $"{i} ({segments[i].type})";
             }
             Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);

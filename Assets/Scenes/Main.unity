@@ -2227,12 +2227,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 786587996}
         m_TargetAssemblyTypeName: CarInteraface, Assembly-CSharp
-        m_MethodName: TestCars
+        m_MethodName: DEBUGSetCarSpeed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 500
+          m_IntArgument: 350
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3416,6 +3416,7 @@ GameObject:
   m_Component:
   - component: {fileID: 786587997}
   - component: {fileID: 786587996}
+  - component: {fileID: 786587999}
   - component: {fileID: 786587995}
   - component: {fileID: 786587998}
   m_Layer: 0
@@ -3513,6 +3514,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   finishes: -1
+--- !u!114 &786587999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 786587994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb6f6b257345e4a41898839819c95826, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carPrefab: {fileID: 5127508956181644207, guid: d442d4e60b6e2b94990840eacc3d5e83, type: 3}
+  entities: []
 --- !u!1 &813721476
 GameObject:
   m_ObjectHideFlags: 0
@@ -10360,7 +10375,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2105776869
 RectTransform:
   m_ObjectHideFlags: 0

@@ -57,6 +57,7 @@ namespace OverdriveServer
                     Program.UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{!string.IsNullOrEmpty(crossedStartingLine)}");
                     Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, up:{uphillCounter}down:{downhillCounter}, offest: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance} {crossedStartingLine}");
                     CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, !string.IsNullOrEmpty(crossedStartingLine));
+                    car.LaneCheck();
                 }
                 catch{
                     Program.Log($"[41] Error parsing car track update: {Program.BytesToString(content)}");
@@ -69,6 +70,7 @@ namespace OverdriveServer
             } else if(id == RECV_CAR_OFF_TRACK){ //43 ONOH FALL
                 Program.UtilLog($"43:{car.id}");
                 Program.Log($"[43] {car.name} fell off track");
+                CarEventFellCall?.Invoke(car.id);
             } else if(id == RECV_TRACK_CENTER_UPDATE){ //45 Track center updated
                 Program.Log($"[45] Track center updated: {Program.BytesToString(content)}");
                 Program.UtilLog($"45:{car.id}:{Program.BytesToString(content)}");
@@ -101,5 +103,7 @@ namespace OverdriveServer
         public event CarEventLocation? CarEventLocationCall;
         public delegate void CarEventTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine);
         public event CarEventTransition? CarEventTransitionCall;
+        public delegate void CarEventFell(string carID);
+        public event CarEventFell? CarEventFellCall;
     }
 }

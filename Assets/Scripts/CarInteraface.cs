@@ -13,12 +13,14 @@ public class CarInteraface : MonoBehaviour
     public CarBalanceTesting balanceTesting;
     public TimeTrialMode timeTrialMode;
     CMS cms;
+    CarEntityTracker carEntityTracker;
     string scanningCar;
     // Start is called before the first frame update
     void Start()
     {
         client.BaseAddress = new System.Uri("http://localhost:7117/");
         cms = FindObjectOfType<CMS>();
+        carEntityTracker = GetComponent<CarEntityTracker>();
         ReconnectToServer();
     }
     public void ScanTrack(){
@@ -103,6 +105,22 @@ public class CarInteraface : MonoBehaviour
                         }
                     } else if(c[0] == "-3"){
                         GetTrackAndGenerate();
+                    } else if(c[0] == "-4"){
+                        Debug.Log("Setting position 1");
+                        try{
+                            string id = c[1];
+                            int speed = GetCar(id) == -1 ? 0 : cars[GetCar(id)].speed;
+                            int index = int.Parse(c[2]);
+                            if(index == -1){Debug.Log("car position currently unknown"); return; }
+                            float horizontalOffset = float.Parse(c[3]);
+                            bool trusted = c[4] != "True";
+                            //Debug.Log($"Setting position for {id} at {index} with {horizontalOffset} and {trusted}");
+                            carEntityTracker.SetPosition(id, index, speed, horizontalOffset, trusted);
+                        }
+                        catch(System.Exception e){
+                            Debug.Log(e);
+                        }
+                        
                     }
                     else if(c[0] == "-5"){
                         //Debug.Log("Fin was crossed");
@@ -204,6 +222,13 @@ public class CarInteraface : MonoBehaviour
         { if(cars[i].id == id){return i;} }
         return -1;
     }
+
+    public void DEBUGSetCarSpeed(int speed){
+        for (int i = 0; i < cars.Length; i++)
+        { ControlCar(cars[i], speed, 0); }
+    }
+
+
     [System.Serializable]
     public class CarData{
         public string name;
