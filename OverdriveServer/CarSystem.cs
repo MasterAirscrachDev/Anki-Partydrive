@@ -24,7 +24,7 @@ namespace OverdriveServer
         public async Task ConnectToCarAsync(BluetoothDevice carDevice){
             FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
             Save s = await fs.LoadFile($"{carDevice.Id}.dat");
-            string name = "Unknown Car";
+            string name = $"Unknown Car({carDevice.Id})";
             int speedBalance = 0;
             bool hadConfig = false;
             if(s != null){
@@ -40,7 +40,7 @@ namespace OverdriveServer
                 Car car = new Car(name, carDevice.Id, carDevice, speedBalance);
                 if(!hadConfig){
                     s = new Save();
-                    s.SetString("name", carDevice.Name);
+                    s.SetString("name", name);
                     s.SetInt("speedBalance", 0);
                     await fs.SaveFile($"{carDevice.Id}.dat", s);
                 }
