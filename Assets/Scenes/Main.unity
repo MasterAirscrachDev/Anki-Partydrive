@@ -2154,7 +2154,7 @@ GameObject:
   - component: {fileID: 480844158}
   - component: {fileID: 480844157}
   m_Layer: 5
-  m_Name: Button TestCars
+  m_Name: Button TestCar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2227,7 +2227,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 786587996}
         m_TargetAssemblyTypeName: CarInteraface, Assembly-CSharp
-        m_MethodName: DEBUGSetCarSpeed
+        m_MethodName: DEBUGSetCarsSpeed
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5433,7 +5433,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TestCars
+  m_text: Set Car Speed
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10008,6 +10008,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   calculate: 0
   resolution: 8
+  points: []
 --- !u!1 &2007630404
 GameObject:
   m_ObjectHideFlags: 0

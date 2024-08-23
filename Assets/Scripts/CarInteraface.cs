@@ -223,7 +223,7 @@ public class CarInteraface : MonoBehaviour
         return -1;
     }
 
-    public void DEBUGSetCarSpeed(int speed){
+    public void DEBUGSetCarsSpeed(int speed){
         for (int i = 0; i < cars.Length; i++)
         { ControlCar(cars[i], speed, 0); }
     }
