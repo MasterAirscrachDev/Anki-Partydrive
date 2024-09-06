@@ -1,13 +1,11 @@
 import asyncio
 from bleak import BleakClient, BleakScanner
-from bleak.backends.characteristic import BleakGATTCharacteristic
-from bleak_winrt.windows.devices.bluetooth.genericattributeprofile import GattCharacteristicProperties
-from bleak.backends.scanner import AdvertisementData
-from bleak.backends.device import BLEDevice
-from bleak_winrt.windows.storage.streams import DataWriter, DataReader
 import logging
 import winrt.windows.devices.bluetooth as winbt
 import winrt.windows.devices.bluetooth.genericattributeprofile as gatt
+from winrt.windows.storage.streams import DataWriter, DataReader
+from winrt.windows.foundation import EventRegistrationToken
+import uuid
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -22,6 +20,8 @@ class SuperCarEmulator:
     def __init__(self):
         self.real_supercar = None
         self.emulated_supercar = None
+        self.read_characteristic = None
+        self.write_characteristic = None
 
     async def find_real_supercar(self):
         devices = await BleakScanner.discover()
@@ -38,42 +38,50 @@ class SuperCarEmulator:
         logger.info(f"Connected to real SuperCar: {device.name} - {device.address}")
 
     async def setup_emulated_supercar(self):
-        # Create a BluetoothLEAdvertisementPublisher
-        publisher = winbt.advertisement.BluetoothLEAdvertisementPublisher()
-        publisher.advertisement.local_name = "EmulatedSuperCarDrive"
+        try:
+            # Create a BluetoothLEAdvertisementPublisher
+            publisher = winbt.advertisement.BluetoothLEAdvertisementPublisher()
+            publisher.advertisement.local_name = "EmulatedSuperCarDrive"
 
-        # Add the SuperCar service UUID to the advertisement
-        data_section = winbt.advertisement.BluetoothLEAdvertisementDataSection()
-        data_section.data_type = 0x07  # Complete list of 128-bit Service UUIDs
-        writer = DataWriter()
-        writer.write_guid(SUPERCAR_SERVICE_UUID)
-        data_section.data = writer.detach_buffer()
-        publisher.advertisement.data_sections.append(data_section)
+            # Simplify the advertisement data
+            manufacturer_data = winbt.advertisement.BluetoothLEManufacturerData()
+            manufacturer_data.data = DataWriter().detach_buffer()
+            manufacturer_data.company_id = 0xFFFF  # A generic company ID
+            publisher.advertisement.manufacturer_data.append(manufacturer_data)
 
-        # Start advertising
-        publisher.start()
-        logger.info("Started advertising as EmulatedSuperCarDrive")
+            logger.debug("Advertisement setup complete. Attempting to start advertising...")
 
-        # Create a GattServiceProvider for the SuperCar service
-        service_provider = await gatt.GattServiceProvider.create_async(SUPERCAR_SERVICE_UUID)
-        service = service_provider.service
+            # Start advertising
+            publisher.start()
+            logger.info("Started advertising as EmulatedSuperCarDrive")
 
-        # Add characteristics
-        read_char = await service.create_characteristic_async(
-            SUPERCAR_READ_CHAR_UUID,
-            GattCharacteristicProperties.READ | GattCharacteristicProperties.NOTIFY
-        )
-        write_char = await service.create_characteristic_async(
-            SUPERCAR_WRITE_CHAR_UUID,
-            GattCharacteristicProperties.WRITE
-        )
+            # Create a GattServiceProvider for the SuperCar service
+            logger.debug(f"Creating GattServiceProvider with UUID: {SUPERCAR_SERVICE_UUID}")
+            service_provider = await gatt.GattServiceProvider.create_async(uuid.UUID(SUPERCAR_SERVICE_UUID))
+            self.emulated_supercar = service_provider
+            service = service_provider.service
 
-        # Set up read and write handlers
-        read_char.read_requested = self.handle_read_request
-        write_char.write_requested = self.handle_write_request
+            # Add characteristics
+            logger.debug(f"Creating read characteristic with UUID: {SUPERCAR_READ_CHAR_UUID}")
+            self.read_characteristic = await service.create_characteristic_async(
+                uuid.UUID(SUPERCAR_READ_CHAR_UUID),
+                gatt.GattCharacteristicProperties.READ | gatt.GattCharacteristicProperties.NOTIFY
+            )
 
-        self.emulated_supercar = service_provider
-        logger.info("Emulated SuperCar service set up successfully")
+            logger.debug(f"Creating write characteristic with UUID: {SUPERCAR_WRITE_CHAR_UUID}")
+            self.write_characteristic = await service.create_characteristic_async(
+                uuid.UUID(SUPERCAR_WRITE_CHAR_UUID),
+                gatt.GattCharacteristicProperties.WRITE
+            )
+
+            # Set up read and write handlers
+            self.read_characteristic.read_requested = self.handle_read_request
+            self.write_characteristic.write_requested = self.handle_write_request
+
+            logger.info("Emulated SuperCar service set up successfully")
+        except Exception as e:
+            logger.error(f"Error in setup_emulated_supercar: {str(e)}")
+            raise
 
     async def handle_read_request(self, sender, args):
         # Read from the real SuperCar and respond
@@ -101,19 +109,23 @@ class SuperCarEmulator:
             args.status = gatt.GattWriteRequestStatus.UNLIKELY_ERROR
 
     async def run(self):
-        # Find and connect to the real SuperCar
-        real_supercar_device = await self.find_real_supercar()
-        if not real_supercar_device:
-            return
+        try:
+            # Find and connect to the real SuperCar
+            real_supercar_device = await self.find_real_supercar()
+            if not real_supercar_device:
+                return
 
-        await self.connect_to_real_supercar(real_supercar_device)
+            await self.connect_to_real_supercar(real_supercar_device)
 
-        # Set up the emulated SuperCar
-        await self.setup_emulated_supercar()
+            # Set up the emulated SuperCar
+            await self.setup_emulated_supercar()
 
-        # Keep the program running
-        while True:
-            await asyncio.sleep(1)
+            # Keep the program running
+            while True:
+                await asyncio.sleep(1)
+        except Exception as e:
+            logger.error(f"Error in run method: {str(e)}")
+            raise
 
 async def main():
     emulator = SuperCarEmulator()
