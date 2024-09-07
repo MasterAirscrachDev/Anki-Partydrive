@@ -20,12 +20,20 @@ namespace OverdriveServer
         public static List<TrackScanner> scansInProgress = new List<TrackScanner>();
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Overdrive Server By MasterAirscrach");
-            Console.WriteLine("Starting server...");
-            await bluetoothInterface.InitaliseBletooth(); //Start the bluetooth subsystem
-            bluetoothInterface.ScanForCars(); //Start scanning for cars
-            webInterface.Start(); //Start the web interface
-            await Task.Delay(-1); //dont close the program
+            if (args.Length == 1) {
+                if (args[0] == "snoop") { 
+                    Snooper snoop = new Snooper();
+                    await snoop.Start();
+                }
+            }else{
+                Console.WriteLine("Overdrive Server By MasterAirscrach");
+                Console.WriteLine("Starting server...");
+                await bluetoothInterface.InitaliseBletooth(); //Start the bluetooth subsystem
+                bluetoothInterface.ScanForCars(); //Start scanning for cars
+                webInterface.Start(); //Start the web interface
+                await Task.Delay(-1); //dont close the program
+            }
+            
         }
         public static void Log(string message){
             SysLog += message + "\n";
