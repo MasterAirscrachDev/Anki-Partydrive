@@ -108,6 +108,9 @@ namespace OverdriveServer
                         else if(direction == 2){ Y--; }
                         else if(direction == 3){ X--; }
                     }
+                    else{
+                        Program.UtilLog($"Unknown track piece: {trackID}");
+                    }
 
                     if(trackPieces.Count > 4){
                         //if our current position is the same as the start position, set checkingScan to true
@@ -137,6 +140,7 @@ namespace OverdriveServer
             else if(id == 57){ return TrackPieceType.FnFSpecial; }
             else if(id == 34){ return TrackPieceType.PreFinishLine; }
             else if(id == 33){ return TrackPieceType.FinishLine; }
+            else if(id == 10){ return TrackPieceType.CrissCross; }
             else{ return TrackPieceType.Unknown; }
         }
     }

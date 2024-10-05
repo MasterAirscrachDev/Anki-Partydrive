@@ -2,7 +2,6 @@
   "profiles": {
     "OverdriveServer": {
       "commandName": "Project",
-      "commandLineArgs": "snoop",
       "hotReloadEnabled": false
     }
   }

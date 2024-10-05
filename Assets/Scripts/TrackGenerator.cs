@@ -98,6 +98,20 @@ public class TrackGenerator : MonoBehaviour
                 //     track.transform.Rotate(0, 90, 0);
                 //     track.transform.localScale = new Vector3(-1, 1, segments[i].flipped ? -1 : 1);
                 // }
+            } if(segments[i].type == TrackPieceType.CrissCross){
+                //do we already have a criss cross at this location?
+                bool hasCrissCross = false;
+                for(int j = 0; j < i; j++){
+                    if(segments[j].type == TrackPieceType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y){
+                        hasCrissCross = true;
+                        trackPieces[j].name = $"{i} {trackPieces[j].name}";
+                        break;
+                    }
+                }
+                if(!hasCrissCross){
+                    track = Instantiate(segments[i].validated ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform);
+                }
+                pos += forward;
             }
             trackPieces.Add(track);
             if(track != null){

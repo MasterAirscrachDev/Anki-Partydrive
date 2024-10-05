@@ -7,7 +7,7 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using InTheHand.Bluetooth;
 using Windows.Storage.Streams;
 using Windows.Devices.Bluetooth.Advertisement;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Windows.Devices.Radios;
 
 namespace OverdriveServer
 {
@@ -37,7 +37,7 @@ namespace OverdriveServer
 
             public async Task InitaliseBletooth(){
                 Bluetooth.AvailabilityChanged += (s, e) =>
-                { Program.Log($"Bluetooth availability changed"); };
+                { Console.WriteLine($"Bluetooth availability changed"); };
                 Bluetooth.AdvertisementReceived += OnAdvertisementReceived;
                 StartBLEScan();
                 GetCars();
@@ -48,8 +48,8 @@ namespace OverdriveServer
                 leScanOptions.AcceptAllAdvertisements = true;
                 var scan = Bluetooth.RequestLEScanAsync(leScanOptions);
                 if(scan == null)
-                { Program.Log("Scan failed"); return; }
-                Program.Log("Snooper Scan started");
+                { Console.WriteLine("Scan failed"); return; }
+                Console.WriteLine("Snooper Scan started");
             }
             async Task GetCars(){ 
                 // Use default request options for simplicity
@@ -60,15 +60,15 @@ namespace OverdriveServer
                 var cancellationToken = cancellationTokenSource.Token;
                 // Scan for devices
                 var devices = await Bluetooth.ScanForDevicesAsync(requestOptions, cancellationToken);
-                if(devices.Count == 0){ Program.Log("No devices found"); return; }
+                if(devices.Count == 0){ Console.WriteLine("No devices found"); return; }
                 //we dont really car about the devices, we just want to wait for the scan to finish
             }
 
             async void OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args){
                 try{
-                    //Program.Log($"Advertisement received {args.Name}");
+                    //Console.WriteLine($"Advertisement received {args.Name}");
                     if(args.Name.Contains("Drive")){
-                        Program.Log($"Advertisement received, car {args.Name}");
+                        Console.WriteLine($"Advertisement received, car {args.Name}");
                         snoopingCar = args.Device;
                         carBLEName = args.Name;
                         Bluetooth.AdvertisementReceived -= OnAdvertisementReceived;
@@ -76,15 +76,15 @@ namespace OverdriveServer
                     }
                 }
                 catch{
-                    Program.Log($"Advertisement received, not car {args.Name}");
+                    Console.WriteLine($"Advertisement received, not car {args.Name}");
                     foreach(var data in args.ManufacturerData)
-                    { Program.Log($"{data.Key}: {Program.BytesToString(data.Value)}"); }
+                    { Console.WriteLine($"{data.Key}: {Program.BytesToString(data.Value)}"); }
                 }
             }
             async Task ConnectToCar(){
                 await snoopingCar.Gatt.ConnectAsync();
                 if(snoopingCar.Gatt.IsConnected){
-                    Program.Log($"Snooper Connected to car {snoopingCar.Name}");
+                    Console.WriteLine($"Snooper Connected to car {snoopingCar.Name}");
                     IsCarStillConnected();
                     var service = await snoopingCar.Gatt.GetPrimaryServiceAsync(CarSystem.ServiceID);
                     if(service == null){ return; }
@@ -94,14 +94,14 @@ namespace OverdriveServer
                     snooperHost.CreateVirtualCar();
 
                 }else{
-                    Program.Log($"Failed to connect to car {snoopingCar.Name}");
+                    Console.WriteLine($"Failed to connect to car {snoopingCar.Name}");
                 }
             }
             async Task IsCarStillConnected(){
                 while(snoopingCar.Gatt.IsConnected){
                     await Task.Delay(1000);
                 }
-                Program.Log($"Car disconnected");
+                Console.WriteLine($"Car disconnected");
             }
             void OnCarCharacteristicChanged(object sender, GattCharacteristicValueChangedEventArgs args){
                 //relay step
@@ -129,11 +129,11 @@ namespace OverdriveServer
                 //create a new bluetooth device
                 var service = await GattServiceProvider.CreateAsync(CarSystem.ServiceID);
                 if (service.Error != Windows.Devices.Bluetooth.BluetoothError.Success) { 
-                    Program.Log("Failed to create service"); return;
+                    Console.WriteLine("Failed to create service"); return;
                 }
                 virtualCar = service.ServiceProvider;
                 //create a read notify characteristic
-                Program.Log("Creating read notify characteristic");
+                Console.WriteLine("Creating read notify characteristic");
                 var readNotifyResult = await virtualCar.Service.CreateCharacteristicAsync(
                     CarSystem.ReadID, new GattLocalCharacteristicParameters
                     {
@@ -142,12 +142,12 @@ namespace OverdriveServer
                     });
 
                 if (readNotifyResult.Error != Windows.Devices.Bluetooth.BluetoothError.Success) {
-                    Program.Log("Failed to create read notify characteristic"); return;
+                    Console.WriteLine("Failed to create read notify characteristic"); return;
                 }
                 readNotifyCharacteristic = readNotifyResult.Characteristic;
                 readNotifyCharacteristic.ReadRequested += OnVirtualCarCharacteristicChanged;
                 //create a write characteristic
-                Program.Log("Creating write characteristic");
+                Console.WriteLine("Creating write characteristic");
                 var writeResult = await virtualCar.Service.CreateCharacteristicAsync(
                     CarSystem.WriteID, new GattLocalCharacteristicParameters
                     {
@@ -156,7 +156,7 @@ namespace OverdriveServer
                     });
 
                 if (writeResult.Error != Windows.Devices.Bluetooth.BluetoothError.Success) {
-                    Program.Log("Failed to create write characteristic"); return;
+                    Console.WriteLine("Failed to create write characteristic"); return;
                 }
                 writeCharacteristic = writeResult.Characteristic;
                 writeCharacteristic.WriteRequested += OnVirtualCarWriteRequested;
@@ -168,45 +168,44 @@ namespace OverdriveServer
                 };
 
                 //publish the service
-                Program.Log("Publishing service");
+                Console.WriteLine("Publishing service");
                 virtualCar.StartAdvertising(advertisingParameters);
                 Console.WriteLine("Virtual car created and advertising");
                 StartAdvertising();
                 Console.WriteLine("Virtual car advertising started");
 
             }
-            void StartAdvertising() {
-                try {
-                    // Validate carName
-                    if (string.IsNullOrEmpty(carName)) {
-                        throw new ArgumentException("carName cannot be null or empty");
-                    }
-            
-                    // Validate CarSystem.ServiceID
-                    if (CarSystem.ServiceID == Guid.Empty) {
-                        throw new ArgumentException("CarSystem.ServiceID cannot be an empty GUID");
-                    }
-            
+            void StartAdvertising(){
+                try{
+                    //CarName is not null or empty here
+
+                    //CarSystem.ServiceID is valid here
+
                     // Create a new BluetoothLEAdvertisement
                     BluetoothLEAdvertisement advertisement = new BluetoothLEAdvertisement();
                     advertisement.LocalName = carName; // Set the server name here
-            
+
                     // Optionally, add service UUIDs to advertise the GATT service
                     advertisement.ServiceUuids.Add(CarSystem.ServiceID);
-                    Console.WriteLine("Advertisement created");
-            
+                    Console.WriteLine($"Advertisement created with name: {carName} and ServiceID: {CarSystem.ServiceID}");
+
                     // Create a new BluetoothLEAdvertisementPublisher with the advertisement
                     var publisher = new BluetoothLEAdvertisementPublisher(advertisement);
-                    Console.WriteLine("Publisher created");
-            
                     // Start advertising
+                    Console.WriteLine("Publisher created, Starting advertising");
                     publisher.Start();
-                    Console.WriteLine("Advertising started");
-                } catch (ArgumentException ae) {
-                    Program.Log($"Argument error: {ae.Message}"); //Value does not fall within the expected range (Name has invalid Chars??)
-                } catch (Exception e) {
-                    Program.Log($"Failed to start advertising: {e.Message}");
+                    Console.WriteLine("Publisher started");
                 }
+                catch (ArgumentException ae)
+                {
+                    Console.WriteLine($"Argument error: {ae.Message}");
+                    Console.WriteLine($"Parameter name: {ae.ParamName}");
+                    Console.WriteLine($"Stack trace: {ae.StackTrace}");
+                }
+                catch (InvalidOperationException ioe)
+                { Console.WriteLine($"Operation error: {ioe.Message}"); }
+                catch (Exception e)
+                { Console.WriteLine($"Failed to start advertising: {e.Message}"); }
             }
             void OnVirtualCarCharacteristicChanged(object sender, GattReadRequestedEventArgs args){
                 //relay step
