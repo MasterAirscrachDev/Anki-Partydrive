@@ -127,18 +127,10 @@ namespace OverdriveServer
             return true;
         }
         void OnCarJumped(string carID){
-            if(tracking && carID == scanningCar.id){
-                TrackPiece piece = new TrackPiece(TrackPieceType.Jump, 63, false, X, Y);
-                if(checkingScan){
-                    bool valid = ValidateTrackPiece(piece);
-                    if(!valid){ return; }
-                }else{
-                    trackPieces.Add(piece);
-                    //move 2 spaces in the direction we are facing
-                    MoveBasedOnDirection(2);
-                }
-                SendCurrentTrack();
-                currentPieceIndex++;
+            if(carID == scanningCar.id){
+                OnTrackPosition(carID, 0, 58, 0, 0, false); //jump ramp
+                tracking = true;
+                OnTrackPosition(carID, 0, 63, 0, 0, false); //jump landing
             }
         }
         void LogTrack(){
@@ -156,9 +148,9 @@ namespace OverdriveServer
             else if(id == 57){ return TrackPieceType.FnFSpecial; }
             else if(id == 34){ return TrackPieceType.PreFinishLine; }
             else if(id == 33){ return TrackPieceType.FinishLine; }
-            else if(id == 10){ return TrackPieceType.CrissCross; }
-            //58 is jump takeoff maybe
-            //63 is jump landing maybe
+            else if(id == 10){ return TrackPieceType.CrissCross; } 
+            else if(id == 58){ return TrackPieceType.JumpRamp; } //58 is jump takeoff maybe
+            else if(id == 63){ return TrackPieceType.JumpLanding; } //63 is jump landing maybe
             else{ return TrackPieceType.Unknown; }
         }
     }

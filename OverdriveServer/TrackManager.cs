@@ -152,7 +152,7 @@ namespace OverdriveServer
         }
         [System.Serializable]
         public enum TrackPieceType{
-            Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, Jump
+            Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding
         }
         public class TrackCarLocation{
             public string ID;

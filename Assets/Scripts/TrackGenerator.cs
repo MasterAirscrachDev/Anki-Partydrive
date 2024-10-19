@@ -112,7 +112,7 @@ public class TrackGenerator : MonoBehaviour
                     track = Instantiate(segments[i].validated ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform);
                 }
                 pos += forward;
-            } if(segments[i].type == TrackPieceType.Jump){
+            } if(segments[i].type == TrackPieceType.JumpRamp){
                 track = Instantiate(segments[i].validated ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
                 pos += forward * 2;
             }
@@ -151,5 +151,5 @@ public class TrackPiece{
 }
 [System.Serializable]
 public enum TrackPieceType{
-    Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, Jump
+    Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding
 }
