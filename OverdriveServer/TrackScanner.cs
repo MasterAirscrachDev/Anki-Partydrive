@@ -63,88 +63,87 @@ namespace OverdriveServer
         }
         void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise){
             if(tracking){
-                tracking = false;
+                tracking = false; bool AutoIncrementIndex = true;
                 TrackPieceType type = PeiceFromID(trackID);
-                if(type == TrackPieceType.Unknown){ Program.Log($"Unknown TrackID: {trackID}"); tracking = true; return; }
+                //if(type == TrackPieceType.Unknown){ Program.Log($"Unknown TrackID: {trackID}"); tracking = true; return; }
                 TrackPiece piece = new TrackPiece(type, trackID, clockwise, X, Y);
                 if(type == TrackPieceType.FinishLine && trackPieces.Count == 0){ 
                     //add a prefinish line piece if the finish line is the first piece
                     trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, clockwise, X, Y));
                 }
-                int oldX = X, oldY = Y;
                 if(checkingScan){
-                    //if this piece is the same as the piece at the same index in the trackPieces list, we are on the right track
-                    if(!trackPieces[currentPieceIndex].Equals(piece)){
-                        //Console.WriteLine($"Mismatch at {currentPieceIndex}, expected: {trackPieces[currentPieceIndex]}, got {piece}");
-                        retries++;
-                        if(retries >= maxRetries){ //if we have retried too many times, we have failed the scan
-                            finishedScan = true;
-                            SendFinishedTrack();
-                        }
-                        else{
-                            checkingScan = false;
-                            ResetScan(); return;
-                        }
-                    }else{
-                        trackPieces[currentPieceIndex].validated = true;
-                        if(currentPieceIndex == trackPieces.Count - 1){
-                            successfulScan = true;
-                            finishedScan = true;
-                            //Console.WriteLine("Scan successful");
-                            // for(int i = 0; i < trackPieces.Count; i++){
-                            //     Console.WriteLine($"{i}: ({trackPieces[i].type}|{trackPieces[i].internalID}|[{trackPieces[i].X},{trackPieces[i].Y}])");
-                            // }
-                            SendFinishedTrack();
-                        }
-                    }
+                    bool valid = ValidateTrackPiece(piece);
+                    if(!valid){ return; }
                 }else{
                     trackPieces.Add(piece);
-                    if(type == TrackPieceType.Turn){
-                        if(clockwise){ direction++; }else{ direction--; }
-                        if(direction == 4){ direction = 0; }
-                        else if(direction == -1){ direction = 3; }
-                    }
-                    
-                    if(type != TrackPieceType.Unknown && type != TrackPieceType.PreFinishLine){
-                        if(direction == 0){ Y++; }
-                        else if(direction == 1){ X++; }
-                        else if(direction == 2){ Y--; }
-                        else if(direction == 3){ X--; }
-                    }
-                    else{
-                        Program.UtilLog($"Unknown track piece: {trackID}");
-                    }
+                    if(type == TrackPieceType.Turn){ RotateDirection(clockwise); }
+                    else if(type != TrackPieceType.Unknown && type != TrackPieceType.PreFinishLine){ MoveBasedOnDirection(); }
+                    else{ Program.Log($"Unknown track piece: {trackID}"); AutoIncrementIndex = false; }
 
-                    if(trackPieces.Count > 4){
+                    if(!checkingScan && trackPieces.Count > 4 && trackPieces[0].IsAt(X, Y)){
                         //if our current position is the same as the start position, set checkingScan to true
-                        if(trackPieces[0].IsAt(X, Y)){
-                            // Console.WriteLine($"reached assumed scan start at {piece}");
-                            // //print the first 3 pieces
-                            // for(int i = 0; i < 3; i++){
-                            //     Console.WriteLine($"{i}: {trackPieces[i]}");
-                            // }
-                            checkingScan = true;
-                            currentPieceIndex = -1;
-                        }
+                        checkingScan = true; currentPieceIndex = -1;
                     }
                 }
                 SendCurrentTrack();
                 //Console.WriteLine($"index: {currentPieceIndex}/{trackPieces.Count} is ({type}|{trackID}|[{oldX},{oldY}]), checking: {checkingScan}, retries: {retries}");
+                currentPieceIndex+= AutoIncrementIndex ? 1 : 0;
+            }
+        }
+        void RotateDirection(bool clockwise){
+            if(clockwise){ direction++; }else{ direction--; }
+            if(direction == 4){ direction = 0; }
+            else if(direction == -1){ direction = 3; }
+        }
+        void MoveBasedOnDirection(int spaces = 1){
+            if(direction == 0){ Y += spaces; }
+            else if(direction == 1){ X += spaces; }
+            else if(direction == 2){ Y -= spaces; }
+            else if(direction == 3){ X -= spaces; }
+        }
+        bool ValidateTrackPiece(TrackPiece piece){
+            //if this piece is the same as the piece at the same index in the trackPieces list, we are on the right track
+            if(!trackPieces[currentPieceIndex].Equals(piece)){
+                //Console.WriteLine($"Mismatch at {currentPieceIndex}, expected: {trackPieces[currentPieceIndex]}, got {piece}");
+                retries++;
+                if(retries >= maxRetries){ //if we have retried too many times, we have failed the scan
+                    finishedScan = true;
+                    SendFinishedTrack();
+                }
+                else{
+                    checkingScan = false;
+                    ResetScan(); return false;
+                }
+            }else{
+                trackPieces[currentPieceIndex].validated = true;
+                if(currentPieceIndex == trackPieces.Count - 1){
+                    successfulScan = true;
+                    finishedScan = true;
+                    //Console.WriteLine("Scan successful");
+                    //LogTrack();
+                    SendFinishedTrack();
+                }
+            }
+            return true;
+        }
+        void OnCarJumped(string carID){
+            if(tracking && carID == scanningCar.id){
+                TrackPiece piece = new TrackPiece(TrackPieceType.Jump, 63, false, X, Y);
+                if(checkingScan){
+                    bool valid = ValidateTrackPiece(piece);
+                    if(!valid){ return; }
+                }else{
+                    trackPieces.Add(piece);
+                    //move 2 spaces in the direction we are facing
+                    MoveBasedOnDirection(2);
+                }
+                SendCurrentTrack();
                 currentPieceIndex++;
             }
         }
-        void OnCarJumped(string carID){
-            if(tracking && carID == scanningCar.id){ 
-                TrackPiece piece = new TrackPiece(TrackPieceType.Jump, 63, false, X, Y);
-                trackPieces.Add(piece);
-                //move 2 spaces in the direction we are facing
-                if(direction == 0){ Y += 2; }
-                else if(direction == 1){ X += 2; }
-                else if(direction == 2){ Y -= 2; }
-                else if(direction == 3){ X -= 2; }
-                SendCurrentTrack();
-                currentPieceIndex++;
-
+        void LogTrack(){
+            for(int i = 0; i < trackPieces.Count; i++){
+                Console.WriteLine($"{i}: ({trackPieces[i].type}|{trackPieces[i].internalID}|[{trackPieces[i].X},{trackPieces[i].Y}])");
             }
         }
         void SendCurrentTrack(){
