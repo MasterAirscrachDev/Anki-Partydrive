@@ -72,7 +72,8 @@ namespace OverdriveServer
                 Program.Log($"[43] {car.name} fell off track");
                 CarEventFellCall?.Invoke(car.id);
             } else if(id == RECV_TRACK_CENTER_UPDATE){ //45 Track center updated
-                Program.Log($"[45] Track center updated: {Program.BytesToString(content)}");
+                //this reads the track center, however this gives us the same info as 39 and 41 making it unhelpful when trying to correct for errors
+                Program.Log($"[45] Track center updated: {Program.BytesToString(content)}, Test as: {BitConverter.ToSingle(content, 2)}");
                 Program.UtilLog($"45:{car.id}:{Program.BytesToString(content)}");
             } else if(id == RECV_CAR_SPEED_UPDATE){ //54 car speed changed
                 Program.Log($"[54] {car.name} speed changed");

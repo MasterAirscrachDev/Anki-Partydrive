@@ -15,6 +15,7 @@ public class CarInteraface : MonoBehaviour
     CMS cms;
     CarEntityTracker carEntityTracker;
     string scanningCar;
+    int DEBUG_SPEED = 0, DEBUG_LANE = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -223,8 +224,16 @@ public class CarInteraface : MonoBehaviour
     }
 
     public void DEBUGSetCarsSpeed(int speed){
+        DEBUG_SPEED = speed;
+        DEBUGUpdate();
+    }
+    public void DEBUGSetCarsLane(int lane){
+        DEBUG_LANE = lane;
+        DEBUGUpdate();
+    }
+    void DEBUGUpdate(){
         for (int i = 0; i < cars.Length; i++)
-        { ControlCar(cars[i], speed, 0); }
+        { ControlCar(cars[i], DEBUG_SPEED, DEBUG_LANE); }
     }
 
 
