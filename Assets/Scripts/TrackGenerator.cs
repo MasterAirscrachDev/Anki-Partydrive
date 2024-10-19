@@ -112,7 +112,11 @@ public class TrackGenerator : MonoBehaviour
                     track = Instantiate(segments[i].validated ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform);
                 }
                 pos += forward;
+            } if(segments[i].type == TrackPieceType.Jump){
+                track = Instantiate(segments[i].validated ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
+                pos += forward * 2;
             }
+
             trackPieces.Add(track);
             if(track != null){
                 track.name = $"{i} ({segments[i].type})";
@@ -129,8 +133,8 @@ public class TrackGenerator : MonoBehaviour
 }
 [System.Serializable]
 public class TrackPiece{
-    public readonly TrackPieceType type;
-    public readonly int internalID;
+    public TrackPieceType type; //should be readonly (but isnt so its visible in the inspector)
+    public int internalID; //should be readonly (but isnt so its visible in the inspector)
     public readonly bool flipped;
     public readonly int X, Y;
     public int up, down, elevation;

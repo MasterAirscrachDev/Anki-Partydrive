@@ -12,7 +12,7 @@ namespace OverdriveServer
         Car scanningCar;
         public async Task<bool> CancelScan(Car cancelThis){
             if(scanningCar == cancelThis){
-                SetEventsSub(false);
+                //SetEventsSub(false);
                 await scanningCar.SetCarSpeed(0, 500);
                 SetEventsSub(false);
                 finishedScan = true;
@@ -24,9 +24,11 @@ namespace OverdriveServer
             if(sub){ 
                 Program.messageManager.CarEventLocationCall += OnTrackPosition; 
                 Program.messageManager.CarEventTransitionCall += OnTrackTransition;
+                Program.messageManager.CarEventJumpCall += OnCarJumped;
             }else{ 
                 Program.messageManager.CarEventLocationCall -= OnTrackPosition;
                 Program.messageManager.CarEventTransitionCall -= OnTrackTransition;
+                Program.messageManager.CarEventJumpCall -= OnCarJumped;
             }
         }
         public async Task ScanTrack(Car car){
@@ -63,6 +65,7 @@ namespace OverdriveServer
             if(tracking){
                 tracking = false;
                 TrackPieceType type = PeiceFromID(trackID);
+                if(type == TrackPieceType.Unknown){ Program.Log($"Unknown TrackID: {trackID}"); tracking = true; return; }
                 TrackPiece piece = new TrackPiece(type, trackID, clockwise, X, Y);
                 if(type == TrackPieceType.FinishLine && trackPieces.Count == 0){ 
                     //add a prefinish line piece if the finish line is the first piece
@@ -130,6 +133,20 @@ namespace OverdriveServer
                 currentPieceIndex++;
             }
         }
+        void OnCarJumped(string carID){
+            if(tracking && carID == scanningCar.id){ 
+                TrackPiece piece = new TrackPiece(TrackPieceType.Jump, 63, false, X, Y);
+                trackPieces.Add(piece);
+                //move 2 spaces in the direction we are facing
+                if(direction == 0){ Y += 2; }
+                else if(direction == 1){ X += 2; }
+                else if(direction == 2){ Y -= 2; }
+                else if(direction == 3){ X -= 2; }
+                SendCurrentTrack();
+                currentPieceIndex++;
+
+            }
+        }
         void SendCurrentTrack(){
             Program.trackManager.SetTrack(trackPieces.ToArray(), false);
             Program.UtilLog($"-3:{scanningCar.id}");
@@ -141,6 +158,8 @@ namespace OverdriveServer
             else if(id == 34){ return TrackPieceType.PreFinishLine; }
             else if(id == 33){ return TrackPieceType.FinishLine; }
             else if(id == 10){ return TrackPieceType.CrissCross; }
+            //58 is jump takeoff maybe
+            //63 is jump landing maybe
             else{ return TrackPieceType.Unknown; }
         }
     }

@@ -106,7 +106,6 @@ public class CarInteraface : MonoBehaviour
                     } else if(c[0] == "-3"){
                         GetTrackAndGenerate();
                     } else if(c[0] == "-4"){
-                        Debug.Log("Setting position 1");
                         try{
                             string id = c[1];
                             int speed = GetCar(id) == -1 ? 0 : cars[GetCar(id)].speed;

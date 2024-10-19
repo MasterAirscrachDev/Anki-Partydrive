@@ -1338,7 +1338,7 @@ RectTransform:
   - {fileID: 1692014351}
   - {fileID: 1923248593}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3499,7 +3499,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &786587998
 MonoBehaviour:
@@ -5135,7 +5135,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1088570997
 MonoBehaviour:
@@ -5343,7 +5343,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1110400117
 MonoBehaviour:
@@ -6908,7 +6908,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0
+  m_text: 3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7036,151 +7036,225 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   test: 0
   SourceSegments:
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 244
+  - type: 0
+    internalID: 0
+    up: 244
     down: 80
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 131
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 255
+  - type: 0
+    internalID: 0
+    up: 255
     down: 96
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 105
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 255
+  - type: 0
+    internalID: 0
+    up: 255
     down: 0
     elevation: 0
     validated: 0
-  - up: 69
+  - type: 0
+    internalID: 0
+    up: 69
     down: 81
     elevation: 0
     validated: 0
-  - up: 35
+  - type: 0
+    internalID: 0
+    up: 35
     down: 126
     elevation: 0
     validated: 0
-  - up: 207
+  - type: 0
+    internalID: 0
+    up: 207
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 36
+  - type: 0
+    internalID: 0
+    up: 36
     down: 76
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 114
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 255
+  - type: 0
+    internalID: 0
+    up: 255
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 58
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 53
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
-  - up: 255
+  - type: 0
+    internalID: 0
+    up: 255
     down: 0
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 84
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 104
     elevation: 0
     validated: 0
-  - up: 0
+  - type: 0
+    internalID: 0
+    up: 0
     down: 0
     elevation: 0
     validated: 0
@@ -7197,7 +7271,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1435206871
 GameObject:
@@ -7633,7 +7707,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1464164413
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7980,7 +8054,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: 3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
   m_sharedMaterial: {fileID: -7548483605016708549, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
@@ -8268,67 +8342,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1589703154}
   m_CullTransparentMesh: 1
---- !u!1001 &1592985210
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5.0001
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -2.0002
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -7511558181221131132, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 7630a01f2f93b8747a440082f7d42a18, type: 2}
-    - target: {fileID: 919132149155446097, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
-      propertyPath: m_Name
-      value: TrackJump
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5481507c7a4e05e47885639fac3cdaef, type: 3}
 --- !u!1 &1643385039
 GameObject:
   m_ObjectHideFlags: 0
@@ -9658,155 +9671,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   test: 0
   trackCamera: {fileID: 1229594995}
-  segments:
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 244
-    down: 80
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 131
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 255
-    down: 96
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 105
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 255
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 69
-    down: 81
-    elevation: 0
-    validated: 0
-  - up: 35
-    down: 126
-    elevation: 0
-    validated: 0
-  - up: 207
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 36
-    down: 76
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 114
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 255
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 58
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 53
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 255
-    down: 0
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 84
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 104
-    elevation: 0
-    validated: 0
-  - up: 0
-    down: 0
-    elevation: 0
-    validated: 0
+  segments: []
   trackPrefabs:
   - {fileID: 8254316182376960447, guid: f3956bd3d8db4014aadc8d446fd43bd3, type: 3}
   - {fileID: 2253291087745149315, guid: 11338035dcc803949a28766c9279ecb9, type: 3}
@@ -9817,12 +9682,14 @@ MonoBehaviour:
   - {fileID: 1420869229212445663, guid: 461039858e52f50428a39fdc190176d5, type: 3}
   - {fileID: 5676790427786985064, guid: b99a8de5961832540be731a4c8b09b56, type: 3}
   - {fileID: 2639290113408202594, guid: 4be85139b73284546856c8c534ac7ec8, type: 3}
+  - {fileID: 9211132806049291155, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
   scannningPrefabs:
   - {fileID: 8254316182376960447, guid: f35717277450502458a22f2fd6739479, type: 3}
   - {fileID: 2253291087745149315, guid: c895c1cc6635a7c4f825146d1e6ace88, type: 3}
   - {fileID: 8196681214722379249, guid: 9a7427d26432849428aab93a41a30116, type: 3}
   - {fileID: 4556589103512767978, guid: ea3739e4522a64b448b799542b7c44ef, type: 3}
   - {fileID: 7733899436698094811, guid: e9c3437da7590d649a2c648c95643e45, type: 3}
+  - {fileID: 5848027651141914956, guid: d1723de9ae84b214a895669347c1b2b2, type: 3}
 --- !u!4 &1948605592
 Transform:
   m_ObjectHideFlags: 0
@@ -9836,7 +9703,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &1948605596
 LineRenderer:

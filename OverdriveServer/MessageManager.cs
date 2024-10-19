@@ -82,20 +82,37 @@ namespace OverdriveServer
                 Program.UtilLog($"63:{car.id}:{charging}");
                 Program.Log($"[63] {car.name} charging: {charging}");
                 car.data.charging = charging;
+            } else if(id == RECV_UNKNOWN_65){ //65 Unknown
+                Program.UtilLog($"65:{car.id}");
+                //Program.Log($"[65] {car.name} slipped");
+            } else if(id == RECV_UNKNOWN_67){ //67 Unknown
+                Program.UtilLog($"67:{car.id}");
+                //Program.Log($"[67] {car.name} ???");
+            } else if(id == RECV_TRACK_JUMP){ //75 car jumped
+                //this provides a lot of data, unsure what any of it means / how to parse
+                Program.UtilLog($"75:{car.id}");
+                Program.Log($"[75] {car.name} jumped");
+                CarEventJumpCall?.Invoke(car.id);
             } else if(id == RECV_CAR_COLLISION){ //77 Collision Detected
                 Program.UtilLog($"77:{car.id}");
                 Program.Log($"[77] {car.name} collision detected");
-            }
-            else if(id == RECV_TRACK_SPECIAL_TRIGGER){ //83 FnF specialBlock
+            } else if(id == RECV_UNKNOWN_78){ //78 Unknown
+                Program.UtilLog($"78:{car.id}");
+                //Program.Log($"[78] {car.name} ???");
+            } else if(id == RECV_UNKNOWN_79){ //79 Unknown
+                Program.UtilLog($"79:{car.id}");
+                //Program.Log($"[79] {car.name} ???");
+            } else if(id == RECV_TRACK_SPECIAL_TRIGGER){ //83 FnF specialBlock
                 Program.UtilLog($"83:{car.id}");
                 Program.Log($"[83] {car.name} hit special block");
+            } else if(id == RECV_CAR_MESSAGE_CYCLE_OVERTIME){ //134 Car message cycle overtime
+                Program.UtilLog($"134:{car.id}");
+                //Program.Log($"[134] {car.name} message cycle overtime"); //commented until we know what this is
             }
+
             else{
                 Program.Log($"???({id})[{Program.IntToByteString(id)}]:{Program.BytesToString(content)}");
-                //45
-                //65 slip ? car on track ?
                 //79 
-                //134 CarMsgCycleOvertime
             }
         }
         //subscribable event
@@ -105,5 +122,7 @@ namespace OverdriveServer
         public event CarEventTransition? CarEventTransitionCall;
         public delegate void CarEventFell(string carID);
         public event CarEventFell? CarEventFellCall;
+        public delegate void CarEventJump(string carID);
+        public event CarEventJump? CarEventJumpCall;
     }
 }
