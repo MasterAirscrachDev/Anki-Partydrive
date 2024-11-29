@@ -110,6 +110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 959e55e6c00b9f9498ade0399728625f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lerpSpeed: 0.1
+  lerpSpeed: 1
   solidMaterial: {fileID: 2100000, guid: 342972559360e144982184f6103550c1, type: 2}
   transparentMaterial: {fileID: 2100000, guid: 76ef9830f4733ef4b82b93057b6b2f98, type: 2}

@@ -76,9 +76,11 @@ namespace OverdriveServer
                     if(!valid){ return; }
                 }else{
                     trackPieces.Add(piece);
-                    if(type == TrackPieceType.Turn){ RotateDirection(clockwise); }
-                    else if(type != TrackPieceType.Unknown && type != TrackPieceType.PreFinishLine){ MoveBasedOnDirection(); }
-                    else{ Program.Log($"Unknown track piece: {trackID}"); AutoIncrementIndex = false; }
+                    if(type == TrackPieceType.Turn){ RotateDirection(clockwise); } //rotate the direction if we are on a turn
+                    if(type != TrackPieceType.PreFinishLine){
+                        if(type != TrackPieceType.Unknown){ MoveBasedOnDirection(); } //move the car forward if we are not on a prefinish line
+                        else{ Program.Log($"Unknown track piece: {trackID}, internal id:{(int)type}"); }
+                    }else{ AutoIncrementIndex = false; }
 
                     if(!checkingScan && trackPieces.Count > 4 && trackPieces[0].IsAt(X, Y)){
                         //if our current position is the same as the start position, set checkingScan to true
