@@ -50,15 +50,23 @@ namespace OverdriveServer
                                     await context.Response.WriteAsync("Bad Request");
                                 }
                             });
-                            endpoints.MapGet("/resetcenter/{car}", async context =>{
-                                var car = context.Request.RouteValues["car"];
-                                Car c = Program.carSystem.GetCar(car.ToString());
+                            endpoints.MapGet("/resetcenter/{instruct}", async context =>{
+                                var instruct = context.Request.RouteValues["instruct"];
+                                string car = instruct.ToString();
+                                float offset = 0;
+                                if(car.Contains(":")){
+                                    string[] parts = car.Split(':');
+                                    car = parts[0];
+                                    offset = float.Parse(parts[1]);
+                                }
+
+                                Car c = Program.carSystem.GetCar(car);
                                 if(c == null){
                                     context.Response.StatusCode = 404;
                                     await context.Response.WriteAsync("Car not found");
                                     return;
                                 }
-                                await c.SetCarTrackCenter(0);
+                                await c.SetCarTrackCenter(offset);
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Centered");
                             });

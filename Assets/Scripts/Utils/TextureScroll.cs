@@ -9,7 +9,8 @@ public class TextureScroll : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        material.mainTextureOffset += new Vector2(scrollSpeed * Time.deltaTime, 0);
-    }
+    { material.mainTextureOffset += new Vector2(scrollSpeed * Time.deltaTime, 0); }
+
+    //stops scrolling textures from being in source control
+    void OnDestory(){ material.mainTextureOffset = Vector2.zero; }
 }

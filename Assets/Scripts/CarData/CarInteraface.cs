@@ -86,11 +86,13 @@ public class CarInteraface : MonoBehaviour
             var responseString = await response.Content.ReadAsStringAsync();
             if(responseString != ""){ 
                 string[] logs = responseString.Split('\n');
-                for (int i = 0; i < logs.Length; i++)
+                for (int i = 0; i < logs.Length; i++) //logging too much slows down the program immensely
                 {
                     if(logs[i] == ""){ continue; }
+                    bool ignoreLog = false;
                     for (int j = 0; j < ignore.Length; j++)
-                    { if(logs[i].StartsWith(ignore[j])){ continue; } }
+                    { if(logs[i].StartsWith(ignore[j])){ ignoreLog = true; break; } }
+                    if(ignoreLog){ continue; }
                     
                     Debug.Log(logs[i]);
                 }
@@ -152,6 +154,10 @@ public class CarInteraface : MonoBehaviour
                             cars[index].trackID = trackID;
                             cars[index].laneOffset = laneOffset;
                             cars[index].speed = speed;
+
+                            if(Mathf.Abs(laneOffset) > 100){
+                                Call($"resetcenter/{cars[index].id}");
+                            }
                         }
                     } else if (c[0] == "41"){
                         int trackIDIndex = int.Parse(c[2]); //Why are these blank? (need roadinfo)
