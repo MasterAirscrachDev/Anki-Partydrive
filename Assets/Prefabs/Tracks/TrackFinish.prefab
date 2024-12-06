@@ -195,6 +195,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  points:
-  - {x: 0, y: 0, z: -0.5}
-  - {x: 0, y: 0, z: 0.5}
+  leftPoints:
+  - {x: -0.25, y: 0, z: -0.5}
+  - {x: -0.25, y: 0, z: 0.5}
+  RightPoints:
+  - {x: 0.25, y: 0, z: -0.5}
+  - {x: 0.25, y: 0, z: 0.5}

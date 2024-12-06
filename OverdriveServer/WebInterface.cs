@@ -107,6 +107,7 @@ namespace OverdriveServer
                                 Program.Log("Application Registered");
                                 Program.GetLog(); Program.GetUtilLog();
                                 Program.SetLogging(false);
+                                Program.CheckCurrentTrack();
                                 linkCooldown = 5;
                                 UnlinkApplication();
                                 context.Response.StatusCode = 200;

@@ -79,6 +79,7 @@ public class CarInteraface : MonoBehaviour
         ApiCall($"tts/{text}", false, true);
     }
     async Task TickServer(){
+        string[] ignore = new string[]{"[39]", "[77]", "[83]", "[41]", "[54]"};
         while(true){
             var response = await client.GetAsync("logs");
             if(response.StatusCode != System.Net.HttpStatusCode.OK){ ReconnectToServer(); return; }
@@ -88,7 +89,9 @@ public class CarInteraface : MonoBehaviour
                 for (int i = 0; i < logs.Length; i++)
                 {
                     if(logs[i] == ""){ continue; }
-                    if(logs[i].StartsWith("[39]") || logs[i].StartsWith("[77]")  || logs[i].StartsWith("[83]") || logs[i].StartsWith("[41]")){ continue; }
+                    for (int j = 0; j < ignore.Length; j++)
+                    { if(logs[i].StartsWith(ignore[j])){ continue; } }
+                    
                     Debug.Log(logs[i]);
                 }
             }
@@ -118,7 +121,7 @@ public class CarInteraface : MonoBehaviour
                             carEntityTracker.SetPosition(id, index, speed, horizontalOffset, trusted);
                         }
                         catch(System.Exception e){
-                            Debug.Log(e);
+                            Debug.Log($"{logs[i]} caused an error: {e}");
                         }
                         
                     }

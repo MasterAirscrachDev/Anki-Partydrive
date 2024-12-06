@@ -22,6 +22,11 @@ namespace OverdriveServer
             Program.messageManager.CarEventFellCall += OnCarFell;
             PositionTicker();
         }
+        public void AlertIfTrackIsValid(){
+            if(trackValidated){
+                Program.UtilLog($"-3:_:{trackValidated}");
+            }
+        }
         async Task PositionTicker(){
             await Task.Delay(15000); //odds are we havent connected to cars and scanned a track in 15 seconds
             while(true){

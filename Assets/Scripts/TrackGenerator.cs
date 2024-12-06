@@ -11,9 +11,10 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] GameObject[] trackPrefabs;
     [SerializeField] GameObject[] scannningPrefabs;
     //
-    List<GameObject> trackPieces;
+    [SerializeField] List<GameObject> trackPieces;
 
     public TrackSpline GetTrackPiece(int index){
+        if(trackPieces[index] == null){ return null; }
         return trackPieces[index].GetComponent<TrackSpline>();
     }
     public TrackPieceType GetTrackPieceType(int index){

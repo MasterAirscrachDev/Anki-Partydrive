@@ -151,8 +151,8 @@ namespace OverdriveServer
             else if(id == 34){ return TrackPieceType.PreFinishLine; }
             else if(id == 33){ return TrackPieceType.FinishLine; }
             else if(id == 10){ return TrackPieceType.CrissCross; } 
-            else if(id == 58){ return TrackPieceType.JumpRamp; } //58 is jump takeoff maybe
-            else if(id == 63){ return TrackPieceType.JumpLanding; } //63 is jump landing maybe
+            else if(id == 58){ return TrackPieceType.JumpRamp; }
+            else if(id == 63){ return TrackPieceType.JumpLanding; }
             else{ return TrackPieceType.Unknown; }
         }
     }

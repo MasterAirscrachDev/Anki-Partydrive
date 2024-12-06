@@ -55,6 +55,9 @@ namespace OverdriveServer
         public static void SetLogging(bool state){
             printLog = state;
         }
+        public static void CheckCurrentTrack(){
+            trackManager.AlertIfTrackIsValid();
+        }
         public static void TTS(string message){
             SpeechSynthesizer synth = new SpeechSynthesizer();
             synth.SetOutputToDefaultAudioDevice();

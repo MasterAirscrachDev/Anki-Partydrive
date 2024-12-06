@@ -12,12 +12,10 @@ public class CarEntityTracker : MonoBehaviour
     {
         track = FindObjectOfType<TrackGenerator>();
     }
-
     public void SetPosition(string id, int trackIndex,int speed, float horizontalOffset, bool positionTrusted){
         ModelEntity entity = entities.Find(x => x.id == id);
         TrackSpline trackPiece = track.GetTrackPiece(trackIndex);
         if(trackPiece == null){ //either we are on a PreStart or an error has occured
-            //trackPiece = track.getTrackPiece(trackIndex + 1);
             if(track.GetTrackPieceType(trackIndex + 1) == TrackPieceType.FinishLine){
                 trackPiece = track.GetTrackPiece(trackIndex + 1);
             }else{ return; }
@@ -30,7 +28,7 @@ public class CarEntityTracker : MonoBehaviour
             entities.Add(entity);
         }
         entity.entity.SetTrustedPosition(positionTrusted);
-        entity.entity.SetTrackSpline(trackPiece);
+        entity.entity.SetTrackSpline((TrackSpline)trackPiece);
         entity.entity.SetSpeedAndOffset(speed, horizontalOffset);
     }
     [System.Serializable]

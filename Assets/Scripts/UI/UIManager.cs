@@ -7,14 +7,17 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] GameObject MainCamera, TrackCamera, CarsLoadingIcon, TrackScan, TrackCancelScan;
     [SerializeField] GameObject[] UILayers;
-    [SerializeField] TMP_Text devCarCount, menuCarCount, finishCounterText;
+    [SerializeField] TMP_Text devCarCount, devSpeed,devOffset,menuCarCount, finishCounterText;
+    [SerializeField] CarInteraface cars;
     int finishCounter = 1;
     int UIlayer = 0;
+    int devCarSpeed = 400, devCarOffset = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        devSpeed.text = devCarSpeed.ToString();
+        devOffset.text = devCarOffset.ToString();
     }
 
     // Update is called once per frame
@@ -50,6 +53,20 @@ public class UIManager : MonoBehaviour
     public void SetIsScanningTrack(bool scan){
         TrackScan.SetActive(!scan);
         TrackCancelScan.SetActive(scan);
+    }
+    public void ModDevCarSpeed(int speed){
+        devCarSpeed += speed;
+        devSpeed.text = devCarSpeed.ToString();
+    }
+    public void ModDevCarOffset(int offset){
+        devCarOffset += offset;
+        devOffset.text = devCarOffset.ToString();
+    }
+    public void ApplyDevCarSpeed(){
+        cars.DEBUGSetCarsSpeed(devCarSpeed);
+    }
+    public void ApplyDevCarOffset(){
+        cars.DEBUGSetCarsLane(devCarOffset);
     }
 
 }
