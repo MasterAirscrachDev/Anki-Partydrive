@@ -6,6 +6,7 @@ public class TrackSpline : MonoBehaviour
 {
     [SerializeField] Vector3[] leftPoints, RightPoints;
     [SerializeField] bool simple = true;
+    public bool flipped = false;
     public Vector3 GetPoint(float t, float offset){
         return transform.TransformPoint(CurveInterpolator.Cilp(PointsFromOffset(offset), t));
     }
@@ -31,7 +32,9 @@ public class TrackSpline : MonoBehaviour
 
         Vector3[] points = new Vector3[leftPoints.Length];
         for(int i = 0; i < points.Length; i++){
-            points[i] = Vector3.Lerp(leftPoints[i], RightPoints[i], offset);
+            Vector3 A = flipped ? RightPoints[i] : leftPoints[i];
+            Vector3 B = flipped ? leftPoints[i] : RightPoints[i];
+            points[i] = Vector3.Lerp(A, B, offset);
         }
         return points;
     }

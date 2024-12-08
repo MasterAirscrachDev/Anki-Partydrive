@@ -1,8 +1,6 @@
 ﻿using static OverdriveServer.Definitions;
-namespace OverdriveServer
-{
-    class MessageManager
-    {
+namespace OverdriveServer {
+    class MessageManager {
         public void ParseMessage(byte[] content, Car car){
             byte id = content[1];
             if(id == RECV_PING){//23 ping response
@@ -22,15 +20,8 @@ namespace OverdriveServer
                 float offset = BitConverter.ToSingle(content, 4);
                 int speed = BitConverter.ToInt16(content, 8);
                 bool clockwise = content[10] == 0x47; //this is a secret parsing flag, we can use it to decphier turn directions
-                //tf does location mean (index in the internal array?)
                 Program.UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}:{clockwise}");
                 Program.Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
-                //IDs
-                //36 ??? 39 FnF Straight 40 Straight
-                //17 18 20 23 FnF Curve / Curve
-                //34 PreFinishLine
-                //33 Start/Finish
-                //57 FnF Powerup
                 car.data.trackPosition = trackLocation; 
                 car.data.trackID = trackID;
                 car.data.laneOffset = offset;
@@ -39,7 +30,6 @@ namespace OverdriveServer
             } else if(id == RECV_TRACK_TRANSITION){ //41 car moved between track pieces
                 try{
                     if(content.Length < 18){ return; } //not enough data
-                    //Console.WriteLine(BytesToString(content));
                     int trackPiece = Convert.ToInt32((sbyte)content[2]);
                     int oldTrackPiece = Convert.ToInt32((sbyte)content[3]);
                     float offset = BitConverter.ToSingle(content, 4);
@@ -47,16 +37,15 @@ namespace OverdriveServer
                     int downhillCounter = content[15];
                     int leftWheelDistance = content[16];
                     int rightWheelDistance = content[17];
-
-                    // There is a shorter segment for the starting line track.
-                    string crossedStartingLine = "";
+                    // There is a shorter segment for the starting line track. (this fails on inside turns)
+                    bool crossedStartingLine = false;
                     if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
-                        crossedStartingLine = " (Crossed Starting Line)";
+                        crossedStartingLine = true;
                         Program.UtilLog($"-5:{car.id}:{DateTime.Now.ToBinary()}"); //UPGRADE TO WORK WITH MULTI FINISH LINES
                     }
-                    Program.UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{!string.IsNullOrEmpty(crossedStartingLine)}");
-                    Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, up:{uphillCounter}down:{downhillCounter}, offest: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance} {crossedStartingLine}");
-                    CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, !string.IsNullOrEmpty(crossedStartingLine));
+                    Program.UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{crossedStartingLine}");
+                    Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, up:{uphillCounter}down:{downhillCounter}, offest: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance}, CrossedFinishLine: {crossedStartingLine}");
+                    CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
                     car.LaneCheck();
                 }
                 catch{
@@ -110,10 +99,8 @@ namespace OverdriveServer
                 Program.UtilLog($"134:{car.id}");
                 //Program.Log($"[134] {car.name} message cycle overtime"); //commented until we know what this is
             }
-
             else{
                 Program.Log($"???({id})[{Program.IntToByteString(id)}]:{Program.BytesToString(content)}");
-                //79 
             }
         }
         //subscribable event

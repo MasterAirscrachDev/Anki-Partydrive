@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 9065531909353157704}
   - component: {fileID: 7668438000843196928}
   m_Layer: 5
-  m_Name: CharText (TMP)
+  m_Name: NameText (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -434,7 +434,7 @@ GameObject:
   - component: {fileID: 2528312107420081983}
   - component: {fileID: 844386281902366397}
   m_Layer: 5
-  m_Name: Char Image
+  m_Name: Colour Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -806,10 +806,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76a4fe060866eeb40a0ae915d26202c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterName: {fileID: 7668438000843196928}
+  playerName: {fileID: 0}
   carName: {fileID: 4272681303129961407}
   positionText: {fileID: 891317611961037215}
   energyBar: {fileID: 141332946559120754}
+  attachments: []
 --- !u!1 &6167518796921782730
 GameObject:
   m_ObjectHideFlags: 0

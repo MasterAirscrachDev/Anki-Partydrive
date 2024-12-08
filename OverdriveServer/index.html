@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Overdrive Server</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Syne+Mono&display=swap" rel="stylesheet">
+    <style>
+        html {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+        }
+        .carBlock {
+            display: flex;
+            flex-direction: column;
+            background-color: grey;
+            border: 3px solid rgb(46, 46, 46);
+            border-radius: 15px;
+            margin: 10px;
+            max-width: 300px;
+        }
+        .carBlockContent {
+            padding: 10px;
+        }
+        .carBlockControls {
+            background-color: rgb(80, 80, 80);
+            border-radius: 15px;
+            padding: 10px;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #ffa600;
+            cursor: pointer;
+        }
+        input[type="checkbox"] {
+            height: 25px;
+            width: 25px;
+            accent-color: orange;
+        }
+        button {
+            background-color: #ffa600;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Overdrive Server</h1>
+    <form action='/scan'>
+        <button type='submit'>Scan for cars</button>
+    </form>
+
+
+    <div id="car-data" class="carBlock">
+        <div class="carBlockContent">
+            <p id="car-name">Name:  Template</p>
+            <p id="car-id">ID: 0000000000</p>
+            <p id="car-track-position">Track Position: ?</p>
+            <p id="car-track-id">Track ID: ?</p>
+            <p id="car-lane-offset">Lane Offset: 0.0000 </p>
+            <input type="range" id="car-lane-offset-slider" name="lane-offset" min="-70" max="70" value="0">
+            <p id="car-speed">Speed: 0.000</p>
+            <p id="car-battery">Battery: </p>
+            <p style="display: flex; align-items: center;">Is Charging: <input type="checkbox" id="car-charging"></p>
+        </div>
+        <div class="carBlockControls">
+            <form action='/controlcar/'>
+                <p>Speed: 0.000 <input type="range" id="car-speed-slider" name="speed" min="0" max="1000" value="0"></p>
+                <p>Lane Offset: 0.0000 <input type="range" id="car-lane-offset-slider" name="lane-offset" min="-70" max="70" value="0"></p>
+                <button type='submit'>Control Car</button>
+            </form>
+            <form action="/setlights/">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>R: <input type="checkbox" style="accent-color: red;" name="R"></label>
+                    <label>G: <input type="checkbox" style="accent-color: green;" name="G"></label>
+                    <label>B: <input type="checkbox" style="accent-color: blue;" name="B"></label>
+                </div>
+                <button type="submit">Set Light</button>
+            </form>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select all forms
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                let actionUrl = form.getAttribute('action'); // Get the form's action URL
+                const formData = new FormData(form); // Collect form data
+
+                // Construct query string
+                data = '';
+                //if formdata has 1 entry, set data to that entry
+                if(formData.entries().next().value){
+                    data = formData.entries().next().value[1];
+                }
+                actionUrl += data; // Append data to action URL
+                console.log(actionUrl);
+                // Send the request asynchronously
+                fetch(actionUrl, {
+                    method: 'GET',
+                })
+                .then(response => response.text()) // Convert response to text (or JSON if expected)
+                .then(data => {
+                    console.log('Success:', data); // Handle success
+                })
+                .catch((error) => {
+                    console.error('Error:', error); // Handle errors
+                });
+            });
+        });
+        //create 3 copies of the car block
+        for (let i = 0; i < 3; i++) {
+            const carBlock = document.getElementById('car-data').cloneNode(true);
+            carBlock.id = 'car-data-' + i;
+            document.body.appendChild(carBlock);
+        }
+    });
+    </script>
+</body>
+</html>

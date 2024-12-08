@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 public class PlayerCardSystem : MonoBehaviour
 {
-    [SerializeField] TMP_Text characterName, carName, positionText;
+    [SerializeField] TMP_Text playerName, carName, positionText;
     [SerializeField] Image energyBar;
     [SerializeField] GameObject[] attachments;
     float energyPercent = 0.75f;
     int attachmentIndex = -1;
-    public void SetCharacterName(string name){
-        characterName.text = name;
+    public void SetPlayerName(string name){
+        playerName.text = name;
     }
     public void SetCarName(string name){
         carName.text = name;

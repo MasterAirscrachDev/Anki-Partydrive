@@ -5,12 +5,9 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class TrackGenerator : MonoBehaviour
 {
-    [SerializeField] bool test;
     [SerializeField] TrackCamera trackCamera;
     [SerializeField] TrackPiece[] segments;
-    [SerializeField] GameObject[] trackPrefabs;
-    [SerializeField] GameObject[] scannningPrefabs;
-    //
+    [SerializeField] GameObject[] trackPrefabs, scannningPrefabs;
     [SerializeField] List<GameObject> trackPieces;
 
     public TrackSpline GetTrackPiece(int index){
@@ -19,14 +16,6 @@ public class TrackGenerator : MonoBehaviour
     }
     public TrackPieceType GetTrackPieceType(int index){
         return segments[index].type;
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        if(test){
-            test = false;
-            GenerateTrackPls();
-        }
     }
     void GenerateTrackPls(){
         for(int i = 0; i < transform.childCount; i++){
@@ -77,6 +66,7 @@ public class TrackGenerator : MonoBehaviour
                 track = Instantiate(segments[i].validated ? trackPrefabs[useIndex] : scannningPrefabs[3], pos, rot, transform);
                 //if curve right set scale to x -1
                 track.transform.localScale = new Vector3(segments[i].flipped ? -1 : 1, 1, 1);
+                track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
                 //pos += forward;
                 //rotate forward vector
                 forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
