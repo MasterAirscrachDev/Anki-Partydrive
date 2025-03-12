@@ -39,6 +39,7 @@ namespace OverdriveServer {
                     int rightWheelDistance = content[17];
                     // There is a shorter segment for the starting line track. (this fails on inside turns)
                     bool crossedStartingLine = false;
+                    //greater than 25 and less than 37 (mm presumably)
                     if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
                         crossedStartingLine = true;
                         Program.UtilLog($"-5:{car.id}:{DateTime.Now.ToBinary()}"); //UPGRADE TO WORK WITH MULTI FINISH LINES

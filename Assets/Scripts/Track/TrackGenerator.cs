@@ -66,7 +66,7 @@ public class TrackGenerator : MonoBehaviour
                 track = Instantiate(segments[i].validated ? trackPrefabs[useIndex] : scannningPrefabs[3], pos, rot, transform);
                 //if curve right set scale to x -1
                 track.transform.localScale = new Vector3(segments[i].flipped ? -1 : 1, 1, 1);
-                track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
+                //track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
                 //pos += forward;
                 //rotate forward vector
                 forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
@@ -118,7 +118,12 @@ public class TrackGenerator : MonoBehaviour
     }
     public void Generate(TrackPiece[] segments){
         this.segments = segments;
-        GenerateTrackPls();
+        try{
+            GenerateTrackPls();
+        }
+        catch(System.Exception e){
+            Debug.LogError(e);
+        }
         trackCamera.TrackUpdated();
     }
 }

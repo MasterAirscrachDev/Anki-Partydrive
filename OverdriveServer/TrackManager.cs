@@ -84,8 +84,7 @@ namespace OverdriveServer {
             public readonly int internalID;
             public readonly bool flipped;
             public readonly int X, Y;
-            public int up, down, elevation;
-            public bool validated = false;
+            public int up, down, elevation, certaintyScore;
             public TrackPiece(TrackPieceType type, int id, bool flipped, int X, int Y){
                 this.type = type;
                 this.flipped = flipped;
