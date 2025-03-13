@@ -54,9 +54,8 @@ namespace OverdriveServer {
                     return;
                 }
                 
-            } else if(id == RECV_CAR_ERROR){ //42 car error
-                int error = content[2];
-                Program.Log($"[42] {car.name} error: {error}");
+            } else if(id == RECV_TRACK_INTERSECTION){ //42 track intersection
+                //
             } else if(id == RECV_CAR_OFF_TRACK){ //43 ONOH FALL
                 Program.UtilLog($"43:{car.id}");
                 Program.Log($"[43] {car.name} fell off track");

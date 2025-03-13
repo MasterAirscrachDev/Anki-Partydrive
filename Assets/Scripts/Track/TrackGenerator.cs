@@ -118,6 +118,9 @@ public class TrackGenerator : MonoBehaviour
     }
     public void Generate(TrackPiece[] segments){
         this.segments = segments;
+        for(int i = 0; i < segments.Length; i++){
+            Debug.Log($"Segment {i}: {segments[i]}");
+        }
         try{
             GenerateTrackPls();
         }

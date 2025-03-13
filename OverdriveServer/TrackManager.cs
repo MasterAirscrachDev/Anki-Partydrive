@@ -7,7 +7,12 @@ namespace OverdriveServer {
         TrackPiece[]? track;
         bool trackValidated = false;
         List<TrackCarLocation> carLocations;
-        public void SetTrack(TrackPiece[] track, bool validated){ this.track = track; trackValidated = validated; }
+        public void SetTrack(TrackPiece[] track, bool validated){ 
+            this.track = track; trackValidated = validated; 
+            // for(int i = 0; i < track.Length; i++){ 
+            //     Program.Log($"Track Piece {i}: {track[i]}");
+            // }
+        }
         public TrackManager(){
             carLocations = new List<TrackCarLocation>();
             Program.messageManager.CarEventLocationCall += OnCarPosUpdate;
@@ -83,13 +88,14 @@ namespace OverdriveServer {
             public readonly TrackPieceType type;
             public readonly int internalID;
             public readonly bool flipped;
-            public int up, down, elevation, certaintyScore;
+            public int up, down, elevation;
             public TrackPiece(TrackPieceType type, int id, bool flipped){
                 this.type = type;
                 this.flipped = flipped;
                 internalID = id;
                 up = 0; down = 0;
             }
+            public bool validated = false;
             public void SetUpDown(int up, int down){ this.up = up; this.down = down; }
             public override bool Equals(object? obj) { // Check for null and compare run-time types.
                 if (obj == null || !GetType().Equals(obj.GetType())) { return false; }
@@ -132,7 +138,7 @@ namespace OverdriveServer {
             }
             public void SetLast(int id, bool flipped) {
                 if(lastTracks.Count == 0){ return;}
-                TrackPieceType type = TrackScanner.PeiceFromID(id);
+                TrackPieceType type = TrackScanner.PieceFromID(id);
                 lastTracks[lastTracks.Count - 1] = new TypeIDPair(type, id, flipped);
             }
             public string GetLastTracks() {
