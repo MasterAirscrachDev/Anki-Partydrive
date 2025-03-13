@@ -40,12 +40,12 @@ namespace OverdriveServer {
                     // There is a shorter segment for the starting line track. (this fails on inside turns)
                     bool crossedStartingLine = false;
                     //greater than 25 and less than 37 (mm presumably)
-                    if ((leftWheelDistance < 0x25) && (leftWheelDistance > 0x19) && (rightWheelDistance < 0x25) && (rightWheelDistance > 0x19)) {
+                    if ((leftWheelDistance < 36) && (leftWheelDistance > 32) && (rightWheelDistance < 36) && (rightWheelDistance > 32)) {
                         crossedStartingLine = true;
                         Program.UtilLog($"-5:{car.id}:{DateTime.Now.ToBinary()}"); //UPGRADE TO WORK WITH MULTI FINISH LINES
                     }
                     Program.UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{crossedStartingLine}");
-                    Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, up:{uphillCounter}down:{downhillCounter}, offest: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance}, CrossedFinishLine: {crossedStartingLine}");
+                    Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, Y:(+{uphillCounter} -{downhillCounter}), X: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance}, Finish: {crossedStartingLine}");
                     CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
                     car.LaneCheck();
                 }

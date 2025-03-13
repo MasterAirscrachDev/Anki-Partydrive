@@ -83,25 +83,23 @@ namespace OverdriveServer {
             public readonly TrackPieceType type;
             public readonly int internalID;
             public readonly bool flipped;
-            public readonly int X, Y;
             public int up, down, elevation, certaintyScore;
-            public TrackPiece(TrackPieceType type, int id, bool flipped, int X, int Y){
+            public TrackPiece(TrackPieceType type, int id, bool flipped){
                 this.type = type;
                 this.flipped = flipped;
                 internalID = id;
                 up = 0; down = 0;
-                this.X = X; this.Y = Y;
             }
             public void SetUpDown(int up, int down){ this.up = up; this.down = down; }
-            public bool IsAt(int x, int y){ return X == x && Y == y; }
-            public override bool Equals(object obj) { // Check for null and compare run-time types.
+            public override bool Equals(object? obj) { // Check for null and compare run-time types.
                 if (obj == null || !GetType().Equals(obj.GetType())) { return false; }
                 else {
                     TrackPiece p = (TrackPiece)obj;
                     return (type == p.type) && (internalID == p.internalID) && (flipped == p.flipped);
                 }
             }
-            public override string ToString() { return $"({type}|{internalID}|[{X},{Y}])"; }
+            public override int GetHashCode() { return (type, internalID, flipped).GetHashCode(); }
+            public override string ToString() { return $"({type}|{internalID})"; }
         }
         [System.Serializable]
         public enum TrackPieceType{

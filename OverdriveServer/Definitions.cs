@@ -32,11 +32,13 @@
         public const byte SEND_CAR_CHANGE_DIRECTION = 0x32; //50
         public const byte SEND_CAR_CONFIGURATION = 0x45; //69
         public const byte SEND_ROAD_NETWORK_META = 0x49; //73
+        public const byte RECV_TRACK_TRANSITION_2 = 0x51; //81
         public const byte RECV_CAR_MESSAGE_CYCLE_OVERTIME = 0x86; //134
         //Unknown
         public const byte RECV_UNKNOWN_65 = 0x41; //65 slip ? car on track ?
         public const byte RECV_UNKNOWN_67 = 0x43; //67
         public const byte RECV_UNKNOWN_78 = 0x4e; //78
         public const byte RECV_UNKNOWN_79 = 0x4f; //79
+        
     }
 }

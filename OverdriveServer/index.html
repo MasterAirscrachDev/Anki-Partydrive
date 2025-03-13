@@ -67,12 +67,21 @@
 </head>
 <body>
     <h1>Overdrive Server</h1>
-    <form action='/scan'>
-        <button type='submit'>Scan for cars</button>
-    </form>
+    <div style="display: flex;">
+        <form action='/scan'>
+            <button type='submit'>Scan for cars</button>
+        </form>
+        <form action='/cars'>
+            <button type='submit'>Get Car Data</button>
+        </form>
+    </div>
+    
+    <div id="car-list" style="display: flex;">
+        
 
+    </div>
 
-    <div id="car-data" class="carBlock">
+    <div id="car-data" class="carBlock" style="display: none;">
         <div class="carBlockContent">
             <p id="car-name">Name:  Template</p>
             <p id="car-id">ID: 0000000000</p>
@@ -103,42 +112,43 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Select all forms
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent default form submission
-
-                let actionUrl = form.getAttribute('action'); // Get the form's action URL
-                const formData = new FormData(form); // Collect form data
-
-                // Construct query string
-                data = '';
-                //if formdata has 1 entry, set data to that entry
-                if(formData.entries().next().value){
-                    data = formData.entries().next().value[1];
-                }
-                actionUrl += data; // Append data to action URL
-                console.log(actionUrl);
-                // Send the request asynchronously
-                fetch(actionUrl, {
-                    method: 'GET',
-                })
-                .then(response => response.text()) // Convert response to text (or JSON if expected)
-                .then(data => {
-                    console.log('Success:', data); // Handle success
-                })
-                .catch((error) => {
-                    console.error('Error:', error); // Handle errors
-                });
-            });
-        });
-        //create 3 copies of the car block
-        for (let i = 0; i < 3; i++) {
-            const carBlock = document.getElementById('car-data').cloneNode(true);
-            carBlock.id = 'car-data-' + i;
-            document.body.appendChild(carBlock);
-        }
+        refreshFormBindings();
     });
+
+    function refreshFormBindings() {
+        // Select all forms
+        const forms = document.querySelectorAll('form');
+        //remove all event listeners
+        forms.forEach(form => {
+            form.removeEventListener('submit', onFormSubmit);
+            form.addEventListener('submit', onFormSubmit);
+        });
+    }
+    function onFormSubmit(event){
+        event.preventDefault(); // Prevent default form submission
+        let actionUrl = form.getAttribute('action'); // Get the form's action URL
+        const formData = new FormData(form); // Collect form data
+
+        // Construct query string
+        data = '';
+        //if formdata has 1 entry, set data to that entry
+        if(formData.entries().next().value){
+            data = formData.entries().next().value[1];
+        }
+        actionUrl += data; // Append data to action URL
+        console.log(actionUrl);
+        // Send the request asynchronously
+        fetch(actionUrl, {
+            method: 'GET',
+        })
+        .then(response => response.text()) // Convert response to text (or JSON if expected)
+        .then(data => {
+            console.log('Success:', data); // Handle success
+        })
+        .catch((error) => {
+            console.error('Error:', error); // Handle errors
+        });
+    }
     </script>
 </body>
 </html>

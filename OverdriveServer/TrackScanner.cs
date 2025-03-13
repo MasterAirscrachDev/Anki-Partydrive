@@ -2,10 +2,9 @@
 namespace OverdriveServer {
     class TrackScanner {
         List<TrackPiece> trackPieces;
-        bool tracking = false, checkingScan = false, successfulScan = false, finishedScan = false;
-        int retries = 0, maxRetries = 3;
+        bool hasAddedPieceThisSegment = false, successfulScan = false, finishedScan = false;
+        bool isScanning = false;
         int currentPieceIndex = 0;
-        int X = 0, Y = 0, direction = 0;
         Car scanningCar;
         public async Task<bool> CancelScan(Car cancelThis) {
             if(scanningCar == cancelThis){
@@ -35,7 +34,7 @@ namespace OverdriveServer {
             await car.SetCarLane(0);
             while (!finishedScan){ await Task.Delay(500); }
         }
-        void ResetScan() { trackPieces.Clear(); X = 0; Y = 0; direction = 0; currentPieceIndex = 0; }
+        void ResetScan() { trackPieces.Clear(); }
         async Task SendFinishedTrack() {
             SetEventsSub(false);
             await scanningCar.SetCarSpeed(0, 500);
@@ -46,65 +45,80 @@ namespace OverdriveServer {
             Program.trackManager.SetTrack(successfulScan ? solvedPieces : null, successfulScan);
             finishedScan = true;
         }
-        void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
-            tracking = true; if(trackPieces.Count > 0){ trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);}
-        }
-        void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise) {
-            if(tracking) {
-                tracking = false; bool AutoIncrementIndex = true;
-                TrackPieceType type = PeiceFromID(trackID);
-                TrackPiece piece = new TrackPiece(type, trackID, clockwise, X, Y);
-                if(type == TrackPieceType.FinishLine && trackPieces.Count == 0) { //add a prefinish line piece if the finish line is the first piece
-                    trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, clockwise, X, Y));
-                }
-                if(checkingScan) {
-                    bool valid = ValidateTrackPiece(piece); if(!valid){ return; }
-                } else {
-                    trackPieces.Add(piece);
-                    if(type == TrackPieceType.Turn){ RotateDirection(clockwise); } //rotate the direction if we are on a turn
-                    if(type != TrackPieceType.PreFinishLine) {
-                        if(type != TrackPieceType.Unknown){ MoveBasedOnDirection(); } //move the car forward if we are not on a prefinish line
-                        else{ Program.Log($"Unknown track piece: {trackID}, internal id:{(int)type}"); }
-                    } else { AutoIncrementIndex = false; }
-
-                    if(!checkingScan && trackPieces.Count > 4 && trackPieces[0].IsAt(X, Y)){ //if our current position is the same as the start position, set checkingScan to true
-                        checkingScan = true; currentPieceIndex = -1;
-                    }
-                }
-                SendCurrentTrack();
-                //Console.WriteLine($"index: {currentPieceIndex}/{trackPieces.Count} is ({type}|{trackID}|[{oldX},{oldY}]), checking: {checkingScan}, retries: {retries}");
-                currentPieceIndex+= AutoIncrementIndex ? 1 : 0;
+        void OnCarJumped(string carID) {
+            if(carID == scanningCar.id) {
+                OnTrackPosition(carID, 0, 58, 0, 0, false); //jump ramp
+                hasAddedPieceThisSegment = true;
+                OnTrackPosition(carID, 0, 63, 0, 0, false); //jump landing
             }
         }
-        void RotateDirection(bool clockwise){
+        void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
+            if(!isScanning){
+                if(crossedStartingLine){ 
+                    isScanning = true;
+                    trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
+                    trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
+                    trackPieces[0].certaintyScore = 100;
+                    trackPieces[1].certaintyScore = 100;
+                    currentPieceIndex = 1;
+                    hasAddedPieceThisSegment = false;
+                }
+            }else{
+                if(!hasAddedPieceThisSegment){
+                    if(crossedStartingLine){
+                        successfulScan = true;
+                        finishedScan = true;
+                        SendFinishedTrack();
+                    }else{
+                        if(Abs(leftWheelDistance - rightWheelDistance) < 2){
+                            trackPieces.Add(new TrackPiece(TrackPieceType.Straight, 36, false));
+                        }else if(leftWheelDistance > rightWheelDistance){
+                            trackPieces.Add(new TrackPiece(TrackPieceType.Turn, 17, false));
+                        }else{
+                            trackPieces.Add(new TrackPiece(TrackPieceType.Turn, 17, true));
+                        }
+                    }
+                }
+                //if(trackPieces.Count > 0){ trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);} //this would cause badness for loops
+                hasAddedPieceThisSegment = false;
+            }
+        }
+        void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise) {
+            if(!hasAddedPieceThisSegment && isScanning){
+                hasAddedPieceThisSegment = true;
+                TrackPieceType type = PeiceFromID(trackID);
+                if(type == TrackPieceType.Unknown || type ==  TrackPieceType.PreFinishLine || type ==  TrackPieceType.FinishLine){ return; }
+                TrackPiece piece = new TrackPiece(type, trackID, clockwise);
+                trackPieces.Add(piece);
+                currentPieceIndex++;
+                SendCurrentTrack();
+                //Console.WriteLine($"index: {currentPieceIndex}/{trackPieces.Count} is ({type}|{trackID}|[{oldX},{oldY}]), checking: {checkingScan}, retries: {retries}");
+            }
+        }
+        int RotateDirection(bool clockwise, int direction) {
             if(clockwise){ direction++; }else{ direction--; }
             if(direction == 4){ direction = 0; }
             else if(direction == -1){ direction = 3; }
+            return direction;
         }
-        void MoveBasedOnDirection(int spaces = 1){
+        (int,int) MoveBasedOnDirection(int spaces, int direction, int X, int Y) {
             if(direction == 0){ Y += spaces; }
             else if(direction == 1){ X += spaces; }
             else if(direction == 2){ Y -= spaces; }
             else if(direction == 3){ X -= spaces; }
+            return (X,Y);
         }
-        bool ValidateTrackPiece(TrackPiece piece) { //if this piece is the same as the piece at the same index in the trackPieces list, we are on the right track
-            if(!trackPieces[currentPieceIndex].Equals(piece)) {
-                retries++; //if we have retried too many times, we have failed the scan
-                if(retries >= maxRetries) { finishedScan = true;  SendFinishedTrack(); }
-                else{ checkingScan = false; ResetScan(); return false; }
-            } else {
-                trackPieces[currentPieceIndex].validated = true;
-                if(currentPieceIndex == trackPieces.Count - 1){ successfulScan = true; finishedScan = true; SendFinishedTrack(); }
-            }
-            return true;
-        }
-        void OnCarJumped(string carID) {
-            if(carID == scanningCar.id) {
-                OnTrackPosition(carID, 0, 58, 0, 0, false); //jump ramp
-                tracking = true;
-                OnTrackPosition(carID, 0, 63, 0, 0, false); //jump landing
-            }
-        }
+        // bool ValidateTrackPiece(TrackPiece piece) { //if this piece is the same as the piece at the same index in the trackPieces list, we are on the right track
+        //     if(!trackPieces[currentPieceIndex].Equals(piece)) {
+        //         retries++; //if we have retried too many times, we have failed the scan
+        //         if(retries >= maxRetries) { finishedScan = true;  SendFinishedTrack(); }
+        //         else{ checkingScan = false; ResetScan(); return false; }
+        //     } else {
+        //         if(currentPieceIndex == trackPieces.Count - 1){ successfulScan = true; finishedScan = true; SendFinishedTrack(); }
+        //     }
+        //     return true;
+        // }
+        
         void SendCurrentTrack() {
             Program.trackManager.SetTrack(trackPieces.ToArray(), false);
             Program.UtilLog($"-3:{scanningCar.id}");
@@ -120,5 +134,6 @@ namespace OverdriveServer {
             else if(id == 63){ return TrackPieceType.JumpLanding; }
             else{ return TrackPieceType.Unknown; }
         }
+        int Abs(int i) { return i < 0 ? -i : i; }
     }
 }

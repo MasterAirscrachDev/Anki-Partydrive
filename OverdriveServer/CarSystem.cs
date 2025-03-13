@@ -112,8 +112,8 @@ namespace OverdriveServer {
         public async Task SetCarSpeed(int speed, int accel = 1000){
             //only balance speed if not 0
             if(speedBalance != 0 && speed != 0){  speed = Math.Clamp(speed + speedBalance, 0, 1200); }
-            byte[] data = new byte[7];
-            data[0] = 0x06;
+            byte[] data = new byte[8];
+            data[0] = 0x07;
             data[1] = SEND_CAR_SPEED_UPDATE;
             //speed as int16
             data[2] = (byte)(speed & 0xFF);
@@ -123,6 +123,7 @@ namespace OverdriveServer {
             data[5] = (byte)((accel >> 8) & 0xFF);
             //respect track piece speed limits
             data[6] = 0x01;
+            data[7] = 0x01;
             await WriteToCarAsync(data);
             this.data.speed = speed;
         }

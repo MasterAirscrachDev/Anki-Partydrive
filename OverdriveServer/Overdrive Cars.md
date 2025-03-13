@@ -33,5 +33,12 @@ and some `Diodes Inc. DMG1016V` mosfets.
 3. Ensure the motor wires are routed through the slots at the back of the PCB
 4. Reassemble the car (Be careful with the clips, they are fragile)
 
+### ChargeFlash
+the cars let you flash them using the charging pins using a modified charger like this:
+UART Tx Pin -> Base of NPN Transistor
+UART 5V Pin -> NPN Transistor collector
+Charger Positive -> NPN Transistor emitter
+Charger Ground -> UART Ground
+
 
 [Back To Root](https://github.com/MasterAirscrachDev/Anki-Partydrive?tab=readme-ov-file#anki-partydrive)
