@@ -38,4 +38,12 @@ public class TrackSpline : MonoBehaviour
         }
         return points;
     }
+
+    void OnDrawGizmosSelected(){
+        Gizmos.color = Color.green;
+        for(int i = 0; i < leftPoints.Length - 1; i++){
+            Gizmos.DrawLine(transform.TransformPoint(leftPoints[i]), transform.TransformPoint(leftPoints[i + 1]));
+            Gizmos.DrawLine(transform.TransformPoint(RightPoints[i]), transform.TransformPoint(RightPoints[i + 1]));
+        }
+    }
 }

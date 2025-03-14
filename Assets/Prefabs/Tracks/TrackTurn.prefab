@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4556589103512767978}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -97,16 +97,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftPoints:
-  - {x: 0.25062, y: 0, z: -0.49979}
-  - {x: 0.2112, y: 0, z: -0.2627}
-  - {x: 0.12371, y: 0, z: -0.0832}
-  - {x: -0.03851, y: 0, z: 0.09137}
-  - {x: -0.2614, y: 0, z: 0.2109}
-  - {x: -0.49994, y: 0, z: 0.24979}
+  - {x: 0.2, y: 0, z: -0.49979}
+  - {x: 0.166, y: 0, z: -0.283}
+  - {x: 0.089, y: 0, z: -0.115}
+  - {x: -0.115, y: 0, z: 0.089}
+  - {x: -0.283, y: 0, z: 0.166}
+  - {x: -0.49994, y: 0, z: 0.2}
   RightPoints:
-  - {x: -0.2498, y: 0, z: -0.4991}
-  - {x: -0.2607, y: 0, z: -0.4272}
-  - {x: -0.2999, y: 0, z: -0.3514}
-  - {x: -0.3505, y: 0, z: -0.2984}
-  - {x: -0.4268, y: 0, z: -0.2612}
-  - {x: -0.5003, y: 0, z: -0.2493}
+  - {x: -0.2, y: 0, z: -0.5}
+  - {x: -0.21, y: 0, z: -0.42}
+  - {x: -0.246, y: 0, z: -0.337}
+  - {x: -0.337, y: 0, z: -0.246}
+  - {x: -0.42, y: 0, z: -0.21}
+  - {x: -0.5, y: 0, z: -0.2}
+  simple: 0
+  flipped: 0

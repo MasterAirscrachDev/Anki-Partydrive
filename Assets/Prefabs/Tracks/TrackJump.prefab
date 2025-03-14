@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8403528684596855081}
   - component: {fileID: 4841527129684086412}
   - component: {fileID: 7265564092682500678}
+  - component: {fileID: 8652843096061166051}
   m_Layer: 0
   m_Name: TrackJump
   m_TagString: Untagged
@@ -83,3 +84,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8652843096061166051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9211132806049291155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftPoints:
+  - {x: -0.2, y: 0, z: -0.5}
+  - {x: -0.2, y: 0.06, z: 0}
+  - {x: -0.2, y: 0.2, z: 0.35}
+  - {x: -0.2, y: 0.27, z: 0.47}
+  - {x: -0.2, y: 0.2, z: 0.69}
+  - {x: -0.2, y: 0.05, z: 1}
+  - {x: -0.2, y: 0, z: 1.5}
+  RightPoints:
+  - {x: 0.2, y: 0, z: -0.5}
+  - {x: 0.2, y: 0.06, z: 0}
+  - {x: 0.2, y: 0.2, z: 0.35}
+  - {x: 0.2, y: 0.27, z: 0.47}
+  - {x: 0.2, y: 0.2, z: 0.69}
+  - {x: 0.2, y: 0.05, z: 1}
+  - {x: 0.2, y: 0, z: 1.5}
+  simple: 0
+  flipped: 0

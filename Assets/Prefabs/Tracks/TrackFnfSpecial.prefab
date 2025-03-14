@@ -27,8 +27,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6319217318122853736}
   m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: -0.126, y: 0.0001, z: 0}
-  m_LocalScale: {x: 0.3922, y: 0.22, z: 1}
+  m_LocalPosition: {x: -0.1007, y: 0.0001, z: 0}
+  m_LocalScale: {x: 0.3228669, y: 0.1811084, z: 0.82322}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8830334630018504523}
@@ -124,7 +124,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8196681214722379249}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -196,8 +196,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftPoints:
-  - {x: -0.25, y: 0, z: -0.5}
-  - {x: -0.25, y: 0, z: 0.5}
+  - {x: -0.2, y: 0, z: -0.5}
+  - {x: -0.2, y: 0, z: 0.5}
   RightPoints:
-  - {x: 0.25, y: 0, z: -0.5}
-  - {x: 0.25, y: 0, z: 0.5}
+  - {x: 0.2, y: 0, z: -0.5}
+  - {x: 0.2, y: 0, z: 0.5}
+  simple: 1
+  flipped: 0

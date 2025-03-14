@@ -106,6 +106,7 @@ public class TrackGenerator : MonoBehaviour
             } if(segments[i].type == TrackPieceType.JumpRamp){
                 track = Instantiate(segments[i].validated ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
                 pos += forward * 2;
+                track.transform.Rotate(0, 180, 0);
             }
 
             trackPieces.Add(track);
@@ -118,9 +119,15 @@ public class TrackGenerator : MonoBehaviour
     }
     public void Generate(TrackPiece[] segments){
         this.segments = segments;
-        for(int i = 0; i < segments.Length; i++){
-            Debug.Log($"Segment {i}: {segments[i]}");
+        //does segments contain any null values?
+        if(System.Array.Exists(segments, x => x == null)){
+            for(int i = 0; i < segments.Length; i++){
+                Debug.Log($"Segment {i}: {segments[i]}");
+            }
+            return;
         }
+
+        
         try{
             GenerateTrackPls();
         }
