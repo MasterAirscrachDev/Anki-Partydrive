@@ -3,7 +3,7 @@ namespace OverdriveServer {
     class TrackScanner {
         List<TrackPiece> trackPieces = new List<TrackPiece>();
         List<TrackPiece>? validationTrack;
-        bool hasAddedPieceThisSegment = false, successfulScan = false, finishedScan = false;
+        bool successfulScan = false, finishedScan = false;
         bool isScanning = false, isValidation = false;
         int skipSegments = 0, finishesPassed = 0, scanAttempts = 0;
 
@@ -49,7 +49,6 @@ namespace OverdriveServer {
             isScanning = false; 
             isValidation = false; 
             finishesPassed = 0;
-            hasAddedPieceThisSegment = false; 
             scanAttempts = resetAttempts;
             if(scanAttempts > 0){
                 Program.Log($"Scan attempt {scanAttempts}");
@@ -74,7 +73,8 @@ namespace OverdriveServer {
                 trackPieces[trackPieces.Count - 1].validated = isValidation;
                 trackPieces[trackPieces.Count - 2].validated = isValidation;
                 trackPieces[trackPieces.Count - 3].validated = isValidation;
-                skipSegments = 5;
+                skipSegments = 4;
+                ValidateMatchAndSendTrack();
             }
         }
         void OnCarFell(string carID) {
@@ -83,87 +83,97 @@ namespace OverdriveServer {
             }
         }
         void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise) {
-            // if(carID == scanningCar.id){ 
-            //     lastFlipped = clockwise;
-            //     lastTrackID = trackID;
-            // }
-            if(!hasAddedPieceThisSegment && isScanning){
-                if(skipSegments > 0){ skipSegments--; return; }
-                hasAddedPieceThisSegment = true;
-                TrackPieceType type = PieceFromID(trackID);
-                if(
-                    type == TrackPieceType.Unknown || 
-                    type ==  TrackPieceType.PreFinishLine || 
-                    type ==  TrackPieceType.FinishLine ||
-                    type ==  TrackPieceType.JumpRamp ||
-                    type ==  TrackPieceType.JumpLanding
-                ){ hasAddedPieceThisSegment = false; return; }
-                trackPieces.Add(new TrackPiece(type, trackID, clockwise));
-                trackPieces[trackPieces.Count - 1].validated = isValidation;
-                ValidateMatchAndSendTrack();
+            if(carID == scanningCar.id){ 
+                lastFlipped = clockwise;
+                lastTrackID = trackID;
             }
+            // if(!hasAddedPieceThisSegment && isScanning){
+            //     if(skipSegments > 0){ skipSegments--; return; }
+            //     hasAddedPieceThisSegment = true;
+            //     TrackPieceType type = PieceFromID(trackID);
+            //     if(
+            //         type == TrackPieceType.Unknown || 
+            //         type ==  TrackPieceType.PreFinishLine || 
+            //         type ==  TrackPieceType.FinishLine ||
+            //         type ==  TrackPieceType.JumpRamp ||
+            //         type ==  TrackPieceType.JumpLanding
+            //     ){ hasAddedPieceThisSegment = false; return; }
+            //     trackPieces.Add(new TrackPiece(type, trackID, clockwise));
+            //     trackPieces[trackPieces.Count - 1].validated = isValidation;
+            //     ValidateMatchAndSendTrack();
+            // }
         }
         void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
             if(!isScanning){ //true until we reach the first finish line
-                if(crossedStartingLine){ 
+                if(crossedStartingLine){
                     scanningCar.SetCarSpeed(450, 500);
                     isScanning = true;
                     trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
                     trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
-                    skipSegments = 2; //i dont like this
-                    hasAddedPieceThisSegment = false;
+                    skipSegments = 1; //i dont like this
                 }
             }else{
-                if(!hasAddedPieceThisSegment){
-                    if(skipSegments > 0){ skipSegments--; return; }
-                    if(crossedStartingLine){ //currently only supports one finish piece
-                        finishesPassed++;
-                        if(finishesPassed >= finishCount){
-                            if(!isValidation){
-                                validationTrack = trackPieces.ToList();
-                                if(ValidateTrackConnects(validationTrack)){
-                                    isValidation = true;
-                                    trackPieces.Clear();
-                                    trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
-                                    trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
-                                    trackPieces[trackPieces.Count - 1].validated = true;
-                                    trackPieces[trackPieces.Count - 2].validated = true;
-                                    skipSegments = 2;
-                                    hasAddedPieceThisSegment = false;
-                                    return;
-                                }else{
-                                    scanAttempts++;
-                                    if(scanAttempts > 3){ finishedScan = true; return; }
-                                    trackPieces.Clear();
-                                    validationTrack = null;
-                                    isValidation = false;
-                                    finishesPassed = 0;
-                                    hasAddedPieceThisSegment = false;
-                                    skipSegments = 2;
-                                    trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
-                                    trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
-                                }
-                            }else {
-                                //compare validation track to trackPieces
-                                successfulScan = MatchTracks(validationTrack, trackPieces);
-                                Program.Log($"Validation: {successfulScan}");
-                                SendFinishedTrack();
+                int trackID = lastTrackID; lastTrackID = 0;
+                if(skipSegments > 0){ skipSegments--; return; }
+                if(crossedStartingLine){ //currently only supports one finish piece
+                    finishesPassed++;
+                    if(finishesPassed >= finishCount){
+                        if(!isValidation){
+                            validationTrack = trackPieces.ToList();
+                            if(ValidateTrackConnects(validationTrack)){
+                                isValidation = true;
+                                trackPieces.Clear();
+                                trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
+                                trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
+                                trackPieces[trackPieces.Count - 1].validated = true;
+                                trackPieces[trackPieces.Count - 2].validated = true;
+                                skipSegments = 2;
+                                return;
+                            }else{
+                                scanAttempts++;
+                                if(scanAttempts > 3){ finishedScan = true; return; }
+                                trackPieces.Clear();
+                                validationTrack = null;
+                                isValidation = false;
+                                finishesPassed = 0;
+                                skipSegments = 2;
+                                trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
+                                trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
                             }
+                        }else {
+                            //compare validation track to trackPieces
+                            successfulScan = MatchTracks(validationTrack, trackPieces);
+                            Program.Log($"Validation: {successfulScan}");
+                            SendFinishedTrack();
                         }
+                    }
+                }else{
+                    bool fallback = false;
+                    if(trackID != 0){
+                        TrackPieceType type = PieceFromID(trackID);
+                        if(
+                            type == TrackPieceType.Unknown || 
+                            type ==  TrackPieceType.PreFinishLine || 
+                            type ==  TrackPieceType.FinishLine ||
+                            type ==  TrackPieceType.JumpRamp ||
+                            type ==  TrackPieceType.JumpLanding
+                        ){ return; }
+                        trackPieces.Add(new TrackPiece(type, trackID, lastFlipped));
+                    }
+                    else if(Abs(leftWheelDistance - rightWheelDistance) < 4){
+                        trackPieces.Add(new TrackPiece(TrackPieceType.Straight, 36, false));
+                        fallback = true;
                     }else{
-                        if(Abs(leftWheelDistance - rightWheelDistance) < 4){
-                            trackPieces.Add(new TrackPiece(TrackPieceType.Straight, 36, false));
-                        }else if(leftWheelDistance > rightWheelDistance){
-                            trackPieces.Add(new TrackPiece(TrackPieceType.Turn, 17, true));
-                        }else{
-                            trackPieces.Add(new TrackPiece(TrackPieceType.Turn, 17, false));
-                        }
-                        trackPieces[trackPieces.Count - 1].validated = isValidation;
+                        trackPieces.Add(new TrackPiece(TrackPieceType.Turn, 17, leftWheelDistance > rightWheelDistance));
+                        fallback = true;
+                    }
+                    trackPieces[trackPieces.Count - 1].validated = isValidation;
+                    trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);
+                    if(fallback){
                         Program.Log($"TEMP: used fallback for transition, {trackPieces[trackPieces.Count - 1].type}, from L{leftWheelDistance} and R{rightWheelDistance}");
                     }
+                    ValidateMatchAndSendTrack();
                 }
-                //if(trackPieces.Count > 0){ trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);} //this would cause badness for loops
-                hasAddedPieceThisSegment = false;
             }
         }
         

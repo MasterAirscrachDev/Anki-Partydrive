@@ -106,7 +106,6 @@ public class TrackGenerator : MonoBehaviour
             } if(segments[i].type == TrackPieceType.JumpRamp){
                 track = Instantiate(segments[i].validated ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
                 pos += forward * 2;
-                //track.transform.Rotate(0, 180, 0);
             }
 
             trackPieces.Add(track);

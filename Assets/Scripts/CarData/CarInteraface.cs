@@ -187,6 +187,7 @@ public class CarInteraface : MonoBehaviour
         string trackString = await track.Content.ReadAsStringAsync();
         TrackPiece[] trackPieces = JsonConvert.DeserializeObject<TrackPiece[]>(trackString);
         FindObjectOfType<TrackGenerator>().Generate(trackPieces);
+        //FindObjectOfType<UIManager>().SetIsScanningTrack(false);
     }
     public void Call(string call){
         ApiCall(call);
