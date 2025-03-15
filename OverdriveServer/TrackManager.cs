@@ -9,9 +9,6 @@ namespace OverdriveServer {
         List<TrackCarLocation> carLocations;
         public void SetTrack(TrackPiece[] track, bool validated){ 
             this.track = track; trackValidated = validated; 
-            // for(int i = 0; i < track.Length; i++){ 
-            //     Program.Log($"Track Piece {i}: {track[i]}");
-            // }
         }
         public TrackManager(){
             carLocations = new List<TrackCarLocation>();

@@ -7,6 +7,8 @@ namespace OverdriveServer {
         bool isScanning = false, isValidation = false;
         int skipSegments = 0, finishesPassed = 0, scanAttempts = 0;
 
+        int lastTrackID; bool lastFlipped;
+
 
         int finishCount = 1; //temp hardcoded
 
@@ -25,15 +27,16 @@ namespace OverdriveServer {
                 Program.messageManager.CarEventLocationCall += OnTrackPosition; 
                 Program.messageManager.CarEventTransitionCall += OnTrackTransition;
                 Program.messageManager.CarEventJumpCall += OnCarJumped;
+                Program.messageManager.CarEventFellCall += OnCarFell;
             }else{ 
                 Program.messageManager.CarEventLocationCall -= OnTrackPosition;
                 Program.messageManager.CarEventTransitionCall -= OnTrackTransition;
                 Program.messageManager.CarEventJumpCall -= OnCarJumped;
+                Program.messageManager.CarEventFellCall -= OnCarFell;
             }
         }
         public async Task ScanTrack(Car car) {
             scanningCar = car;
-            trackPieces = new List<TrackPiece>();
             ResetScan();
             SetEventsSub(true);
             await car.SetCarSpeed(600, 500);
@@ -45,6 +48,7 @@ namespace OverdriveServer {
             validationTrack = null; 
             isScanning = false; 
             isValidation = false; 
+            finishesPassed = 0;
             hasAddedPieceThisSegment = false; 
             scanAttempts = resetAttempts;
             if(scanAttempts > 0){
@@ -60,6 +64,7 @@ namespace OverdriveServer {
             Program.UtilLog(content);
             Program.trackManager.SetTrack(successfulScan ? solvedPieces : null, successfulScan);
             finishedScan = true;
+            Program.Log($"Track scan finished, succsess: {successfulScan}, {solvedPieces.Length} pieces");
         }
         void OnCarJumped(string carID) {
             if(carID == scanningCar.id) {
@@ -70,6 +75,32 @@ namespace OverdriveServer {
                 trackPieces[trackPieces.Count - 2].validated = isValidation;
                 trackPieces[trackPieces.Count - 3].validated = isValidation;
                 skipSegments = 5;
+            }
+        }
+        void OnCarFell(string carID) {
+            if(carID == scanningCar.id) {
+                SendFinishedTrack();
+            }
+        }
+        void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise) {
+            // if(carID == scanningCar.id){ 
+            //     lastFlipped = clockwise;
+            //     lastTrackID = trackID;
+            // }
+            if(!hasAddedPieceThisSegment && isScanning){
+                if(skipSegments > 0){ skipSegments--; return; }
+                hasAddedPieceThisSegment = true;
+                TrackPieceType type = PieceFromID(trackID);
+                if(
+                    type == TrackPieceType.Unknown || 
+                    type ==  TrackPieceType.PreFinishLine || 
+                    type ==  TrackPieceType.FinishLine ||
+                    type ==  TrackPieceType.JumpRamp ||
+                    type ==  TrackPieceType.JumpLanding
+                ){ hasAddedPieceThisSegment = false; return; }
+                trackPieces.Add(new TrackPiece(type, trackID, clockwise));
+                trackPieces[trackPieces.Count - 1].validated = isValidation;
+                ValidateMatchAndSendTrack();
             }
         }
         void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
@@ -104,6 +135,9 @@ namespace OverdriveServer {
                                     scanAttempts++;
                                     if(scanAttempts > 3){ finishedScan = true; return; }
                                     trackPieces.Clear();
+                                    validationTrack = null;
+                                    isValidation = false;
+                                    finishesPassed = 0;
                                     hasAddedPieceThisSegment = false;
                                     skipSegments = 2;
                                     trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
@@ -132,24 +166,7 @@ namespace OverdriveServer {
                 hasAddedPieceThisSegment = false;
             }
         }
-        void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise) {
-            if(!hasAddedPieceThisSegment && isScanning){
-                if(skipSegments > 0){ skipSegments--; return; }
-                hasAddedPieceThisSegment = true;
-                TrackPieceType type = PieceFromID(trackID);
-                if(
-                    type == TrackPieceType.Unknown || 
-                    type ==  TrackPieceType.PreFinishLine || 
-                    type ==  TrackPieceType.FinishLine ||
-                    type ==  TrackPieceType.JumpRamp ||
-                    type ==  TrackPieceType.JumpLanding
-                ){ hasAddedPieceThisSegment = false; return; }
-                trackPieces.Add(new TrackPiece(type, trackID, clockwise));
-                trackPieces[trackPieces.Count - 1].validated = isValidation;
-                ValidateMatchAndSendTrack();
-                //Console.WriteLine($"index: {currentPieceIndex}/{trackPieces.Count} is ({type}|{trackID}|[{oldX},{oldY}]), checking: {checkingScan}, retries: {retries}");
-            }
-        }
+        
         int RotateDirection(bool clockwise, int direction) {
             if(clockwise){ direction++; }else{ direction--; }
             if(direction == 4){ direction = 0; }
