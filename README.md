@@ -24,14 +24,17 @@ This is not a remake of the Anki Overdrive app, I am not making a campaign or up
 - [x] Read the cars' state
 - [x] Control the cars speed
 - [x] Basic lane control
-- [x] Track Scanning
-- [x] Basic Car Tracking
-- [ ] Full Car Tracking
-- [ ] Accurate lane tracking
-- [ ] Race Mode support
+- [x] Track Scanning (Now V2 with fallback enhancement)
+- [x] Support for all overdrive tracks
+- [ ] Car Tracking
+- [x] Estimateive lane tracking
+- [ ] Accurate lane tracking (Not possible with current public knowledge)
+- [ ] Light control
+- [ ] Simple graphical web interface
+- [ ] Race Mode (Full API) support
 ## Game
 - [x] Cool map
-- [x] Procedural track generation (show the irl track in 3D in game)
+- [x] Procedural track generation (show the irl track in 3D)
 - [x] Talk to the server
 - [x] Control the cars
 - [x] Identify the cars by lights
