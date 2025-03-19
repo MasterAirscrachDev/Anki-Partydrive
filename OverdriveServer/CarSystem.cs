@@ -113,7 +113,7 @@ namespace OverdriveServer {
             //only balance speed if not 0
             if(speedBalance != 0 && speed != 0){  speed = Math.Clamp(speed + speedBalance, 0, 1200); }
             byte[] data = Program.DEV_V4 ? new byte[8] : new byte[7];
-            data[0] = Program.DEV_V4 ? (byte)0x08 : (byte)0x07;
+            data[0] = Program.DEV_V4 ? (byte)0x07 : (byte)0x06;
             data[1] = SEND_CAR_SPEED_UPDATE;
             //speed as int16
             data[2] = (byte)(speed & 0xFF);

@@ -87,21 +87,6 @@ namespace OverdriveServer {
                 lastFlipped = clockwise;
                 lastTrackID = trackID;
             }
-            // if(!hasAddedPieceThisSegment && isScanning){
-            //     if(skipSegments > 0){ skipSegments--; return; }
-            //     hasAddedPieceThisSegment = true;
-            //     TrackPieceType type = PieceFromID(trackID);
-            //     if(
-            //         type == TrackPieceType.Unknown || 
-            //         type ==  TrackPieceType.PreFinishLine || 
-            //         type ==  TrackPieceType.FinishLine ||
-            //         type ==  TrackPieceType.JumpRamp ||
-            //         type ==  TrackPieceType.JumpLanding
-            //     ){ hasAddedPieceThisSegment = false; return; }
-            //     trackPieces.Add(new TrackPiece(type, trackID, clockwise));
-            //     trackPieces[trackPieces.Count - 1].validated = isValidation;
-            //     ValidateMatchAndSendTrack();
-            // }
         }
         void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
             if(!isScanning){ //true until we reach the first finish line
@@ -114,7 +99,10 @@ namespace OverdriveServer {
                 }
             }else{
                 int trackID = lastTrackID; lastTrackID = 0;
-                if(skipSegments > 0){ skipSegments--; return; }
+                if(skipSegments > 0){ 
+                    Program.Log($"Skipping segment, left: {leftWheelDistance}, right: {rightWheelDistance}, skip: {skipSegments}");
+                    skipSegments--; return; 
+                }
                 if(crossedStartingLine){ //currently only supports one finish piece
                     finishesPassed++;
                     if(finishesPassed >= finishCount){
