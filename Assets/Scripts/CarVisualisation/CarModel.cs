@@ -7,17 +7,19 @@ public class CarModel : MonoBehaviour
     [SerializeField] float speedTuning = 0.01f;
     [SerializeField] Material solidMaterial, transparentMaterial;
     TrackSpline trackSpline;
-    int speed = 0;
+    int speed = 0, pieceIdx = 0, shift = 0;
     float trackPieceProgression = 0, trackPieceLength = 0;
     float horizontalOffset = 0;
     Vector3 lastPosition;
 
     int timout;
+    TrackGenerator track;
     // Start is called before the first frame update
     void Start()
     {
         timout = 5;
         StartCoroutine(Timeout());
+        track = FindObjectOfType<TrackGenerator>();
     }
     IEnumerator Timeout(){
         while(timout > 0){
@@ -37,12 +39,20 @@ public class CarModel : MonoBehaviour
             lastPosition = transform.position;
             transform.Rotate(0, 180, 0);
         }
+        if(trackPieceProgression >= 1 && shift > 2){
+            trackPieceProgression = 0;
+            shift++;
+            trackSpline = track.GetTrackPiece(pieceIdx + shift);
+            if(trackSpline == null){trackSpline = track.GetTrackPiece(pieceIdx + ++shift); }
+        }
     }
-    public void SetTrackSpline(TrackSpline trackSpline){
+    public void SetTrackSpline(TrackSpline trackSpline, int idx){
         timout = 5;
-        if(trackSpline != this.trackSpline){ //only update if the track spline is different
+        if(idx != this.pieceIdx){ //only update if the track spline is different
+            this.pieceIdx = idx;
             this.trackSpline = trackSpline;
             trackPieceProgression = 0;
+            shift = 0;
             trackPieceLength = trackSpline.GetLength(horizontalOffset);
         }
     }

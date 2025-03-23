@@ -12,6 +12,7 @@ public class TrackGenerator : MonoBehaviour
 
     public TrackSpline GetTrackPiece(int index){
         if(trackPieces[index] == null){ return null; }
+        if(index >= trackPieces.Count){ index-= trackPieces.Count; }
         return trackPieces[index].GetComponent<TrackSpline>();
     }
     public TrackPieceType GetTrackPieceType(int index){
