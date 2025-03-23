@@ -97,6 +97,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftPoints: []
-  RightPoints: []
+  rightPoints: []
   simple: 1
   flipped: 0

@@ -96,6 +96,9 @@ public class TrackGenerator : MonoBehaviour
                     if(segments[j].type == TrackPieceType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y){
                         hasCrissCross = true;
                         trackPieces[j].name = $"{i} {trackPieces[j].name}";
+                        if(segments[j].validated){
+                            track = Instantiate(trackPrefabs[10], pos, rot, transform); //invisible criss cross (for splines)
+                        }
                         break;
                     }
                 }
@@ -111,6 +114,30 @@ public class TrackGenerator : MonoBehaviour
             trackPieces.Add(track);
             if(track != null){
                 track.name = $"{i} ({segments[i].type})";
+                if(segments[i].validated){
+                    if(i == 1){
+                        track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
+                    }else if (i > 1){
+                        if(trackPieces[i] == null){ continue; }
+                        try{
+                            int offset = 1;
+                            if(trackPieces[i - 1] == null){ offset = 2; }
+                            if(trackPieces[i - offset] == null){ Debug.Log($"Track {i} was null"); continue; }
+                            Vector3 lastTrackEndLink = trackPieces[i - offset].GetComponent<TrackSpline>().GetEndLinkPoint();
+                            Vector3 lastTrackStartLink = trackPieces[i].GetComponent<TrackSpline>().GetStartLinkPoint();
+                            Debug.DrawLine(lastTrackEndLink, lastTrackStartLink, Color.red, 400);
+                            float linkDist = Vector3.Distance(lastTrackEndLink, lastTrackStartLink);
+                            if(linkDist > 0.01f){
+                                track.GetComponent<TrackSpline>().flipped = true;
+                            }
+                        }
+                        catch(System.Exception e){
+                            Debug.LogError(e);
+                        }
+                        
+                    }
+                }
+                
             }
             Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
             lastPos = pos;
@@ -118,14 +145,6 @@ public class TrackGenerator : MonoBehaviour
     }
     public void Generate(TrackPiece[] segments){
         this.segments = segments;
-        //does segments contain any null values?
-        if(System.Array.Exists(segments, x => x == null)){
-            for(int i = 0; i < segments.Length; i++){
-                Debug.Log($"Segment {i}: {segments[i]}");
-            }
-            return;
-        }
-
         
         try{
             GenerateTrackPls();

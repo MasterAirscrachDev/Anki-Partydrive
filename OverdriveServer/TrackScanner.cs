@@ -90,12 +90,19 @@ namespace OverdriveServer {
         }
         void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
             if(!isScanning){ //true until we reach the first finish line
+                int trackID = lastTrackID; lastTrackID = 0;
                 if(crossedStartingLine){
                     scanningCar.SetCarSpeed(450, 500);
                     isScanning = true;
                     trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
                     trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
-                    skipSegments = 1; //i dont like this
+                    skipSegments = 1;
+                    ValidateMatchAndSendTrack();
+                }else if(trackID != 0 && PieceFromID(trackID) == TrackPieceType.FinishLine){ //should be able to initate a scan from the start correctly now
+                    isScanning = true;
+                    trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
+                    trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
+                    ValidateMatchAndSendTrack();
                 }
             }else{
                 int trackID = lastTrackID; lastTrackID = 0;
@@ -105,31 +112,31 @@ namespace OverdriveServer {
                 }
                 if(crossedStartingLine){ //currently only supports one finish piece
                     finishesPassed++;
-                    if(finishesPassed >= finishCount){
-                        if(!isValidation){
+                    if(finishesPassed >= finishCount){ //validation phase
+                        if(!isValidation){ //if we are on the first scan
                             validationTrack = trackPieces.ToList();
-                            if(ValidateTrackConnects(validationTrack)){
+                            if(ValidateTrackConnects(validationTrack)){ //ensure the track loops
                                 isValidation = true;
                                 trackPieces.Clear();
                                 trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
                                 trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
                                 trackPieces[trackPieces.Count - 1].validated = true;
                                 trackPieces[trackPieces.Count - 2].validated = true;
-                                skipSegments = 2;
-                                return;
-                            }else{
+                                skipSegments = 1;
+                                ValidateMatchAndSendTrack();
+                            }else{ //validation failed reset and try again
                                 scanAttempts++;
                                 if(scanAttempts > 3){ finishedScan = true; return; }
                                 trackPieces.Clear();
                                 validationTrack = null;
                                 isValidation = false;
                                 finishesPassed = 0;
-                                skipSegments = 2;
+                                skipSegments = 1;
                                 trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
                                 trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
+                                ValidateMatchAndSendTrack();
                             }
-                        }else {
-                            //compare validation track to trackPieces
+                        }else {  //compare validation track to trackPieces
                             successfulScan = MatchTracks(validationTrack, trackPieces);
                             Program.Log($"Validation: {successfulScan}");
                             SendFinishedTrack();
@@ -215,7 +222,10 @@ namespace OverdriveServer {
         bool MatchTracks(List<TrackPiece> track1, List<TrackPiece> track2) {
             if(track1.Count != track2.Count){ return false; }
             for(int i = 0; i < track1.Count; i++){
-                if(track1[i] != track2[i]){ return false; }
+                if(track1[i] != track2[i]){ 
+                    Program.Log($"Validation failed, track does not match, {track1[i]} != {track2[i]}");
+                    return false; 
+                }
             }
             return true;
         }

@@ -51,7 +51,7 @@ namespace OverdriveServer {
             if(car == null){ car = new TrackCarLocation(id); carLocations.Add(car); }
             car.horizontalPosition = offset;
             car.TrackCrossed(track.Length);
-            Console.WriteLine($"Car {id} is at index {car.trackIndex} {track[car.trackIndex]}");
+            //Console.WriteLine($"Car {id} is at index {car.trackIndex} {track[car.trackIndex]}");
             if(crossedStartingLine){
                 if(track[car.trackIndex].type != TrackPieceType.FinishLine){ //something is off
                     int currentIndex = car.trackIndex, closestFinishLine = -1, closestDistance = 1000; //find the closest finish line to our current Index
@@ -98,11 +98,17 @@ namespace OverdriveServer {
                 if (obj == null || !GetType().Equals(obj.GetType())) { return false; }
                 else {
                     TrackPiece p = (TrackPiece)obj;
-                    return (type == p.type) && (internalID == p.internalID) && (flipped == p.flipped);
+                    return (type == p.type) && (flipped == p.flipped);
                 }
             }
-            public override int GetHashCode() { return (type, internalID, flipped).GetHashCode(); }
-            public override string ToString() { return $"({type}|{internalID})"; }
+            public static bool operator ==(TrackPiece? a, TrackPiece? b) {
+                if (ReferenceEquals(a, b)) { return true; }
+                if (a is null || b is null) { return false; }
+                return a.Equals(b);
+            }
+            public static bool operator !=(TrackPiece? a, TrackPiece? b) { return !(a == b); }
+            //public override int GetHashCode() { return (type, internalID, flipped).GetHashCode(); }
+            public override string ToString() { return $"({type}|id:{internalID}|flipped:{flipped})"; }
         }
         [System.Serializable]
         public enum TrackPieceType{

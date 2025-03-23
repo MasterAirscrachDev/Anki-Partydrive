@@ -198,7 +198,7 @@ MonoBehaviour:
   leftPoints:
   - {x: -0.2, y: 0, z: -0.5}
   - {x: -0.2, y: 0, z: 0.5}
-  RightPoints:
+  rightPoints:
   - {x: 0.2, y: 0, z: -0.5}
   - {x: 0.2, y: 0, z: 0.5}
   simple: 1
