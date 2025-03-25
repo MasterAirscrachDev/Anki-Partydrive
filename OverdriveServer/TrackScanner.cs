@@ -63,7 +63,7 @@ namespace OverdriveServer {
             Program.UtilLog(content);
             Program.trackManager.SetTrack(successfulScan ? solvedPieces : null, successfulScan);
             finishedScan = true;
-            Program.Log($"Track scan finished, succsess: {successfulScan}, {solvedPieces.Length} pieces");
+            //Program.Log($"Track scan finished, succsess: {successfulScan}, {solvedPieces.Length} pieces");
         }
         void OnCarJumped(string carID) {
             if(carID == scanningCar.id) {
@@ -138,7 +138,7 @@ namespace OverdriveServer {
                             }
                         }else {  //compare validation track to trackPieces
                             successfulScan = MatchTracks(validationTrack, trackPieces);
-                            Program.Log($"Validation: {successfulScan}");
+                            //Program.Log($"Validation: {successfulScan}");
                             SendFinishedTrack();
                         }
                     }
@@ -164,9 +164,9 @@ namespace OverdriveServer {
                     }
                     trackPieces[trackPieces.Count - 1].validated = isValidation;
                     trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);
-                    if(fallback){
-                        Program.Log($"TEMP: used fallback for transition, {trackPieces[trackPieces.Count - 1].type}, from L{leftWheelDistance} and R{rightWheelDistance}");
-                    }
+                    // if(fallback){
+                    //     Program.Log($"TEMP: used fallback for transition, {trackPieces[trackPieces.Count - 1].type}, from L{leftWheelDistance} and R{rightWheelDistance}");
+                    // }
                     ValidateMatchAndSendTrack();
                 }
             }
@@ -198,7 +198,7 @@ namespace OverdriveServer {
                 currentTrack = trackPieces.ToList();
             }
             Program.trackManager.SetTrack(currentTrack.ToArray(), false);
-            Program.UtilLog($"-3:{scanningCar.id}");
+            Program.UtilLog($"-3:{scanningCar.id}:false");
         }
         bool ValidateTrackConnects(List<TrackPiece> track){
             int X = 0, Y = -1, direction = 0;
@@ -212,7 +212,7 @@ namespace OverdriveServer {
                 }else if(piece.type == TrackPieceType.JumpRamp){
                     (X,Y) = MoveBasedOnDirection(2, direction, X, Y);
                 }
-                Program.Log($"Validation: {i} {piece.type}, {X}, {Y}");
+                //Program.Log($"Validation: {i} {piece.type}, {X}, {Y}");
             }
             (X,Y) = MoveBasedOnDirection(1, direction, X, Y);
             if(X == 0 && Y == 0){ return true; } 

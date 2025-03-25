@@ -12,9 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fleck" Version="1.2.0" />
     <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.37" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Speech" Version="8.0.0" />
+    <PackageReference Include="System.Speech" Version="9.0.3" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

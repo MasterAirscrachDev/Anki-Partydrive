@@ -9,6 +9,7 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] TrackPiece[] segments;
     [SerializeField] GameObject[] trackPrefabs, scannningPrefabs;
     [SerializeField] List<GameObject> trackPieces;
+    public bool hasTrack = false;
 
     public TrackSpline GetTrackPiece(int index){
         if(trackPieces[index] == null){ return null; }
@@ -138,17 +139,17 @@ public class TrackGenerator : MonoBehaviour
                         
                     }
                 }
-                
             }
             Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
             lastPos = pos;
         }
     }
-    public void Generate(TrackPiece[] segments){
+    public void Generate(TrackPiece[] segments, bool validated){
         this.segments = segments;
-        
         try{
             GenerateTrackPls();
+            hasTrack = validated;
+            Debug.Log($"Track generated with {segments.Length} segments, {trackPieces.Count} track pieces, validated: {validated}");
         }
         catch(System.Exception e){
             Debug.LogError(e);
@@ -158,21 +159,32 @@ public class TrackGenerator : MonoBehaviour
 }
 [System.Serializable]
 public class TrackPiece{
-    public TrackPieceType type; //should be readonly (but isnt so its visible in the inspector)
-    public int internalID; //should be readonly (but isnt so its visible in the inspector)
+    public readonly TrackPieceType type;
+    public readonly int internalID;
     public readonly bool flipped;
-    public readonly int X, Y;
-    public int up, down, elevation;
-    public bool validated = false;
+    public int up, down, elevation, X, Y;
     public TrackPiece(TrackPieceType type, int id, bool flipped){
         this.type = type;
         this.flipped = flipped;
         internalID = id;
         up = 0; down = 0;
     }
-    public void SetUpDown(int up, int down){
-        this.up = up; this.down = down;
+    public bool validated = false;
+    public void SetUpDown(int up, int down){ this.up = up; this.down = down; }
+    public override bool Equals(object? obj) { // Check for null and compare run-time types.
+        if (obj == null || !GetType().Equals(obj.GetType())) { return false; }
+        else {
+            TrackPiece p = (TrackPiece)obj;
+            return (type == p.type) && (flipped == p.flipped);
+        }
     }
+    public static bool operator ==(TrackPiece? a, TrackPiece? b) {
+        if (ReferenceEquals(a, b)) { return true; }
+        if (a is null || b is null) { return false; }
+        return a.Equals(b);
+    }
+    public static bool operator !=(TrackPiece? a, TrackPiece? b) { return !(a == b); }
+    public override string ToString() { return $"({type}|id:{internalID}|flipped:{flipped})"; }
 }
 [System.Serializable]
 public enum TrackPieceType{

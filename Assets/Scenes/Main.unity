@@ -4162,6 +4162,7 @@ MonoBehaviour:
   cars: []
   balanceTesting: {fileID: 0}
   timeTrialMode: {fileID: 0}
+  trackGenerator: {fileID: 1948605591}
 --- !u!4 &786587997
 Transform:
   m_ObjectHideFlags: 0
@@ -4202,6 +4203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb6f6b257345e4a41898839819c95826, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  track: {fileID: 1948605591}
   carPrefab: {fileID: 5127508956181644207, guid: d442d4e60b6e2b94990840eacc3d5e83, type: 3}
   entities: []
 --- !u!1 &813721476
@@ -7854,7 +7856,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8116,227 +8118,227 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   test: 0
   SourceSegments:
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 244
+  - up: 244
     down: 80
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 131
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 255
+  - up: 255
     down: 96
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 105
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 255
+  - up: 255
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 69
+  - up: 69
     down: 81
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 35
+  - up: 35
     down: 126
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 207
+  - up: 207
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 36
+  - up: 36
     down: 76
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 114
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 255
+  - up: 255
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 58
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 53
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 255
+  - up: 255
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 84
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 104
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
-  - type: 0
-    internalID: 0
-    up: 0
+  - up: 0
     down: 0
     elevation: 0
+    X: 0
+    Y: 0
     validated: 0
 --- !u!4 &1431338461
 Transform:
@@ -9134,7 +9136,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
   m_sharedMaterial: {fileID: -7548483605016708549, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
@@ -11309,6 +11311,7 @@ MonoBehaviour:
   - {fileID: 7733899436698094811, guid: e9c3437da7590d649a2c648c95643e45, type: 3}
   - {fileID: 5848027651141914956, guid: d1723de9ae84b214a895669347c1b2b2, type: 3}
   trackPieces: []
+  hasTrack: 0
 --- !u!4 &1948605592
 Transform:
   m_ObjectHideFlags: 0

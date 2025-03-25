@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using InTheHand.Bluetooth;
 using Newtonsoft.Json;
 using static OverdriveServer.Definitions;
+using static OverdriveServer.NetStructures;
 
 namespace OverdriveServer {
     class CarSystem {
@@ -192,19 +193,5 @@ namespace OverdriveServer {
             }catch{}
         }
     }
-    [System.Serializable]
-    public class CarData{
-        public string name;
-        public string id;
-        public int trackPosition;
-        public int trackID;
-        public float laneOffset;
-        public int speed;
-        public int battery;
-        public bool charging;
-        public CarData(string name, string id){
-            this.name = name;
-            this.id = id;
-        }
-    }
+    
 }

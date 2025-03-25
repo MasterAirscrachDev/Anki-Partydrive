@@ -1,10 +1,11 @@
 ﻿using System.Speech.Synthesis;
+using static OverdriveServer.NetStructures;
 namespace OverdriveServer {
     class Program {
-        static string SysLog = "", UtilityLog = "";
         static bool printLog = true; 
         public static bool DEV_V4 = false;
         public static WebInterface webInterface = new WebInterface();
+        public static WebsocketManager socketMan = new WebsocketManager();
         public static BluetoothInterface bluetoothInterface = new BluetoothInterface();
         public static CarSystem carSystem = new CarSystem();
         public static MessageManager messageManager = new MessageManager();
@@ -22,10 +23,12 @@ namespace OverdriveServer {
                 await Task.Delay(-1); //dont close the program
             }
         }
-        public static void Log(string message){ SysLog += message + "\n"; if(printLog){ Console.WriteLine(message); } }
-        public static void UtilLog(string message){ UtilityLog += message + "\n"; }
-        public static string GetLog(){ string content = SysLog; SysLog = ""; return content; }
-        public static string GetUtilLog(){ string content = UtilityLog; UtilityLog = ""; return content; }
+        public static async Task Log(string message){ 
+            socketMan.Notify(EVENT_SYSTEM_LOG, message);
+            if(printLog && !socketMan.HasClients()){ Console.WriteLine(message); } 
+        }
+        public static async Task UtilLog(string message){ socketMan.Notify(EVENT_UTILITY_LOG, message); }
+
         public static void SetLogging(bool state){ printLog = state; }
         public static void CheckCurrentTrack(){ trackManager.AlertIfTrackIsValid(); }
         public static void TTS(string message){

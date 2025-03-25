@@ -1,10 +1,13 @@
 ﻿using static OverdriveServer.Definitions;
+using static OverdriveServer.NetStructures;
 namespace OverdriveServer {
     class MessageManager {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         public void ParseMessage(byte[] content, Car car){
             byte id = content[1];
             if(id == RECV_PING){//23 ping response
                 Program.Log($"[23] Ping response: {Program.BytesToString(content)}");
+
             } else if(id == RECV_VERSION){ //25 version response
                 int version = content[2];
                 Program.Log($"[25] Version response: {version}");
@@ -20,7 +23,16 @@ namespace OverdriveServer {
                 float offset = BitConverter.ToSingle(content, 4);
                 int speed = BitConverter.ToInt16(content, 8);
                 bool clockwise = content[10] == 0x47; //this is a secret parsing flag, we can use it to decphier turn directions
-                Program.UtilLog($"39:{car.id}:{trackLocation}:{trackID}:{offset}:{speed}:{clockwise}");
+                Program.socketMan.Notify(EVENT_CAR_LOCATION, 
+                    new LocationData {
+                        carID = car.id,
+                        trackLocation = trackLocation,
+                        trackID = trackID,
+                        offset = offset,
+                        speed = speed,
+                        clockwise = clockwise
+                    }
+                );
                 Program.Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
                 car.data.trackPosition = trackLocation; 
                 car.data.trackID = trackID;
@@ -37,15 +49,27 @@ namespace OverdriveServer {
                     int downhillCounter = content[15];
                     int leftWheelDistance = content[16];
                     int rightWheelDistance = content[17];
-                    // There is a shorter segment for the starting line track. (this fails on inside turns)
+                    // There is a shorter segment for the starting line track. (may fail on inside turns)
                     bool crossedStartingLine = false;
                     //greater than 25 and less than 37 (mm presumably)
                     if ((leftWheelDistance < 36) && (leftWheelDistance > 32) && (rightWheelDistance < 36) && (rightWheelDistance > 32)) {
                         crossedStartingLine = true;
-                        Program.UtilLog($"-5:{car.id}:{DateTime.Now.ToBinary()}"); //UPGRADE TO WORK WITH MULTI FINISH LINES
+                        Program.UtilLog($"-4:{car.id}:{DateTime.Now.ToBinary()}"); //UPGRADE TO WORK WITH MULTI FINISH LINES
                     }
-                    Program.UtilLog($"41:{car.id}:{trackPiece}:{oldTrackPiece}:{offset}:{uphillCounter}:{downhillCounter}:{leftWheelDistance}:{rightWheelDistance}:{crossedStartingLine}");
                     Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, Y:(+{uphillCounter} -{downhillCounter}), X: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance}, Finish: {crossedStartingLine}");
+                    Program.socketMan.Notify(EVENT_CAR_TRANSITION, 
+                        new TransitionData{
+                            carID = car.id,
+                            trackPiece = trackPiece,
+                            oldTrackPiece = oldTrackPiece,
+                            offset = offset,
+                            uphillCounter = uphillCounter,
+                            downhillCounter = downhillCounter,
+                            leftWheelDistance = leftWheelDistance,
+                            rightWheelDistance = rightWheelDistance,
+                            crossedStartingLine = crossedStartingLine
+                        }
+                    );
                     CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
                     car.LaneCheck();
                 }
@@ -102,6 +126,7 @@ namespace OverdriveServer {
             else{
                 Program.Log($"???({id})[{Program.IntToByteString(id)}]:{Program.BytesToString(content)}");
             }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
         //subscribable event
         public delegate void CarEventLocation(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise);

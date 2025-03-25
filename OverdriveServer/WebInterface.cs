@@ -3,14 +3,21 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using System.Net.WebSockets;
+using System.Threading;
+using System.Collections.Concurrent;
+using System.Text;
 
 namespace OverdriveServer {
     class WebInterface {
         int linkCooldown = 0;
+        
         public void Start(){
             string[] args = new string[]{"--urls", "http://localhost:7117"};
             CreateHostBuilder(args).Build().RunAsync();
         }
+        
         IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args).ConfigureLogging(logging => { 
                 logging.ClearProviders(); logging.SetMinimumLevel(LogLevel.Warning); }).ConfigureWebHostDefaults(webBuilder => {
@@ -98,23 +105,6 @@ namespace OverdriveServer {
                                     await context.Response.WriteAsync("Bad Request");
                                 }
                             });
-                            endpoints.MapGet("/registerlogs", async context => {
-                                Program.Log("Application Registered");
-                                Program.GetLog(); Program.GetUtilLog();
-                                Program.SetLogging(false);
-                                Program.CheckCurrentTrack();
-                                linkCooldown = 5;
-                                UnlinkApplication();
-                                context.Response.StatusCode = 200;
-                                await context.Response.WriteAsync("Logs registered, call /logs to get logs");
-                            });
-                            endpoints.MapGet("/logs", async context => {
-                                linkCooldown = 5;
-                                await context.Response.WriteAsync(Program.GetLog());
-                            });
-                            endpoints.MapGet("/utillogs", async context => {
-                                await context.Response.WriteAsync(Program.GetUtilLog());
-                            });
                             endpoints.MapGet("/clearcardata", async context => {
                                 Program.carSystem.ClearCarData();
                                 context.Response.StatusCode = 200;
@@ -173,8 +163,9 @@ namespace OverdriveServer {
                             endpoints.MapGet("/track", async context => {
                                 context.Response.ContentType = "application/json";
                                 await context.Response.WriteAsync(Program.trackManager.TrackDataAsJson());
-                            });
+                            });                  
                         });
+                        
                         app.Run(async context => {
                             if (context.Request.Path == "/")
                             { 
@@ -191,6 +182,7 @@ namespace OverdriveServer {
                         });
                     });
                 });
+        
         async Task UnlinkApplication(){
             while(linkCooldown > 0){
                 await Task.Delay(1000);

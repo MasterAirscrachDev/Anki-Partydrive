@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class CarEntityTracker : MonoBehaviour
 {
-    TrackGenerator track;
+    [SerializeField] TrackGenerator track;
     [SerializeField] GameObject carPrefab;
     [SerializeField] List<ModelEntity> entities = new List<ModelEntity>();
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        track = FindObjectOfType<TrackGenerator>();
-    }
-    
+
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, bool positionTrusted){
+        if(!track.hasTrack){ Debug.Log("No Track"); return; }
         ModelEntity entity = entities.Find(x => x.id == id);
         TrackSpline trackPiece = track.GetTrackPiece(trackIndex);
         if(trackPiece == null){ //either we are on a PreStart or an error has occured
