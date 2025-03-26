@@ -40,6 +40,7 @@
         //Unknown
         public const byte RECV_UNKNOWN_65 = 0x41; //65 slip ? car on track ?
         public const byte RECV_UNKNOWN_67 = 0x43; //67
+        public const byte RECV_UNKNOWN_68 = 0x44; //68
         public const byte RECV_UNKNOWN_78 = 0x4e; //78
         public const byte RECV_UNKNOWN_79 = 0x4f; //79
         

@@ -9,7 +9,7 @@ public class CarEntityTracker : MonoBehaviour
     [SerializeField] List<ModelEntity> entities = new List<ModelEntity>();
 
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, bool positionTrusted){
-        if(!track.hasTrack){ Debug.Log("No Track"); return; }
+        if(!track.hasTrack){ return; }
         ModelEntity entity = entities.Find(x => x.id == id);
         TrackSpline trackPiece = track.GetTrackPiece(trackIndex);
         if(trackPiece == null){ //either we are on a PreStart or an error has occured

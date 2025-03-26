@@ -4204,7 +4204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   track: {fileID: 1948605591}
-  carPrefab: {fileID: 5127508956181644207, guid: d442d4e60b6e2b94990840eacc3d5e83, type: 3}
+  carPrefab: {fileID: 7701812964422263099, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
   entities: []
 --- !u!1 &813721476
 GameObject:
