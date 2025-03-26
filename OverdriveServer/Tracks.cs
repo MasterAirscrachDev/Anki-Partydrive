@@ -21,6 +21,7 @@ namespace OverdriveServer {
                     return (type == p.type) && (flipped == p.flipped);
                 }
             }
+            public override int GetHashCode() { return (int)type ^ flipped.GetHashCode(); }
             public static bool operator ==(TrackPiece? a, TrackPiece? b) {
                 if (ReferenceEquals(a, b)) { return true; }
                 if (a is null || b is null) { return false; }
@@ -36,38 +37,17 @@ namespace OverdriveServer {
         }
         public class TrackCarLocation{
             public string ID;
+            int maxTrackSegments = 6;
             public int trackIndex;
             public float trackPosition;
             public float horizontalPosition;
             public bool positionTrusted = false;
-            List<TypeIDPair> lastTracks = new List<TypeIDPair>();
-            public TrackCarLocation(string id){ ID = id; }
-            public bool PieceMatches(TrackPiece piece, int index){
-                if(lastTracks.Count <= index){ return false; }
-                if(lastTracks[index].id == -1){ return true; } //if unknown, we dont care
-                if(lastTracks[index].type == piece.type && lastTracks[index].flipped == piece.flipped && lastTracks[index].id == piece.internalID){ return true; }
-                return false;
-            }
-            public bool AllUnknowns() {
-                foreach(TypeIDPair pair in lastTracks){ if(pair.id != -1){ return false; } }
-                return true;
-            }
-            public int GetLastTrackLength(){ return lastTracks.Count; }
-            public void TrackCrossed(int trackLength) {
-                lastTracks.Add(new TypeIDPair());
-                if(lastTracks.Count > 6){ lastTracks.RemoveAt(0); }
-                trackIndex++;
-                if(trackIndex >= trackLength){ trackIndex = 0; }
-            }
-            public void SetLast(int id, bool flipped) {
-                if(lastTracks.Count == 0){ return;}
-                TrackPieceType type = TrackScanner.PieceFromID(id);
-                lastTracks[lastTracks.Count - 1] = new TypeIDPair(type, id, flipped);
-            }
-            public string GetLastTracks() {
-                string str = "";
-                foreach(TypeIDPair pair in lastTracks){ str += $"{pair.type}({pair.id})\n";  }
-                return str;
+            List<TrackPieceLocalised> lastTracks = new List<TrackPieceLocalised>();
+            public TrackCarLocation(string id, int maxTrackSegments){ ID = id; this.maxTrackSegments = maxTrackSegments; }
+            public int GetLocalisedTrackLength(){ return lastTracks.Count; }
+            public void AddTrack(TrackPieceLocalised piece){ 
+                lastTracks.Add(piece);
+                if(lastTracks.Count > 6){ lastTracks.RemoveAt(0); } //keep the last 6 (smallest possible number of pieces w)
             }
             public void ClearTracks(){ lastTracks.Clear(); }
         }
@@ -83,6 +63,14 @@ namespace OverdriveServer {
                 this.type = type;
                 this.id = id;
                 this.flipped = flipped;
+            }
+        }
+        public class TrackPieceLocalised{
+            public TrackPiece piece;
+            public bool clockwise;
+            public TrackPieceLocalised(TrackPiece piece, bool clockwise){
+                this.piece = piece;
+                this.clockwise = clockwise;
             }
         }
     }
