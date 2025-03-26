@@ -27,12 +27,12 @@ namespace OverdriveServer {
                 Program.messageManager.CarEventLocationCall += OnTrackPosition; 
                 Program.messageManager.CarEventTransitionCall += OnTrackTransition;
                 Program.messageManager.CarEventJumpCall += OnCarJumped;
-                Program.messageManager.CarEventFellCall += OnCarFell;
+                Program.messageManager.CarEventDelocalised += OnCarFell;
             }else{ 
                 Program.messageManager.CarEventLocationCall -= OnTrackPosition;
                 Program.messageManager.CarEventTransitionCall -= OnTrackTransition;
                 Program.messageManager.CarEventJumpCall -= OnCarJumped;
-                Program.messageManager.CarEventFellCall -= OnCarFell;
+                Program.messageManager.CarEventDelocalised -= OnCarFell;
             }
         }
         public async Task ScanTrack(Car car) {

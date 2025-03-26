@@ -15,7 +15,7 @@ namespace OverdriveServer {
             carLocations = new List<TrackCarLocation>();
             Program.messageManager.CarEventLocationCall += OnCarPosUpdate;
             Program.messageManager.CarEventTransitionCall += OnCarTransition;
-            Program.messageManager.CarEventFellCall += OnCarFell;
+            Program.messageManager.CarEventDelocalised += OnCarDelocalised;
         }
         public void AlertIfTrackIsValid(){ if(trackValidated){ Program.UtilLog($"-3:_:{trackValidated}"); } }
         void OnCarPosUpdate(string id, int trackLocation, int trackID, float offset, int speed, bool clockwise){
@@ -80,7 +80,7 @@ namespace OverdriveServer {
                 }
             );
         }
-        void OnCarFell(string id){
+        void OnCarDelocalised(string id){
             TrackCarLocation car = carLocations.Find(car => car.ID == id);
             if(car != null){
                 car.ClearTracks();
