@@ -37,41 +37,58 @@ namespace OverdriveServer {
         }
         public class TrackCarLocation{
             public string ID;
-            int maxTrackSegments = 6;
+            int trackLength = 0, memoryLength = 0, lastTrackID = 0;
+            bool lastFlipped = false;
             public int trackIndex;
             public float trackPosition;
             public float horizontalPosition;
             public bool positionTrusted = false;
-            List<TrackPieceLocalised> lastTracks = new List<TrackPieceLocalised>();
-            public TrackCarLocation(string id, int maxTrackSegments){ ID = id; this.maxTrackSegments = maxTrackSegments; }
+            List<TrackPiece> lastTracks = new List<TrackPiece>();
+            public TrackCarLocation(string id, int trackLength){ 
+                ID = id; 
+                this.trackLength = trackLength; 
+                memoryLength = Math.Max(6, trackLength - 2);
+                if(memoryLength > 8){ memoryLength = 8; } //max 8 pieces in memory
+            }
             public int GetLocalisedTrackLength(){ return lastTracks.Count; }
-            public void AddTrack(TrackPieceLocalised piece){ 
-                lastTracks.Add(piece);
-                if(lastTracks.Count > 6){ lastTracks.RemoveAt(0); } //keep the last 6 (smallest possible number of pieces w)
+            public void SetOnPosition(int ID, bool flipped){ //set the last track piece to the current one
+                lastTrackID = ID; lastFlipped = flipped;
             }
-            public void ClearTracks(){ lastTracks.Clear(); }
-        }
-        class TypeIDPair{
-            public TrackPieceType type;
-            public int id;
-            public bool flipped;
-            public TypeIDPair(){
-                id = -1;
-                type = TrackPieceType.Unknown;
+            public void OnTransition(float offset, int left, int right) {
+                int lID = lastTrackID; bool lFlipped = lastFlipped;
+                lastTrackID = 0; lastFlipped = false; //reset the last track piece
+                horizontalPosition = offset;
+                TrackPiece segment = TrackManager.GetTrackPieceWithFallback(lID, lFlipped, left, right);
+
+                lastTracks.Add(segment);
+                if(lastTracks.Count > memoryLength){ lastTracks.RemoveAt(0); } //keep the last 6 (smallest possible number of pieces w)
+                trackIndex++;
+                if(trackIndex >= trackLength){ trackIndex -= trackLength; } //loop around
             }
-            public TypeIDPair(TrackPieceType type, int id, bool flipped){
-                this.type = type;
-                this.id = id;
-                this.flipped = flipped;
+
+            public bool PieceMatches(TrackPiece piece, int index) {
+                if (index < 0 || index >= lastTracks.Count) { return false; } // Check for out-of-bounds index
+                TrackPiece lastPiece = lastTracks[index];
+                if(lastPiece.internalID == 0) { //fallbacks are treated as wildcards
+                    if(lastPiece.type == piece.type) { return true; } //if the type is the same, its probably the same piece
+                    else{
+                        if(lastPiece.type == TrackPieceType.Straight && piece.type == TrackPieceType.CrissCross) { return true; } //crisscross is a straight piece
+                    }
+                } 
+                return (piece.type == lastPiece.type) && (piece.flipped == lastPiece.flipped);
             }
-        }
-        public class TrackPieceLocalised{
-            public TrackPiece piece;
-            public bool clockwise;
-            public TrackPieceLocalised(TrackPiece piece, bool clockwise){
-                this.piece = piece;
-                this.clockwise = clockwise;
+            public TrackPiece GetTrackAt(int index) {
+                if (index < 0 || index >= lastTracks.Count) { return null; } // Check for out-of-bounds index
+                return lastTracks[index];
             }
+            public string MemoryString() {
+                string content = $"Mem: ";
+                for (int i = lastTracks.Count - 1; i >= 0; i--) {
+                    content += $"[{lastTracks[i].type} {lastTracks[i].internalID} {lastTracks[i].flipped}]";
+                }
+                return content;
+            }
+            public void ClearTracks(){ lastTracks.Clear(); positionTrusted = false; horizontalPosition = 0; }
         }
     }
 }

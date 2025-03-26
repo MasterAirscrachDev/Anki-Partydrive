@@ -184,6 +184,12 @@ namespace OverdriveServer {
             data[17] = 0x00; //?? 
             await WriteToCarAsync(data, true);
         }
+        public async Task UTurn(){
+            byte[] data = new byte[2];
+            data[0] = 0x02; //size
+            data[1] = SEND_CAR_UTURN; //id 50
+            await WriteToCarAsync(data, true);
+        }
 
         async Task WriteToCarAsync(byte[] data, bool response = false){
             if(!hasWriteCharacteristic){ return; }

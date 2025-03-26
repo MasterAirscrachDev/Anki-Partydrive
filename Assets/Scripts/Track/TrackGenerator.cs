@@ -149,7 +149,7 @@ public class TrackGenerator : MonoBehaviour
         try{
             GenerateTrackPls();
             hasTrack = validated;
-            Debug.Log($"Track generated with {segments.Length} segments, {trackPieces.Count} track pieces, validated: {validated}");
+            //Debug.Log($"Track generated with {segments.Length} segments, {trackPieces.Count} track pieces, validated: {validated}");
         }
         catch(System.Exception e){
             Debug.LogError(e);

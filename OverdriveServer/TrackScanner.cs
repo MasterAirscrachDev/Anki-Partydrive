@@ -98,7 +98,7 @@ namespace OverdriveServer {
                     trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
                     skipSegments = 1;
                     ValidateMatchAndSendTrack();
-                }else if(trackID != 0 && PieceFromID(trackID) == TrackPieceType.FinishLine){ //should be able to initate a scan from the start correctly now
+                }else if(trackID != 0 && TrackManager.PieceFromID(trackID) == TrackPieceType.FinishLine){ //should be able to initate a scan from the start correctly now
                     isScanning = true;
                     trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
                     trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
@@ -143,30 +143,17 @@ namespace OverdriveServer {
                         }
                     }
                 }else{
-                    bool fallback = false;
-                    if(trackID != 0){
-                        TrackPieceType type = PieceFromID(trackID);
-                        if(
-                            type == TrackPieceType.Unknown || 
-                            type ==  TrackPieceType.PreFinishLine || 
-                            type ==  TrackPieceType.FinishLine ||
-                            type ==  TrackPieceType.JumpRamp ||
-                            type ==  TrackPieceType.JumpLanding
-                        ){ return; }
-                        trackPieces.Add(new TrackPiece(type, trackID, lastFlipped));
-                    }
-                    else if(Abs(leftWheelDistance - rightWheelDistance) < 4){
-                        trackPieces.Add(new TrackPiece(TrackPieceType.Straight, 36, false));
-                        fallback = true;
-                    }else{
-                        trackPieces.Add(new TrackPiece(TrackPieceType.Turn, 17, leftWheelDistance > rightWheelDistance));
-                        fallback = true;
-                    }
+                    TrackPiece segment = TrackManager.GetTrackPieceWithFallback(trackID, lastFlipped, leftWheelDistance, rightWheelDistance);
+                    if(
+                        segment.type == TrackPieceType.Unknown || 
+                        segment.type == TrackPieceType.PreFinishLine || 
+                        segment.type == TrackPieceType.FinishLine ||
+                        segment.type == TrackPieceType.JumpRamp ||
+                        segment.type == TrackPieceType.JumpLanding
+                    ){ return; }
+                    trackPieces.Add(segment);
                     trackPieces[trackPieces.Count - 1].validated = isValidation;
                     trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);
-                    // if(fallback){
-                    //     Program.Log($"TEMP: used fallback for transition, {trackPieces[trackPieces.Count - 1].type}, from L{leftWheelDistance} and R{rightWheelDistance}");
-                    // }
                     ValidateMatchAndSendTrack();
                 }
             }
@@ -219,27 +206,25 @@ namespace OverdriveServer {
             Program.Log($"Validation failed, track does not connect, X: {X}, Y: {Y}, Expected: 0,0");
             return false;
         }
-        bool MatchTracks(List<TrackPiece> track1, List<TrackPiece> track2) {
-            if(track1.Count != track2.Count){ return false; }
-            for(int i = 0; i < track1.Count; i++){
-                if(track1[i] != track2[i]){ 
-                    Program.Log($"Validation failed, track does not match, {track1[i]} != {track2[i]}");
-                    return false; 
+        bool MatchTracks(List<TrackPiece> trackPieces, List<TrackPiece> validation) {
+            if(trackPieces.Count != validation.Count){ return false; }
+            for(int i = 0; i < trackPieces.Count; i++){
+                if(trackPieces[i] != validation[i]){ 
+                    TrackPiece A = trackPieces[i];
+                    TrackPiece B = validation[i];
+
+                    //CrissCross is ID 10, and ID 0 is a fallback for unknown pieces
+                    if(A.internalID == 0 && B.internalID == 10){ trackPieces[i] = validation[i]; }
+                    else if(A.internalID == 10 && B.internalID == 0){ trackPieces[i] = validation[i]; }
+                    else{
+                        Program.Log($"Validation failed, track does not match, {trackPieces[i]} != {validation[i]}");
+                        return false; 
+                    }
                 }
             }
             return true;
         }
-        public static TrackPieceType PieceFromID(int id) {
-            if(id == 17 || id == 18 || id == 20 || id == 23 || id == 24 || id == 27){ return TrackPieceType.Turn; }
-            else if(id == 36 || id == 39 || id == 40 || id == 48 || id == 51){ return TrackPieceType.Straight; }
-            else if(id == 57 || id == 53 || id == 54){ return TrackPieceType.FnFSpecial; }
-            else if(id == 34){ return TrackPieceType.PreFinishLine; }
-            else if(id == 33){ return TrackPieceType.FinishLine; }
-            else if(id == 10){ return TrackPieceType.CrissCross; } 
-            else if(id == 58 || id == 43){ return TrackPieceType.JumpRamp; }
-            else if(id == 63 || id == 46){ return TrackPieceType.JumpLanding; }
-            else{ return TrackPieceType.Unknown; }
-        }
-        int Abs(int i) { return i < 0 ? -i : i; }
+        
+        
     }
 }

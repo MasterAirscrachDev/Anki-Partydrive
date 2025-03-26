@@ -11,22 +11,13 @@ public class CarModel : MonoBehaviour
     float trackPieceProgression = 0, trackPieceLength = 0;
     float horizontalOffset = 0;
     Vector3 lastPosition;
-
-    int timout;
+    float timeout = 5;
     TrackGenerator track;
     // Start is called before the first frame update
     void Start()
     {
-        timout = 5;
-        StartCoroutine(Timeout());
+        timeout = 5;
         track = FindObjectOfType<TrackGenerator>();
-    }
-    IEnumerator Timeout(){
-        while(timout > 0){
-            yield return new WaitForSeconds(1);
-            timout--;
-        }
-        FindObjectOfType<CarEntityTracker>().RemoveEntity(gameObject.name);
     }
 
     // Update is called once per frame
@@ -45,9 +36,13 @@ public class CarModel : MonoBehaviour
             trackSpline = track.GetTrackPiece(pieceIdx + shift);
             if(trackSpline == null){trackSpline = track.GetTrackPiece(pieceIdx + ++shift); }
         }
+        timeout -= Time.deltaTime;
+        if(timeout <= 0){
+            FindObjectOfType<CarEntityTracker>().RemoveEntity(gameObject.name);
+        }
     }
     public void SetTrackSpline(TrackSpline trackSpline, int idx){
-        timout = 5;
+        timeout = 5;
         if(idx != this.pieceIdx){ //only update if the track spline is different
             this.pieceIdx = idx;
             this.trackSpline = trackSpline;
@@ -58,7 +53,7 @@ public class CarModel : MonoBehaviour
     }
     public void SetSpeedAndOffset(int speed, float offset){
         this.speed = speed;
-        this.horizontalOffset = offset;
+        this.horizontalOffset = offset; //change this to smooth when changed
     }
     public void SetTrustedPosition(bool trusted){
         GetComponent<MeshRenderer>().material = trusted ? solidMaterial : transparentMaterial;

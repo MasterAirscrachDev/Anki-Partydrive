@@ -3,11 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using System.Net.WebSockets;
-using System.Threading;
-using System.Collections.Concurrent;
-using System.Text;
 
 namespace OverdriveServer {
     class WebInterface {

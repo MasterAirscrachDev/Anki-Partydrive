@@ -14,6 +14,7 @@
         public const byte RECV_CAR_OFF_TRACK = 0x2b; //43
         public const byte SEND_TRACK_CENTER_UPDATE = 0x2c; //44
         public const byte RECV_TRACK_CENTER_UPDATE = 0x2d; //45
+        public const byte SEND_CAR_UTURN = 0x32; //50
         public const byte SEND_LIGHTS_PATTERN_UPDATE = 0x33; //51
         public const byte RECV_CAR_SPEED_UPDATE = 0x36; //54
         public const byte RECV_CAR_CHARGING_STATUS = 0x3f; //63
@@ -29,7 +30,7 @@
         public const byte SEND_SHUTDOWN = 0x1c; //28
         public const byte SEND_LIGHTS_UPDATE = 0x1d; //29
         public const byte SEND_CAR_CANCEL_LANE_CHANGE = 0x26; //38
-        public const byte SEND_CAR_CHANGE_DIRECTION = 0x32; //50
+        
         public const byte SEND_CAR_CONFIGURATION = 0x45; //69
         public const byte SEND_ROAD_NETWORK_META = 0x49; //73
         public const byte RECV_TRACK_TRANSITION_2 = 0x51; //81
