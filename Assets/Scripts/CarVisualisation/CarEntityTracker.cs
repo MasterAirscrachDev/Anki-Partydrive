@@ -23,6 +23,7 @@ public class CarEntityTracker : MonoBehaviour
                 id = id,
                 entity = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarModel>()
             };
+            entity.entity.name = id;
             entities.Add(entity);
         }
         entity.entity.SetTrustedPosition(positionTrusted);
