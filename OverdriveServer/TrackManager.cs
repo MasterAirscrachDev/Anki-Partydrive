@@ -25,30 +25,6 @@ namespace OverdriveServer {
             if(car == null){ car = new TrackCarLocation(id, track.Length); carLocations.Add(car); }
             car.SetOnPosition(trackID, clockwise);
             car.horizontalPosition = offset;
-            
-            // car.SetLast(trackID, clockwise);
-            // car.horizontalPosition = offset;
-            // //does this car match the track?
-            // if(car.PieceMatches(track[car.trackIndex], 0)){ car.positionTrusted = true; return; }
-            // car.positionTrusted = false;
-            // //match the car to the track to find the correct index (using Unknown as a wildcard)
-            // if(car.AllUnknowns()){ return; } //we got no clue
-            // for(int i = 0; i < track.Length - car.GetLastTrackLength(); i++){
-            //     bool match = true;
-            //     int trackLength = car.GetLastTrackLength();
-            //     for (int j = 0; j < trackLength; j++) { // Calculate the reversed index
-            //         int reversedIndex = trackLength - 1 - j;
-            //         if (!car.PieceMatches(track[i + j], reversedIndex)) { match = false; break; }
-            //     }
-            //     if(match){
-            //         if(i == car.trackIndex){ break; }
-            //         Console.WriteLine($"Car {id} index Corrected from {car.trackIndex} to {i}\nCurrentCarpieces:");
-            //         Console.WriteLine(car.GetLastTracks());
-            //         Console.WriteLine("");
-            //         car.trackIndex = i;
-            //         break;
-            //     }
-            // }
         }
         void OnCarTransition(string id, int trackPiece, int oldTrackPiece, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
             if(!trackValidated){ return; }
@@ -99,10 +75,11 @@ namespace OverdriveServer {
                     if(matchCount == 1 && matchedIndex != car.trackIndex){
                         Console.WriteLine($"Car {id} index corrected from {car.trackIndex} to {matchedIndex}");
                         car.trackIndex = matchedIndex;
+                        car.positionTrusted = true; //we are sure about the position now
                     }
                     else if(matchCount > 1){
                         Console.WriteLine($"Car {id} has ambiguous position - multiple matches found. Keeping current position.");
-                    }else if(memoryLength > 4 && matchCount == 0){ //if we have a lot of memory and no matches, we might be on the wrong track
+                    }else if(memoryLength > 4 && matchCount == 0){ //if we have a lot of memory and no matches, we might be on the wrong track (update this to require a few warnings before we do this)
                         Program.carSystem.GetCar(id).UTurn(); //request a U-turn
                         Console.WriteLine($"Car {id} has no matches, requesting U-turn");
                         car.ClearTracks(); //clear the track memory, we are lost

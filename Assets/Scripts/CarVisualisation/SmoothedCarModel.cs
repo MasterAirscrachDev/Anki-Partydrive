@@ -16,7 +16,7 @@ public class SmoothedCarModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(followTarget == null){ Destroy(gameObject); }
+        if(followTarget == null){ Destroy(gameObject); return; }
         transform.LookAt(followTarget);
         transform.position = Vector3.Lerp(transform.position, followTarget.position, smoothSpeed * Time.deltaTime);
     }
