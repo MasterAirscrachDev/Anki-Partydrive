@@ -18,6 +18,7 @@ namespace OverdriveServer
                 {
                     clients.Add(socket);
                     Console.WriteLine("Client connected: " + socket.ConnectionInfo.ClientIpAddress);
+                    Program.CheckCurrentTrack(); //check if the track is valid
                 };
 
                 socket.OnClose = () =>

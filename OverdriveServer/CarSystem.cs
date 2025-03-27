@@ -15,6 +15,13 @@ namespace OverdriveServer {
         public static readonly BluetoothUuid WriteID = BluetoothUuid.FromGuid(new Guid("BE15BEE1-6186-407E-8381-0BD89C4D8DF4"));
         List<Car> cars = new List<Car>();
         public Car? GetCar(string id){ return cars.Find(car => car.id == id); }
+        public Car[] GetCarsOffCharge(){
+            List<Car> carsOffCharge = new List<Car>();
+            foreach(Car car in cars){
+                if(!car.data.charging){ carsOffCharge.Add(car); }
+            }
+            return carsOffCharge.ToArray();
+        }
         public async Task ConnectToCarAsync(BluetoothDevice carDevice){
             FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
             Save s = await fs.LoadFile($"{carDevice.Id}.dat");

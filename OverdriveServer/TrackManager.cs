@@ -7,6 +7,7 @@ namespace OverdriveServer {
         public int totalStarts = 1;
         TrackPiece[]? track;
         bool trackValidated = false;
+        int carsAwaitingLineup = 0;
         List<TrackCarLocation> carLocations;
         public void SetTrack(TrackPiece[] track, bool validated){ 
             this.track = track; trackValidated = validated; 
@@ -87,7 +88,19 @@ namespace OverdriveServer {
                 }
             }
             car.OnTransition(offset, leftWheelDistance, rightWheelDistance);
-
+            if(carsAwaitingLineup > 0){ //if we are waiting for lineup, check if we are at the start line
+                if(car.positionTrusted){
+                    if(car.trackIndex == 0){ //if we are at the start line, stop the car
+                        Program.carSystem.GetCar(id).SetCarSpeed(0, 1000); //stop the car
+                        Program.Log($"Lineup finished for {id}");
+                        carsAwaitingLineup--;
+                    }//if we are in the last 2 segments then slow down
+                    else if(car.trackIndex >= track.Length - 2){ //if we are in the last 2 segments then slow down
+                        Program.carSystem.GetCar(id).SetCarSpeed(250, 1000); //slow down to 200
+                        Program.Log($"Lineup slowing down for {id}");
+                    }
+                }
+            }
 
             int carspeed = 0;
             if(Program.carSystem.GetCar(id) != null){ carspeed = Program.carSystem.GetCar(id).data.speed; }
@@ -108,6 +121,27 @@ namespace OverdriveServer {
                 Console.WriteLine($"Car {id} delocalised, clearing track memory");
             }
         }
+
+        public void RequestLineup(){
+            Car[] cars = Program.carSystem.GetCarsOffCharge(); //get all cars that are not charging
+            if(cars.Length == 0){ Program.Log("No cars to lineup"); return; }
+            if(track == null || !trackValidated){ Program.Log("No track to lineup on"); return; }
+            //set the lane offset for each car based on index
+            if(cars.Length > 4){ Program.Log("Too many cars to lineup"); return; } //max 4 cars (for now)
+            //68,23,-23,-68 lanes 1-4
+            for(int i = 0; i < cars.Length; i++){
+                float laneOffset = 0;
+                if(i == 0){ laneOffset = 68; } //lane 1
+                else if(i == 1){ laneOffset = 23; } //lane 2
+                else if(i == 2){ laneOffset = -23; } //lane 3
+                else if(i == 3){ laneOffset = -68; } //lane 4
+                cars[i].SetCarSpeed(550, 1000); //set the speed to 550 for all cars
+                cars[i].SetCarLane(laneOffset, 100, 1000); //set the lane offset for each car
+            }
+            carsAwaitingLineup = cars.Length;
+            Program.Log($"Lineup started with {cars.Length} cars");
+        }
+
         TrackPiece GetTrackPieceLooped(int index){
             if(track == null){ return null; }
             if(index < 0){ index = track.Length + index; } //loop backwards
