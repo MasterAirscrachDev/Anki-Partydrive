@@ -32,61 +32,62 @@ namespace OverdriveServer {
             TrackCarLocation car = carLocations.Find(car => car.ID == id);
             if(car == null){ car = new TrackCarLocation(id, track.Length); carLocations.Add(car); }
             car.horizontalPosition = offset;
-            Console.WriteLine($"idx {car.trackIndex} {track[car.trackIndex]}");
-            if(crossedStartingLine && false){ //temp testing
-                if(track[car.trackIndex].type != TrackPieceType.FinishLine){ //something is off
-                    int currentIndex = car.trackIndex, closestFinishLine = -1, closestDistance = 1000; //find the closest finish line to our current Index
-                    for(int i = 0; i < track.Length; i++){ //find the closest finishline both forward and backward
-                        if(track[i].type == TrackPieceType.FinishLine){
-                            int distance = Math.Abs(i - currentIndex);
-                            if(distance < closestDistance){ closestDistance = distance; closestFinishLine = i; }
-                        }
+            //Console.WriteLine($"idx {car.trackIndex} {track[car.trackIndex]}");
+            //match the cars track memory to see if we can find the correct index
+            int memoryLength = car.GetLocalisedTrackLength();
+            if(memoryLength > 2){ //we have some track memory, try to match it to the track
+                //Console.WriteLine($"{car.MemoryString()}");
+                int matchCount = 0;
+                int matchedIndex = -1;
+                // Find all potential matches
+                for(int trackIndex = 0; trackIndex < track.Length; trackIndex++){
+                    bool match = true;
+                    string check = "Chk: ";
+                    for (int memoryIndex = memoryLength - 1; memoryIndex >= 0; memoryIndex--) { 
+                        TrackPiece piece = GetTrackPieceLooped(trackIndex + memoryIndex); // Get the track piece at the current index
+                        check += $"[{piece.type} {piece.internalID} {piece.flipped}]";
+                        if (!car.PieceMatches(piece, memoryIndex)) { match = false; break; }
                     }
-                    if(closestFinishLine != -1 && closestFinishLine != currentIndex){ //we found a finish line, and it's not the same as the current index
-                        Console.WriteLine($"Car {id} crossed starting line, corrected from {currentIndex} to {closestFinishLine}, difference: {closestDistance}");
-                        car.trackIndex = closestFinishLine - 1; //-1 because it gets incremented by the OnTransition function
+                    if(match){
+                        matchCount++;
+                        matchedIndex = trackIndex + memoryLength; // Store the matched index
+                        //Console.WriteLine(check);
                     }
+                    
                 }
-            }else{
-                //match the cars track memory to see if we can find the correct index
-                int memoryLength = car.GetLocalisedTrackLength();
-                if(memoryLength > 2){ //we have some track memory, try to match it to the track
-                    Console.WriteLine($"{car.MemoryString()}");
-                    int matchCount = 0;
-                    int matchedIndex = -1;
-                    // Find all potential matches
-                    for(int trackIndex = 0; trackIndex < track.Length; trackIndex++){
-                        bool match = true;
-                        string check = "Chk: ";
-                        for (int memoryIndex = memoryLength - 1; memoryIndex >= 0; memoryIndex--) { 
-                            TrackPiece piece = GetTrackPieceLooped(trackIndex + memoryIndex); // Get the track piece at the current index
-                            check += $"[{piece.type} {piece.internalID} {piece.flipped}]";
-                            if (!car.PieceMatches(piece, memoryIndex)) { match = false; break; }
-                        }
-                        if(match){
-                            matchCount++;
-                            matchedIndex = trackIndex + memoryLength; // Store the matched index
-                            Console.WriteLine(check);
-                        }
-                        
-                    }
-                    // Report the number of potential matches
-                    Console.WriteLine($"Car {id} has {matchCount} potential track position matches");
-                    // Only update position if exactly one match is found and it's different from current
-                    if(matchCount == 1 && matchedIndex != car.trackIndex){
-                        Console.WriteLine($"Car {id} index corrected from {car.trackIndex} to {matchedIndex}");
-                        car.trackIndex = matchedIndex;
-                        car.positionTrusted = true; //we are sure about the position now
-                    }
-                    else if(matchCount > 1){
-                        Console.WriteLine($"Car {id} has ambiguous position - multiple matches found. Keeping current position.");
-                    }else if(memoryLength > 4 && matchCount == 0){ //if we have a lot of memory and no matches, we might be on the wrong track (update this to require a few warnings before we do this)
+                // Report the number of potential matches
+                //Console.WriteLine($"Car {id} has {matchCount} potential track position matches");
+                // Only update position if exactly one match is found and it's different from current
+                if(matchCount == 1 && matchedIndex != car.trackIndex){
+                    //Console.WriteLine($"Car {id} index corrected from {car.trackIndex} to {matchedIndex}");
+                    car.trackIndex = matchedIndex;
+                    car.positionTrusted = true; //we are sure about the position now
+                    car.voidSegments = 0; //reset the void segments counter
+                }
+                else if(matchCount > 1){
+                    //Console.WriteLine($"Car {id} has ambiguous position - multiple matches found. Keeping current position.");
+                    car.voidSegments = 0; //reset the void segments counter
+                }else if(memoryLength > 2 && matchCount == 0){ //if we have a lot of memory and no matches, we might be on the wrong track (update this to require a few warnings before we do this)
+                    if(car.voidSegments > 4){
+                        Car carE = Program.carSystem.GetCar(id);
+                        int speed = carE.data.speed;
+                        carE.SetCarSpeed(150, 2000); //slow down to 150
                         Program.carSystem.GetCar(id).UTurn(); //request a U-turn
-                        Console.WriteLine($"Car {id} has no matches, requesting U-turn");
+                        //Console.WriteLine($"Car {id} has no matches, requesting U-turn");
                         car.ClearTracks(); //clear the track memory, we are lost
+                        //in 2s return to normal speed
+                        Task.Delay(2000).ContinueWith(t => {
+                            if(Program.carSystem.GetCar(id) != null){
+                                Program.carSystem.GetCar(id).SetCarSpeed(speed); //return to normal speed
+                                car.ClearTracks(); //clear the track memory
+                            }
+                        });
+                    }else{
+                        car.voidSegments++; //increment the void segments counter
                     }
                 }
             }
+            //end localisation check
             car.OnTransition(offset, leftWheelDistance, rightWheelDistance);
             if(carsAwaitingLineup > 0){ //if we are waiting for lineup, check if we are at the start line
                 if(car.positionTrusted){

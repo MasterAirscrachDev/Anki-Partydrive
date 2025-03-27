@@ -71,6 +71,7 @@ namespace OverdriveServer {
                         }
                     );
                     CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
+                    car.data.laneOffset = offset;
                     car.LaneCheck();
                 }
                 catch{

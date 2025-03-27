@@ -39,7 +39,7 @@ namespace OverdriveServer {
             public string ID;
             int trackLength = 0, memoryLength = 0, lastTrackID = 0;
             bool lastFlipped = false;
-            public int trackIndex;
+            public int trackIndex = 1, voidSegments = 0;
             public float trackPosition;
             public float horizontalPosition;
             public bool positionTrusted = false;
@@ -88,7 +88,7 @@ namespace OverdriveServer {
                 }
                 return content;
             }
-            public void ClearTracks(){ lastTracks.Clear(); positionTrusted = false; horizontalPosition = 0; }
+            public void ClearTracks(){ lastTracks.Clear(); positionTrusted = false; horizontalPosition = 0; voidSegments = 0; }
         }
     }
 }

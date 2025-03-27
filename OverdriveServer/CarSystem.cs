@@ -158,7 +158,9 @@ namespace OverdriveServer {
             requestedOffset = (int)lane;
         }
         public void LaneCheck(){
-            if((Math.Abs(requestedOffset - data.laneOffset) > 0.3) && data.speed > 0){
+            if(Math.Abs(requestedOffset - data.laneOffset) > 100 && data.speed > 0){
+                SetCarTrackCenter(0); Console.WriteLine($"{id} Your lane is bogus, expect trouble");
+            } else if((Math.Abs(requestedOffset - data.laneOffset) > 0.3) && data.speed > 0){
                 SetCarLane(requestedOffset);
             }
         }
@@ -193,7 +195,7 @@ namespace OverdriveServer {
         }
         public async Task UTurn(){
             byte[] data = new byte[4];
-            data[0] = 0x04; //size
+            data[0] = 0x03; //size
             data[1] = SEND_CAR_UTURN; //id 50
             data[2] = 0x03; //0x00 Not Turn, 0x01 Left, 0x02 Right, 0x03 U-Turn, 0x04 Jump U-turn
             data[3] = 0x00; //0x00 Turn Now, 0x01 Turn at new Track Piece
