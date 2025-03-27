@@ -90,13 +90,13 @@ namespace OverdriveServer {
             car.OnTransition(offset, leftWheelDistance, rightWheelDistance);
             if(carsAwaitingLineup > 0){ //if we are waiting for lineup, check if we are at the start line
                 if(car.positionTrusted){
-                    if(car.trackIndex == 0){ //if we are at the start line, stop the car
-                        Program.carSystem.GetCar(id).SetCarSpeed(0, 1000); //stop the car
+                    if(car.trackIndex == 1){ //if we are at the start line, stop the car
+                        Program.carSystem.GetCar(id).SetCarSpeed(0, 3000); //stop the car
                         Program.Log($"Lineup finished for {id}");
                         carsAwaitingLineup--;
                     }//if we are in the last 2 segments then slow down
-                    else if(car.trackIndex >= track.Length - 2){ //if we are in the last 2 segments then slow down
-                        Program.carSystem.GetCar(id).SetCarSpeed(250, 1000); //slow down to 200
+                    else if(car.trackIndex >= track.Length - 1){ //if we are in the last 2 segments then slow down
+                        Program.carSystem.GetCar(id).SetCarSpeed(150, 500); //slow down to 200
                         Program.Log($"Lineup slowing down for {id}");
                     }
                 }

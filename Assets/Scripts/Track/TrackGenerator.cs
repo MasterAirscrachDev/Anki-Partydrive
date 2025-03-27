@@ -44,18 +44,18 @@ public class TrackGenerator : MonoBehaviour
                 //if the abs of height diff is 2, use the 4th prefab, if height diff is -1 use the 7th prefab otherwise use the 1st prefab
                 int prefIndex = 1;
                 int heightDiff = 0;
-                if(segments[i].up == 255 && segments[i].down == 255){ prefIndex = 7; }
-                else if(segments[i].up == 255 || segments[i].down == 255){ prefIndex = 4;heightDiff = segments[i].up == 255 ? 2 : -2;}
+                //if(segments[i].up == 255 && segments[i].down == 255){ prefIndex = 7; }
+                //else if(segments[i].up == 255 || segments[i].down == 255){ prefIndex = 4; heightDiff = segments[i].up == 255 ? 2 : -2;}
                 track = Instantiate(segments[i].validated ? trackPrefabs[prefIndex] : scannningPrefabs[1], pos, rot, transform);
                 pos += forward;
-                if(heightDiff == 2){
-                    track.transform.Rotate(0, 180, 0);
-                    pos += Vector3.up * 0.2f;
-                }
-                else if(heightDiff == -2){
-                    pos += Vector3.down * 0.2f;
-                    track.transform.Translate(0, -0.2f, 0);
-                }
+                // if(heightDiff == 2){
+                //     track.transform.Rotate(0, 180, 0);
+                //     pos += Vector3.up * 0.2f;
+                // }
+                // else if(heightDiff == -2){
+                //     pos += Vector3.down * 0.2f;
+                //     track.transform.Translate(0, -0.2f, 0);
+                // }
             } if(segments[i].type == TrackPieceType.FnFSpecial){
                 track = Instantiate(segments[i].validated ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
                 if(segments[i].flipped){

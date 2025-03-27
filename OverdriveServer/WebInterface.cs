@@ -158,7 +158,12 @@ namespace OverdriveServer {
                             endpoints.MapGet("/track", async context => {
                                 context.Response.ContentType = "application/json";
                                 await context.Response.WriteAsync(Program.trackManager.TrackDataAsJson());
-                            });                  
+                            });
+                            endpoints.MapGet("/lineup", async context => {
+                                context.Response.StatusCode = 200;
+                                Program.trackManager.RequestLineup();
+                                await context.Response.WriteAsync("Attempting to lineup cars");
+                            }); 
                         });
                         
                         app.Run(async context => {

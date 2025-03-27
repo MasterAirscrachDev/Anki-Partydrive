@@ -15,6 +15,7 @@ public class CarInteraface : MonoBehaviour
     [SerializeField] TrackGenerator trackGenerator;
     CMS cms;
     CarEntityTracker carEntityTracker;
+    [SerializeField] UIManager uiManager;
     string scanningCar;
     int DEBUG_SPEED = 0, DEBUG_LANE = 0;
     
@@ -128,8 +129,12 @@ public class CarInteraface : MonoBehaviour
                             ApiCall($"tts/Car {c[2]} has connected");
                         }
                     } else if(c[0] == "-3"){
-                        bool validated = c[2] == "True";
-                        GetTrackAndGenerate(validated);
+                        bool valid = false;
+                        if(c[2] != "in-progress"){
+                            valid = c[2] == "True";
+                            uiManager.SetIsScanningTrack(false); //set the UI to not scanning
+                        }
+                        GetTrackAndGenerate(valid);
                     } else if(c[0] == "-4"){ //finish line crossed (will be deprecated soon)
                         if(balanceTesting != null){ balanceTesting.CrossedFinish(); }
                         if(timeTrialMode != null){ timeTrialMode.CarCrossedFinish(c); }

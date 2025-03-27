@@ -185,7 +185,7 @@ namespace OverdriveServer {
                 currentTrack = trackPieces.ToList();
             }
             Program.trackManager.SetTrack(currentTrack.ToArray(), false);
-            Program.UtilLog($"-3:{scanningCar.id}:false");
+            Program.UtilLog($"-3:{scanningCar.id}:in-progress");
         }
         bool ValidateTrackConnects(List<TrackPiece> track){
             int X = 0, Y = -1, direction = 0;
