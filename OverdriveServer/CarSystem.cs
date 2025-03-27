@@ -192,9 +192,11 @@ namespace OverdriveServer {
             await WriteToCarAsync(data, true);
         }
         public async Task UTurn(){
-            byte[] data = new byte[2];
-            data[0] = 0x02; //size
+            byte[] data = new byte[4];
+            data[0] = 0x04; //size
             data[1] = SEND_CAR_UTURN; //id 50
+            data[2] = 0x03; //0x00 Not Turn, 0x01 Left, 0x02 Right, 0x03 U-Turn, 0x04 Jump U-turn
+            data[3] = 0x00; //0x00 Turn Now, 0x01 Turn at new Track Piece
             await WriteToCarAsync(data, true);
         }
 

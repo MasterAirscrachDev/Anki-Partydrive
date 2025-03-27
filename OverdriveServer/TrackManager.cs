@@ -123,7 +123,7 @@ namespace OverdriveServer {
         }
 
         public void RequestLineup(){
-            Car[] cars = Program.carSystem.GetCarsOffCharge(); //get all cars that are not charging
+            Car[] cars = Program.carSystem.GetCarsOffCharge();
             if(cars.Length == 0){ Program.Log("No cars to lineup"); return; }
             if(track == null || !trackValidated){ Program.Log("No track to lineup on"); return; }
             //set the lane offset for each car based on index
