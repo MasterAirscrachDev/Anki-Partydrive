@@ -6,13 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace OverdriveServer {
     class WebInterface {
-        int linkCooldown = 0;
-        
         public void Start(){
             string[] args = new string[]{"--urls", "http://localhost:7117"};
             CreateHostBuilder(args).Build().RunAsync();
         }
-        
+        //Depricated in favor of WebsocketManager
         IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args).ConfigureLogging(logging => { 
                 logging.ClearProviders(); logging.SetMinimumLevel(LogLevel.Warning); }).ConfigureWebHostDefaults(webBuilder => {
@@ -180,16 +178,9 @@ namespace OverdriveServer {
                                 await context.Response.WriteAsync($"Failed to find path {context.Request.Path}");
                             }
                         });
-                    });
-                });
-        
-        async Task UnlinkApplication(){
-            while(linkCooldown > 0){
-                await Task.Delay(1000);
-                linkCooldown--;
+                    }
+                );
             }
-            Program.SetLogging(true);
-            Program.Log("Application Unlinked");
-        }
+        );
     }
 }

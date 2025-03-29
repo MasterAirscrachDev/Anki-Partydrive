@@ -15,6 +15,27 @@ public class CarData{
     }
 }
 [System.Serializable]
+public class UCarData{ //mirron class because unity cannot serialize CarData
+    public string name;
+    public string id;
+    public int trackPosition;
+    public int trackID;
+    public float laneOffset;
+    public int speed;
+    public int battery;
+    public bool charging;
+    public UCarData(CarData carData){
+        this.name = carData.name;
+        this.id = carData.id;
+        this.trackPosition = carData.trackPosition;
+        this.trackID = carData.trackID;
+        this.laneOffset = carData.laneOffset;
+        this.speed = carData.speed;
+        this.battery = carData.battery;
+        this.charging = carData.charging;
+    }
+}
+[System.Serializable]
 public class TransitionData {
     public string carID {get; set;}
     public int trackPiece {get; set;}

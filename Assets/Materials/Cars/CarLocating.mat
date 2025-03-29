@@ -7,15 +7,17 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: StartGateHolo
-  m_Shader: {fileID: 4800000, guid: 07bb7b24db43dcb45a8b1224ba2f7eaf, type: 3}
-  m_ValidKeywords: []
+  m_Name: CarLocating
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ValidKeywords:
+  - _ALPHABLEND_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2450
-  stringTagMap: {}
+  m_CustomRenderQueue: 3000
+  stringTagMap:
+    RenderType: Transparent
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -61,24 +63,20 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DstBlend: 0
-    - _EdgeHeight: 0
-    - _EdgeWidth: 0.019
+    - _DstBlend: 10
     - _GlossMapScale: 1
-    - _Glossiness: 0.923
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MainHeight: 0
     - _Metallic: 0
-    - _Mode: 0
+    - _Mode: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 1
+    - _SrcBlend: 5
     - _UVSec: 0
-    - _ZWrite: 1
+    - _ZWrite: 0
     m_Colors:
-    - _Color: {r: 0.21568628, g: 0.21568628, b: 0.21568628, a: 1}
-    - _EdgeColor: {r: 1, g: 0.5486495, b: 0, a: 1}
+    - _Color: {r: 0.1204165, g: 0.7143605, b: 0.7735849, a: 0.43137255}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

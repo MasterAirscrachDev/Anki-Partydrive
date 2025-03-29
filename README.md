@@ -51,6 +51,7 @@ This is not a remake of the Anki Overdrive app, I am not making a campaign or up
 # Credits:  
 This project uses InTheHand.BluetoothLE to connect to the Anki Overdrive cars. 
 
+
 # Disclaimer:  
 This project is not affiliated with Anki, or new Anki (Digital Dream Labs / DDL) in any way.  
 Use of the Anki Overdrive name is for internet searchability and is not intended to imply any affiliation with Anki or DDL.

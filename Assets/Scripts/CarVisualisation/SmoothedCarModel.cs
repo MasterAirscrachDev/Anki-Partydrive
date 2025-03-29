@@ -5,7 +5,8 @@ using UnityEngine;
 public class SmoothedCarModel : MonoBehaviour
 {
     Transform followTarget;
-    [SerializeField] float smoothSpeed = 0.125f;
+    [SerializeField] float smoothSpeedA = 6f, smoothSpeedB = 2f;
+    Vector3 smoothPositionA;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,7 +18,13 @@ public class SmoothedCarModel : MonoBehaviour
     void Update()
     {
         if(followTarget == null){ Destroy(gameObject); return; }
-        transform.LookAt(followTarget);
-        transform.position = Vector3.Lerp(transform.position, followTarget.position, smoothSpeed * Time.deltaTime);
+        if(Vector3.Distance(transform.position, followTarget.position) < 0.01f){ return; }
+        smoothPositionA = Vector3.Lerp(smoothPositionA, followTarget.position, smoothSpeedA * Time.deltaTime);
+
+        transform.position = Vector3.Lerp(transform.position, smoothPositionA, smoothSpeedB * Time.deltaTime);
+
+        transform.LookAt(smoothPositionA);
+        Debug.DrawLine(followTarget.position, smoothPositionA, Color.red);
+        Debug.DrawLine(transform.position, smoothPositionA, Color.green);
     }
 }

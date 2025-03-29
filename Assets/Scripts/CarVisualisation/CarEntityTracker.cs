@@ -6,11 +6,11 @@ public class CarEntityTracker : MonoBehaviour
 {
     [SerializeField] TrackGenerator track;
     [SerializeField] GameObject carPrefab;
-    [SerializeField] List<ModelEntity> entities = new List<ModelEntity>();
+    [SerializeField] Dictionary<string, CarEntityPosition> trackers = new Dictionary<string, CarEntityPosition>();
 
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, bool positionTrusted){
         if(!track.hasTrack){ return; }
-        ModelEntity entity = entities.Find(x => x.id == id);
+        CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
         TrackSpline trackPiece = track.GetTrackPiece(trackIndex);
         if(trackPiece == null){ //either we are on a PreStart or an error has occured
             trackIndex++;
@@ -19,27 +19,24 @@ public class CarEntityTracker : MonoBehaviour
             }else{ return; }
         }
         if(entity == null){
-            entity = new ModelEntity {
-                id = id,
-                entity = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarModel>()
-            };
-            entity.entity.name = id;
-            entities.Add(entity);
+            CarEntityPosition carModel = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarEntityPosition>();
+            carModel.gameObject.name = $"{id} True Position";
+            carModel.transform.GetChild(0).gameObject.name = $"{id} Model";
+            carModel.carModelManager = carModel.transform.GetChild(0).GetComponent<CarModelManager>();
+            trackers.Add(id, carModel);
         }
-        entity.entity.SetTrustedPosition(positionTrusted);
-        entity.entity.SetTrackSpline(trackPiece, trackIndex);
-        entity.entity.SetSpeedAndOffset(speed, horizontalOffset);
+        entity.SetTrustedPosition(positionTrusted);
+        entity.SetTrackSpline(trackPiece, trackIndex);
+        entity.SetSpeedAndOffset(speed, horizontalOffset);
     }
-    public void RemoveEntity(string id){
-        ModelEntity entity = entities.Find(x => x.id == id);
-        if(entity != null){
-            Destroy(entity.entity.gameObject);
-            entities.Remove(entity);
+    public void CarDelocalised(string id){
+        if(trackers.ContainsKey(id)){
+            trackers[id].Delocalise();
         }
     }
-    [System.Serializable]
-    class ModelEntity{
-        public string id;
-        public CarModel entity;
+    public void SetSpeedAndLane(string id, int speed, float horizontalOffset){
+        if(trackers.ContainsKey(id)){
+            trackers[id].SetSpeedAndOffset(speed, horizontalOffset);
+        }
     }
 }

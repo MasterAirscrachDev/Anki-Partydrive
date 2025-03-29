@@ -36,7 +36,6 @@ namespace OverdriveServer {
             Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding
         }
         public class TrackCarLocation{
-            public string ID;
             int trackLength = 0, memoryLength = 0, lastTrackID = 0;
             bool lastFlipped = false;
             public int trackIndex = 1, voidSegments = 0;
@@ -44,38 +43,28 @@ namespace OverdriveServer {
             public float horizontalPosition;
             public bool positionTrusted = false;
             List<TrackPiece> lastTracks = new List<TrackPiece>();
-            public TrackCarLocation(string id, int trackLength){ 
-                ID = id; 
+            public TrackCarLocation(int trackLength){ 
                 this.trackLength = trackLength; 
                 memoryLength = Math.Max(6, trackLength - 2);
                 if(memoryLength > 8){ memoryLength = 8; } //max 8 pieces in memory
             }
             public int GetLocalisedTrackLength(){ return lastTracks.Count; }
-            public void SetOnPosition(int ID, bool flipped){ //set the last track piece to the current one
-                lastTrackID = ID; lastFlipped = flipped;
-            }
-            public void OnTransition(float offset, int left, int right) {
-                int lID = lastTrackID; bool lFlipped = lastFlipped;
-                lastTrackID = 0; lastFlipped = false; //reset the last track piece
-                horizontalPosition = offset;
-                TrackPiece segment = TrackManager.GetTrackPieceWithFallback(lID, lFlipped, left, right);
-
+            public void OnSegment(TrackPiece segment, float offset){
                 lastTracks.Add(segment);
                 if(lastTracks.Count > memoryLength){ lastTracks.RemoveAt(0); } //keep the last 6 (smallest possible number of pieces w)
                 trackIndex++;
                 if(trackIndex >= trackLength){ trackIndex -= trackLength; } //loop around
+                horizontalPosition = offset;
             }
 
-            public bool PieceMatches(TrackPiece piece, int index) {
+            public bool PieceMatches(TrackPiece piece, int index, bool update = false) {
                 if (index < 0 || index >= lastTracks.Count) { return false; } // Check for out-of-bounds index
-                TrackPiece lastPiece = lastTracks[index];
-                if(lastPiece.internalID == 0) { //fallbacks are treated as wildcards
-                    if(lastPiece.type == piece.type) { return true; } //if the type is the same, its probably the same piece
-                    else{
-                        if(lastPiece.type == TrackPieceType.Straight && piece.type == TrackPieceType.CrissCross) { return true; } //crisscross is a straight piece
-                    }
-                } 
-                return (piece.type == lastPiece.type) && (piece.flipped == lastPiece.flipped);
+                (bool match, TrackPiece? updateTo) = TrackManager.EvaluateMatch(piece, lastTracks[index]);
+                if (match) { //if the piece matches, return true
+                    if(updateTo != null && update) { lastTracks[index] = updateTo; } //update the piece if needed
+                    return true;
+                }
+                return false; //otherwise, return false
             }
             public TrackPiece GetTrackAt(int index) {
                 if (index < 0 || index >= lastTracks.Count) { return null; } // Check for out-of-bounds index
@@ -88,6 +77,7 @@ namespace OverdriveServer {
                 }
                 return content;
             }
+            public void SafeClear() { lastTracks.Clear(); } //clear the track memory, but keep position Trusted
             public void ClearTracks(){ lastTracks.Clear(); positionTrusted = false; horizontalPosition = 0; voidSegments = 0; }
         }
     }

@@ -7,7 +7,7 @@ using System;
 public class CarInteraface : MonoBehaviour
 {
     public bool connected = false;
-    public CarData[] cars;
+    public UCarData[] cars;
     HttpClient client = new HttpClient();
     NativeWebSocket.WebSocket ws;
     public CarBalanceTesting balanceTesting;
@@ -17,7 +17,7 @@ public class CarInteraface : MonoBehaviour
     CarEntityTracker carEntityTracker;
     [SerializeField] UIManager uiManager;
     string scanningCar;
-    int DEBUG_SPEED = 0, DEBUG_LANE = 0;
+    int DEBUG_SPEED = 400, DEBUG_LANE = 0;
     
     private string[] webhookEvents = new string[] {
         NetDefinitions.EVENT_SYSTEM_LOG,
@@ -33,24 +33,10 @@ public class CarInteraface : MonoBehaviour
         client.BaseAddress = new Uri("http://localhost:7117/");
         ws = new NativeWebSocket.WebSocket("ws://localhost:7118/");
 
-        ws.OnOpen += () => {
-            Debug.Log("WebSocket connection opened");
-        };
-
-        ws.OnError += (e) => {
-            Debug.Log($"WebSocket error: {e}");
-        };
-
-        ws.OnClose += (e) => {
-            Debug.Log($"WebSocket connection closed: {e}");
-            ReconnectToServer();
-        };
-
-        ws.OnMessage += (bytes) => {
-            string message = System.Text.Encoding.UTF8.GetString(bytes);
-            //Debug.Log($"WebSocket message received: {message}");
-            ProcessWebhookData(message);
-        };
+        ws.OnOpen += () => { Debug.Log("WebSocket connection opened"); };
+        ws.OnError += (e) => { Debug.Log($"WebSocket error: {e}"); }; //Unable to connect to the remote server (if server missing)
+        ws.OnClose += (e) => { Debug.Log($"WebSocket connection closed: {e}"); ReconnectToServer(); };
+        ws.OnMessage += (bytes) => { ProcessWebhookData(System.Text.Encoding.UTF8.GetString(bytes)); };
 
         ws.Connect();
 
@@ -86,9 +72,10 @@ public class CarInteraface : MonoBehaviour
         scanningCar = null;
     }
     
-    public void ControlCar(CarData car, int speed, int lane){
+    public void ControlCar(UCarData car, int speed, int lane){
         if(car.charging){ return; }
         ApiCall($"controlcar/{car.id}:{speed}:{lane}");
+        carEntityTracker.SetSpeedAndLane(car.id, speed, lane);
     }
     
     public void SetCarColours(CarData car, float r, float g, float b){
@@ -217,7 +204,10 @@ public class CarInteraface : MonoBehaviour
         var response = await client.GetAsync("cars");
         string responseString = await response.Content.ReadAsStringAsync();
         CarData[] cars = JsonConvert.DeserializeObject<CarData[]>(responseString);
-        this.cars = cars;
+        UCarData[] uCars = new UCarData[cars.Length];
+        for (int i = 0; i < cars.Length; i++)
+        { uCars[i] = new UCarData(cars[i]); }
+        this.cars = uCars;
         Debug.Log("Updated Cars");
         // Define color values in an array
         var colors = new (float, float, float)[] {

@@ -2,8 +2,6 @@
 using static OverdriveServer.NetStructures;
 namespace OverdriveServer {
     class Program {
-        static bool printLog = true; 
-        public static bool DEV_V4 = false;
         public static WebInterface webInterface = new WebInterface();
         public static WebsocketManager socketMan = new WebsocketManager();
         public static BluetoothInterface bluetoothInterface = new BluetoothInterface();
@@ -14,7 +12,6 @@ namespace OverdriveServer {
         static async Task Main(string[] args) {
             if (args.Length == 1 && args[0] == "-snoop") { Snooper snoop = new Snooper(); await snoop.Start(); }
             else{
-                if(args.Contains("-v4")){ DEV_V4 = true; Console.WriteLine("Overdrive v4 Compatibility Enabled"); }
                 Console.WriteLine("Overdrive Server By MasterAirscrach");
                 Console.WriteLine("Starting server...");
                 await bluetoothInterface.InitaliseBletooth(); //Start the bluetooth subsystem
@@ -25,11 +22,9 @@ namespace OverdriveServer {
         }
         public static async Task Log(string message){ 
             socketMan.Notify(EVENT_SYSTEM_LOG, message);
-            if(printLog && !socketMan.HasClients()){ Console.WriteLine(message); } 
+            if(!socketMan.HasClients()){ Console.WriteLine(message); } 
         }
         public static async Task UtilLog(string message){ socketMan.Notify(EVENT_UTILITY_LOG, message); }
-
-        public static void SetLogging(bool state){ printLog = state; }
         public static void CheckCurrentTrack(){ trackManager.AlertIfTrackIsValid(); }
         public static void TTS(string message){
             SpeechSynthesizer synth = new SpeechSynthesizer();

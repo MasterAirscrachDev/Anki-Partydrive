@@ -3,9 +3,11 @@
         //IMPLEMENTED ==========================================================
         public const byte SEND_CAR_DISCONNECT = 0x0d; //13
         public const byte RECV_PING = 0x17; //23
+        public const byte SEND_VERSION_REQUEST = 0x18; //24
         public const byte RECV_VERSION = 0x19; //25
         public const byte SEND_BATTERY_REQUEST = 0x1a; //26
         public const byte RECV_BATTERY_RESPONSE = 0x1b; //27
+        public const byte SEND_LIGHTS_UPDATE = 0x1d; //29
         public const byte SEND_CAR_SPEED_UPDATE = 0x24; //36
         public const byte SEND_CAR_LANE_CHANGE = 0x25; //37
         public const byte RECV_TRACK_LOCATION = 0x27; //39
@@ -26,11 +28,8 @@
         //NOT IMPLEMENTED / UNKNOWN ===========================================
         //Not implemented, but known
         public const byte SEND_PING = 0x16; //22
-        public const byte SEND_VERSION = 0x18; //24
         public const byte SEND_SHUTDOWN = 0x1c; //28
-        public const byte SEND_LIGHTS_UPDATE = 0x1d; //29
         public const byte SEND_CAR_CANCEL_LANE_CHANGE = 0x26; //38
-        
         public const byte SEND_CAR_CONFIGURATION = 0x45; //69
         public const byte SEND_ROAD_NETWORK_META = 0x49; //73
         public const byte RECV_TRACK_TRANSITION_2 = 0x51; //81

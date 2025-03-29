@@ -56,6 +56,8 @@ namespace OverdriveServer {
                 characteristic.CharacteristicValueChanged += (sender, args) => { CarCharacteristicChanged(sender, args, car); };
                 await characteristic.StartNotificationsAsync();
                 await car.EnableSDKMode(true);
+                await car.RequestCarVersion();
+                await car.RequestCarBattery();
                 await Task.Delay(500);
                 Program.UtilLog($"-1:{car.id}:{car.name}");
             }
@@ -89,8 +91,12 @@ namespace OverdriveServer {
         public string name;
         public string id;
         public BluetoothDevice device;
-        public int speedBalance = 0;
+        int speedBalance = 0;
         float requestedOffset = 0;
+        //used by custom tracking
+        public int lastPositionID = 0; public bool lastFlipped = false;
+        //
+        bool V4_MODE = false;
         public CarData data;
         GattCharacteristic writeCharacteristic;
         bool hasWriteCharacteristic = false;
@@ -120,8 +126,8 @@ namespace OverdriveServer {
         public async Task SetCarSpeed(int speed, int accel = 1000){
             //only balance speed if not 0
             if(speedBalance != 0 && speed != 0){  speed = Math.Clamp(speed + speedBalance, 0, 1200); }
-            byte[] data = Program.DEV_V4 ? new byte[8] : new byte[7];
-            data[0] = Program.DEV_V4 ? (byte)0x07 : (byte)0x06;
+            byte[] data = V4_MODE ? new byte[8] : new byte[7];
+            data[0] = V4_MODE ? (byte)0x07 : (byte)0x06;
             data[1] = SEND_CAR_SPEED_UPDATE;
             //speed as int16
             data[2] = (byte)(speed & 0xFF);
@@ -131,7 +137,7 @@ namespace OverdriveServer {
             data[5] = (byte)((accel >> 8) & 0xFF);
             //respect track piece speed limits
             data[6] = 0x01;
-            if(Program.DEV_V4){ data[7] = 0x01; } //drive without scanned track? v4 only
+            if(V4_MODE){ data[7] = 0x01; } //drive without scanned track? v4 only
             await WriteToCarAsync(data);
             this.data.speed = speed;
         }
@@ -198,8 +204,15 @@ namespace OverdriveServer {
             data[0] = 0x03; //size
             data[1] = SEND_CAR_UTURN; //id 50
             data[2] = 0x03; //0x00 Not Turn, 0x01 Left, 0x02 Right, 0x03 U-Turn, 0x04 Jump U-turn
-            data[3] = 0x00; //0x00 Turn Now, 0x01 Turn at new Track Piece
+            data[3] = 0x01; //0x00 Turn Now, 0x01 Turn at new Track Piece
             await WriteToCarAsync(data, true);
+        }
+        public async Task RequestCarVersion(){
+            byte[] data = new byte[]{0x01, SEND_VERSION_REQUEST}; //12385 and higher should use V4 mode
+            await WriteToCarAsync(data, true);
+        }
+        public void SetCarSoftwareVersion(short version){
+            if(version >= 12385){ V4_MODE = true; } //v4 mode
         }
 
         async Task WriteToCarAsync(byte[] data, bool response = false){
@@ -210,5 +223,4 @@ namespace OverdriveServer {
             }catch{}
         }
     }
-    
 }

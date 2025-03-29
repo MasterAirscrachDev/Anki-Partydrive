@@ -7,8 +7,6 @@ namespace OverdriveServer {
         bool isScanning = false, isValidation = false;
         int skipSegments = 0, finishesPassed = 0, scanAttempts = 0;
 
-        int lastTrackID; bool lastFlipped;
-
 
         int finishCount = 1; //temp hardcoded
 
@@ -24,13 +22,11 @@ namespace OverdriveServer {
         }
         void SetEventsSub(bool sub) {
             if(sub){ 
-                Program.messageManager.CarEventLocationCall += OnTrackPosition; 
-                Program.messageManager.CarEventTransitionCall += OnTrackTransition;
+                Program.messageManager.CarEventSegmentCall += OnTrackSegment;
                 Program.messageManager.CarEventJumpCall += OnCarJumped;
                 Program.messageManager.CarEventDelocalised += OnCarFell;
             }else{ 
-                Program.messageManager.CarEventLocationCall -= OnTrackPosition;
-                Program.messageManager.CarEventTransitionCall -= OnTrackTransition;
+                Program.messageManager.CarEventSegmentCall -= OnTrackSegment;
                 Program.messageManager.CarEventJumpCall -= OnCarJumped;
                 Program.messageManager.CarEventDelocalised -= OnCarFell;
             }
@@ -82,35 +78,28 @@ namespace OverdriveServer {
                 SendFinishedTrack();
             }
         }
-        void OnTrackPosition(string carID, int trackLocation, int trackID, float offset, int speed, bool clockwise) {
-            if(carID == scanningCar.id){ 
-                lastFlipped = clockwise;
-                lastTrackID = trackID;
-            }
-        }
-        void OnTrackTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine){
+        void OnTrackSegment(string carID, TrackPiece segment, float _, int up, int down){
+            if(carID != scanningCar.id) { return; } //only process the car we are scanning
             if(!isScanning){ //true until we reach the first finish line
-                int trackID = lastTrackID; lastTrackID = 0;
-                if(crossedStartingLine){
+                if(segment.type == TrackPieceType.PreFinishLine && segment.internalID == 34){
                     scanningCar.SetCarSpeed(450, 500);
                     isScanning = true;
-                    trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
+                    trackPieces.Add(segment);
                     trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
                     skipSegments = 1;
                     ValidateMatchAndSendTrack();
-                }else if(trackID != 0 && TrackManager.PieceFromID(trackID) == TrackPieceType.FinishLine){ //should be able to initate a scan from the start correctly now
+                }else if(segment.internalID != 0 && segment.type == TrackPieceType.FinishLine){ //should be able to initate a scan from the start correctly now
                     isScanning = true;
                     trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
-                    trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
+                    trackPieces.Add(segment);
                     ValidateMatchAndSendTrack();
                 }
             }else{
-                int trackID = lastTrackID; lastTrackID = 0;
                 if(skipSegments > 0){ 
-                    Program.Log($"Skipping segment, left: {leftWheelDistance}, right: {rightWheelDistance}, skip: {skipSegments}");
+                    Program.Log($"Skipping segment, skip: {skipSegments}");
                     skipSegments--; return; 
                 }
-                if(crossedStartingLine){ //currently only supports one finish piece
+                if(segment.type == TrackPieceType.PreFinishLine){ //currently only supports one finish piece
                     finishesPassed++;
                     if(finishesPassed >= finishCount){ //validation phase
                         if(!isValidation){ //if we are on the first scan
@@ -118,7 +107,7 @@ namespace OverdriveServer {
                             if(ValidateTrackConnects(validationTrack)){ //ensure the track loops
                                 isValidation = true;
                                 trackPieces.Clear();
-                                trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
+                                trackPieces.Add(segment);
                                 trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
                                 trackPieces[trackPieces.Count - 1].validated = true;
                                 trackPieces[trackPieces.Count - 2].validated = true;
@@ -132,7 +121,7 @@ namespace OverdriveServer {
                                 isValidation = false;
                                 finishesPassed = 0;
                                 skipSegments = 1;
-                                trackPieces.Add(new TrackPiece(TrackPieceType.PreFinishLine, 34, false));
+                                trackPieces.Add(segment);
                                 trackPieces.Add(new TrackPiece(TrackPieceType.FinishLine, 33, false));
                                 ValidateMatchAndSendTrack();
                             }
@@ -143,7 +132,6 @@ namespace OverdriveServer {
                         }
                     }
                 }else{
-                    TrackPiece segment = TrackManager.GetTrackPieceWithFallback(trackID, lastFlipped, leftWheelDistance, rightWheelDistance);
                     if(
                         segment.type == TrackPieceType.Unknown || 
                         segment.type == TrackPieceType.PreFinishLine || 
@@ -153,7 +141,7 @@ namespace OverdriveServer {
                     ){ return; }
                     trackPieces.Add(segment);
                     trackPieces[trackPieces.Count - 1].validated = isValidation;
-                    trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);
+                    //trackPieces[trackPieces.Count - 1].SetUpDown(uphillCounter, downhillCounter);
                     ValidateMatchAndSendTrack();
                 }
             }
@@ -209,17 +197,12 @@ namespace OverdriveServer {
         bool MatchTracks(List<TrackPiece> trackPieces, List<TrackPiece> validation) {
             if(trackPieces.Count != validation.Count){ return false; }
             for(int i = 0; i < trackPieces.Count; i++){
-                if(trackPieces[i] != validation[i]){ 
-                    TrackPiece A = trackPieces[i];
-                    TrackPiece B = validation[i];
-
-                    //CrissCross is ID 10, and ID 0 is a fallback for unknown pieces
-                    if(A.internalID == 0 && B.internalID == 10){ trackPieces[i] = validation[i]; }
-                    else if(A.internalID == 10 && B.internalID == 0){ trackPieces[i] = validation[i]; }
-                    else{
-                        Program.Log($"Validation failed, track does not match, {trackPieces[i]} != {validation[i]}");
-                        return false; 
-                    }
+                (bool match, TrackPiece? updateTo) = TrackManager.EvaluateMatch(trackPieces[i], validation[i]);
+                if(match){ //if the piece matches, return true
+                    if(updateTo != null) { trackPieces[i] = updateTo; validation[i] = updateTo; } //update the piece if needed
+                }else{
+                    Program.Log($"Validation failed, track does not match, {trackPieces[i]} != {validation[i]}");
+                    return false; 
                 }
             }
             return true;
