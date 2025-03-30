@@ -10,7 +10,6 @@ public class CarInteraface : MonoBehaviour
     public UCarData[] cars;
     HttpClient client = new HttpClient();
     NativeWebSocket.WebSocket ws;
-    public CarBalanceTesting balanceTesting;
     public TimeTrialMode timeTrialMode;
     [SerializeField] TrackGenerator trackGenerator;
     CMS cms;
@@ -19,14 +18,11 @@ public class CarInteraface : MonoBehaviour
     string scanningCar;
     int DEBUG_SPEED = 400, DEBUG_LANE = 0;
     
-    private string[] webhookEvents = new string[] {
-        NetDefinitions.EVENT_SYSTEM_LOG,
-        NetDefinitions.EVENT_UTILITY_LOG,
-        NetDefinitions.EVENT_CAR_FELL,
-        NetDefinitions.EVENT_CAR_LOCATION,
-        NetDefinitions.EVENT_CAR_TRACKING_UPDATE,
-        NetDefinitions.EVENT_CAR_TRANSITION
-    };
+    public UCarData GetCarFromID(string id){
+        for (int i = 0; i < cars.Length; i++)
+        { if(cars[i].id == id){return cars[i];} }
+        return null;
+    }
     
     // Start is called before the first frame update
     void Start() {
@@ -74,7 +70,14 @@ public class CarInteraface : MonoBehaviour
     
     public void ControlCar(UCarData car, int speed, int lane){
         if(car.charging){ return; }
-        ApiCall($"controlcar/{car.id}:{speed}:{lane}");
+        //ApiCall($"controlcar/{car.id}:{speed}:{lane}");
+        WebhookData data = new WebhookData{
+            EventType = NetDefinitions.EVENT_CAR_MOVE,
+            Payload = $"{car.id}:{speed}:{lane}"
+        };
+
+        string jsonData = JsonConvert.SerializeObject(data);
+        ws.SendText(jsonData);
         carEntityTracker.SetSpeedAndLane(car.id, speed, lane);
     }
     
@@ -122,9 +125,6 @@ public class CarInteraface : MonoBehaviour
                             uiManager.SetIsScanningTrack(false); //set the UI to not scanning
                         }
                         GetTrackAndGenerate(valid);
-                    } else if(c[0] == "-4"){ //finish line crossed (will be deprecated soon)
-                        if(balanceTesting != null){ balanceTesting.CrossedFinish(); }
-                        if(timeTrialMode != null){ timeTrialMode.CarCrossedFinish(c); }
                     } else if(c[0] == "27"){
                         int battery = int.Parse(c[2]);
                         int index = GetCar(c[1]);
@@ -132,7 +132,7 @@ public class CarInteraface : MonoBehaviour
                             cars[index].battery = battery;
                         }
                     } else if(c[0] == "43"){ 
-                        //fell off track
+                        carEntityTracker.CarDelocalised(c[1]);
 
                     } else if(c[0] == "63"){ //charging status
                         int index = GetCar(c[1]);
@@ -144,6 +144,13 @@ public class CarInteraface : MonoBehaviour
                 case NetDefinitions.EVENT_CAR_LOCATION:
                     try {
                         LocationData locationData = JsonConvert.DeserializeObject<LocationData>(webhookData.Payload.ToString());
+                        int index = GetCar(locationData.carID);
+                        if(index != -1){
+                            cars[index].trackPosition = locationData.trackLocation;
+                            cars[index].trackID = locationData.trackID;
+                            cars[index].laneOffset = locationData.offset;
+                            cars[index].speed = locationData.speed;
+                        }
                     } catch (Exception e) {
                         Debug.LogError($"Error processing car position update: {e.Message}");
                     }
@@ -155,7 +162,7 @@ public class CarInteraface : MonoBehaviour
             
             }
         } catch (Exception e) {
-            Debug.LogError($"Error parsing webhook data: {e.Message}\nData: {jsonData}");
+            Debug.LogError($"Error parsing webhook data: {e.Message}\n{e.StackTrace}\nData: {jsonData}");
         }
     }
     
@@ -184,7 +191,7 @@ public class CarInteraface : MonoBehaviour
         }
     }
     
-    public void Call(string call){
+    public void Call(string call){ //used by UI buttons
         ApiCall(call);
     }
     
@@ -197,6 +204,14 @@ public class CarInteraface : MonoBehaviour
         var response = await client.GetAsync(call);
         string responseString = await response.Content.ReadAsStringAsync();
         if(printResult){ Debug.Log(responseString); }
+    }
+    public void ApiCallV2(string eventType, object data){
+        WebhookData webhookData = new WebhookData {
+            EventType = eventType,
+            Payload = data
+        };
+        string jsonData = JsonConvert.SerializeObject(webhookData);
+        ws.SendText(jsonData);
     }
     
     async Task GetCarInfo(){
@@ -226,7 +241,7 @@ public class CarInteraface : MonoBehaviour
         ApiCall("batteries");
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
-        { cms.controllers[i].RefreshCarIndex(); }
+        { cms.controllers[i].CheckCarExists(); }
     }
     
     public int GetCar(string id){
@@ -252,7 +267,6 @@ public class CarInteraface : MonoBehaviour
     [System.Serializable]
     private class WebhookData {
         public string EventType { get; set; }
-        public System.DateTime Timestamp { get; set; }
         public dynamic Payload { get; set; }
     }
 }

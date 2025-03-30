@@ -1,6 +1,7 @@
 using System.Text.Json;
 using static OverdriveServer.NetStructures;
 using Fleck;
+//using Newtonsoft.Json;
 
 namespace OverdriveServer
 {
@@ -58,7 +59,7 @@ namespace OverdriveServer
         {
             if(!HasClients()) { return; }
             // Create a JSON object to send with the original object as payload
-            var jsonMessage = new
+            var WebhookData = new WebhookData
             {
                 EventType = eventType,
                 Payload = data
@@ -73,7 +74,7 @@ namespace OverdriveServer
                 };
                 
                 // Serialize the object to JSON in one step
-                string jsonString = JsonSerializer.Serialize(jsonMessage, options);
+                string jsonString = JsonSerializer.Serialize(WebhookData, options);
                 
                 // Send the JSON string to all connected clients
                 SendMessageToClient(jsonString);
@@ -84,9 +85,40 @@ namespace OverdriveServer
         }
         void MessageToServerCallback(string message)
         {
-            Console.WriteLine("Message to server: " + message);
+            //Console.WriteLine("Message to server: " + message);
             // Handle the message from the client here
-            // For example, you can parse it and perform actions based on its content
+            try{
+                var webhookData = JsonSerializer.Deserialize<WebhookData>(message);
+                if(webhookData == null) { return; }
+                if(webhookData.EventType == EVENT_CAR_MOVE){
+                    //data will be id:speed:offset
+                    //offset or speed may be - meaning null
+                    string[] data = ((JsonElement)webhookData.Payload).GetString().Split(":");
+                    if(data.Length != 3) { return; }
+                    string id = data[0];
+                    Car car = Program.carSystem.GetCar(id);
+                    if(car == null) { return; }
+                    if(data[1] != "-") { 
+                        car.SetCarSpeed(int.Parse(data[1]));
+                    }
+                    if(data[2] != "-") { 
+                        car.SetCarLane(float.Parse(data[2]));
+                    }
+                }else if(webhookData.EventType == EVENT_REFRESH_CONFIGS){
+                    Program.carSystem.UpdateConfigs();
+                }
+            }
+            catch (Exception ex) {
+                Console.WriteLine($"Error deserializing message: {ex.Message}");
+                return;
+            }
+
+        }
+        [System.Serializable]
+        public class WebhookData
+        {
+            public string EventType { get; set; }
+            public object Payload { get; set; }
         }
     }
 }

@@ -44,7 +44,7 @@ namespace OverdriveServer {
             //match the cars track memory to see if we can find the correct index
             int memoryLength = car.GetLocalisedTrackLength();
             if(memoryLength > 2){ //we have some track memory, try to match it to the track
-                Console.WriteLine($"{car.MemoryString()}");
+                //Console.WriteLine($"{car.MemoryString()}");
                 int matchCount = 0;
                 int matchedIndex = -1;
                 int bestTrackIndex = -1, bestMemoryCount = 0;
@@ -68,21 +68,25 @@ namespace OverdriveServer {
                             bestTrackIndex = trackIndex; // Store the best track index
                         }
                     }
-                    Console.WriteLine(check);
+                    //Console.WriteLine(check);
                     
                 }
                 // Report the number of potential matches
-                Console.WriteLine($"Car {carID} has {matchCount} potential track position matches");
+                //Console.WriteLine($"Car {carID} has {matchCount} potential track position matches");
+                if(matchedIndex > track.Length - 1){ //if the matched index is greater than the track length, we need to loop it
+                    matchedIndex = matchedIndex - track.Length; //loop the index
+                }
                 // Only update position if exactly one match is found and it's different from current
-                if(matchCount == 1 && matchedIndex != car.trackIndex){
+                if(matchCount == 1 && (matchedIndex != car.trackIndex || !car.positionTrusted)){
                     //Console.WriteLine($"Car {id} index corrected from {car.trackIndex} to {matchedIndex}");
                     car.trackIndex = matchedIndex;
                     car.positionTrusted = true; //we are sure about the position now
                     car.voidSegments = 0; //reset the void segments counter
                 }
                 else if(matchCount > 1){
-                    Console.WriteLine($"Car {carID} has ambiguous position - multiple matches found. Keeping current position.");
+                    //Console.WriteLine($"Car {carID} has ambiguous position - multiple matches found. Keeping current position.");
                     car.trackIndex = matchedIndex; //update the track index to the best match
+                    car.positionTrusted = false; //we are not sure about the position now
                     car.voidSegments = 0; //reset the void segments counter
                 }else if(matchCount == 0){ //if we have a lot of memory and no matches, we might be on the wrong track (update this to require a few warnings before we do this)
                     if(car.voidSegments > 4){
@@ -90,7 +94,7 @@ namespace OverdriveServer {
                         int speed = carE.data.speed;
                         carE.SetCarSpeed(150, 2000); //slow down to 150
                         Program.carSystem.GetCar(carID).UTurn(); //request a U-turn
-                        Console.WriteLine($"Car {carID} has no matches, requesting U-turn");
+                        //Console.WriteLine($"Car {carID} has no matches, requesting U-turn");
                         car.ClearTracks(); //clear the track memory, we are lost
                         //in 2s return to normal speed
                         Task.Delay(2000).ContinueWith(t => {
@@ -110,13 +114,18 @@ namespace OverdriveServer {
             car.OnSegment(segment, offset); //update the car's track position
             if(carsAwaitingLineup > 0){ //if we are waiting for lineup, check if we are at the start line
                 if(car.positionTrusted){
-                    if(car.trackIndex == 1){ //if we are at the start line, stop the car
-                        Program.carSystem.GetCar(carID).SetCarSpeed(0, 3000); //stop the car
-                        Program.Log($"Lineup finished for {carID}");
-                        carsAwaitingLineup--;
+                    if(car.trackIndex == 0){ //if we are at the start line, stop the car
+                        //Program.carSystem.GetCar(carID).SetCarSpeed(150, 1000); //stop the car
+                        Task.Delay(850).ContinueWith(t => {
+                            if(Program.carSystem.GetCar(carID) != null){
+                                Program.carSystem.GetCar(carID).SetCarSpeed(0, 3000); //stop the car
+                                Program.Log($"Lineup finished for {carID}");
+                                carsAwaitingLineup--;
+                            }
+                        });
                     }//if we are in the last 2 segments then slow down
                     else if(car.trackIndex >= track.Length - 1){ //if we are in the last 2 segments then slow down
-                        Program.carSystem.GetCar(carID).SetCarSpeed(150, 500); //slow down to 200
+                        Program.carSystem.GetCar(carID).SetCarSpeed(330, 500); //slow down to 200
                         Program.Log($"Lineup slowing down for {carID}");
                     }
                 }
@@ -147,15 +156,22 @@ namespace OverdriveServer {
             if(track == null || !trackValidated){ Program.Log("No track to lineup on"); return; }
             //set the lane offset for each car based on index
             if(cars.Length > 4){ Program.Log("Too many cars to lineup"); return; } //max 4 cars (for now)
-            //68,23,-23,-68 lanes 1-4
+            float outerMostLane = 70; //outer most lane offset
+            //lanes  go 1, 2, 3, 4 (left to right) flipping from positive to negative in the middle
             for(int i = 0; i < cars.Length; i++){
                 float laneOffset = 0;
-                if(i == 0){ laneOffset = 68; } //lane 1
-                else if(i == 1){ laneOffset = 23; } //lane 2
-                else if(i == 2){ laneOffset = -23; } //lane 3
-                else if(i == 3){ laneOffset = -68; } //lane 4
+                if(cars.Length == 2){
+                    //car 0 should be in the middle of the left half, car 1 should be in the middle of the right half
+                    laneOffset = (i == 0) ? (outerMostLane / 2) : (-outerMostLane / 2); //set the lane offset for each car
+                }else if(cars.Length == 3){
+                    if(i == 0){ laneOffset = (outerMostLane / 2) + 15; } //car 0 should be in the middle of the left half
+                    else if(i == 1){ laneOffset = 0; } //car 1 should be in the middle of the track
+                    else{ laneOffset = -(outerMostLane / 2) - 15 ; } //car 2 should be in the middle of the right half
+                }else if(cars.Length == 4){
+                    
+                }
                 cars[i].SetCarSpeed(550, 1000); //set the speed to 550 for all cars
-                cars[i].SetCarLane(laneOffset, 100, 1000); //set the lane offset for each car
+                cars[i].SetCarLane(laneOffset, 10); //set the lane offset for each car
             }
             carsAwaitingLineup = cars.Length;
             Program.Log($"Lineup started with {cars.Length} cars");

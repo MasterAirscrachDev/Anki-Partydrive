@@ -13,7 +13,7 @@
         public const byte RECV_TRACK_LOCATION = 0x27; //39
         public const byte RECV_TRACK_TRANSITION = 0x29; //41
         public const byte RECV_TRACK_INTERSECTION = 0x2a; //42
-        public const byte RECV_CAR_OFF_TRACK = 0x2b; //43
+        public const byte RECV_CAR_DELOCALIZED = 0x2b; //43
         public const byte SEND_TRACK_CENTER_UPDATE = 0x2c; //44
         public const byte RECV_TRACK_CENTER_UPDATE = 0x2d; //45
         public const byte SEND_CAR_UTURN = 0x32; //50

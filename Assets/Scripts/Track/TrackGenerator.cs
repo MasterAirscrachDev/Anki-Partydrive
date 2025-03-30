@@ -19,6 +19,9 @@ public class TrackGenerator : MonoBehaviour
     public TrackPieceType GetTrackPieceType(int index){
         return segments[index].type;
     }
+    public TrackPiece[] GetTrackPieces(){
+        return segments;
+    }
     void GenerateTrackPls(){
         for(int i = 0; i < transform.childCount; i++){
             if(Application.isPlaying){
@@ -149,6 +152,11 @@ public class TrackGenerator : MonoBehaviour
         try{
             GenerateTrackPls();
             hasTrack = validated;
+
+            if(validated){
+                Debug.Log($"Track validated with {segments.Length} segments, {trackPieces.Count} track pieces");
+                OnTrackValidated?.Invoke(segments);
+            }
             //Debug.Log($"Track generated with {segments.Length} segments, {trackPieces.Count} track pieces, validated: {validated}");
         }
         catch(System.Exception e){
@@ -156,7 +164,43 @@ public class TrackGenerator : MonoBehaviour
         }
         trackCamera.TrackUpdated();
     }
+    public delegate void OnVerifyTrack(TrackPiece[] segments);
+    public event OnVerifyTrack? OnTrackValidated;
+
+    public static (bool, TrackPiece?) EvaluateMatch(TrackPiece A, TrackPiece B){
+        if(A == null || B == null){ return (false, null); } //if either piece is null, we can't match them
+        else if(A.internalID != 0 && B.internalID != 0){ //if both pieces are not fallbacks
+            return ((A.type == B.type) && (A.flipped == B.flipped), null); //match if the type and flipped state are the same
+        }else if(A.internalID == 0 && B.internalID == 0){ //if both pieces are fallbacks
+            return ((A.type == B.type) && (A.flipped == B.flipped), null); //match if the type and flipped state are the same
+        }
+        else{ //A or B is a fallback, check if we can match them
+            for(int i = 0; i < 2; i++){ 
+                TrackPiece C = A; //copy A to C
+                TrackPiece D = B; //copy B to D
+                if(i == 1){ C = B; D = A; } //swap C and D
+                if(C.internalID == 0 && D.internalID != 0){ //if C is a fallback and D is not
+                    if(C.type == D.type){ 
+                        if(C.validated){ D.validated = true; } //if C is validated, set D to validated
+                        return (true, D); 
+                    } //if the type is the same, its probably the same piece (return the one with the ID)
+                    else{
+                        if(C.type == TrackPieceType.Straight && D.type == TrackPieceType.CrissCross) { 
+                            if (C.validated){ D.validated = true; } //if C is validated, set D to validated
+                            return (true, D);
+                        } //crisscross is a straight piece
+                        else if(C.type == TrackPieceType.Straight && D.type == TrackPieceType.FnFSpecial) { 
+                            if (C.validated){ D.validated = true; } //if C is validated, set D to validated
+                            return (true, D); 
+                        } //FnF is a straight piece
+                    }
+                }
+            }
+        }
+        return (false, null); //no match found (should not happen)
+    }
 }
+
 [System.Serializable]
 public class TrackPiece{
     public readonly TrackPieceType type;

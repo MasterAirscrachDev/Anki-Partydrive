@@ -59,6 +59,9 @@ namespace OverdriveServer {
             Program.UtilLog(content);
             Program.trackManager.SetTrack(successfulScan ? solvedPieces : null, successfulScan);
             finishedScan = true;
+            if(successfulScan){
+                Program.trackManager.RequestLineup();
+            }
             //Program.Log($"Track scan finished, succsess: {successfulScan}, {solvedPieces.Length} pieces");
         }
         void OnCarJumped(string carID) {

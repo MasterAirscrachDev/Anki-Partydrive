@@ -5,19 +5,32 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] GameObject MainCamera, TrackCamera, CarsLoadingIcon, TrackScan, TrackCancelScan;
+    [Header("Developer UI")]
+    [SerializeField] TMP_Text devCarCount;
+    [SerializeField] TMP_Text devSpeed; 
+    [SerializeField] TMP_Text devOffset;
+    [Header("Menu UI")]
+    [SerializeField] TMP_Text menuCarCount;
+    [SerializeField] GameObject CarsLoadingIcon;
+    [Header("Scanning UI")]
+    [SerializeField] GameObject TrackScan;
+    [SerializeField] GameObject TrackCancelScan;
+    
+    [Header("Other")]
     [SerializeField] GameObject[] UILayers;
-    [SerializeField] TMP_Text devCarCount, devSpeed,devOffset,menuCarCount, finishCounterText;
+    [SerializeField] TMP_Text finishCounterText;
     [SerializeField] CarInteraface cars;
+    [SerializeField] GameObject MainCamera;
+    [SerializeField] GameObject TrackCamera;
     int finishCounter = 1;
     int UIlayer = 0;
     int devCarSpeed = 400, devCarOffset = 0;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         devSpeed.text = devCarSpeed.ToString();
         devOffset.text = devCarOffset.ToString();
+        SetUILayer(0);
     }
 
     // Update is called once per frame
@@ -29,10 +42,13 @@ public class UIManager : MonoBehaviour
         MainCamera.SetActive(!track);
         TrackCamera.SetActive(track);
     }
-    public void SetUILayer(int layer){
+    public void SetUILayer(int layer){ //sets the active UI layer, disables all others
         for (int i = 0; i < UILayers.Length; i++)
         { UILayers[i].SetActive(i == layer); }
         UIlayer = layer;
+    }
+    public void ToggleUILayer(int layer, bool active){ //toggles a specific UI layer
+        UILayers[layer].SetActive(active);
     }
     public int GetUILayer(){
         return UIlayer;
@@ -68,5 +84,4 @@ public class UIManager : MonoBehaviour
     public void ApplyDevCarOffset(){
         cars.DEBUGSetCarsLane(devCarOffset);
     }
-
 }

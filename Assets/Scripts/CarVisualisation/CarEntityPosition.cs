@@ -12,12 +12,10 @@ public class CarEntityPosition : MonoBehaviour
     float trackPieceProgression = 0, trackPieceLength = 0;
     float horizontalOffset = 0;
     Vector3 lastPosition;
-    float timeout = 5;
     TrackGenerator track;
     // Start is called before the first frame update
     void Start()
     {
-        timeout = 5;
         track = FindObjectOfType<TrackGenerator>();
 
         //if not the editor, destroy the mesh renderer
@@ -43,14 +41,12 @@ public class CarEntityPosition : MonoBehaviour
             trackSpline = track.GetTrackPiece(pieceIdx + shift);
             if(trackSpline == null){trackSpline = track.GetTrackPiece(pieceIdx + ++shift); }
         }
-        timeout -= Time.deltaTime;
-        if(timeout <= 0){
-            transform.position = new Vector3(0, -100, 0); //move the car out of sight
-            transform.rotation = Quaternion.identity; //reset rotation
-        }
+        // if(timeout <= 0){
+        //     transform.position = new Vector3(0, -100, 0); //move the car out of sight
+        //     transform.rotation = Quaternion.identity; //reset rotation
+        // }
     }
     public void SetTrackSpline(TrackSpline trackSpline, int idx){
-        timeout = 5;
         if(idx != this.pieceIdx){ //only update if the track spline is different
             this.pieceIdx = idx;
             this.trackSpline = trackSpline;
@@ -73,7 +69,7 @@ public class CarEntityPosition : MonoBehaviour
         trackSpline = null;
         speed = 0;
         shift = 0;
-        transform.position = new Vector3(0, -100, 0); //move the car out of sight
-        transform.rotation = Quaternion.identity; //reset rotation  
+        transform.position = new Vector3(0, -50, 0); //move the car out of sight
+        transform.rotation = Quaternion.identity; //reset rotation
     }
 }

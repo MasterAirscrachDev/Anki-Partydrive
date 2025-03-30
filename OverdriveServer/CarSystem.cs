@@ -30,8 +30,8 @@ namespace OverdriveServer {
             bool hadConfig = false;
             if(s != null) {
                 hadConfig = true;
-                name = s.GetString("name");
-                speedBalance = (int)s.GetInt("speedBalance");
+                name = s.GetVar("name", $"Unknown Car({carDevice.Id})"); 
+                speedBalance = s.GetVar("speedBalance", 0);
             }
             Program.Log($"[0] Connecting to car {name}");
 
@@ -41,8 +41,8 @@ namespace OverdriveServer {
                 Car car = new Car(name, carDevice.Id, carDevice, speedBalance);
                 if(!hadConfig){
                     s = new Save();
-                    s.SetString("name", name);
-                    s.SetInt("speedBalance", 0);
+                    s.SetVar("name", name);
+                    s.SetVar("speedBalance", 0);
                     await fs.SaveFile($"{carDevice.Id}.dat", s);
                 }
                 GattService service = await car.device.Gatt.GetPrimaryServiceAsync(ServiceID);
@@ -86,6 +86,18 @@ namespace OverdriveServer {
         }
         public int CarCount(){ return cars.Count; }
         public Car GetCar(int index){ return cars[index]; }
+
+        public async Task UpdateConfigs(){
+            FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
+            foreach(Car car in cars){
+                Save s = await fs.LoadFile($"{car.device.Id}.dat");
+                if(s != null){
+                    string name = s.GetVar("name", $"Unknown Car({car.device.Id})");
+                    int speedBalance = s.GetVar("speedBalance", 0);
+                    car.UpdateConfigs(name, speedBalance);
+                }
+            }
+        }
     }
     public class Car{
         public string name;
@@ -107,6 +119,10 @@ namespace OverdriveServer {
             this.speedBalance = speedBalance;
             this.data = new CarData(name, id);
             GetWriteCharacteristic();
+        }
+        public void UpdateConfigs(string name, int speedBalance){
+            this.name = name;
+            this.speedBalance = speedBalance;
         }
         async Task GetWriteCharacteristic(){
             var service = await device.Gatt.GetPrimaryServiceAsync(CarSystem.ServiceID);
@@ -164,7 +180,7 @@ namespace OverdriveServer {
             requestedOffset = (int)lane;
         }
         public void LaneCheck(){
-            if(Math.Abs(requestedOffset - data.laneOffset) > 100 && data.speed > 0){
+            if(Math.Abs(requestedOffset - data.laneOffset) > 200 && data.speed > 0){
                 SetCarTrackCenter(0); Console.WriteLine($"{id} Your lane is bogus, expect trouble");
             } else if((Math.Abs(requestedOffset - data.laneOffset) > 0.3) && data.speed > 0){
                 SetCarLane(requestedOffset);

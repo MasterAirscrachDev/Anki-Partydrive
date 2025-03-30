@@ -12,22 +12,27 @@ public class CarEntityTracker : MonoBehaviour
         if(!track.hasTrack){ return; }
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
         TrackSpline trackPiece = track.GetTrackPiece(trackIndex);
+        bool trueFin = true;
         if(trackPiece == null){ //either we are on a PreStart or an error has occured
             trackIndex++;
             if(track.GetTrackPieceType(trackIndex) == TrackPieceType.FinishLine){
-                trackPiece = track.GetTrackPiece(trackIndex);
+                trackPiece = track.GetTrackPiece(trackIndex); trueFin = false;
             }else{ return; }
         }
         if(entity == null){
-            CarEntityPosition carModel = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarEntityPosition>();
-            carModel.gameObject.name = $"{id} True Position";
-            carModel.transform.GetChild(0).gameObject.name = $"{id} Model";
-            carModel.carModelManager = carModel.transform.GetChild(0).GetComponent<CarModelManager>();
-            trackers.Add(id, carModel);
+            entity = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarEntityPosition>();
+            entity.gameObject.name = $"{id} True Position";
+            entity.transform.GetChild(0).gameObject.name = $"{id} Model";
+            entity.carModelManager = entity.transform.GetChild(0).GetComponent<CarModelManager>();
+            entity.carModelManager.Setup(); //make this load model and colour later
+            trackers.Add(id, entity);
         }
         entity.SetTrustedPosition(positionTrusted);
         entity.SetTrackSpline(trackPiece, trackIndex);
         entity.SetSpeedAndOffset(speed, horizontalOffset);
+        if(trackIndex == 1 && trueFin){ //if we are on the finish line, we have finished the lap
+            OnCarCrossedFinishLine?.Invoke(id);
+        }
     }
     public void CarDelocalised(string id){
         if(trackers.ContainsKey(id)){
@@ -39,4 +44,6 @@ public class CarEntityTracker : MonoBehaviour
             trackers[id].SetSpeedAndOffset(speed, horizontalOffset);
         }
     }
+    public delegate void CarCrossedFinishLine(string id);
+    public event CarCrossedFinishLine? OnCarCrossedFinishLine;
 }

@@ -27,9 +27,8 @@ namespace OverdriveServer {
                 OnTransition(content, car); //moved to dedicated function bc its complex
             } else if(id == RECV_TRACK_INTERSECTION){ //42 track intersection
                 //
-            } else if(id == RECV_CAR_OFF_TRACK){ //43 ONOH FALL
+            } else if(id == RECV_CAR_DELOCALIZED){ //43 Off track
                 Program.UtilLog($"43:{car.id}");
-                Program.Log($"[43] {car.name} fell off track");
                 CarEventDelocalised?.Invoke(car.id);
             } else if(id == RECV_TRACK_CENTER_UPDATE){ //45 Track center updated
                 //this reads the track center, however this gives us the same info as 39 and 41 making it unhelpful when trying to correct for errors
@@ -106,7 +105,7 @@ namespace OverdriveServer {
                 int leftWheelDistance = content[16], rightWheelDistance = content[17];
                 float offset = BitConverter.ToSingle(content, 4);
 
-                // There is a shorter segment for the starting line track. (may fail on inside turns)
+                // There is a shorter segment for the starting line track. (may fail on inside turns) 35, 34
                 bool crossedStartingLine = (leftWheelDistance < 36) && (leftWheelDistance > 32) && (rightWheelDistance < 36) && (rightWheelDistance > 32);
                 //Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, Y:(+{uphillCounter} -{downhillCounter}), X: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance}, Finish: {crossedStartingLine}");
                 Program.socketMan.Notify(EVENT_CAR_TRANSITION, 
@@ -125,7 +124,7 @@ namespace OverdriveServer {
                 CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
                 car.data.laneOffset = offset;
                 car.LaneCheck();
-
+                
                 SolveSegment(car, car.lastPositionID, car.lastFlipped, leftWheelDistance, rightWheelDistance, crossedStartingLine, offset, uphillCounter, downhillCounter); //solve the segment
                 car.lastPositionID = 0; //set the last track piece to the current one
             }
@@ -140,11 +139,19 @@ namespace OverdriveServer {
                 TrackPieceType type = TrackManager.PieceFromID(ID);
                 if(type != TrackPieceType.Unknown){ segment = new TrackPiece(type, ID, flipped); } //if we have a valid ID, set the segment to that
             }else{
+                //difference can be upwards of 9 on turns
+                // 39, 30 = inside turn
+                // 61, 51 = outside turn
+                // 57,56 = straight
+                // 22, 22 = finish line
+                // 34, 34 = prefinish line
+
                 TrackPieceType type = (TrackManager.Abs(left - right) < 4) ? TrackPieceType.Straight : TrackPieceType.Turn;
                 if(type == TrackPieceType.Straight && finish){ type = TrackPieceType.PreFinishLine; } //if we are straight and at the finish line, set it to prefinish line
                 flipped = (type == TrackPieceType.Straight) ? false : (left > right);
                 segment = new TrackPiece(type, 0, flipped); //fallback to straight or turn
             }
+            Console.WriteLine($"Car: {car.id} L: {left}, R: {right}, Segment: {segment}");
             CarEventSegmentCall?.Invoke(car.id, segment, offset, up, down); //call the event
         }
 

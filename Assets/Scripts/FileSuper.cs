@@ -314,9 +314,7 @@ public class FileSuper
         try{
             if(b == null){ return null; }
             using (MemoryStream ms = new MemoryStream())
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
             { bf.Serialize(ms, b); return ms.ToArray(); }
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
         }
         catch(Exception e){
             Log($"Error converting object to byte array: {e.Message}");
@@ -328,9 +326,7 @@ public class FileSuper
             using (MemoryStream memStream = new MemoryStream()) {
                 memStream.Write(arrBytes, 0, arrBytes.Length);
                 memStream.Seek(0, SeekOrigin.Begin);
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
                 return bf.Deserialize(memStream);
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
             }
         }
         catch(Exception e){
