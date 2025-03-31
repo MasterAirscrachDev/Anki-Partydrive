@@ -42,10 +42,12 @@ namespace OverdriveServer {
                 Program.UtilLog($"63:{car.id}:{charging}");
                 Program.Log($"[63] {car.name} charging: {charging}");
                 car.data.charging = charging;
-            } else if(id == RECV_UNKNOWN_65){ //65 Unknown
+            } else if(id == -1)
+            { //65 Unknown
                 Program.UtilLog($"65:{car.id}");
                 //Program.Log($"[65] {car.name} slipped");
-            } else if(id == RECV_UNKNOWN_67){ //67 Unknown
+            } else if(id == -1)
+            { //67 Unknown
                 Program.UtilLog($"67:{car.id}");
                 //Program.Log($"[67] {car.name} ???");
             } else if(id == RECV_TRACK_JUMP){ //75 car jumped
@@ -56,10 +58,11 @@ namespace OverdriveServer {
             } else if(id == RECV_CAR_COLLISION){ //77 Collision Detected
                 Program.UtilLog($"77:{car.id}");
                 Program.Log($"[77] {car.name} collision detected");
-            } else if(id == RECV_UNKNOWN_78){ //78 Unknown
+            } else if(id == -1){ //78 Unknown
                 Program.UtilLog($"78:{car.id}");
                 //Program.Log($"[78] {car.name} ???");
-            } else if(id == RECV_UNKNOWN_79){ //79 Unknown
+            } else if(id == -1)
+            { //79 Unknown
                 Program.UtilLog($"79:{car.id}");
                 //Program.Log($"[79] {car.name} ???");
             } else if(id == RECV_TRACK_SPECIAL_TRIGGER){ //83 FnF specialBlock
@@ -77,6 +80,8 @@ namespace OverdriveServer {
             int trackLocation = content[2], trackID = content[3], speed = BitConverter.ToInt16(content, 8);
             float offset = BitConverter.ToSingle(content, 4);
             bool clockwise = content[10] == 0x47; //this is a secret parsing flag, we can use it to decphier turn directions
+            
+            
             Program.socketMan.Notify(EVENT_CAR_LOCATION, 
                 new LocationData {
                     carID = car.id,

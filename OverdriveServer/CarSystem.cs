@@ -192,27 +192,33 @@ namespace OverdriveServer {
         }
         public async Task SetCarLightsPattern(float r, float g, float b){
             byte[] data = new byte[18];
-            data[0] = 0x11; //size
-            data[1] = SEND_LIGHTS_PATTERN_UPDATE; //id (set lights) 51
-            data[2] = 0x03; //ENGINE maybe ??? Headlights, Brakelights, Frontlights, Enginelights ??
-            data[3] = 0x00; //???
-            data[4] = 0x00; //???
+
             int rByte =  r == 1 ? 0x01 : 0x00;
             int gByte =  g == 1 ? 0x01 : 0x00;
             int bByte =  b == 1 ? 0x01 : 0x00;
-            data[5] = (byte)rByte; //red    maybe start 
-            data[6] = (byte)rByte; //red2?? maybe end
-            data[7] = 0x00; //??
-            data[8] = 0x03; //Also maybe engine ??
-            data[9] = 0x00; //??
-            data[10] = (byte)gByte; //green    maybe start
-            data[11] = (byte)gByte; //green2?? maybe end
-            data[12] = 0x00; //??
-            data[13] = 0x02; //Effect ??  Steady,Fade,Throb,Flash,Random,Count ??
-            data[14] = 0x00; //??
-            data[15] = (byte)bByte; //blue    maybe start
-            data[16] = (byte)bByte; //blue2?? maybe end
-            data[17] = 0x00; //?? 
+            
+            data[0] = 0x11; //size
+            data[1] = SEND_LIGHTS_PATTERN_UPDATE; //id (set lights) 51
+
+            data[2] = 0x03;//  channel_count c  ENGINE maybe ??? Headlights, Brakelights, Frontlights, Enginelights ??
+
+            data[3] = 0x00; // start of anki_vehicle_light_config num.1 of chNEL LIGHT_RED
+            data[4] = 0x02; //??? EFFECT_STEADY
+            data[5] = 1; //red    maybe start 
+            data[6] = 30; //red2?? maybe end
+            data[7] = 0x01; //?? cycles_per_10_sec
+
+            data[8] = 0x03; // start of anki_vehicle_light_config num.2 of chNEL LIGHT_GREEN
+            data[9] = 0x02; // EFFECT_STEADY
+            data[10] = 1; //green    maybe start
+            data[11] = 15; //green2?? maybe end
+            data[12] = 0x01; //cycles_per_10_sec
+
+            data[13] = 0x02; //start of anki_vehicle_light_config num.3 of chNEL LIGHT_BLUE
+            data[14] = 0x02; //EFFECT_STEADY
+            data[15] = 1; //blue    maybe start
+            data[16] = 10; //blue2?? maybe end
+            data[17] = 0x01; //cycles_per_10_sec
             await WriteToCarAsync(data, true);
         }
         public async Task UTurn(){
