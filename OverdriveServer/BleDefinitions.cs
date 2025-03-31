@@ -34,15 +34,15 @@
         public const byte SEND_ROAD_NETWORK_META = 0x49; //73
         public const byte RECV_TRACK_TRANSITION_2 = 0x51; //81
         public const byte RECV_AWAITING_NEXT_INIT = 0x54; //84
-        public const byte SEND_REBOOT = 0x55; //85
+        public const byte SEND_REBOOT = 0x55; //85 (V4)
         public const byte RECV_CAR_MESSAGE_CYCLE_OVERTIME = 0x86; //134
-        public const byte RECV_DEBUG_RAW = 0xD2; //210
+        public const byte RECV_DEBUG_RAW = 0xD2; //210 (V4 DEV)
         //Unknown
-        public const byte RECV_UNKNOWN_65 = 0x41; //65 slip ? car on track ?
-        public const byte RECV_UNKNOWN_67 = 0x43; //67
-        public const byte RECV_UNKNOWN_68 = 0x44; //68
-        public const byte RECV_UNKNOWN_78 = 0x4e; //78
-        public const byte RECV_UNKNOWN_79 = 0x4f; //79
+        public const byte RECV_LANE_CHANGE_UPDATE = 0x41; //65
+        public const byte RECV_DELOCALIZED_AUTO_RECOVERY_STARTED = 0x43; //67
+        public const byte RECV_DELOCALIZED_AUTO_RECOVERY_SUCCSESS = 0x44; //68
+        public const byte RECV_JUMP_RESULT = 0x4e; //78
+        public const byte RECV_SUPERCODE = 0x4f; //79
         
     }
 }
