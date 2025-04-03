@@ -5,12 +5,12 @@ namespace OverdriveServer{
         public class CarData{
             public string name {get; set;}
             public string id {get; set;}
-            public int trackPosition {get; set;}
-            public int trackID {get; set;}
-            public float laneOffset {get; set;}
+            public float offset {get; set;}
             public int speed {get; set;}
             public int battery {get; set;}
             public bool charging {get; set;}
+            public bool onTrack {get; set;}
+            public int batteryStatus {get; set;}
             public CarData(string name, string id){
                 this.name = name;
                 this.id = id;
@@ -54,5 +54,15 @@ namespace OverdriveServer{
         public const string EVENT_CAR_TRACKING_UPDATE = "car_tracking_update";
         public const string EVENT_CAR_MOVE = "car_move_update";
         public const string EVENT_REFRESH_CONFIGS = "refresh_configs";
+
+        public static class UtilityMessages {
+            public const string MSG_CAR_CONNECTED = "cc"; //:carID:name
+            public const string MSG_CAR_DISCONNECTED = "cd";//:carID
+            public const string MSG_CAR_DELOCALIZED = "deloc";//:carID
+            public const string MSG_CAR_SPEED_UPDATE = "sud";//:carID:speed:trueSpeed
+            public const string MSG_CAR_POWERUP = "pup"; //:carID
+            public const string MSG_TR_SCAN_UPDATE = "skup"; //:carID:trackValidated
+            public const string MSG_CAR_STATUS_UPDATE = "csu"; //:carID
+        }
     }
 }

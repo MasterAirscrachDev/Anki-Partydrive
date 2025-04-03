@@ -5,6 +5,7 @@ using TMPro;
 using System;
 using System.Threading.Tasks;
 using UnityEngine.UI;
+using static OverdriveServer.NetStructures;
 
 public class CarBalancer : MonoBehaviour
 {
@@ -263,7 +264,7 @@ public class CarBalancer : MonoBehaviour
         }
         await fs.SaveFile($"{id}.dat", s);
         messageText.text = $"Car speed mod saved to file\n";
-        carInterface.ApiCallV2(NetDefinitions.EVENT_REFRESH_CONFIGS, 0);
+        carInterface.ApiCallV2(EVENT_REFRESH_CONFIGS, 0);
     }
     public void BackToMenu(){
         ui.SetUILayer(0); //go back to main menu
