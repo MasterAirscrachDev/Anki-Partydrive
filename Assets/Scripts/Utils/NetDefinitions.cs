@@ -52,8 +52,9 @@ namespace OverdriveServer{
         public const string EVENT_CAR_TRANSITION = "car_transition";
         public const string EVENT_CAR_DELOCALIZED = "car_delocalized";
         public const string EVENT_CAR_TRACKING_UPDATE = "car_tracking_update";
-        public const string EVENT_CAR_MOVE = "car_move_update";
-        public const string EVENT_REFRESH_CONFIGS = "refresh_configs";
+        public const string SV_CAR_MOVE = "car_move_update";
+        public const string SV_REFRESH_CONFIGS = "refresh_configs";
+        public const string SV_LINEUP = "lineup";
 
         public static class UtilityMessages {
             public const string MSG_CAR_CONNECTED = "cc"; //:carID:name

@@ -18,14 +18,15 @@ public class CarController : MonoBehaviour
     PlayerCardSystem pcs;
     public CarsManagement carsManagement;
 
-    //INPUT VALUES
+    //INPUT VALUES======
     public float Iaccel;
     public float Isteer;
     public bool Iboost;
     public int Idrift;
     public bool IitemA;
     public bool IitemB;
-
+    //===================
+    bool wasBoostLastFrame = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -84,15 +85,22 @@ public class CarController : MonoBehaviour
         }
     }
     void FixedUpdate(){ //change this to support AI cars
-        int targetSpeed = (int)Mathf.Lerp(0, 500, Iaccel);
+        int targetSpeed = (int)Mathf.Lerp(50, 600, Iaccel);
         speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.009f);
         if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
 
-        //lane = (int)move.x * 10;
-        lane += Mathf.RoundToInt(Isteer * 2.5f);
+        lane += Mathf.RoundToInt(Isteer);
         lane = Mathf.Clamp(lane, -64, 64);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
+    }
+    void Update(){
+        if(Iboost && !wasBoostLastFrame){
+            if(carsManagement != null){
+                carsManagement.NextCar(this);
+            }
+        }
+        wasBoostLastFrame = Iboost;
     }
     public void CheckCarExists(){
         int idx = carInterface.GetCar(carID);

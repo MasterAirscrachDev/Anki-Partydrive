@@ -50,7 +50,7 @@ public class CarsManagement : MonoBehaviour
     public void LoadGamemode(){
         UIManager ui = FindObjectOfType<UIManager>();
         if(cms.gameMode == GameMode.TimeTrial){
-            ui.SetUILayer(4);
+            ui.SetUILayer(5);
         }
         else if(cms.gameMode == GameMode.Party){
             Debug.Log("Party Mode not done yet");

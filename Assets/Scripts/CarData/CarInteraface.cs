@@ -12,7 +12,6 @@ public class CarInteraface : MonoBehaviour
     public UCarData[] cars;
     HttpClient client = new HttpClient();
     NativeWebSocket.WebSocket ws;
-    public TimeTrialMode timeTrialMode;
     [SerializeField] TrackGenerator trackGenerator;
     CMS cms;
     CarEntityTracker carEntityTracker;
@@ -74,7 +73,7 @@ public class CarInteraface : MonoBehaviour
         if(car.charging){ return; }
         //ApiCall($"controlcar/{car.id}:{speed}:{lane}");
         WebhookData data = new WebhookData{
-            EventType = EVENT_CAR_MOVE,
+            EventType = SV_CAR_MOVE,
             Payload = $"{car.id}:{speed}:{lane}"
         };
 

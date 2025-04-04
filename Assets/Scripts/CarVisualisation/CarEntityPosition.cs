@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CarEntityPosition : MonoBehaviour
@@ -20,7 +21,7 @@ public class CarEntityPosition : MonoBehaviour
 
         //if not the editor, destroy the mesh renderer
         if(!Application.isEditor || true){
-            Destroy(GetComponent<MeshRenderer>());
+            GetComponent<MeshRenderer>().enabled = false;
             Destroy(GetComponent<MeshFilter>());
         }
     }
@@ -69,5 +70,8 @@ public class CarEntityPosition : MonoBehaviour
         shift = 0;
         transform.position = new Vector3(0, -50, 0); //move the car out of sight
         transform.rotation = Quaternion.identity; //reset rotation
+    }
+    public bool IsDelocalised(){
+        return trackSpline == null;
     }
 }

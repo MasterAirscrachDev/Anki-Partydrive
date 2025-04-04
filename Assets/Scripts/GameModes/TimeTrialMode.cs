@@ -2,27 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System;
+using static OverdriveServer.NetStructures;
 
 public class TimeTrialMode : MonoBehaviour
 {
     [SerializeField] TMP_Text showText;
     [SerializeField] GameObject startButton;
+    CarEntityTracker carEntityTracker;
     CMS cms;
-    List<carTime> carTimes = new List<carTime>();
+    List<CarTime> carTimes = new List<CarTime>();
     void OnEnable()
     {
         if(cms == null){
             cms = FindObjectOfType<CMS>();
         }
-        showText.text = "Line Up The Cars";
+        showText.text = "Lining up cars...";
+        cms.SetGlobalLock(true);
+        FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, "");
         cms.TTS("Please line up the cars before starting");
         startButton.SetActive(true);
     }
     public void StartGame(){
         startButton.SetActive(false);
+        carEntityTracker = FindObjectOfType<CarEntityTracker>();
+        string[] activeCars = carEntityTracker.GetActiveCars();
+        foreach(string carID in activeCars){
+            carTimes.Add(new CarTime(carID));
+        }
+        carEntityTracker.OnCarCrossedFinishLine += CarCrossedFinish;
         StartCoroutine(CountDown());
-        FindObjectOfType<CarInteraface>().timeTrialMode = this;
     }
     IEnumerator CountDown(){
         showText.text = "Get Ready!";
@@ -40,6 +48,9 @@ public class TimeTrialMode : MonoBehaviour
         showText.text = "GO!";
         cms.TTS("Go!");
         cms.SetGlobalLock(false);
+        foreach(CarTime ct in carTimes){
+            ct.lapStartedTime = Time.time;
+        }
         yield return new WaitForSeconds(1);
         showText.text = "";
         StartCoroutine(EndGame());
@@ -66,42 +77,40 @@ public class TimeTrialMode : MonoBehaviour
         cms.SetGlobalLock(true);
         cms.StopAllCars();
         cms.TTS("Game Over!");
-        FindObjectOfType<CarInteraface>().timeTrialMode = null;
+        carEntityTracker.OnCarCrossedFinishLine -= CarCrossedFinish;
     }
-    public void CarCrossedFinish(string[] data){
-        string carID = data[1];
-        string longTime = data[2];
-        DateTime time = DateTime.FromBinary(long.Parse(longTime));
+    public void CarCrossedFinish(string carID){
         //is there a carTime for this car?
-        carTime ct = carTimes.Find(x => x.carID == carID);
+        CarTime ct = carTimes.Find(x => x.id == carID);
         if(ct == null){
-            ct = new carTime();
-            ct.carID = carID;
-            ct.lapStartedTime = time;
+            ct = new CarTime(carID);
+            ct.lapStartedTime = Time.time;
             carTimes.Add(ct);
         }
         else{
             //set the lap time if it is less than the current lap time
-            float newLapTime = (float)(time - ct.lapStartedTime).TotalSeconds;
-            if(ct.lapTime == 0 || newLapTime < ct.lapTime){
-                ct.lapTime = newLapTime;
+            float newLapTime = Time.time - ct.lapStartedTime;
+            if(ct.bestLapTime == 0 || newLapTime < ct.bestLapTime){
+                ct.bestLapTime = newLapTime;
                 cms.TTS($"{cms.CarNameFromId(carID)} did a new fastest lap");
-                cms.GetController(carID).SetTimeTrialTime(ct.lapTime);
-
+                cms.GetController(carID).SetTimeTrialTime(ct.bestLapTime);
             }
-            ct.lapStartedTime = time;
+            ct.lapStartedTime = Time.time;
         }
         //sort the list by lap time (but put cars with no lap time at the end)
-        carTimes.Sort((x, y) => x.lapTime == 0 ? 1 : y.lapTime == 0 ? -1 : x.lapTime.CompareTo(y.lapTime));
+        carTimes.Sort((x, y) => x.bestLapTime == 0 ? 1 : y.bestLapTime == 0 ? -1 : x.bestLapTime.CompareTo(y.bestLapTime));
         for(int i = 0; i < carTimes.Count; i++){
-            if(cms.GetController(carTimes[i].carID) != null){
-                cms.GetController(carTimes[i].carID).SetPosition(i + 1);
+            if(cms.GetController(carTimes[i].id) != null){
+                cms.GetController(carTimes[i].id).SetPosition(i + 1);
             }
         }
     }
-    class carTime{
-        public string carID;
-        public DateTime lapStartedTime;
-        public float lapTime;
+    class CarTime{
+        public CarTime(string id) {
+            this.id = id;
+        }
+        public string id;
+        public float lapStartedTime;
+        public float bestLapTime;
     }
 }

@@ -3738,7 +3738,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connected: 0
   cars: []
-  timeTrialMode: {fileID: 0}
   trackGenerator: {fileID: 1948605591}
   uiManager: {fileID: 314132437}
 --- !u!1 &717870494
