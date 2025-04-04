@@ -41,10 +41,6 @@ public class CarEntityPosition : MonoBehaviour
             trackSpline = track.GetTrackPiece(pieceIdx + shift);
             if(trackSpline == null){trackSpline = track.GetTrackPiece(pieceIdx + ++shift); }
         }
-        // if(timeout <= 0){
-        //     transform.position = new Vector3(0, -100, 0); //move the car out of sight
-        //     transform.rotation = Quaternion.identity; //reset rotation
-        // }
     }
     public void SetTrackSpline(TrackSpline trackSpline, int idx){
         if(idx != this.pieceIdx){ //only update if the track spline is different
@@ -55,9 +51,11 @@ public class CarEntityPosition : MonoBehaviour
             trackPieceLength = trackSpline.GetLength(horizontalOffset);
         }
     }
-    public void SetSpeedAndOffset(int speed, float offset){
-        this.speed = speed;
+    public void SetOffset(float offset){
         this.horizontalOffset = offset; //change this to smooth when changed
+    }
+    public void SetSpeed(int speed){
+        this.speed = speed;
     }
     public void SetTrustedPosition(bool trusted){
         GetComponent<MeshRenderer>().material = trusted ? solidMaterial : transparentMaterial;

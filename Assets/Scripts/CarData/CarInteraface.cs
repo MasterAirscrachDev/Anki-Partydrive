@@ -80,7 +80,8 @@ public class CarInteraface : MonoBehaviour
 
         string jsonData = JsonConvert.SerializeObject(data);
         ws.SendText(jsonData);
-        carEntityTracker.SetSpeedAndLane(car.id, speed, lane);
+        carEntityTracker.SetSpeed(car.id, speed);
+        carEntityTracker.SetOffset(car.id, lane);
     }
     
     public void SetCarColours(CarData car, float r, float g, float b){
@@ -114,8 +115,7 @@ public class CarInteraface : MonoBehaviour
 
                 case EVENT_UTILITY_LOG:
                     string[] c = webhookData.Payload.ToString().Split(':');
-                    //Debug.Log($"C0 = {c[0]}");
-                    if (c[0] == MSG_CAR_CONNECTED || c[0] == "-2"){
+                    if (c[0] == MSG_CAR_CONNECTED){
                         GetCarInfo();
                         if(c[0] == "-1"){
                             ApiCall($"tts/Car {c[2]} has connected");
@@ -127,16 +127,26 @@ public class CarInteraface : MonoBehaviour
                             uiManager.SetIsScanningTrack(false); //set the UI to not scanning
                         }
                         GetTrackAndGenerate(valid);
-                    } else if(c[0] == "27"){
-                        int battery = int.Parse(c[2]);
-                        int index = GetCar(c[1]);
-                        if(index != -1){
-                            cars[index].battery = battery;
-                        }
                     } else if(c[0] == MSG_CAR_DELOCALIZED){ 
                         carEntityTracker.CarDelocalised(c[1]);
-
                     } else if(c[0] == MSG_CAR_STATUS_UPDATE){ // status
+                        GetCarInfo();
+                    } else if(c[0] == MSG_CAR_SPEED_UPDATE){
+                        string carID = c[1];
+                        int speed = int.Parse(c[2]);
+                        int trueSpeed = int.Parse(c[3]);
+                        int index = GetCar(carID);
+                        if(index != -1){
+                            cars[index].speed = speed;
+                            carEntityTracker.SetSpeed(cars[index].id, speed);
+                        }
+                    } else if(c[0] == MSG_CAR_POWERUP){ //powerup
+                        string carID = c[1];
+                        int index = GetCar(carID);
+                        if(index != -1){
+                            
+                        }
+                    } else if(c[0] == MSG_CAR_DISCONNECTED){ //disconnected
                         GetCarInfo();
                     }
                     break;

@@ -29,7 +29,8 @@ public class CarEntityTracker : MonoBehaviour
         }
         entity.SetTrustedPosition(positionTrusted);
         entity.SetTrackSpline(trackPiece, trackIndex);
-        entity.SetSpeedAndOffset(speed, horizontalOffset);
+        entity.SetSpeed(speed);
+        entity.SetOffset(horizontalOffset);
         if(trackIndex == 1 && trueFin){ //if we are on the finish line, we have finished the lap
             OnCarCrossedFinishLine?.Invoke(id);
         }
@@ -39,9 +40,14 @@ public class CarEntityTracker : MonoBehaviour
             trackers[id].Delocalise();
         }
     }
-    public void SetSpeedAndLane(string id, int speed, float horizontalOffset){
+    public void SetSpeed(string id, int speed){
         if(trackers.ContainsKey(id)){
-            trackers[id].SetSpeedAndOffset(speed, horizontalOffset);
+            trackers[id].SetSpeed(speed);
+        }
+    }
+    public void SetOffset(string id, float horizontalOffset){
+        if(trackers.ContainsKey(id)){
+            trackers[id].SetOffset(horizontalOffset);
         }
     }
     public delegate void CarCrossedFinishLine(string id);
