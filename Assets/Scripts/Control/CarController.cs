@@ -6,12 +6,14 @@ using UnityEngine.InputSystem;
 
 public class CarController : MonoBehaviour
 {
-    [SerializeField] int speed, lane;
+    [SerializeField] int speed;
+    [SerializeField] float lane;
     [SerializeField] string carID;
     public float energy = 75;
     float maxEnergy = 100;
-    int oldSpeed, oldLane;
-    bool locked = true;
+    int oldSpeed;
+    float oldLane;
+    [SerializeField] bool locked = true;
     Color playerColor = Color.red;
     CarInteraface carInterface;
     CMS cms;
@@ -69,14 +71,9 @@ public class CarController : MonoBehaviour
             if(!Application.isPlaying){ return; }
             await Task.Delay(500); //approx 2 ticks per second
             if(!locked && (speed != oldSpeed || lane != oldLane)){
-                oldSpeed = speed;
                 oldLane = lane;
-                int useSpeed = speed;
-                if(Iboost && energy > 0){
-                    useSpeed += 200;
-                    energy -= 3f;
-                }
-                carInterface.ControlCar(carInterface.GetCarFromID(carID), useSpeed, lane);
+                oldSpeed = speed;
+                carInterface.ControlCar(carInterface.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
             }
             if(energy < maxEnergy && !Iboost && !locked){
                 energy += 0.5f;
@@ -85,12 +82,17 @@ public class CarController : MonoBehaviour
         }
     }
     void FixedUpdate(){ //change this to support AI cars
-        int targetSpeed = (int)Mathf.Lerp(50, 600, Iaccel);
+        int targetSpeed = (int)Mathf.Lerp(50, 800, Iaccel);
         speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.009f);
         if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
+        if(Iaccel > 0 && Iboost && energy > 1){
+            energy -= 0.5f;
+            if(energy < 0){ energy = 0; }
+            speed += 250;
+        }
 
-        lane += Mathf.RoundToInt(Isteer);
+        lane += Isteer * 0.5f;
         lane = Mathf.Clamp(lane, -64, 64);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
     }

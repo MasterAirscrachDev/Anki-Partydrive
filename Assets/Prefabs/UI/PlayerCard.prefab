@@ -810,7 +810,8 @@ MonoBehaviour:
   carName: {fileID: 4272681303129961407}
   positionText: {fileID: 891317611961037215}
   energyBar: {fileID: 141332946559120754}
-  attachments: []
+  attachments:
+  - {fileID: 5317434523373700445, guid: 402f20866f5c861449be13b2b72731a6, type: 3}
 --- !u!1 &6167518796921782730
 GameObject:
   m_ObjectHideFlags: 0

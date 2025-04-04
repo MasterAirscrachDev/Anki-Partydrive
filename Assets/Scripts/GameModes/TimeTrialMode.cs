@@ -7,7 +7,7 @@ using static OverdriveServer.NetStructures;
 public class TimeTrialMode : MonoBehaviour
 {
     [SerializeField] TMP_Text showText;
-    [SerializeField] GameObject startButton;
+    [SerializeField] GameObject startButton, menuButton, replayButton;
     CarEntityTracker carEntityTracker;
     CMS cms;
     List<CarTime> carTimes = new List<CarTime>();
@@ -16,11 +16,16 @@ public class TimeTrialMode : MonoBehaviour
         if(cms == null){
             cms = FindObjectOfType<CMS>();
         }
+        StartMode();
+    }
+    void StartMode(){
         showText.text = "Lining up cars...";
         cms.SetGlobalLock(true);
         FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, "");
-        cms.TTS("Please line up the cars before starting");
+        cms.TTS("Supercars to the starting line");
         startButton.SetActive(true);
+        menuButton.SetActive(true);
+        replayButton.SetActive(false);
     }
     public void StartGame(){
         startButton.SetActive(false);
@@ -78,6 +83,8 @@ public class TimeTrialMode : MonoBehaviour
         cms.StopAllCars();
         cms.TTS("Game Over!");
         carEntityTracker.OnCarCrossedFinishLine -= CarCrossedFinish;
+        menuButton.SetActive(true);
+        replayButton.SetActive(true);
     }
     public void CarCrossedFinish(string carID){
         //is there a carTime for this car?
@@ -104,6 +111,12 @@ public class TimeTrialMode : MonoBehaviour
                 cms.GetController(carTimes[i].id).SetPosition(i + 1);
             }
         }
+    }
+    public void BackToMenu(){
+        FindObjectOfType<UIManager>().SetUILayer(0);
+    }
+    public void Replay(){
+        StartMode();
     }
     class CarTime{
         public CarTime(string id) {
