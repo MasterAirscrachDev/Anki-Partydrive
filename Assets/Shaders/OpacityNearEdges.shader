@@ -44,8 +44,12 @@ Shader "Custom/OpacityNearEdges"
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
+            // Create scrolling UV coordinates
+            float2 scrolledUV = IN.uv_MainTex;
+            scrolledUV.x += _Time.y * 0.1; // Offset X based on time
+
             // Albedo comes from a texture tinted by color
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+            fixed4 c = tex2D (_MainTex, scrolledUV) * _Color;
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;

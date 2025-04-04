@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3576805191090509985}
   - component: {fileID: 3576805191090509987}
+  - component: {fileID: 8626382670086874564}
   - component: {fileID: 3576805191090509982}
   m_Layer: 0
   m_Name: CarController
@@ -48,8 +49,26 @@ MonoBehaviour:
   speed: 0
   lane: 0
   carID: 
-  index: 0
   energy: 75
+  carsManagement: {fileID: 0}
+  Iaccel: 0
+  Isteer: 0
+  Iboost: 0
+  Idrift: 0
+  IitemA: 0
+  IitemB: 0
+--- !u!114 &8626382670086874564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3576805191090509986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f5dedb392ea3b449655cd7d123ef6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3576805191090509982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,7 +82,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
-  m_NotificationBehavior: 0
+  m_NotificationBehavior: 3
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -73,8 +92,48 @@ MonoBehaviour:
       m_Calls: []
   m_ControlsChangedEvent:
     m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8626382670086874564}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnPlayerInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_ActionEvents:
+  - m_PersistentCalls:
       m_Calls: []
-  m_ActionEvents: []
+    m_ActionId: 0b27c834-6316-414b-bf7f-eb1581f3f209
+    m_ActionName: Racing/Accelerate[/Keyboard/w]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 72fa2af1-f93d-49cf-af06-70351c892a03
+    m_ActionName: Racing/Steer[/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: cf152a41-7477-48a6-9e17-cc33fef97a6c
+    m_ActionName: Racing/ItemA
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7aa53113-debb-442b-8bb7-abe7aa2cdbf8
+    m_ActionName: Racing/ItemB
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fd5142fa-ddd2-4e73-b4c0-281850e23de9
+    m_ActionName: Racing/Boost[/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b9ef3808-d67b-4ab5-b5df-263234c28a7f
+    m_ActionName: Racing/DriftLeft[/Keyboard/q]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fd867876-1c32-4fff-8178-351845c55df2
+    m_ActionName: Racing/DriftRight[/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Racing

@@ -15,22 +15,25 @@ public class CarController : MonoBehaviour
     Color playerColor = Color.red;
     CarInteraface carInterface;
     CMS cms;
-    PlayerInput iinput;
     PlayerCardSystem pcs;
     public CarsManagement carsManagement;
+
+    //INPUT VALUES
+    public float Iaccel;
+    public float Isteer;
+    public bool Iboost;
+    public int Idrift;
+    public bool IitemA;
+    public bool IitemB;
+
     // Start is called before the first frame update
     void Start()
     {
-        iinput = GetComponent<PlayerInput>();
         carInterface = FindObjectOfType<CarInteraface>();
         cms = FindObjectOfType<CMS>();
         cms.AddController(this);
         ControlTicker();
         FindObjectOfType<PlayerCardmanager>().UpdateCardCount();
-        iinput.currentActionMap.actions[2].performed += ctx => OnDrift(ctx.ReadValueAsButton());
-        iinput.currentActionMap.actions[3].performed += ctx => OnUseItem(ctx.ReadValueAsButton());
-        iinput.currentActionMap.actions[4].performed += ctx => OnActivateItem(ctx.ReadValueAsButton());
-        iinput.currentActionMap.actions[5].performed += ctx => OnBoost(ctx.ReadValueAsButton());
         int uiLayer = FindObjectOfType<UIManager>().GetUILayer();
         if(uiLayer == 2){
             carsManagement = FindObjectOfType<CarsManagement>();
@@ -48,16 +51,6 @@ public class CarController : MonoBehaviour
         //pcs.SetPosition(internalControlIndex + 1);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
     }
-    void OnDrift(bool pressed){ //Button B
-        //Debug.Log("Drift");
-
-    }
-    void OnUseItem(bool pressed){ //Button Y
-        //Debug.Log("Use Item");
-    }
-    void OnActivateItem(bool pressed){ //Button X
-        //Debug.Log("Activate Item");
-    }
     void OnBoost(bool pressed){ //Button A
         if(!pressed){ return; }
         Debug.Log("Boost");
@@ -73,36 +66,32 @@ public class CarController : MonoBehaviour
     async Task ControlTicker(){
         while(true){
             if(!Application.isPlaying){ return; }
-            await Task.Delay(500); //approx 60 ticks per second
-            bool boosting = iinput.currentActionMap.actions[5].IsPressed();
+            await Task.Delay(500); //approx 2 ticks per second
             if(!locked && (speed != oldSpeed || lane != oldLane)){
                 oldSpeed = speed;
                 oldLane = lane;
                 int useSpeed = speed;
-                if(boosting && energy > 0){
+                if(Iboost && energy > 0){
                     useSpeed += 200;
                     energy -= 3f;
                 }
                 carInterface.ControlCar(carInterface.GetCarFromID(carID), useSpeed, lane);
             }
-            if(energy < maxEnergy && !boosting && !locked){
+            if(energy < maxEnergy && !Iboost && !locked){
                 energy += 0.5f;
                 if(energy > maxEnergy){ energy = maxEnergy; }
             }
         }
     }
-    void FixedUpdate(){
-        float accel = iinput.currentActionMap.actions[0].ReadValue<float>();
-        int targetSpeed = (int)Mathf.Lerp(0, 800, accel);
-        speed = (int)Mathf.Lerp(speed, targetSpeed, (accel == 0) ? 0.05f : 0.009f);
-        if(accel == 0 && speed < 150){ speed = 0; }
-        else if(accel > 0 && speed < 150){ speed = 150; }
+    void FixedUpdate(){ //change this to support AI cars
+        int targetSpeed = (int)Mathf.Lerp(0, 500, Iaccel);
+        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.009f);
+        if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
+        else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
 
-        Vector2 move = iinput.currentActionMap.actions[1].ReadValue<Vector2>();
         //lane = (int)move.x * 10;
-        lane += Mathf.RoundToInt(move.x * 2.5f);
-        if(lane < -50){ lane = -50; }
-        if(lane > 50){ lane = 50; }
+        lane += Mathf.RoundToInt(Isteer * 2.5f);
+        lane = Mathf.Clamp(lane, -64, 64);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
     }
     public void CheckCarExists(){

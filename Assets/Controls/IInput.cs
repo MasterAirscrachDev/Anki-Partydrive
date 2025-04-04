@@ -40,22 +40,13 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""name"": ""Steer"",
                     ""type"": ""Value"",
                     ""id"": ""72fa2af1-f93d-49cf-af06-70351c892a03"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Analog"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Drift"",
-                    ""type"": ""Button"",
-                    ""id"": ""378cb8ad-6f3d-420a-babf-78c0244b2465"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""UseItem"",
+                    ""name"": ""ItemA"",
                     ""type"": ""Button"",
                     ""id"": ""cf152a41-7477-48a6-9e17-cc33fef97a6c"",
                     ""expectedControlType"": ""Button"",
@@ -64,7 +55,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ActivateItem"",
+                    ""name"": ""ItemB"",
                     ""type"": ""Button"",
                     ""id"": ""7aa53113-debb-442b-8bb7-abe7aa2cdbf8"",
                     ""expectedControlType"": ""Button"",
@@ -74,17 +65,26 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Boost"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""fd5142fa-ddd2-4e73-b4c0-281850e23de9"",
+                    ""expectedControlType"": ""Analog"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""DriftLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""b9ef3808-d67b-4ab5-b5df-263234c28a7f"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ResetCenter"",
+                    ""name"": ""DriftRight"",
                     ""type"": ""Button"",
-                    ""id"": ""f050b106-33ff-4830-a43e-70fe2b749787"",
+                    ""id"": ""fd867876-1c32-4fff-8178-351845c55df2"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -117,7 +117,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c8e1a3c7-4401-47c5-b9b4-65e96aa13509"",
-                    ""path"": ""<Gamepad>/leftStick"",
+                    ""path"": ""<Gamepad>/leftStick/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -128,7 +128,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""663e94c8-9b0d-4102-b014-c688e145928e"",
-                    ""path"": ""<Gamepad>/rightStick"",
+                    ""path"": ""<Gamepad>/rightStick/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -137,9 +137,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""2D Vector"",
-                    ""id"": ""079f5c22-3fde-4d2c-a34e-d9ee640a9046"",
-                    ""path"": ""2DVector(mode=2)"",
+                    ""name"": ""1D Axis"",
+                    ""id"": ""05fb45e5-84d9-49e9-9917-04df4080cf18"",
+                    ""path"": ""1DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -148,30 +148,8 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""up"",
-                    ""id"": ""650da01b-8e36-431e-af0a-ecb64579d9dc"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Steer"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""a046ff19-5031-422a-96dc-c079891322d7"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Steer"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""4a741a6c-6af2-45f1-83b8-c8ae6f5d3c0a"",
+                    ""name"": ""negative"",
+                    ""id"": ""0512968f-e3cc-4bbd-8f12-2fcecfa64842"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -181,8 +159,8 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""right"",
-                    ""id"": ""80948332-057f-4803-a269-ac87886ce5ab"",
+                    ""name"": ""positive"",
+                    ""id"": ""0c6d3d55-e3cf-4b15-863f-60c2fea04a27"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -193,23 +171,12 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""6d8912d9-2cc7-40cd-ba4a-91d21771e6a2"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Drift"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""8cf2c3e3-e8b4-4f70-a9f4-bff36c957ece"",
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""UseItem"",
+                    ""action"": ""ItemA"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -220,7 +187,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ActivateItem"",
+                    ""action"": ""ItemB"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -237,7 +204,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""89daa449-155e-45c1-b206-ff42978a4425"",
+                    ""id"": ""c823be2f-6e3b-49ab-9b35-fab7b1a04d82"",
                     ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -248,12 +215,45 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ef73f246-5916-4284-aea9-c12749d1610d"",
-                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""id"": ""5d5faaeb-0f0d-437f-9706-b9ad4d0fe2ae"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ResetCenter"",
+                    ""action"": ""DriftLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d4675a66-a1f1-45d4-adb6-2db75e3e44fd"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DriftLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""76fc252c-80da-41c5-a22c-2f37458d079d"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DriftRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a249c858-c1c1-47d4-a4e3-1651f29cbe36"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DriftRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -266,11 +266,11 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         m_Racing = asset.FindActionMap("Racing", throwIfNotFound: true);
         m_Racing_Accelerate = m_Racing.FindAction("Accelerate", throwIfNotFound: true);
         m_Racing_Steer = m_Racing.FindAction("Steer", throwIfNotFound: true);
-        m_Racing_Drift = m_Racing.FindAction("Drift", throwIfNotFound: true);
-        m_Racing_UseItem = m_Racing.FindAction("UseItem", throwIfNotFound: true);
-        m_Racing_ActivateItem = m_Racing.FindAction("ActivateItem", throwIfNotFound: true);
+        m_Racing_ItemA = m_Racing.FindAction("ItemA", throwIfNotFound: true);
+        m_Racing_ItemB = m_Racing.FindAction("ItemB", throwIfNotFound: true);
         m_Racing_Boost = m_Racing.FindAction("Boost", throwIfNotFound: true);
-        m_Racing_ResetCenter = m_Racing.FindAction("ResetCenter", throwIfNotFound: true);
+        m_Racing_DriftLeft = m_Racing.FindAction("DriftLeft", throwIfNotFound: true);
+        m_Racing_DriftRight = m_Racing.FindAction("DriftRight", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -334,22 +334,22 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     private List<IRacingActions> m_RacingActionsCallbackInterfaces = new List<IRacingActions>();
     private readonly InputAction m_Racing_Accelerate;
     private readonly InputAction m_Racing_Steer;
-    private readonly InputAction m_Racing_Drift;
-    private readonly InputAction m_Racing_UseItem;
-    private readonly InputAction m_Racing_ActivateItem;
+    private readonly InputAction m_Racing_ItemA;
+    private readonly InputAction m_Racing_ItemB;
     private readonly InputAction m_Racing_Boost;
-    private readonly InputAction m_Racing_ResetCenter;
+    private readonly InputAction m_Racing_DriftLeft;
+    private readonly InputAction m_Racing_DriftRight;
     public struct RacingActions
     {
         private @IInput m_Wrapper;
         public RacingActions(@IInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Accelerate => m_Wrapper.m_Racing_Accelerate;
         public InputAction @Steer => m_Wrapper.m_Racing_Steer;
-        public InputAction @Drift => m_Wrapper.m_Racing_Drift;
-        public InputAction @UseItem => m_Wrapper.m_Racing_UseItem;
-        public InputAction @ActivateItem => m_Wrapper.m_Racing_ActivateItem;
+        public InputAction @ItemA => m_Wrapper.m_Racing_ItemA;
+        public InputAction @ItemB => m_Wrapper.m_Racing_ItemB;
         public InputAction @Boost => m_Wrapper.m_Racing_Boost;
-        public InputAction @ResetCenter => m_Wrapper.m_Racing_ResetCenter;
+        public InputAction @DriftLeft => m_Wrapper.m_Racing_DriftLeft;
+        public InputAction @DriftRight => m_Wrapper.m_Racing_DriftRight;
         public InputActionMap Get() { return m_Wrapper.m_Racing; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -365,21 +365,21 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Steer.started += instance.OnSteer;
             @Steer.performed += instance.OnSteer;
             @Steer.canceled += instance.OnSteer;
-            @Drift.started += instance.OnDrift;
-            @Drift.performed += instance.OnDrift;
-            @Drift.canceled += instance.OnDrift;
-            @UseItem.started += instance.OnUseItem;
-            @UseItem.performed += instance.OnUseItem;
-            @UseItem.canceled += instance.OnUseItem;
-            @ActivateItem.started += instance.OnActivateItem;
-            @ActivateItem.performed += instance.OnActivateItem;
-            @ActivateItem.canceled += instance.OnActivateItem;
+            @ItemA.started += instance.OnItemA;
+            @ItemA.performed += instance.OnItemA;
+            @ItemA.canceled += instance.OnItemA;
+            @ItemB.started += instance.OnItemB;
+            @ItemB.performed += instance.OnItemB;
+            @ItemB.canceled += instance.OnItemB;
             @Boost.started += instance.OnBoost;
             @Boost.performed += instance.OnBoost;
             @Boost.canceled += instance.OnBoost;
-            @ResetCenter.started += instance.OnResetCenter;
-            @ResetCenter.performed += instance.OnResetCenter;
-            @ResetCenter.canceled += instance.OnResetCenter;
+            @DriftLeft.started += instance.OnDriftLeft;
+            @DriftLeft.performed += instance.OnDriftLeft;
+            @DriftLeft.canceled += instance.OnDriftLeft;
+            @DriftRight.started += instance.OnDriftRight;
+            @DriftRight.performed += instance.OnDriftRight;
+            @DriftRight.canceled += instance.OnDriftRight;
         }
 
         private void UnregisterCallbacks(IRacingActions instance)
@@ -390,21 +390,21 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Steer.started -= instance.OnSteer;
             @Steer.performed -= instance.OnSteer;
             @Steer.canceled -= instance.OnSteer;
-            @Drift.started -= instance.OnDrift;
-            @Drift.performed -= instance.OnDrift;
-            @Drift.canceled -= instance.OnDrift;
-            @UseItem.started -= instance.OnUseItem;
-            @UseItem.performed -= instance.OnUseItem;
-            @UseItem.canceled -= instance.OnUseItem;
-            @ActivateItem.started -= instance.OnActivateItem;
-            @ActivateItem.performed -= instance.OnActivateItem;
-            @ActivateItem.canceled -= instance.OnActivateItem;
+            @ItemA.started -= instance.OnItemA;
+            @ItemA.performed -= instance.OnItemA;
+            @ItemA.canceled -= instance.OnItemA;
+            @ItemB.started -= instance.OnItemB;
+            @ItemB.performed -= instance.OnItemB;
+            @ItemB.canceled -= instance.OnItemB;
             @Boost.started -= instance.OnBoost;
             @Boost.performed -= instance.OnBoost;
             @Boost.canceled -= instance.OnBoost;
-            @ResetCenter.started -= instance.OnResetCenter;
-            @ResetCenter.performed -= instance.OnResetCenter;
-            @ResetCenter.canceled -= instance.OnResetCenter;
+            @DriftLeft.started -= instance.OnDriftLeft;
+            @DriftLeft.performed -= instance.OnDriftLeft;
+            @DriftLeft.canceled -= instance.OnDriftLeft;
+            @DriftRight.started -= instance.OnDriftRight;
+            @DriftRight.performed -= instance.OnDriftRight;
+            @DriftRight.canceled -= instance.OnDriftRight;
         }
 
         public void RemoveCallbacks(IRacingActions instance)
@@ -426,10 +426,10 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     {
         void OnAccelerate(InputAction.CallbackContext context);
         void OnSteer(InputAction.CallbackContext context);
-        void OnDrift(InputAction.CallbackContext context);
-        void OnUseItem(InputAction.CallbackContext context);
-        void OnActivateItem(InputAction.CallbackContext context);
+        void OnItemA(InputAction.CallbackContext context);
+        void OnItemB(InputAction.CallbackContext context);
         void OnBoost(InputAction.CallbackContext context);
-        void OnResetCenter(InputAction.CallbackContext context);
+        void OnDriftLeft(InputAction.CallbackContext context);
+        void OnDriftRight(InputAction.CallbackContext context);
     }
 }

@@ -4055,6 +4055,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 803553872}
+  - component: {fileID: 803553873}
   m_Layer: 0
   m_Name: MAP ELEMENTS
   m_TagString: Untagged
@@ -4080,6 +4081,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &803553873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803553871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa97eca70fa6db4aaa4ebd4e717aa81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 963194227}
+  startGate: {fileID: 919132148271175483}
+  lightsRed: {fileID: 2100000, guid: bd9eed1aeb472fd44b74abd00a01132f, type: 2}
+  lightsGreen: {fileID: 2100000, guid: 41110fc4292992e45a60924c349bda73, type: 2}
+  lightsYellow: {fileID: 2100000, guid: f2430f4cbb109a54e8c90d4035691659, type: 2}
 --- !u!1 &813721476
 GameObject:
   m_ObjectHideFlags: 0
@@ -4706,8 +4724,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
+  near clip plane: 0.1
+  far clip plane: 100
   field of view: 60
   orthographic: 0
   orthographic size: 5.29
@@ -4733,7 +4751,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4754,7 +4772,7 @@ Animation:
   m_Animations:
   - {fileID: 7400000, guid: 7e7dac600ab1cb5459e6d113641803e6, type: 2}
   m_WrapMode: 0
-  m_PlayAutomatically: 1
+  m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
 --- !u!1 &1008494269
@@ -5589,7 +5607,6 @@ GameObject:
   - component: {fileID: 1088570996}
   - component: {fileID: 1088570995}
   - component: {fileID: 1088570994}
-  - component: {fileID: 1088570997}
   m_Layer: 3
   m_Name: FloorQuad
   m_TagString: Untagged
@@ -5662,20 +5679,6 @@ Transform:
   m_Father: {fileID: 803553872}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &1088570997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1088570992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ad82c742bf715844af334e13ebe5bc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 6201b5ba2d5a9be43862a581b4a07c3d, type: 2}
-  scrollSpeed: 0.1
 --- !u!1 &1091266898
 GameObject:
   m_ObjectHideFlags: 0
@@ -6666,9 +6669,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1229594991}
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.70710677}
+  m_LocalPosition: {x: 0, y: 5.000001, z: -0.00000035762787}
+  m_LocalScale: {x: 1, y: 1.0000004, z: 1.0000004}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 705507995}
@@ -11573,7 +11576,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1711813854682937070
 MeshRenderer:
   m_ObjectHideFlags: 0

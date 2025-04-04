@@ -19,7 +19,7 @@ public class CarEntityPosition : MonoBehaviour
         track = FindObjectOfType<TrackGenerator>();
 
         //if not the editor, destroy the mesh renderer
-        if(!Application.isEditor){
+        if(!Application.isEditor || true){
             Destroy(GetComponent<MeshRenderer>());
             Destroy(GetComponent<MeshFilter>());
         }
