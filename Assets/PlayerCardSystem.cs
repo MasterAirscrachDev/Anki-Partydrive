@@ -49,6 +49,10 @@ public class PlayerCardSystem : MonoBehaviour
             attachmentIndex = index;
         }
     }
+    public void SetColor(Color color){
+        //set the color of the player card using the color value
+        GetComponent<Image>().color = color;
+    }
     public void SetTimeTrialTime(float time){
         //set the time trial time using the time value
         int mins = 0;

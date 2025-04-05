@@ -61,6 +61,11 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < UILayers.Length; i++)
         { UILayers[i].SetActive(i == layer); }
         UIlayer = layer;
+
+        if(layer == 0){ //if we are in the main menu, disable the play button
+            SwitchToTrackCamera(false);
+            playButton.interactable = FindObjectOfType<TrackGenerator>().hasTrack;
+        }
     }
     public void ToggleUILayer(int layer, bool active){ //toggles a specific UI layer
         UILayers[layer].SetActive(active);

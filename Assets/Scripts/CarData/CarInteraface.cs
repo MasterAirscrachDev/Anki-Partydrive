@@ -92,8 +92,8 @@ public class CarInteraface : MonoBehaviour
         carEntityTracker.SetOffset(car.id, lane);
     }
     
-    public void SetCarColours(CarData car, float r, float g, float b){
-        ApiCall($"setlights/{car.id}:{r}:{g}:{b}");
+    public void SetCarColours(UCarData car, int r, int g, int b){
+        ApiCallV2(SV_CAR_S_LIGHTS, $"{car.id}:{r}:{g}:{b}");
     }
     
     
@@ -115,41 +115,7 @@ public class CarInteraface : MonoBehaviour
                     break;
 
                 case EVENT_UTILITY_LOG:
-                    string[] c = webhookData.Payload.ToString().Split(':');
-                    if (c[0] == MSG_CAR_CONNECTED){
-                        GetCarInfo();
-                        if(c[0] == "-1"){
-                            ApiCall($"tts/Car {c[2]} has connected");
-                        }
-                    } else if(c[0] == MSG_TR_SCAN_UPDATE){
-                        bool valid = false;
-                        if(c[2] != "in-progress"){
-                            valid = c[2] == "True";
-                            uiManager.SetIsScanningTrack(false); //set the UI to not scanning
-                        }
-                        GetTrackAndGenerate(valid);
-                    } else if(c[0] == MSG_CAR_DELOCALIZED){ 
-                        carEntityTracker.CarDelocalised(c[1]);
-                    } else if(c[0] == MSG_CAR_STATUS_UPDATE){ // status
-                        GetCarInfo();
-                    } else if(c[0] == MSG_CAR_SPEED_UPDATE){
-                        string carID = c[1];
-                        int speed = int.Parse(c[2]);
-                        int trueSpeed = int.Parse(c[3]);
-                        int index = GetCar(carID);
-                        if(index != -1){
-                            cars[index].speed = speed;
-                            carEntityTracker.SetSpeed(cars[index].id, speed);
-                        }
-                    } else if(c[0] == MSG_CAR_POWERUP){ //powerup
-                        string carID = c[1];
-                        int index = GetCar(carID);
-                        if(index != -1){
-                            
-                        }
-                    } else if(c[0] == MSG_CAR_DISCONNECTED){ //disconnected
-                        GetCarInfo();
-                    }
+                    UtilLog(webhookData.Payload.ToString());
                     break;
                 case EVENT_CAR_LOCATION:
                     try {
@@ -171,6 +137,43 @@ public class CarInteraface : MonoBehaviour
             }
         } catch (Exception e) {
             Debug.LogError($"Error parsing webhook data: {e.Message}\n{e.StackTrace}\nData: {jsonData}");
+        }
+    }
+    void UtilLog(string message){
+        string[] c = message.Split(':');
+        if (c[0] == MSG_CAR_CONNECTED){
+            GetCarInfo();
+            if(c[0] == "-1"){
+                ApiCall($"tts/Car {c[2]} has connected");
+            }
+        } else if(c[0] == MSG_TR_SCAN_UPDATE){
+            bool valid = false;
+            if(c[2] != "in-progress"){
+                valid = c[2] == "True";
+                uiManager.SetIsScanningTrack(false); //set the UI to not scanning
+            }
+            GetTrackAndGenerate(valid);
+        } else if(c[0] == MSG_CAR_DELOCALIZED){ 
+            carEntityTracker.CarDelocalised(c[1]);
+        } else if(c[0] == MSG_CAR_STATUS_UPDATE){ // status
+            GetCarInfo();
+        } else if(c[0] == MSG_CAR_SPEED_UPDATE){
+            string carID = c[1];
+            int speed = int.Parse(c[2]);
+            int trueSpeed = int.Parse(c[3]);
+            int index = GetCar(carID);
+            if(index != -1){
+                cars[index].speed = speed;
+                carEntityTracker.SetSpeed(cars[index].id, speed);
+            }
+        } else if(c[0] == MSG_CAR_POWERUP){ //powerup
+            string carID = c[1];
+            int index = GetCar(carID);
+            if(index != -1){
+                
+            }
+        } else if(c[0] == MSG_CAR_DISCONNECTED){ //disconnected
+            GetCarInfo();
         }
     }
     
@@ -224,31 +227,29 @@ public class CarInteraface : MonoBehaviour
         this.cars = uCars;
         Debug.Log("Updated Cars");
         // Define color values in an array
-        var colors = new (float, float, float)[] {
-            (1, 0, 0), // Red
-            (0, 1, 0), // Green
-            (0, 0, 1), // Blue
-            (1, 1, 0), // Yellow
-            (1, 0, 1), // Magenta
-            (0, 1, 1), // Cyan
-            (1, 1, 1),  // White
+        var colors = new (int, int, int)[] {
+            (255, 0, 0), // Red
+            (0, 255, 0), // Green
+            (0, 0, 255), // Blue
+            (255, 255, 0), // Yellow
+            (255, 0, 255), // Magenta
+            (0, 255, 255), // Cyan
+            (255, 255, 255),  // White
             (0, 0, 0)  // Black (not visible on the track) 8 cars = onoh for now
         };
         for(int i = 0; i < cars.Length; i++){
-            SetCarColours(cars[i], colors[i].Item1, colors[i].Item2, colors[i].Item3);
+            SetCarColours(uCars[i], colors[i].Item1, colors[i].Item2, colors[i].Item3);
         }
         //ApiCall("batteries");
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
         { cms.controllers[i].CheckCarExists(); }
     }
-    
     public int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return i;} }
         return -1;
     }
-
     public void DEBUGSetCarsSpeed(int speed){
         DEBUG_SPEED = speed;
         DEBUGUpdate();

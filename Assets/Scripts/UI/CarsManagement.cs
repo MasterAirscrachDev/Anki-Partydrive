@@ -69,11 +69,16 @@ public class CarsManagement : MonoBehaviour
             carPanels[i] = carPanel;
             RectTransform carItemRect = carItem.GetComponent<RectTransform>();
             carItemRect.anchoredPosition = new Vector2(carItemRect.anchoredPosition.x, (-i * 100) - 50);
-            //if there is a pla
             bool found = false;
             for(int j = 0; j < cms.controllers.Count; j++){
                 if(cms.controllers[j].GetID() == carInterface.cars[i].id){
-                    carPanel.SetPlayerColor(cms.controllers[j].GetPlayerColor());
+                    Color color = cms.controllers[j].GetPlayerColor();
+                    carPanel.SetPlayerColor(color);
+                    //convert the color to a int3
+                    int R = (int)(color.r * 255);
+                    int G = (int)(color.g * 255);
+                    int B = (int)(color.b * 255);
+                    carInterface.SetCarColours(carInterface.cars[i], R, G, B);
                     found = true;
                     break;
                 }

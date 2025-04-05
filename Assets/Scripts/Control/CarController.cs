@@ -14,7 +14,7 @@ public class CarController : MonoBehaviour
     int oldSpeed;
     float oldLane;
     [SerializeField] bool locked = true;
-    Color playerColor = Color.red;
+    Color playerColor = Color.white;
     CarInteraface carInterface;
     CMS cms;
     PlayerCardSystem pcs;
@@ -41,6 +41,10 @@ public class CarController : MonoBehaviour
         if(uiLayer == 2){
             carsManagement = FindObjectOfType<CarsManagement>();
         }
+    }
+    public void SetColour(Color c){
+        playerColor = c;
+        pcs.SetColor(c);
     }
     public void SetCard(PlayerCardSystem pcs){
         this.pcs = pcs;

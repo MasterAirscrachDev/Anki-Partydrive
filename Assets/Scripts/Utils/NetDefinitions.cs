@@ -55,6 +55,7 @@ namespace OverdriveServer{
         public const string SV_CAR_MOVE = "car_move_update";
         public const string SV_REFRESH_CONFIGS = "refresh_configs";
         public const string SV_LINEUP = "lineup";
+        public const string SV_CAR_S_LIGHTS = "car_s_lights";
 
         public static class UtilityMessages {
             public const string MSG_CAR_CONNECTED = "cc"; //:carID:name
@@ -64,6 +65,7 @@ namespace OverdriveServer{
             public const string MSG_CAR_POWERUP = "pup"; //:carID
             public const string MSG_TR_SCAN_UPDATE = "skup"; //:carID:trackValidated
             public const string MSG_CAR_STATUS_UPDATE = "csu"; //:carID
+            public const string MSG_LINEUP = "lu"; //:carID:remainingCars
         }
     }
 }

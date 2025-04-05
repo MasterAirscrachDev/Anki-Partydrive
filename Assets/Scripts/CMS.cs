@@ -8,11 +8,25 @@ public class CMS : MonoBehaviour
     public readonly List<CarController> controllers = new List<CarController>();
     public GameMode gameMode = GameMode.None;
     public bool isGame = false;
+    List<Color> freeColors = new List<Color>();
+    List<Color> usedColors = new List<Color>();
     CarInteraface carInterface;
-    void Start()
-    { carInterface = FindObjectOfType<CarInteraface>(); }
+    void Start() { 
+        carInterface = FindObjectOfType<CarInteraface>(); 
+        //color list purple, green, red, blue
+        freeColors.Add(new Color(1, 0, 1)); //purple/pink
+        freeColors.Add(new Color(0, 1, 0)); //green
+        freeColors.Add(new Color(1, 0, 0)); //red
+        freeColors.Add(new Color(0, 0, 1)); //blue
+        freeColors.Add(new Color(0, 1, 1)); //Cyan
+        freeColors.Add(new Color(1, 1, 0)); //yellow
+    }
     public void AddController(CarController controller){
         controllers.Add(controller);
+        Color c = freeColors[0];
+        freeColors.RemoveAt(0);
+        usedColors.Add(c);
+        controller.SetColour(c);
     }
     public void SetGameMode(int mode){
         gameMode = (GameMode)mode;

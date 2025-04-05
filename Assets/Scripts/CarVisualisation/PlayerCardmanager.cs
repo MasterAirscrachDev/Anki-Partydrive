@@ -8,10 +8,7 @@ public class PlayerCardmanager : MonoBehaviour
     [SerializeField] Transform cardParent;
     CMS cms;
     List<GameObject> cards = new List<GameObject>();
-    void Start()
-    {
-        cms = FindObjectOfType<CMS>();
-    }
+    void Start() { cms = FindObjectOfType<CMS>(); }
     public void UpdateCardCount(){
         int count = cms.controllers.Count;
         //clear all cards
