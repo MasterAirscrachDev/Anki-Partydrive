@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -11,7 +12,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text devOffset;
     [Header("Menu UI")]
     [SerializeField] TMP_Text menuCarCount;
+    [SerializeField] GameObject NoServerWarningText;
     [SerializeField] GameObject CarsLoadingIcon;
+    [SerializeField] Button playButton;
+    [SerializeField] Button carsMenuButton;
+    [SerializeField] Button trackMenuButton;
     [Header("Scanning UI")]
     [SerializeField] GameObject TrackScan;
     [SerializeField] GameObject TrackCancelScan;
@@ -38,6 +43,16 @@ public class UIManager : MonoBehaviour
     {
         
     }
+    public void NoServerWarning(){
+        playButton.interactable = false;
+        carsMenuButton.interactable = false;
+        trackMenuButton.interactable = false;
+        NoServerWarningText.SetActive(true);
+    }
+    public void ServerConnected(){
+        carsMenuButton.interactable = true;
+        trackMenuButton.interactable = true;
+    }   
     public void SwitchToTrackCamera(bool track){
         MainCamera.SetActive(!track);
         TrackCamera.SetActive(track);
@@ -83,5 +98,8 @@ public class UIManager : MonoBehaviour
     }
     public void ApplyDevCarOffset(){
         cars.DEBUGSetCarsLane(devCarOffset);
+    }
+    public void QuitGame(){
+        Application.Quit();
     }
 }

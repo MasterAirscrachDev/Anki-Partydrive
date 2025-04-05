@@ -10,9 +10,7 @@ public class CMS : MonoBehaviour
     public bool isGame = false;
     CarInteraface carInterface;
     void Start()
-    {
-        carInterface = FindObjectOfType<CarInteraface>();
-    }
+    { carInterface = FindObjectOfType<CarInteraface>(); }
     public void AddController(CarController controller){
         controllers.Add(controller);
     }

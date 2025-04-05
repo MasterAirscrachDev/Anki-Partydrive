@@ -8,7 +8,6 @@ using static OverdriveServer.NetStructures.UtilityMessages;
 
 public class CarInteraface : MonoBehaviour
 {
-    public bool connected = false;
     public UCarData[] cars;
     HttpClient client = new HttpClient();
     NativeWebSocket.WebSocket ws;
@@ -30,16 +29,26 @@ public class CarInteraface : MonoBehaviour
         client.BaseAddress = new Uri("http://localhost:7117/");
         ws = new NativeWebSocket.WebSocket("ws://localhost:7118/");
 
-        ws.OnOpen += () => { Debug.Log("WebSocket connection opened"); };
-        ws.OnError += (e) => { Debug.Log($"WebSocket error: {e}"); }; //Unable to connect to the remote server (if server missing)
-        ws.OnClose += (e) => { Debug.Log($"WebSocket connection closed: {e}"); ReconnectToServer(); };
+        ws.OnOpen += () => { 
+            Debug.Log("WebSocket connection opened"); 
+            FindObjectOfType<UIManager>().ServerConnected(); //show the server connected message
+        };
+        ws.OnError += (e) => { 
+            Debug.Log($"WebSocket error: {e}"); 
+            if(e.ToString() == "Unable to connect to the remote server" && !Application.isEditor){
+                //
+                FindObjectOfType<UIManager>().NoServerWarning(); //show the no server warning
+            }
+        }; //Unable to connect to the remote server (if server missing)
+        ws.OnClose += (e) => { Debug.Log($"WebSocket connection closed: {e}"); };
         ws.OnMessage += (bytes) => { ProcessWebhookData(System.Text.Encoding.UTF8.GetString(bytes)); };
 
         ws.Connect();
 
         cms = FindObjectOfType<CMS>();
         carEntityTracker = GetComponent<CarEntityTracker>();
-        ReconnectToServer();
+        ApiCall("scan", false);
+        GetCars();
     }
 
     void Update(){
@@ -87,13 +96,6 @@ public class CarInteraface : MonoBehaviour
         ApiCall($"setlights/{car.id}:{r}:{g}:{b}");
     }
     
-    async Task<bool> SetupListener(){
-        // Perform initial scan and car data fetch
-        ApiCall("scan", false);
-        GetCars();
-        connected = true;
-        return true;
-    }
     
     void ProcessWebhookData(string jsonData) {
         try {
@@ -169,15 +171,6 @@ public class CarInteraface : MonoBehaviour
             }
         } catch (Exception e) {
             Debug.LogError($"Error parsing webhook data: {e.Message}\n{e.StackTrace}\nData: {jsonData}");
-        }
-    }
-    
-    async Task ReconnectToServer(){
-        connected = false;
-        bool reconnnected = false;
-        while(!reconnnected && Application.isPlaying){
-            reconnnected = await SetupListener();
-            await Task.Delay(3000);
         }
     }
     
