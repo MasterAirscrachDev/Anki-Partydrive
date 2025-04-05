@@ -180,9 +180,9 @@ namespace OverdriveServer {
             requestedOffset = (int)lane;
         }
         public void LaneCheck(){
-            if(Math.Abs(requestedOffset - data.laneOffset) > 200 && data.speed > 0){
+            if(Math.Abs(requestedOffset - data.offset) > 200 && data.speed > 0){
                 SetCarTrackCenter(0); Console.WriteLine($"{id} Your lane is bogus, expect trouble");
-            } else if((Math.Abs(requestedOffset - data.laneOffset) > 0.3) && data.speed > 0){
+            } else if((Math.Abs(requestedOffset - data.offset) > 0.3) && data.speed > 0){
                 SetCarLane(requestedOffset);
             }
         }

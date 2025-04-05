@@ -1,5 +1,6 @@
 using System.Text.Json;
 using static OverdriveServer.NetStructures;
+using static OverdriveServer.NetStructures.UtilityMessages;
 using Fleck;
 //using Newtonsoft.Json;
 
@@ -90,7 +91,7 @@ namespace OverdriveServer
             try{
                 var webhookData = JsonSerializer.Deserialize<WebhookData>(message);
                 if(webhookData == null) { return; }
-                if(webhookData.EventType == EVENT_CAR_MOVE){
+                if(webhookData.EventType == SV_CAR_MOVE){
                     //data will be id:speed:offset
                     //offset or speed may be - meaning null
                     string[] data = ((JsonElement)webhookData.Payload).GetString().Split(":");
@@ -104,7 +105,7 @@ namespace OverdriveServer
                     if(data[2] != "-") { 
                         car.SetCarLane(float.Parse(data[2]));
                     }
-                }else if(webhookData.EventType == EVENT_REFRESH_CONFIGS){
+                }else if(webhookData.EventType == SV_REFRESH_CONFIGS){
                     Program.carSystem.UpdateConfigs();
                 }
             }

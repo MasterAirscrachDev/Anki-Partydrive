@@ -18,7 +18,7 @@ namespace OverdriveServer{
         }
         [System.Serializable]
         public class TransitionData {
-            public required string carID {get; set;}
+            public string carID {get; set;}
             public int trackPiece {get; set;}
             public int oldTrackPiece {get; set;}           
             public float offset {get; set;}
@@ -30,7 +30,7 @@ namespace OverdriveServer{
         }
         [System.Serializable]
         public class LocationData {
-            public required string carID {get; set;}
+            public string carID {get; set;}
             public int trackLocation {get; set;}
             public int trackID {get; set;}
             public float offset {get; set;}
@@ -39,7 +39,7 @@ namespace OverdriveServer{
         }
         [System.Serializable]
         public class CarLocationData {
-            public required string carID {get; set;}
+            public string carID {get; set;}
             public int trackIndex {get; set;}
             public int speed {get; set;}
             public float offset {get; set;}
@@ -52,8 +52,10 @@ namespace OverdriveServer{
         public const string EVENT_CAR_TRANSITION = "car_transition";
         public const string EVENT_CAR_DELOCALIZED = "car_delocalized";
         public const string EVENT_CAR_TRACKING_UPDATE = "car_tracking_update";
-        public const string EVENT_CAR_MOVE = "car_move_update";
-        public const string EVENT_REFRESH_CONFIGS = "refresh_configs";
+        public const string SV_CAR_MOVE = "car_move_update";
+        public const string SV_REFRESH_CONFIGS = "refresh_configs";
+        public const string SV_LINEUP = "lineup";
+        public const string SV_CAR_S_LIGHTS = "car_s_lights";
 
         public static class UtilityMessages {
             public const string MSG_CAR_CONNECTED = "cc"; //:carID:name
@@ -63,6 +65,7 @@ namespace OverdriveServer{
             public const string MSG_CAR_POWERUP = "pup"; //:carID
             public const string MSG_TR_SCAN_UPDATE = "skup"; //:carID:trackValidated
             public const string MSG_CAR_STATUS_UPDATE = "csu"; //:carID
+            public const string MSG_LINEUP = "lu"; //:carID:remainingCars
         }
     }
 }

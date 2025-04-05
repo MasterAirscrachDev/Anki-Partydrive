@@ -101,7 +101,9 @@ public class FileSuper
     public bool working, debug;
     string encryptKey, fullpath;
     string[] splitSettings;
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
     BinaryFormatter bf = new BinaryFormatter();
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
     ///<summary>Create a new FileSuper object</summary>
     public FileSuper(string project, string studio, bool debug = false, string[] splitSettings = null)
     {

@@ -93,9 +93,7 @@ namespace OverdriveServer {
                 }
             );
             //Program.Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
-            car.data.trackPosition = trackLocation; 
-            car.data.trackID = trackID;
-            car.data.laneOffset = offset;
+            car.data.offset = offset;
             car.data.speed = speed;
             CarEventLocationCall?.Invoke(car.id, trackLocation, trackID, offset, speed, clockwise);
 
@@ -127,7 +125,7 @@ namespace OverdriveServer {
                     }
                 );
                 CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
-                car.data.laneOffset = offset;
+                car.data.offset = offset;
                 car.LaneCheck();
                 
                 SolveSegment(car, car.lastPositionID, car.lastFlipped, leftWheelDistance, rightWheelDistance, crossedStartingLine, offset, uphillCounter, downhillCounter); //solve the segment
