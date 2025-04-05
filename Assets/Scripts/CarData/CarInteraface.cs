@@ -80,12 +80,10 @@ public class CarInteraface : MonoBehaviour
     
     public void ControlCar(UCarData car, int speed, int lane){
         if(car.charging){ return; }
-        //ApiCall($"controlcar/{car.id}:{speed}:{lane}");
         WebhookData data = new WebhookData{
             EventType = SV_CAR_MOVE,
             Payload = $"{car.id}:{speed}:{lane}"
         };
-
         string jsonData = JsonConvert.SerializeObject(data);
         ws.SendText(jsonData);
         carEntityTracker.SetSpeed(car.id, speed);
@@ -95,7 +93,6 @@ public class CarInteraface : MonoBehaviour
     public void SetCarColours(UCarData car, int r, int g, int b){
         ApiCallV2(SV_CAR_S_LIGHTS, $"{car.id}:{r}:{g}:{b}");
     }
-    
     
     void ProcessWebhookData(string jsonData) {
         try {
@@ -174,6 +171,10 @@ public class CarInteraface : MonoBehaviour
             }
         } else if(c[0] == MSG_CAR_DISCONNECTED){ //disconnected
             GetCarInfo();
+        } else if(c[0] == MSG_LINEUP){
+            string carID = c[1];
+            int remainingCars = int.Parse(c[2]);
+            OnLineupEvent?.Invoke(carID, remainingCars);
         }
     }
     
@@ -269,6 +270,9 @@ public class CarInteraface : MonoBehaviour
         public string EventType { get; set; }
         public dynamic Payload { get; set; }
     }
+
+    public delegate void LineupCallback(string carID, int remainingCars);
+    public event LineupCallback OnLineupEvent;
 }
 [System.Serializable]
 public class UCarData{

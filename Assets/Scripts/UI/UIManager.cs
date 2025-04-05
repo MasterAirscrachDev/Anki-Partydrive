@@ -107,4 +107,7 @@ public class UIManager : MonoBehaviour
     public void QuitGame(){
         Application.Quit();
     }
+    public void OpenLink(string url){
+        Application.OpenURL(url);
+    }
 }

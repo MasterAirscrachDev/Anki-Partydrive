@@ -13,6 +13,7 @@ public class CarController : MonoBehaviour
     float maxEnergy = 100;
     int oldSpeed;
     float oldLane;
+    bool isSetup = false;
     [SerializeField] bool locked = true;
     Color playerColor = Color.white;
     CarInteraface carInterface;
@@ -29,9 +30,14 @@ public class CarController : MonoBehaviour
     public bool IitemB;
     //===================
     bool wasBoostLastFrame = false;
+    void Start(){
+        Setup();
+    }
     // Start is called before the first frame update
-    void Start()
+    void Setup()
     {
+        if(isSetup){ return; }
+        isSetup = true;
         carInterface = FindObjectOfType<CarInteraface>();
         cms = FindObjectOfType<CMS>();
         cms.AddController(this);
@@ -41,12 +47,16 @@ public class CarController : MonoBehaviour
         if(uiLayer == 2){
             carsManagement = FindObjectOfType<CarsManagement>();
         }
+            
     }
     public void SetColour(Color c){
         playerColor = c;
-        pcs.SetColor(c);
+        if(pcs == null){
+            Setup();
+        }
     }
     public void SetCard(PlayerCardSystem pcs){
+        //Debug.Log("SetCard");
         this.pcs = pcs;
         //pcs.SetCharacterName(carInterface.cars[carIndex].characterName);
         UCarData carData = carInterface.GetCarFromID(carID);
@@ -57,6 +67,7 @@ public class CarController : MonoBehaviour
         pcs.SetCarName(text);
         //pcs.SetPosition(internalControlIndex + 1);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
+        pcs.SetColor(playerColor);
     }
     void OnBoost(bool pressed){ //Button A
         if(!pressed){ return; }
@@ -68,7 +79,9 @@ public class CarController : MonoBehaviour
     public void StopCar(){
         speed = 0;
         lane = 0;
-        carInterface.ControlCar(carInterface.GetCarFromID(carID), 0, 0);
+        UCarData carData = carInterface.GetCarFromID(carID);
+        if(carData == null){ return; }
+        carInterface.ControlCar(carData, 0, 0);
     }
     async Task ControlTicker(){
         while(true){

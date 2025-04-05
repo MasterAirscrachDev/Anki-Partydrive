@@ -23,6 +23,7 @@ public class CMS : MonoBehaviour
     }
     public void AddController(CarController controller){
         controllers.Add(controller);
+        Debug.Log($"available colors: {freeColors.Count}");
         Color c = freeColors[0];
         freeColors.RemoveAt(0);
         usedColors.Add(c);
