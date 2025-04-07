@@ -104,9 +104,9 @@ public class CarController : MonoBehaviour
         if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
         if(Iaccel > 0 && Iboost && energy > 1){
-            energy -= 0.5f;
+            energy -= 6f;
             if(energy < 0){ energy = 0; }
-            speed += 250;
+            speed += 50;
         }
 
         lane += Isteer * 0.5f;

@@ -697,7 +697,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -28.8}
+  m_AnchoredPosition: {x: 0, y: -28.800049}
   m_SizeDelta: {x: 351.58, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &65327511
@@ -3844,7 +3844,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -13091,8 +13091,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showText: {fileID: 1254656673}
   startButton: {fileID: 125849343}
-  menuButton: {fileID: 0}
-  replayButton: {fileID: 0}
+  menuButton: {fileID: 355220062}
+  replayButton: {fileID: 354691878}
 --- !u!1 &1948605590
 GameObject:
   m_ObjectHideFlags: 0

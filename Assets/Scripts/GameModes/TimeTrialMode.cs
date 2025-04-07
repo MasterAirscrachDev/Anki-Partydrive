@@ -118,10 +118,10 @@ public class TimeTrialMode : MonoBehaviour
             carInteraface.OnLineupEvent -= OnLineupUpdate;
         }
     }
-    public void BackToMenu(){
+    public void BackToMenu(){ //called by ui
         FindObjectOfType<UIManager>().SetUILayer(0);
     }
-    public void Replay(){
+    public void Replay(){ //called by ui
         StartMode();
     }
     class CarTime{

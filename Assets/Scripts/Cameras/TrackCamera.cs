@@ -19,7 +19,7 @@ public class TrackCamera : MonoBehaviour
     void Update()
     {
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 2);
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(80, targetRotation - 3, 0), Time.deltaTime * 2);
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(85, targetRotation - 3, 0), Time.deltaTime * 2);
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, camSize, Time.deltaTime * 2);
     }
     public void TrackUpdated(){
@@ -34,9 +34,7 @@ public class TrackCamera : MonoBehaviour
         float heighestX = 0, heighestZ = 0, lowestX = 0, lowestZ = 0;
         for(int i = 0; i < trackManager.childCount; i++){
             float dist = Vector3.Distance(trackManager.GetChild(i).position, targetPos);
-            if(dist > maxDist){
-                maxDist = dist;
-            }
+            if(dist > maxDist){ maxDist = dist; }
             if(trackManager.GetChild(i).position.x > heighestX){ heighestX = trackManager.GetChild(i).position.x; }
             if(trackManager.GetChild(i).position.x < lowestX){ lowestX = trackManager.GetChild(i).position.x; }
             if(trackManager.GetChild(i).position.z > heighestZ){ heighestZ = trackManager.GetChild(i).position.z; }
