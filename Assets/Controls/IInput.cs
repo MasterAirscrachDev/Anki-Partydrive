@@ -89,6 +89,15 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UINav"",
+                    ""type"": ""Value"",
+                    ""id"": ""e413b2df-a88c-4420-add2-553d4c91b992"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -256,6 +265,72 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""action"": ""DriftRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e5a2af63-f4ba-4f40-bcae-44dde9b2e1d6"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UINav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""b2c91b0d-0915-4c81-bf14-70835a65a5ae"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UINav"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""08b435f1-ffbd-4d74-bf09-5c12242215ac"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UINav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""782f83aa-cc24-4367-8c8a-e68f4ec82927"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UINav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""ce076711-5cec-4517-a7c7-6d527a51d578"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UINav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""bb439fa8-2068-4748-ad3c-e943a7a2296c"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UINav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -271,6 +346,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         m_Racing_Boost = m_Racing.FindAction("Boost", throwIfNotFound: true);
         m_Racing_DriftLeft = m_Racing.FindAction("DriftLeft", throwIfNotFound: true);
         m_Racing_DriftRight = m_Racing.FindAction("DriftRight", throwIfNotFound: true);
+        m_Racing_UINav = m_Racing.FindAction("UINav", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -339,6 +415,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Racing_Boost;
     private readonly InputAction m_Racing_DriftLeft;
     private readonly InputAction m_Racing_DriftRight;
+    private readonly InputAction m_Racing_UINav;
     public struct RacingActions
     {
         private @IInput m_Wrapper;
@@ -350,6 +427,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         public InputAction @Boost => m_Wrapper.m_Racing_Boost;
         public InputAction @DriftLeft => m_Wrapper.m_Racing_DriftLeft;
         public InputAction @DriftRight => m_Wrapper.m_Racing_DriftRight;
+        public InputAction @UINav => m_Wrapper.m_Racing_UINav;
         public InputActionMap Get() { return m_Wrapper.m_Racing; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -380,6 +458,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @DriftRight.started += instance.OnDriftRight;
             @DriftRight.performed += instance.OnDriftRight;
             @DriftRight.canceled += instance.OnDriftRight;
+            @UINav.started += instance.OnUINav;
+            @UINav.performed += instance.OnUINav;
+            @UINav.canceled += instance.OnUINav;
         }
 
         private void UnregisterCallbacks(IRacingActions instance)
@@ -405,6 +486,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @DriftRight.started -= instance.OnDriftRight;
             @DriftRight.performed -= instance.OnDriftRight;
             @DriftRight.canceled -= instance.OnDriftRight;
+            @UINav.started -= instance.OnUINav;
+            @UINav.performed -= instance.OnUINav;
+            @UINav.canceled -= instance.OnUINav;
         }
 
         public void RemoveCallbacks(IRacingActions instance)
@@ -431,5 +515,6 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         void OnBoost(InputAction.CallbackContext context);
         void OnDriftLeft(InputAction.CallbackContext context);
         void OnDriftRight(InputAction.CallbackContext context);
+        void OnUINav(InputAction.CallbackContext context);
     }
 }
