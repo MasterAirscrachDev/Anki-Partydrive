@@ -335,7 +335,24 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             ]
         }
     ],
-    ""controlSchemes"": []
+    ""controlSchemes"": [
+        {
+            ""name"": ""Main"",
+            ""bindingGroup"": ""Main"",
+            ""devices"": [
+                {
+                    ""devicePath"": ""<Keyboard>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
+                },
+                {
+                    ""devicePath"": ""<Gamepad>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
+                }
+            ]
+        }
+    ]
 }");
         // Racing
         m_Racing = asset.FindActionMap("Racing", throwIfNotFound: true);
@@ -506,6 +523,15 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         }
     }
     public RacingActions @Racing => new RacingActions(this);
+    private int m_MainSchemeIndex = -1;
+    public InputControlScheme MainScheme
+    {
+        get
+        {
+            if (m_MainSchemeIndex == -1) m_MainSchemeIndex = asset.FindControlSchemeIndex("Main");
+            return asset.controlSchemes[m_MainSchemeIndex];
+        }
+    }
     public interface IRacingActions
     {
         void OnAccelerate(InputAction.CallbackContext context);
