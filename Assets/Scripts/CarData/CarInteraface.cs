@@ -9,15 +9,13 @@ using static OverdriveServer.NetStructures.UtilityMessages;
 public class CarInteraface : MonoBehaviour
 {
     public UCarData[] cars;
-    HttpClient client = new HttpClient();
     NativeWebSocket.WebSocket ws;
     [SerializeField] TrackGenerator trackGenerator;
     CMS cms;
     CarEntityTracker carEntityTracker;
     [SerializeField] UIManager uiManager;
     string scanningCar;
-    int DEBUG_SPEED = 400, DEBUG_LANE = 0;
-    
+    bool trackValidated = false;
     public UCarData GetCarFromID(string id){
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return cars[i];} }
@@ -26,12 +24,13 @@ public class CarInteraface : MonoBehaviour
     
     // Start is called before the first frame update
     void Start() {
-        client.BaseAddress = new Uri("http://localhost:7117/");
         ws = new NativeWebSocket.WebSocket("ws://localhost:7118/");
 
         ws.OnOpen += () => { 
             Debug.Log("WebSocket connection opened"); 
             FindObjectOfType<UIManager>().ServerConnected(); //show the server connected message
+            ApiCallV2(SV_SCAN, ""); //Start scanning for cars
+            GetCars();
         };
         ws.OnError += (e) => { 
             Debug.Log($"WebSocket error: {e}"); 
@@ -47,8 +46,7 @@ public class CarInteraface : MonoBehaviour
 
         cms = FindObjectOfType<CMS>();
         carEntityTracker = GetComponent<CarEntityTracker>();
-        ApiCall("scan", false);
-        GetCars();
+        
     }
 
     void Update(){
@@ -65,16 +63,16 @@ public class CarInteraface : MonoBehaviour
         //get the first car that isnt on charge
         int index = 0;
         while(cars[index].charging){ index++; }
-        int fins = FindObjectOfType<UIManager>().GetFinishCounter();
+        int fins = uiManager.GetFinishCounter();
         scanningCar = cars[index].id;
-        ApiCall($"scantrack/{cars[index].id}");
+        ApiCallV2(SV_TR_START_SCAN, cars[index].id); //temp, change scanning to use all active cars (also add support for multiple finish lines)
     }
     
     public void CancelScan(){ CancelTrackMap(); } //idk on this one
     
     async Task CancelTrackMap(){
         if(scanningCar == null){ return; }
-        ApiCall($"canceltrackscan/{scanningCar}");
+        ApiCallV2(SV_TR_CANCEL_SCAN, scanningCar); //temp, change scanning to use all active cars
         scanningCar = null;
     }
     
@@ -128,7 +126,15 @@ public class CarInteraface : MonoBehaviour
                     break;
                 case EVENT_CAR_TRACKING_UPDATE:  
                     CarLocationData tracking = JsonConvert.DeserializeObject<CarLocationData>(webhookData.Payload.ToString());
-                    carEntityTracker.SetPosition(tracking.carID, tracking.trackIndex, tracking.speed, tracking.offset, tracking.positionTrusted);
+                    carEntityTracker.SetPosition(tracking.carID, tracking.trackIndex, tracking.speed, tracking.offset, tracking.trustLevel);
+                    break;
+                case EVENT_CAR_DATA:
+                    CarData[] carData = JsonConvert.DeserializeObject<CarData[]>(webhookData.Payload.ToString());
+                    OnCarData(carData); //update the car data
+                    break;
+                case EVENT_TR_DATA:
+                    Segment[] trackData = JsonConvert.DeserializeObject<Segment[]>(webhookData.Payload.ToString());
+                    trackGenerator.Generate(trackData, trackValidated); //generate the track
                     break;
             
             }
@@ -141,7 +147,7 @@ public class CarInteraface : MonoBehaviour
         if (c[0] == MSG_CAR_CONNECTED){
             GetCarInfo();
             if(c[0] == "-1"){
-                ApiCall($"tts/Car {c[2]} has connected");
+                TTSCall($"Car {c[2]} has connected"); //this is a test, change to use the car name later
             }
         } else if(c[0] == MSG_TR_SCAN_UPDATE){
             bool valid = false;
@@ -149,7 +155,8 @@ public class CarInteraface : MonoBehaviour
                 valid = c[2] == "True";
                 uiManager.SetIsScanningTrack(false); //set the UI to not scanning
             }
-            GetTrackAndGenerate(valid);
+            trackValidated = valid;
+            ApiCallV2(SV_GET_TRACK, 0); //request the track data
         } else if(c[0] == MSG_CAR_DELOCALIZED){ 
             carEntityTracker.CarDelocalised(c[1]);
         } else if(c[0] == MSG_CAR_STATUS_UPDATE){ // status
@@ -178,36 +185,9 @@ public class CarInteraface : MonoBehaviour
         }
     }
     
-    public void TTSCall(string text){
-        ApiCall($"tts/{text}", false, true);
-    }
+    public void TTSCall(string text){ ApiCallV2(SV_TTS, text); }
     
-    async Task GetTrackAndGenerate(bool validated){
-        var track = await client.GetAsync("track");
-        string trackString = await track.Content.ReadAsStringAsync();
-        try{
-            TrackPiece[] trackPieces = JsonConvert.DeserializeObject<TrackPiece[]>(trackString);
-            trackGenerator.Generate(trackPieces, validated);
-        }catch(System.Exception e){
-            Debug.LogError($"Error parsing track data: {e.Message}");
-            return;
-        }
-    }
-    
-    public void Call(string call){ //used by UI buttons
-        ApiCall(call);
-    }
-    
-    public void GetCars(){
-        GetCarInfo();
-    }
-    
-    async Task ApiCall(string call, bool printResult = true, bool safe = false){
-        if(safe){call = call.Replace(" ", "%20"); }
-        var response = await client.GetAsync(call);
-        string responseString = await response.Content.ReadAsStringAsync();
-        if(printResult){ Debug.Log(responseString); }
-    }
+    public void GetCars(){ GetCarInfo(); }
     public void ApiCallV2(string eventType, object data){
         WebhookData webhookData = new WebhookData {
             EventType = eventType,
@@ -216,12 +196,7 @@ public class CarInteraface : MonoBehaviour
         string jsonData = JsonConvert.SerializeObject(webhookData);
         ws.SendText(jsonData);
     }
-    
-    async Task GetCarInfo(){
-        Debug.Log("Getting car info");
-        var response = await client.GetAsync("cars");
-        string responseString = await response.Content.ReadAsStringAsync();
-        CarData[] cars = JsonConvert.DeserializeObject<CarData[]>(responseString);
+    void OnCarData(CarData[] cars){
         UCarData[] uCars = new UCarData[cars.Length];
         for (int i = 0; i < cars.Length; i++)
         { uCars[i] = new UCarData(cars[i]); }
@@ -241,46 +216,28 @@ public class CarInteraface : MonoBehaviour
         for(int i = 0; i < cars.Length; i++){
             SetCarColours(uCars[i], colors[i].Item1, colors[i].Item2, colors[i].Item3);
         }
-        //ApiCall("batteries");
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
         { cms.controllers[i].CheckCarExists(); }
+    }
+    void GetCarInfo(){
+        ApiCallV2(SV_GET_CARS, ""); //get the car data
+        Debug.Log("Getting car info");
     }
     public int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return i;} }
         return -1;
     }
-    public void DEBUGSetCarsSpeed(int speed){
-        DEBUG_SPEED = speed;
-        DEBUGUpdate();
-    }
-    public void DEBUGSetCarsLane(int lane){
-        DEBUG_LANE = lane;
-        DEBUGUpdate();
-    }
-    void DEBUGUpdate(){
-        for (int i = 0; i < cars.Length; i++)
-        { ControlCar(cars[i], DEBUG_SPEED, DEBUG_LANE); }
-    }
-
-    // Classes to deserialize webhook data
-    [System.Serializable]
-    private class WebhookData {
-        public string EventType { get; set; }
-        public dynamic Payload { get; set; }
-    }
-
     public delegate void LineupCallback(string carID, int remainingCars);
     public event LineupCallback OnLineupEvent;
 }
 [System.Serializable]
-public class UCarData{
+public class UCarData{ //used for unity (bc it cant serialize properties)
     public string name;
     public string id;
     public float offset;
     public int speed;
-    public int battery;
     public bool charging;
     public bool onTrack;
     public int batteryStatus;
@@ -289,7 +246,6 @@ public class UCarData{
         id = data.id;
         offset = data.offset;
         speed = data.speed;
-        battery = data.battery;
         charging = data.charging;
         onTrack = data.onTrack;
         batteryStatus = data.batteryStatus;

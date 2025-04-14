@@ -1,6 +1,6 @@
-# Anki Overdrive Bluetooth Api
-This is subject to change/improvement as I learn more about the Anki Overdrive API.
-all expansion on this is welcome.
+# Anki Overdrive Bluetooth Api (Unmaintained)
+This is subject to change/improvement as I learn more about the Anki Overdrive API.  
+All expansion on this is welcome.
 
 ### Usful Links
 [Offical Anki SDK in C](https://github.com/anki/drive-sdk)

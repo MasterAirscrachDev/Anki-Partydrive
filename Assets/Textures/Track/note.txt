@@ -1,0 +1,3 @@
+set 7 tolerance
+rgb 20,20,20 fill 
+that's how to turn blue to nice grey

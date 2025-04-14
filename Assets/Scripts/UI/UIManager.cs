@@ -6,10 +6,6 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Developer UI")]
-    [SerializeField] TMP_Text devCarCount;
-    [SerializeField] TMP_Text devSpeed; 
-    [SerializeField] TMP_Text devOffset;
     [Header("Menu UI")]
     [SerializeField] TMP_Text menuCarCount;
     [SerializeField] GameObject NoServerWarningText;
@@ -33,8 +29,6 @@ public class UIManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
-        devSpeed.text = devCarSpeed.ToString();
-        devOffset.text = devCarOffset.ToString();
         SetUILayer(0);
     }
 
@@ -83,7 +77,6 @@ public class UIManager : MonoBehaviour
         return UIlayer;
     }
     public void SetCarsCount(int count){
-        devCarCount.text = count.ToString();
         menuCarCount.text = count > 0 ? count.ToString() : "";
         CarsLoadingIcon.SetActive(count == 0);
     }
@@ -98,20 +91,6 @@ public class UIManager : MonoBehaviour
     public void SetIsScanningTrack(bool scan){
         TrackScan.SetActive(!scan);
         TrackCancelScan.SetActive(scan);
-    }
-    public void ModDevCarSpeed(int speed){
-        devCarSpeed += speed;
-        devSpeed.text = devCarSpeed.ToString();
-    }
-    public void ModDevCarOffset(int offset){
-        devCarOffset += offset;
-        devOffset.text = devCarOffset.ToString();
-    }
-    public void ApplyDevCarSpeed(){
-        cars.DEBUGSetCarsSpeed(devCarSpeed);
-    }
-    public void ApplyDevCarOffset(){
-        cars.DEBUGSetCarsLane(devCarOffset);
     }
     public void QuitGame(){
         Application.Quit();

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class TrackCamera : MonoBehaviour
 {
-    [SerializeField] Transform trackManager;
-    Vector3 targetPos = new Vector3(0, 10, 0);
+    Vector3 targetPos = new Vector3(0, 5, 0);
+    [SerializeField] Vector2 xzOffset = new Vector2(0, 0);
     float targetRotation = 0;
     float camSize = 2;
     Camera cam;
@@ -19,35 +19,28 @@ public class TrackCamera : MonoBehaviour
     void Update()
     {
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 2);
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(85, targetRotation - 3, 0), Time.deltaTime * 2);
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(70, targetRotation - 3, 0), Time.deltaTime * 2);
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, camSize, Time.deltaTime * 2);
     }
-    public void TrackUpdated(){
+    public void TrackUpdated(Vector3 center, Vector2 size){
         if(!Application.isPlaying){ return; }
-        //get the average position of all track pieces
-        Vector3 pos = Vector3.zero;
-        for(int i = 0; i < trackManager.childCount; i++){ pos += trackManager.GetChild(i).position; }
-        targetPos = pos / trackManager.childCount;
-        targetPos.y = 10;
-        //the diagonal bounds of the track
-        float maxDist = 0;
-        float heighestX = 0, heighestZ = 0, lowestX = 0, lowestZ = 0;
-        for(int i = 0; i < trackManager.childCount; i++){
-            float dist = Vector3.Distance(trackManager.GetChild(i).position, targetPos);
-            if(dist > maxDist){ maxDist = dist; }
-            if(trackManager.GetChild(i).position.x > heighestX){ heighestX = trackManager.GetChild(i).position.x; }
-            if(trackManager.GetChild(i).position.x < lowestX){ lowestX = trackManager.GetChild(i).position.x; }
-            if(trackManager.GetChild(i).position.z > heighestZ){ heighestZ = trackManager.GetChild(i).position.z; }
-            if(trackManager.GetChild(i).position.z < lowestZ){ lowestZ = trackManager.GetChild(i).position.z; }
-        }
-        //if its taller than it is wide, rotate the camera 90 degrees
-        if(heighestX - lowestX < heighestZ - lowestZ){
-            camSize = Mathf.Max(2, (heighestZ - lowestZ) / 2.3f);
+        
+        // Set target position from the center parameter
+        targetPos = new Vector3(center.x, 5, center.z);
+        
+        // Calculate camera size based on the track bounds
+        float maxDist = Mathf.Max(size.x, size.y);
+        
+        // If track is taller than it is wide, rotate the camera 90 degrees
+        if(size.x < size.y){
+            camSize = Mathf.Max(1.5f, (size.y / 2.3f) -0.25f);
             targetRotation = 90;
+            targetPos += new Vector3(xzOffset.y, 0, -xzOffset.x);
         }
         else{
-            camSize = Mathf.Max(2, maxDist / 2.3f);
+            camSize = Mathf.Max(1.5f, (maxDist / 2.3f) - 0.25f);
             targetRotation = 0;
+            targetPos += new Vector3(xzOffset.x, 0, xzOffset.y);
         }
     }
 }

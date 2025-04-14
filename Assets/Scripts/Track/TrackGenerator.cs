@@ -1,28 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static OverdriveServer.NetStructures;
 
 [ExecuteInEditMode]
 public class TrackGenerator : MonoBehaviour
 {
     [SerializeField] TrackCamera trackCamera;
-    [SerializeField] TrackPiece[] segments;
+    [SerializeField] Segment[] segments;
     [SerializeField] GameObject[] trackPrefabs, scannningPrefabs;
     [SerializeField] List<GameObject> trackPieces;
     public bool hasTrack = false;
+    int lastSegmentCount = 0;
 
     public TrackSpline GetTrackPiece(int index){
         if(trackPieces[index] == null){ return null; }
         if(index >= trackPieces.Count){ index-= trackPieces.Count; }
         return trackPieces[index].GetComponent<TrackSpline>();
     }
-    public TrackPieceType GetTrackPieceType(int index){
+    public SegmentType GetTrackPieceType(int index){
         return segments[index].type;
     }
-    public TrackPiece[] GetTrackPieces(){
+    public Segment[] GetTrackPieces(){
         return segments;
     }
-    void GenerateTrackPls(){
+    void GenerateTrackObjects(bool animateLastSegment){
         for(int i = 0; i < transform.childCount; i++){
             if(Application.isPlaying){
                 Destroy(transform.GetChild(i).gameObject);
@@ -40,10 +42,10 @@ public class TrackGenerator : MonoBehaviour
             Quaternion rot = Quaternion.LookRotation(forward);
             //round position to 1 decimal place
             pos = new Vector3(Mathf.Round(pos.x * 10) / 10, Mathf.Round(pos.y * 10) / 10, Mathf.Round(pos.z * 10) / 10);
-            if(segments[i].type == TrackPieceType.FinishLine){
+            if(segments[i].type == SegmentType.FinishLine){
                 track = Instantiate(segments[i].validated ? trackPrefabs[0] : scannningPrefabs[0], pos, rot, transform);
                 pos += forward;
-            } if(segments[i].type == TrackPieceType.Straight){
+            } if(segments[i].type == SegmentType.Straight){
                 //if the abs of height diff is 2, use the 4th prefab, if height diff is -1 use the 7th prefab otherwise use the 1st prefab
                 int prefIndex = 1;
                 int heightDiff = 0;
@@ -59,13 +61,13 @@ public class TrackGenerator : MonoBehaviour
                 //     pos += Vector3.down * 0.2f;
                 //     track.transform.Translate(0, -0.2f, 0);
                 // }
-            } if(segments[i].type == TrackPieceType.FnFSpecial){
+            } if(segments[i].type == SegmentType.FnFSpecial){
                 track = Instantiate(segments[i].validated ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
                 if(segments[i].flipped){
                     track.transform.localScale = new Vector3(-1, 1, 1);
                 }
                 pos += forward;
-            } if(segments[i].type == TrackPieceType.Turn){
+            } if(segments[i].type == SegmentType.Turn){
                 //int useIndex = Mathf.Abs(heightDiff) == 0 ? 3 : (Mathf.Abs(heightDiff) == 2 ? 5 : 6);
                 int useIndex = 3;
                 track = Instantiate(segments[i].validated ? trackPrefabs[useIndex] : scannningPrefabs[3], pos, rot, transform);
@@ -94,11 +96,11 @@ public class TrackGenerator : MonoBehaviour
                 //     track.transform.Rotate(0, 90, 0);
                 //     track.transform.localScale = new Vector3(-1, 1, segments[i].flipped ? -1 : 1);
                 // }
-            } if(segments[i].type == TrackPieceType.CrissCross){
+            } if(segments[i].type == SegmentType.CrissCross){
                 //do we already have a criss cross at this location?
                 bool hasCrissCross = false;
                 for(int j = 0; j < i; j++){
-                    if(segments[j].type == TrackPieceType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y){
+                    if(segments[j].type == SegmentType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y){
                         hasCrissCross = true;
                         trackPieces[j].name = $"{i} {trackPieces[j].name}";
                         if(segments[j].validated){
@@ -111,7 +113,7 @@ public class TrackGenerator : MonoBehaviour
                     track = Instantiate(segments[i].validated ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform);
                 }
                 pos += forward;
-            } if(segments[i].type == TrackPieceType.JumpRamp){
+            } if(segments[i].type == SegmentType.JumpRamp){
                 track = Instantiate(segments[i].validated ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
                 pos += forward * 2;
             }
@@ -146,13 +148,16 @@ public class TrackGenerator : MonoBehaviour
             Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
             lastPos = pos;
         }
+        if(animateLastSegment && trackPieces.Count > 0){
+            trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>();
+        }
     }
-    public void Generate(TrackPiece[] segments, bool validated){
+    public void Generate(Segment[] segments, bool validated){
         this.segments = segments;
         try{
-            GenerateTrackPls();
+            GenerateTrackObjects(lastSegmentCount != segments.Length);
+            lastSegmentCount = segments.Length;
             hasTrack = validated;
-
             if(validated){
                 Debug.Log($"Track validated with {segments.Length} segments, {trackPieces.Count} track pieces");
                 OnTrackValidated?.Invoke(segments);
@@ -161,13 +166,31 @@ public class TrackGenerator : MonoBehaviour
         }
         catch(System.Exception e){
             Debug.LogError(e);
+            return;
         }
-        trackCamera.TrackUpdated();
+
+        //calculate the center and size of the track
+        Vector3 center = Vector3.zero;
+        for(int i = 0; i < trackPieces.Count; i++){
+            if(trackPieces[i] == null){ continue; }
+            center += trackPieces[i].transform.position;
+        }
+        center /= trackPieces.Count;
+        Vector2 size = new Vector2(0, 0);
+        for(int i = 0; i < trackPieces.Count; i++){
+            if(trackPieces[i] == null){ continue; }
+            Vector2 pos = new Vector2(trackPieces[i].transform.position.x, trackPieces[i].transform.position.z);
+            if(pos.x > size.x){ size.x = pos.x; }
+            if(pos.y > size.y){ size.y = pos.y; }
+        }
+        size.x -= center.x; size.y -= center.y;
+        size.x *= 2; size.y *= 2;
+        trackCamera.TrackUpdated(center, size);
     }
-    public delegate void OnVerifyTrack(TrackPiece[] segments);
+    public delegate void OnVerifyTrack(Segment[] segments);
     public event OnVerifyTrack? OnTrackValidated;
 
-    public static (bool, TrackPiece?) EvaluateMatch(TrackPiece A, TrackPiece B){
+    public static (bool, Segment?) EvaluateMatch(Segment A, Segment B){
         if(A == null || B == null){ return (false, null); } //if either piece is null, we can't match them
         else if(A.internalID != 0 && B.internalID != 0){ //if both pieces are not fallbacks
             return ((A.type == B.type) && (A.flipped == B.flipped), null); //match if the type and flipped state are the same
@@ -176,8 +199,8 @@ public class TrackGenerator : MonoBehaviour
         }
         else{ //A or B is a fallback, check if we can match them
             for(int i = 0; i < 2; i++){ 
-                TrackPiece C = A; //copy A to C
-                TrackPiece D = B; //copy B to D
+                Segment C = A; //copy A to C
+                Segment D = B; //copy B to D
                 if(i == 1){ C = B; D = A; } //swap C and D
                 if(C.internalID == 0 && D.internalID != 0){ //if C is a fallback and D is not
                     if(C.type == D.type){ 
@@ -185,11 +208,11 @@ public class TrackGenerator : MonoBehaviour
                         return (true, D); 
                     } //if the type is the same, its probably the same piece (return the one with the ID)
                     else{
-                        if(C.type == TrackPieceType.Straight && D.type == TrackPieceType.CrissCross) { 
+                        if(C.type == SegmentType.Straight && D.type == SegmentType.CrissCross) { 
                             if (C.validated){ D.validated = true; } //if C is validated, set D to validated
                             return (true, D);
                         } //crisscross is a straight piece
-                        else if(C.type == TrackPieceType.Straight && D.type == TrackPieceType.FnFSpecial) { 
+                        else if(C.type == SegmentType.Straight && D.type == SegmentType.FnFSpecial) { 
                             if (C.validated){ D.validated = true; } //if C is validated, set D to validated
                             return (true, D); 
                         } //FnF is a straight piece
@@ -202,12 +225,12 @@ public class TrackGenerator : MonoBehaviour
 }
 
 [System.Serializable]
-public class TrackPiece{
-    public readonly TrackPieceType type;
+public class Segment{ //
+    public readonly SegmentType type;
     public readonly int internalID;
     public readonly bool flipped;
     public int up, down, elevation, X, Y;
-    public TrackPiece(TrackPieceType type, int id, bool flipped){
+    public Segment(SegmentType type, int id, bool flipped){
         this.type = type;
         this.flipped = flipped;
         internalID = id;
@@ -218,19 +241,15 @@ public class TrackPiece{
     public override bool Equals(object? obj) { // Check for null and compare run-time types.
         if (obj == null || !GetType().Equals(obj.GetType())) { return false; }
         else {
-            TrackPiece p = (TrackPiece)obj;
+            Segment p = (Segment)obj;
             return (type == p.type) && (flipped == p.flipped);
         }
     }
-    public static bool operator ==(TrackPiece? a, TrackPiece? b) {
+    public static bool operator ==(Segment? a, Segment? b) {
         if (ReferenceEquals(a, b)) { return true; }
         if (a is null || b is null) { return false; }
         return a.Equals(b);
     }
-    public static bool operator !=(TrackPiece? a, TrackPiece? b) { return !(a == b); }
+    public static bool operator !=(Segment? a, Segment? b) { return !(a == b); }
     public override string ToString() { return $"({type}|id:{internalID}|flipped:{flipped})"; }
-}
-[System.Serializable]
-public enum TrackPieceType{
-    Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding
 }

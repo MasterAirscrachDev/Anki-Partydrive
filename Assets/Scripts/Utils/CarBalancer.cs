@@ -15,7 +15,7 @@ public class CarBalancer : MonoBehaviour
     [SerializeField] UIManager ui;
     [SerializeField] TMP_Text messageText;
     [SerializeField] Button recalibrateButton, saveButton, backButton;
-    TrackPiece[] requestedTrack;
+    Segment[] requestedTrack;
     float startTime;
     string carID;
     UCarData carData;
@@ -34,16 +34,16 @@ public class CarBalancer : MonoBehaviour
     //7.75 is the target laptime
 
     void Start(){
-        requestedTrack = new TrackPiece[9];
-        requestedTrack[0] = new TrackPiece(TrackPieceType.PreFinishLine, 0, false);
-        requestedTrack[1] = new TrackPiece(TrackPieceType.FinishLine, 0, false);
-        requestedTrack[2] = new TrackPiece(TrackPieceType.Straight, 0, true);
-        requestedTrack[3] = new TrackPiece(TrackPieceType.Turn, 0, true);
-        requestedTrack[4] = new TrackPiece(TrackPieceType.Turn, 0, true);
-        requestedTrack[5] = new TrackPiece(TrackPieceType.Straight, 0, false);
-        requestedTrack[6] = new TrackPiece(TrackPieceType.Straight, 0, false);
-        requestedTrack[7] = new TrackPiece(TrackPieceType.Turn, 0, true);
-        requestedTrack[8] = new TrackPiece(TrackPieceType.Turn, 0, true);
+        requestedTrack = new Segment[9];
+        requestedTrack[0] = new Segment(SegmentType.PreFinishLine, 0, false);
+        requestedTrack[1] = new Segment(SegmentType.FinishLine, 0, false);
+        requestedTrack[2] = new Segment(SegmentType.Straight, 0, true);
+        requestedTrack[3] = new Segment(SegmentType.Turn, 0, true);
+        requestedTrack[4] = new Segment(SegmentType.Turn, 0, true);
+        requestedTrack[5] = new Segment(SegmentType.Straight, 0, false);
+        requestedTrack[6] = new Segment(SegmentType.Straight, 0, false);
+        requestedTrack[7] = new Segment(SegmentType.Turn, 0, true);
+        requestedTrack[8] = new Segment(SegmentType.Turn, 0, true);
     }
     void OnDisable(){
         SubTrack(false);
@@ -138,7 +138,7 @@ public class CarBalancer : MonoBehaviour
             step = -1;
         }
     }
-    void OnTrack(TrackPiece[] track){
+    void OnTrack(Segment[] track){
         Debug.Log($"Track validated, callback");
         try{
             if(waitingForTrack){
@@ -159,12 +159,12 @@ public class CarBalancer : MonoBehaviour
             Debug.Log($"Error in track validation: {e.Message}");
         }
     }
-    bool CheckTrack(TrackPiece[] track){
+    bool CheckTrack(Segment[] track){
         if(track.Length != requestedTrack.Length){ return false; }
         for (int i = 0; i < track.Length; i++)
         {
             if(track[i].type != requestedTrack[i].type){
-                if(!(track[i].type == TrackPieceType.FnFSpecial && requestedTrack[i].type == TrackPieceType.Straight)){
+                if(!(track[i].type == SegmentType.FnFSpecial && requestedTrack[i].type == SegmentType.Straight)){
                     return false;
                 }
             }

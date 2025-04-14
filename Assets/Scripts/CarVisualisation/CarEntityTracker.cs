@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static OverdriveServer.NetStructures;
 
 public class CarEntityTracker : MonoBehaviour
 {
@@ -8,14 +9,14 @@ public class CarEntityTracker : MonoBehaviour
     [SerializeField] GameObject carPrefab;
     [SerializeField] Dictionary<string, CarEntityPosition> trackers = new Dictionary<string, CarEntityPosition>();
 
-    public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, bool positionTrusted){
+    public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, int trust){
         if(!track.hasTrack){ return; }
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
         TrackSpline trackPiece = track.GetTrackPiece(trackIndex);
         bool trueFin = true;
         if(trackPiece == null){ //either we are on a PreStart or an error has occured
             trackIndex++;
-            if(track.GetTrackPieceType(trackIndex) == TrackPieceType.FinishLine){
+            if(track.GetTrackPieceType(trackIndex) == SegmentType.FinishLine){
                 trackPiece = track.GetTrackPiece(trackIndex); trueFin = false;
             }else{ return; }
         }
@@ -27,11 +28,11 @@ public class CarEntityTracker : MonoBehaviour
             entity.carModelManager.Setup(); //make this load model and colour later
             trackers.Add(id, entity);
         }
-        entity.SetTrustedPosition(positionTrusted);
+        entity.SetTrust(trust);
         entity.SetTrackSpline(trackPiece, trackIndex);
         entity.SetSpeed(speed);
         entity.SetOffset(horizontalOffset);
-        if(trackIndex == 1 && trueFin && positionTrusted){ //if we are on the finish line, we have finished the lap
+        if(trackIndex == 1 && trueFin && trust > 0){ //if we are on the finish line, we have finished the lap
             OnCarCrossedFinishLine?.Invoke(id);
         }
     }

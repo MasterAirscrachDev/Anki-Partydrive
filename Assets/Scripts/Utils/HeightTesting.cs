@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
+using static OverdriveServer.NetStructures;
 
 [ExecuteInEditMode]
 public class HeightTesting : MonoBehaviour
 {
     [SerializeField] bool test;
-    [SerializeField] TrackPiece[] SourceSegments;
+    [SerializeField] Segment[] SourceSegments;
     // Update is called once per frame
     void Update()
     {
@@ -127,13 +127,13 @@ public class HeightTesting : MonoBehaviour
         return segmentsAtXY.ToArray();
     }
     class CalculationSegment{
-        public TrackPieceType type;
+        public SegmentType type;
         public int elevation, up, down;
         public bool flipped;
         public int index, X, Y;
         public bool heightSet = false;
         public bool atXY(CalculationSegment other){
-            if(type == TrackPieceType.Unknown || other.type == TrackPieceType.Unknown){ return false; }
+            if(type == SegmentType.Unknown || other.type == SegmentType.Unknown){ return false; }
             return X == other.X && Y == other.Y;
         }
     }

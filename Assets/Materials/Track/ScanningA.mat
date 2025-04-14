@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ScanningA
+  m_Shader: {fileID: 4800000, guid: e653236f1e861aa4c9ec3b2b4b06bc9b, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _USEWORLDSPACE_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AspectRatio: 1
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _GridSize: 2.6
+    - _GridX: 0
+    - _GridY: 0
+    - _Gridsize: 0.001
+    - _HexSize: 10
+    - _HexSpacing: 0
+    - _LineWidth: 2
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _PulseAmount: 1.44
+    - _PulseSpeed: 0.19
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SquareSize: 48.2
+    - _SquareSpacing: 0.265
+    - _SrcBlend: 1
+    - _UVSec: 0
+    - _UseWorldSpace: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color1: {r: 0, g: 0.6809718, b: 0.8301887, a: 1}
+    - _Color2: {r: 0, g: 0.5568303, b: 0.754717, a: 1}
+    - _Color3: {r: 0.5, g: 0.8, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GridColor: {r: 1, g: 1, b: 1, a: 1}
+    - _InnerColor: {r: 0.38892844, g: 0.85941696, b: 0.8679245, a: 1}
+    - _OuterColor: {r: 0.17866677, g: 0.40666872, b: 0.5188679, a: 1}
+    - _PulseColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TileScale: {r: 1, g: 1, b: 0, a: 0}
+  m_BuildTextureStacks: []
