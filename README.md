@@ -1,5 +1,5 @@
 # Anki-Partydrive
-<img src= "https://github.com/MasterAirscrachDev/Anki-Partydrive/tree/main/Assets/Textures/Logo.png" alt="Logo" width="200" height="200">  
+<img src= "https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/Assets/Textures/Logo.png?raw=true" alt="Logo" width="200" height="200">  
 
 Its Anki Overdrive, but open source.
 
