@@ -17,13 +17,15 @@ public class PlayerCardmanager : MonoBehaviour
         }
         cards.Clear();
         //create new cards cented wish 250 spacing
-        int spacing = 240;
-        float startX = -spacing * (count - 1) / 2;
+        int offset = -10;
+        const int spacing = 160;
         for(int i = 0; i < count; i++){
             GameObject card = Instantiate(cardPrefab, cardParent);
-            card.transform.localPosition = new Vector3(startX + spacing * i, 0, 0);
+            card.transform.localPosition = new Vector3(10, offset, 0);
             cards.Add(card);
             cms.controllers[i].SetCard(card.GetComponent<PlayerCardSystem>());
+
+            offset -= spacing;
         }
     }
 }

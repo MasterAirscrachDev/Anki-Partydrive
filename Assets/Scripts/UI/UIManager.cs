@@ -59,7 +59,9 @@ public class UIManager : MonoBehaviour
 
         if(layer == 0){ //if we are in the main menu, disable the play button
             SwitchToTrackCamera(false);
-            playButton.interactable = FindObjectOfType<TrackGenerator>().hasTrack;
+            bool canPlay = FindObjectOfType<TrackGenerator>().hasTrack;
+            playButton.interactable = canPlay;
+            playButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
         }
         //find the first button in the layer and select it
         Button[] buttons = UILayers[layer].GetComponentsInChildren<Button>();
@@ -85,12 +87,15 @@ public class UIManager : MonoBehaviour
         finishCounter = Mathf.Clamp(finishCounter, 1, 9);
         finishCounterText.text = finishCounter.ToString();
     }
-    public int GetFinishCounter(){
-        return finishCounter;
-    }
+    public int GetFinishCounter(){ return finishCounter; }
     public void SetIsScanningTrack(bool scan){
         TrackScan.SetActive(!scan);
         TrackCancelScan.SetActive(scan);
+        //select whatever button is active
+        if(UIlayer == 3){ //if we are in the scanning UI
+            if(scan){ TrackCancelScan.GetComponent<Button>().Select(); }
+            else{ TrackScan.GetComponent<Button>().Select(); }
+        }
     }
     public void QuitGame(){
         Application.Quit();

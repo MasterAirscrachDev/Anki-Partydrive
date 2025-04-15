@@ -37,13 +37,13 @@ public class PlayerCardSystem : MonoBehaviour
     public void SetAttachment(int index){
         //set the attachment active state using the index
         if(index == -1){
-            if(gameObject.transform.childCount > 2){
-                Destroy(gameObject.transform.GetChild(2).gameObject);
+            if(gameObject.transform.childCount > 1){
+                Destroy(gameObject.transform.GetChild(1).gameObject); //third child is the attachment
             }
         }
         else{
             if(attachmentIndex != -1){
-                Destroy(gameObject.transform.GetChild(2).gameObject);
+                Destroy(gameObject.transform.GetChild(1).gameObject);
             }
             Instantiate(attachments[index], gameObject.transform);
             attachmentIndex = index;

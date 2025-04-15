@@ -50,6 +50,8 @@ MonoBehaviour:
   lane: 0
   carID: 
   energy: 75
+  maxEnergy: 100
+  locked: 1
   carsManagement: {fileID: 0}
   Iaccel: 0
   Isteer: 0
@@ -57,6 +59,11 @@ MonoBehaviour:
   Idrift: 0
   IitemA: 0
   IitemB: 0
+  statSpeedMod: 1
+  statSteerMod: 1
+  statBoostMod: 1
+  statEnergyMod: 1
+  statDamageMod: 1
 --- !u!114 &8626382670086874564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,7 +142,7 @@ MonoBehaviour:
     m_ActionId: fd867876-1c32-4fff-8178-351845c55df2
     m_ActionName: Racing/DriftRight[/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_DefaultControlScheme: Main
   m_DefaultActionMap: Racing
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
