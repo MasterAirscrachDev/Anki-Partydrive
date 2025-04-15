@@ -14,7 +14,6 @@ public class CarInteraface : MonoBehaviour
     CMS cms;
     CarEntityTracker carEntityTracker;
     [SerializeField] UIManager uiManager;
-    string scanningCar;
     bool trackValidated = false;
     public UCarData GetCarFromID(string id){
         for (int i = 0; i < cars.Length; i++)
@@ -64,17 +63,10 @@ public class CarInteraface : MonoBehaviour
         int index = 0;
         while(cars[index].charging){ index++; }
         int fins = uiManager.GetFinishCounter();
-        scanningCar = cars[index].id;
-        ApiCallV2(SV_TR_START_SCAN, cars[index].id); //temp, change scanning to use all active cars (also add support for multiple finish lines)
+        ApiCallV2(SV_TR_START_SCAN, fins);
     }
     
-    public void CancelScan(){ CancelTrackMap(); } //idk on this one
-    
-    async Task CancelTrackMap(){
-        if(scanningCar == null){ return; }
-        ApiCallV2(SV_TR_CANCEL_SCAN, scanningCar); //temp, change scanning to use all active cars
-        scanningCar = null;
-    }
+    public void CancelScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //idk on this one
     
     public void ControlCar(UCarData car, int speed, int lane){
         if(car.charging){ return; }
@@ -151,8 +143,8 @@ public class CarInteraface : MonoBehaviour
             }
         } else if(c[0] == MSG_TR_SCAN_UPDATE){
             bool valid = false;
-            if(c[2] != "in-progress"){
-                valid = c[2] == "True";
+            if(c[1] != "in-progress"){
+                valid = c[1] == "True";
                 uiManager.SetIsScanningTrack(false); //set the UI to not scanning
             }
             trackValidated = valid;

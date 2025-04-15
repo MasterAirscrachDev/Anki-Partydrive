@@ -60,7 +60,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AspectRatio: 1
-    - _BorderOffset: 0.057
+    - _BorderOffset: 0.1
     - _BorderThickness: 0.01
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -80,9 +80,10 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PulseAmount: 1.44
-    - _PulseSpeed: 0.19
-    - _Scale: 5
+    - _PulseAmount: 1.19
+    - _PulseSpacing: 0.021
+    - _PulseSpeed: 0.15
+    - _Scale: 7
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.5

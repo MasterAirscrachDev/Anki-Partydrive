@@ -44,7 +44,7 @@ public class TrackGenerator : MonoBehaviour
             }
         }
         catch(System.Exception e){
-            Debug.LogError(e);
+            Debug.LogError($"Error generating track: " + e);
             return;
         }
         //calculate the center and size of the track
@@ -143,7 +143,7 @@ public class TrackGenerator : MonoBehaviour
             trackPieces.Add(track);
             if(track != null){
                 track.name = $"{i} ({segments[i].type})";
-                if(segments[i].validated){
+                if(segments[i].validated && fullyValidated){
                     if(i == 1){
                         track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
                     }else if (i > 1){
@@ -165,16 +165,18 @@ public class TrackGenerator : MonoBehaviour
                         }
                         
                     }
-                    if(!fullyValidated){
-                        track.GetComponent<MeshRenderer>().material = validConfirmedMat;
-                    }
+                }
+                if(!fullyValidated && track != null && segments[i].validated){
+                    track.GetComponent<MeshRenderer>().material = validConfirmedMat;
                 }
             }
             Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
             lastPos = pos;
         }
-        if(animateLastSegment && trackPieces.Count > 0){
-            trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>();
+        if(animateLastSegment && trackPieces.Count > 0 ){
+            if(trackPieces[trackPieces.Count - 1] != null){ 
+                trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>();
+            }
         }
     }
     

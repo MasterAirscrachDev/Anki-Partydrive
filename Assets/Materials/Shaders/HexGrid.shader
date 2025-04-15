@@ -10,6 +10,7 @@ Shader "Custom/HexagonalGrid"
         _PulseColor ("Pulse Color", Color) = (0.5,0.8,1,1)
         _PulseSpeed ("Pulse Speed", Range(0,5)) = 1.0
         _PulseAmount ("Pulse Amount", Range(0,10)) = 0.1
+        _PulseSpacing ("Pulse Spacing", Range(0,1)) = 0.1
     }
     SubShader
     {
@@ -46,6 +47,7 @@ Shader "Custom/HexagonalGrid"
             float4 _PulseColor;
             float _PulseSpeed;
             float _PulseAmount;
+            float _PulseSpacing;
             
             v2f vert (appdata v)
             {
@@ -104,27 +106,24 @@ Shader "Custom/HexagonalGrid"
             fixed4 frag (v2f i) : SV_Target
             {
                 // Scale and animate the UV
-                float3 h = getHex(i.uv * _Scale + s.yx);
+                float4 h = getHex(i.uv * _Scale + s.yx);
                 
                 // Calculate edge distance
                 float eDist = hex(h.xy);
-
                 
-                float2 gexPosition = floor(i.uv * _Scale + s.yx) * s.yx;
-                float2 localPosition = frac(i.uv * _Scale + s.yx) * s.yx;
-
+                // Use hexagon cell ID (h.zw) for the wave effect instead of world position
                 // Create some variation based on cell position for visual interest
-                float variation = frac(sin(dot(hexPosition, float2(12.9898, 78.233))) * 43758.5453);
+                float2 cellID = h.zw; // This is the hexagon cell ID
+                float variation = frac(sin(dot(cellID, float2(12.9898, 78.233))) * 43758.5453);
                 float timeOffset = variation * 0.5;
                 
-                // Create an improved wave-like pulse that travels across the material
-                float wavePhase = (i.worldPos.x + i.worldPos.z) * 0.5 - _Time.y * _PulseSpeed;
+                // Create an improved wave-like pulse that follows the hexagonal grid
+                float wavePhase = dot(cellID, float2(_PulseSpacing, _PulseSpacing)) - _Time.y * _PulseSpeed;
                 float distanceEffect = sin(wavePhase * 6.28318) * 0.5 + 0.5;
                 float pulseAmount = distanceEffect * _PulseAmount * (0.8 + 0.2 * sin(_Time.y + variation * 6.28318));
 
                 fixed4 trueColor = lerp(_InnerColor, _PulseColor, pulseAmount);
 
-                
                 // Create color with border
                 float3 col = lerp(trueColor, _BorderColor.rgb,  smoothstep(0.0, _BorderThickness, eDist - 0.5 + _BorderOffset));
                 return fixed4(col, 1.0);

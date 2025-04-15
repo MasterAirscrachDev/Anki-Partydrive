@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ScanningC
-  m_Shader: {fileID: 4800000, guid: e653236f1e861aa4c9ec3b2b4b06bc9b, type: 3}
+  m_Name: ScanningBHex
+  m_Shader: {fileID: 4800000, guid: 8dd4d0e1ee3e83c419ec151c3e87bf4c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _USEWORLDSPACE_ON
@@ -60,6 +60,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _AspectRatio: 1
+    - _BorderOffset: 0.1
+    - _BorderThickness: 0.01
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -78,10 +80,13 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PulseAmount: 1.44
-    - _PulseSpeed: 0.19
+    - _PulseAmount: 1.19
+    - _PulseSpacing: 0.021
+    - _PulseSpeed: 0.15
+    - _Scale: 7
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _Speed: 0.5
     - _SquareSize: 48.2
     - _SquareSpacing: 0.265
     - _SrcBlend: 1
@@ -89,13 +94,14 @@ Material:
     - _UseWorldSpace: 1
     - _ZWrite: 1
     m_Colors:
+    - _BorderColor: {r: 0.47250903, g: 0.18039215, b: 0.5176471, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color1: {r: 0, g: 0.6809718, b: 0.8301887, a: 1}
     - _Color2: {r: 0, g: 0.5568303, b: 0.754717, a: 1}
     - _Color3: {r: 0.5, g: 0.8, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridColor: {r: 1, g: 1, b: 1, a: 1}
-    - _InnerColor: {r: 0.4406339, g: 0.8666667, b: 0.38823533, a: 1}
+    - _InnerColor: {r: 0.8000066, g: 0.38823533, b: 0.8666667, a: 1}
     - _OuterColor: {r: 0.17866677, g: 0.40666872, b: 0.5188679, a: 1}
     - _PulseColor: {r: 0, g: 0, b: 0, a: 1}
     - _TileScale: {r: 1, g: 1, b: 0, a: 0}
