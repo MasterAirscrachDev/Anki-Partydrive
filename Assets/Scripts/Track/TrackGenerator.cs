@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using static OverdriveServer.NetStructures;
 
 [ExecuteInEditMode]
 public class TrackGenerator : MonoBehaviour
 {
     [SerializeField] TrackCamera trackCamera;
+    [SerializeField] Material validConfirmedMat;
+    [SerializeField] PostProcessProfile post;
     [SerializeField] Segment[] segments;
     [SerializeField] GameObject[] trackPrefabs, scannningPrefabs;
     [SerializeField] List<GameObject> trackPieces;
@@ -24,14 +27,73 @@ public class TrackGenerator : MonoBehaviour
     public Segment[] GetTrackPieces(){
         return segments;
     }
-    void GenerateTrackObjects(bool animateLastSegment){
+
+    public void Generate(Segment[] segments, bool validated){
+        this.segments = segments;
+        try{
+            if(validated){
+                StartCoroutine(OnFinalGenerate());
+                return;
+            }
+            GenerateTrackObjects(lastSegmentCount != segments.Length, false);
+            lastSegmentCount = segments.Length;
+            hasTrack = validated;
+            if(validated){
+                Debug.Log($"Track validated with {segments.Length} segments, {trackPieces.Count} track pieces");
+                OnTrackValidated?.Invoke(segments);
+            }
+        }
+        catch(System.Exception e){
+            Debug.LogError(e);
+            return;
+        }
+        //calculate the center and size of the track
+        Vector3 center = Vector3.zero;
+        for(int i = 0; i < trackPieces.Count; i++){
+            if(trackPieces[i] == null){ continue; }
+            center += trackPieces[i].transform.position;
+        }
+        center /= trackPieces.Count;
+        Vector2 size = new Vector2(0, 0);
+        for(int i = 0; i < trackPieces.Count; i++){
+            if(trackPieces[i] == null){ continue; }
+            Vector2 pos = new Vector2(trackPieces[i].transform.position.x, trackPieces[i].transform.position.z);
+            if(pos.x > size.x){ size.x = pos.x; }
+            if(pos.y > size.y){ size.y = pos.y; }
+        }
+        size.x -= center.x; size.y -= center.y;
+        size.x *= 2; size.y *= 2;
+        trackCamera.TrackUpdated(center, size);
+    }
+    IEnumerator OnFinalGenerate(){
+        Bloom b = post.GetSetting<Bloom>();
+        //over 0.5s spike bloom intensity to 300
+        float time = 0;
+        float duration = 0.5f;
+        float start = b.intensity.value;
+        while(time < duration){
+            time += Time.deltaTime;
+            b.intensity.value = Mathf.Lerp(start, 200, time / duration);
+            yield return new WaitForEndOfFrame();
+        }
+        GenerateTrackObjects(false, true);
+        time = 0;
+        //over 0.5s reduce bloom intensity to 1
+        start = b.intensity.value;
+        while(time < duration){
+            time += Time.deltaTime;
+            b.intensity.value = Mathf.Lerp(start, 1, time / duration);
+            yield return new WaitForEndOfFrame();
+        }
+        OnTrackValidated?.Invoke(segments);
+        hasTrack = true;
+        lastSegmentCount = segments.Length;
+    }
+
+    void GenerateTrackObjects(bool animateLastSegment, bool fullyValidated){
         for(int i = 0; i < transform.childCount; i++){
-            if(Application.isPlaying){
-                Destroy(transform.GetChild(i).gameObject);
-            }
-            else{
-                DestroyImmediate(transform.GetChild(i).gameObject);
-            }
+            if(Application.isPlaying){ Destroy(transform.GetChild(i).gameObject); }
+            else{ DestroyImmediate(transform.GetChild(i).gameObject); }
         }
         trackPieces = new List<GameObject>();
         Vector3 pos = Vector3.zero;
@@ -40,64 +102,26 @@ public class TrackGenerator : MonoBehaviour
         for(int i = 0; i < segments.Length; i++){
             GameObject track = null;
             Quaternion rot = Quaternion.LookRotation(forward);
+            bool useFullTrack = segments[i].validated && fullyValidated;
+
             //round position to 1 decimal place
             pos = new Vector3(Mathf.Round(pos.x * 10) / 10, Mathf.Round(pos.y * 10) / 10, Mathf.Round(pos.z * 10) / 10);
             if(segments[i].type == SegmentType.FinishLine){
-                track = Instantiate(segments[i].validated ? trackPrefabs[0] : scannningPrefabs[0], pos, rot, transform);
+                track = Instantiate(useFullTrack ? trackPrefabs[0] : scannningPrefabs[0], pos, rot, transform);
                 pos += forward;
             } if(segments[i].type == SegmentType.Straight){
-                //if the abs of height diff is 2, use the 4th prefab, if height diff is -1 use the 7th prefab otherwise use the 1st prefab
-                int prefIndex = 1;
-                int heightDiff = 0;
-                //if(segments[i].up == 255 && segments[i].down == 255){ prefIndex = 7; }
-                //else if(segments[i].up == 255 || segments[i].down == 255){ prefIndex = 4; heightDiff = segments[i].up == 255 ? 2 : -2;}
-                track = Instantiate(segments[i].validated ? trackPrefabs[prefIndex] : scannningPrefabs[1], pos, rot, transform);
+                track = Instantiate(useFullTrack ? trackPrefabs[1] : scannningPrefabs[1], pos, rot, transform);
                 pos += forward;
-                // if(heightDiff == 2){
-                //     track.transform.Rotate(0, 180, 0);
-                //     pos += Vector3.up * 0.2f;
-                // }
-                // else if(heightDiff == -2){
-                //     pos += Vector3.down * 0.2f;
-                //     track.transform.Translate(0, -0.2f, 0);
-                // }
             } if(segments[i].type == SegmentType.FnFSpecial){
-                track = Instantiate(segments[i].validated ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
-                if(segments[i].flipped){
-                    track.transform.localScale = new Vector3(-1, 1, 1);
-                }
+                track = Instantiate(useFullTrack ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
+                if(segments[i].flipped){ track.transform.localScale = new Vector3(-1, 1, 1); }
                 pos += forward;
             } if(segments[i].type == SegmentType.Turn){
-                //int useIndex = Mathf.Abs(heightDiff) == 0 ? 3 : (Mathf.Abs(heightDiff) == 2 ? 5 : 6);
-                int useIndex = 3;
-                track = Instantiate(segments[i].validated ? trackPrefabs[useIndex] : scannningPrefabs[3], pos, rot, transform);
-                //if curve right set scale to x -1
+                track = Instantiate(useFullTrack ? trackPrefabs[3] : scannningPrefabs[3], pos, rot, transform);
                 track.transform.localScale = new Vector3(segments[i].flipped ? -1 : 1, 1, 1);
-                //track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
-                //pos += forward;
-                //rotate forward vector
                 forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
                 pos += forward;
-                // if(heightDiff == 2){
-                //     pos += Vector3.up * 0.2f;
-                // }
-                // else if(heightDiff == -2){
-                //     pos += Vector3.down * 0.2f;
-                //     track.transform.Translate(0, -0.2f, 0);
-                //     track.transform.Rotate(0, -90, 0);
-                //     track.transform.localScale = new Vector3(segments[i].flipped ? 1 : -1, 1, segments[i].flipped ? 1 : -1);
-                // }
-                // else if(heightDiff == 1){
-                //     pos += Vector3.up * 0.1f;
-                // }
-                // else if(heightDiff == -1){
-                //     pos += Vector3.down * 0.1f;
-                //     track.transform.Translate(0, -0.1f, 0);
-                //     track.transform.Rotate(0, 90, 0);
-                //     track.transform.localScale = new Vector3(-1, 1, segments[i].flipped ? -1 : 1);
-                // }
             } if(segments[i].type == SegmentType.CrissCross){
-                //do we already have a criss cross at this location?
                 bool hasCrissCross = false;
                 for(int j = 0; j < i; j++){
                     if(segments[j].type == SegmentType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y){
@@ -109,12 +133,10 @@ public class TrackGenerator : MonoBehaviour
                         break;
                     }
                 }
-                if(!hasCrissCross){
-                    track = Instantiate(segments[i].validated ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform);
-                }
+                if(!hasCrissCross){ track = Instantiate(useFullTrack ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform); }
                 pos += forward;
             } if(segments[i].type == SegmentType.JumpRamp){
-                track = Instantiate(segments[i].validated ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
+                track = Instantiate(useFullTrack ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
                 pos += forward * 2;
             }
 
@@ -143,6 +165,9 @@ public class TrackGenerator : MonoBehaviour
                         }
                         
                     }
+                    if(!fullyValidated){
+                        track.GetComponent<MeshRenderer>().material = validConfirmedMat;
+                    }
                 }
             }
             Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
@@ -152,41 +177,7 @@ public class TrackGenerator : MonoBehaviour
             trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>();
         }
     }
-    public void Generate(Segment[] segments, bool validated){
-        this.segments = segments;
-        try{
-            GenerateTrackObjects(lastSegmentCount != segments.Length);
-            lastSegmentCount = segments.Length;
-            hasTrack = validated;
-            if(validated){
-                Debug.Log($"Track validated with {segments.Length} segments, {trackPieces.Count} track pieces");
-                OnTrackValidated?.Invoke(segments);
-            }
-            //Debug.Log($"Track generated with {segments.Length} segments, {trackPieces.Count} track pieces, validated: {validated}");
-        }
-        catch(System.Exception e){
-            Debug.LogError(e);
-            return;
-        }
-
-        //calculate the center and size of the track
-        Vector3 center = Vector3.zero;
-        for(int i = 0; i < trackPieces.Count; i++){
-            if(trackPieces[i] == null){ continue; }
-            center += trackPieces[i].transform.position;
-        }
-        center /= trackPieces.Count;
-        Vector2 size = new Vector2(0, 0);
-        for(int i = 0; i < trackPieces.Count; i++){
-            if(trackPieces[i] == null){ continue; }
-            Vector2 pos = new Vector2(trackPieces[i].transform.position.x, trackPieces[i].transform.position.z);
-            if(pos.x > size.x){ size.x = pos.x; }
-            if(pos.y > size.y){ size.y = pos.y; }
-        }
-        size.x -= center.x; size.y -= center.y;
-        size.x *= 2; size.y *= 2;
-        trackCamera.TrackUpdated(center, size);
-    }
+    
     public delegate void OnVerifyTrack(Segment[] segments);
     public event OnVerifyTrack? OnTrackValidated;
 
@@ -223,9 +214,8 @@ public class TrackGenerator : MonoBehaviour
         return (false, null); //no match found (should not happen)
     }
 }
-
 [System.Serializable]
-public class Segment{ //
+public class Segment{
     public readonly SegmentType type;
     public readonly int internalID;
     public readonly bool flipped;
