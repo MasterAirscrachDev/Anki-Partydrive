@@ -14,7 +14,7 @@ public class CarsManagement : MonoBehaviour
     void OnEnable() {
         if(cms == null){
             cms = FindObjectOfType<CMS>();
-            carInterface = FindObjectOfType<CarInteraface>();
+            carInterface = CarInteraface.io;
         }   
         backButton.SetActive(!cms.isGame);
         raceButton.SetActive(cms.isGame);

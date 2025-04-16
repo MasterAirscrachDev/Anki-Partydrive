@@ -18,13 +18,22 @@ public class SmoothedCarModel : MonoBehaviour
     void Update()
     {
         if(followTarget == null){ Destroy(gameObject); return; }
-        if(Vector3.Distance(transform.position, followTarget.position) < 0.01f){ return; }
-        smoothPositionA = Vector3.Lerp(smoothPositionA, followTarget.position, smoothSpeedA * Time.deltaTime);
+        Vector3 targetPos = followTarget.position;
+        Vector3 ourPos = transform.position;
 
-        transform.position = Vector3.Lerp(transform.position, smoothPositionA, smoothSpeedB * Time.deltaTime);
+        float distance = Vector3.Distance(ourPos, targetPos);
+        if(distance < 0.01f){ return; }
+        smoothPositionA = Vector3.Lerp(smoothPositionA, targetPos, smoothSpeedA * Time.deltaTime);
+
+        transform.position = Vector3.Lerp(ourPos, smoothPositionA, smoothSpeedB * Time.deltaTime);
 
         transform.LookAt(smoothPositionA);
-        Debug.DrawLine(followTarget.position, smoothPositionA, Color.red);
-        Debug.DrawLine(transform.position, smoothPositionA, Color.green);
+        Debug.DrawLine(targetPos, smoothPositionA, Color.red);
+        Debug.DrawLine(ourPos, smoothPositionA, Color.green);
+
+        if(distance > 1.2f){
+            smoothPositionA = targetPos;
+            transform.position = targetPos;
+        }
     }
 }

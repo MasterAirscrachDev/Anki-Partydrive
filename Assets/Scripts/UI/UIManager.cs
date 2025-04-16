@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject MainCamera;
     [SerializeField] GameObject TrackCamera;
     int finishCounter = 1;
-    int UIlayer = 0, lastUILayer = 0;
+    int UIlayer = 0;
     int devCarSpeed = 400, devCarOffset = 0;
 
     // Start is called before the first frame update
@@ -54,12 +54,11 @@ public class UIManager : MonoBehaviour
     public void SetUILayer(int layer){ //sets the active UI layer, disables all others
         for (int i = 0; i < UILayers.Length; i++)
         { UILayers[i].SetActive(i == layer); }
-        lastUILayer = UIlayer;
         UIlayer = layer;
 
         if(layer == 0){ //if we are in the main menu, disable the play button
             SwitchToTrackCamera(false);
-            bool canPlay = FindObjectOfType<TrackGenerator>().hasTrack;
+            bool canPlay = TrackGenerator.track.hasTrack;
             playButton.interactable = canPlay;
             playButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
         }
@@ -68,9 +67,6 @@ public class UIManager : MonoBehaviour
         if(buttons.Length > 0){
             buttons[0].Select();
         }
-    }
-    public void GoBack(){
-        SetUILayer(lastUILayer); //go back to the last UI layer
     }
     public void ToggleUILayer(int layer, bool active){ //toggles a specific UI layer
         UILayers[layer].SetActive(active);

@@ -451,7 +451,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PARTYDRIVE DEMO 1.0.0
+  m_text: PARTYDRIVE DEMO 2.0.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
   m_sharedMaterial: {fileID: -1470650276818706409, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
@@ -3678,8 +3678,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 314132437}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: GoBack
-        m_Mode: 1
+        m_MethodName: SetUILayer
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4045,6 +4045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76482c4a71f29004e8abe10541d9aacd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  botPrefab: {fileID: 3576805191090509986, guid: b979934b55fdc8c438f47e752f6b24ab, type: 3}
   gameMode: 0
   isGame: 0
 --- !u!114 &705507997
@@ -4542,7 +4543,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.5803922, g: 0.8745098, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -4564,12 +4565,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 314132437}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: GoBack
-        m_Mode: 1
+        m_MethodName: SetUILayer
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

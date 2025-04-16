@@ -5,6 +5,7 @@ using UnityEngine;
 //Central Management System
 public class CMS : MonoBehaviour
 {
+    [SerializeField] GameObject botPrefab;
     public readonly List<CarController> controllers = new List<CarController>();
     public GameMode gameMode = GameMode.None;
     public bool isGame = false;
@@ -12,7 +13,7 @@ public class CMS : MonoBehaviour
     List<Color> usedColors = new List<Color>();
     CarInteraface carInterface;
     void Start() { 
-        carInterface = FindObjectOfType<CarInteraface>(); 
+        carInterface = CarInteraface.io;
         //color list purple, green, red, blue
         freeColors.Add(new Color(1, 0, 1)); //purple/pink
         freeColors.Add(new Color(0, 1, 0)); //green
@@ -28,6 +29,11 @@ public class CMS : MonoBehaviour
         freeColors.RemoveAt(0);
         usedColors.Add(c);
         controller.SetColour(c);
+    }
+    public void SpawnAI(string id){
+        GameObject bot = Instantiate(botPrefab, transform.position, Quaternion.identity);
+        AIController ai = bot.GetComponent<AIController>();
+        ai.SetID(id);
     }
     public void SetGameMode(int mode){
         gameMode = (GameMode)mode;

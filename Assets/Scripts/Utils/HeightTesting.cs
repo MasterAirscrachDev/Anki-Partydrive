@@ -117,7 +117,7 @@ public class HeightTesting : MonoBehaviour
     //         }
     //     }
 
-    //     FindObjectOfType<TrackGenerator>().Generate(calculatedSegments);
+    //     TrackGenerator.track.Generate(calculatedSegments);
     // }
     CalculationSegment[] GetSegmentsFromXY(CalculationSegment calculationSegment, CalculationSegment[] calcSegments){
         List<CalculationSegment> segmentsAtXY = new List<CalculationSegment>();

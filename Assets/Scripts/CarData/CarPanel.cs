@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class CarPanel : MonoBehaviour
 {
-    [SerializeField] Button speedBalanceButton;
+    [SerializeField] Button speedBalanceButton, AIButton;
     [SerializeField] TMP_InputField nameInput;
     [SerializeField] Image playerColorImage;
     string carID, oldName;
@@ -16,6 +16,7 @@ public class CarPanel : MonoBehaviour
         oldName = name;
         carID = id;
         speedBalanceButton.onClick.AddListener(OnSpeedBalanceButton);
+        AIButton.onClick.AddListener(OnAIToggle);
         nameInput.onEndEdit.AddListener(OnNameChanged);
     }
 
@@ -26,6 +27,10 @@ public class CarPanel : MonoBehaviour
         ui.SetUILayer(3); //go to track scanning UI
         ui.ToggleUILayer(4, true); //enable balancing UI
         FindObjectOfType<CarBalancer>().Setup(carID);
+    }
+    public void OnAIToggle(){
+        FindObjectOfType<CMS>().SpawnAI(carID);
+        AIButton.interactable = false;
     }
 
     public void OnNameChanged(string name){

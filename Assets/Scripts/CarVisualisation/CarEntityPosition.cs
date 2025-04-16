@@ -9,14 +9,14 @@ public class CarEntityPosition : MonoBehaviour
     [SerializeField] Material solidMaterial, transparentMaterial;
     public CarModelManager carModelManager;
     TrackSpline trackSpline;
-    int speed = 0, pieceIdx = 0, shift = 0;
+    int speed = 0, segmentIdx = 0, shift = 0;
     float trackPieceProgression = 0, trackPieceLength = 0, horizontalOffset = 0;
     Vector3 lastPosition;
     TrackGenerator track;
     bool showOnTrack = true;
     void Start()
     {
-        track = FindObjectOfType<TrackGenerator>();
+        track = TrackGenerator.track;
         //if not the editor, destroy the mesh renderer
         if(!Application.isEditor || true){
             GetComponent<MeshRenderer>().enabled = false;
@@ -31,7 +31,7 @@ public class CarEntityPosition : MonoBehaviour
         if(trackSpline != null){
             Vector3 targetPos = trackSpline.GetPoint(trackPieceProgression, horizontalOffset);
             if(!showOnTrack){
-                targetPos.y -= 10; //hide the car
+                targetPos.y -= 20; //hide the car
             }
             transform.position = targetPos;
             if(Vector3.Distance(transform.position, lastPosition) > 0.01f){ //should fix weirdness when stopping
@@ -43,13 +43,13 @@ public class CarEntityPosition : MonoBehaviour
         if(trackPieceProgression >= 1 && shift > 2){
             trackPieceProgression = 0;
             shift++;
-            trackSpline = track.GetTrackPiece(pieceIdx + shift);
-            if(trackSpline == null){trackSpline = track.GetTrackPiece(pieceIdx + ++shift); }
+            trackSpline = track.GetTrackSpline(segmentIdx + shift);
+            if(trackSpline == null){trackSpline = track.GetTrackSpline(segmentIdx + ++shift); }
         }
     }
     public void SetTrackSpline(TrackSpline trackSpline, int idx){
-        if(idx != this.pieceIdx){ //only update if the track spline is different
-            this.pieceIdx = idx;
+        if(idx != this.segmentIdx){ //only update if the track spline is different
+            this.segmentIdx = idx;
             this.trackSpline = trackSpline;
             trackPieceProgression = 0;
             shift = 0;
@@ -83,5 +83,8 @@ public class CarEntityPosition : MonoBehaviour
     }
     public bool IsDelocalised(){
         return trackSpline == null;
+    }
+    public (uint i, float x, float y) GetIXY(){
+        return ((uint)segmentIdx, horizontalOffset, trackPieceProgression);
     }
 }

@@ -32,8 +32,8 @@ public class CarController : MonoBehaviour
     const int maxTargetSpeed = 800;
     const int minTargetSpeed = 50;
     const int baseBoostSpeed = 50;
-    const float baseEnergyGain = 0.5f;
-    const float baseSteering = 0.5f;
+    const float baseEnergyGain = 0.1f;
+    const float baseSteering = 0.7f;
     public float statSpeedMod = 1f;
     public float statSteerMod = 1f;
     public float statBoostMod = 1f;
@@ -50,7 +50,7 @@ public class CarController : MonoBehaviour
     {
         if(isSetup){ return; }
         isSetup = true;
-        carInterface = FindObjectOfType<CarInteraface>();
+        carInterface = CarInteraface.io;
         cms = FindObjectOfType<CMS>();
         cms.AddController(this);
         ControlTicker();
@@ -183,6 +183,8 @@ public class CarController : MonoBehaviour
         CheckCarExists();
         pcs.SetCarName(data.name);
     }
+    public (int, float) GetMetrics(){ return (speed, lane); }
+    public string GetCarID(){ return carID; }
     public void SetLocked(bool state){ locked = state; }
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }

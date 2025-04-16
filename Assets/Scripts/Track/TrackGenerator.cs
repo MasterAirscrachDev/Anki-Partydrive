@@ -15,15 +15,25 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] List<GameObject> trackPieces;
     public bool hasTrack = false;
     int lastSegmentCount = 0;
+    public static TrackGenerator track;
 
-    public TrackSpline GetTrackPiece(int index){
+    void Awake(){
+        if(track == null){ track = this; }else{ DestroyImmediate(this); } //make this a singleton
+    }
+
+    int LoopIndex(int index){
+        if(index < 0){ return segments.Length + index; }
+        if(index >= segments.Length){ return index - segments.Length; }
+        return index;
+    }
+
+    public TrackSpline GetTrackSpline(int index){
         if(trackPieces[index] == null){ return null; }
         if(index >= trackPieces.Count){ index-= trackPieces.Count; }
         return trackPieces[index].GetComponent<TrackSpline>();
     }
-    public SegmentType GetTrackPieceType(int index){
-        return segments[index].type;
-    }
+    public SegmentType GetSegmentType(int index){ index = LoopIndex(index); return segments[index].type; }
+    public bool GetSegmentReversed(int index){ index = LoopIndex(index);  return segments[index].flipped; }
     public Segment[] GetTrackPieces(){
         return segments;
     }

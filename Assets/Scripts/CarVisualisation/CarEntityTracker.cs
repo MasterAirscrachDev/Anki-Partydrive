@@ -12,12 +12,12 @@ public class CarEntityTracker : MonoBehaviour
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, int trust){
         if(!track.hasTrack){ return; }
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
-        TrackSpline trackPiece = track.GetTrackPiece(trackIndex);
+        TrackSpline trackPiece = track.GetTrackSpline(trackIndex);
         bool trueFin = true;
         if(trackPiece == null){ //either we are on a PreStart or an error has occured
             trackIndex++;
-            if(track.GetTrackPieceType(trackIndex) == SegmentType.FinishLine){
-                trackPiece = track.GetTrackPiece(trackIndex); trueFin = false;
+            if(track.GetSegmentType(trackIndex) == SegmentType.FinishLine){
+                trackPiece = track.GetTrackSpline(trackIndex); trueFin = false;
             }else{ return; }
         }
         if(entity == null){
@@ -51,14 +51,21 @@ public class CarEntityTracker : MonoBehaviour
             trackers[id].SetOffset(horizontalOffset);
         }
     }
-    public string[] GetActiveCars(){
-        string[] activeCars = new string[trackers.Count];
+    public string[] GetActiveCars(string exclude = null){
+        string[] activeCars = new string[exclude == null ? trackers.Count : trackers.Count - 1];
         int i = 0;
         foreach(KeyValuePair<string, CarEntityPosition> kvp in trackers){
+            if(kvp.Key == exclude){ continue; } //skip the excluded car
             activeCars[i] = kvp.Key;
             i++;
         }
         return activeCars;
+    }
+    public (uint i, float x, float y) GetCarIXY(string id){
+        if(trackers.ContainsKey(id)){
+            return trackers[id].GetIXY();
+        }
+        return (0, 0, 0);
     }
     public delegate void CarCrossedFinishLine(string id);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;

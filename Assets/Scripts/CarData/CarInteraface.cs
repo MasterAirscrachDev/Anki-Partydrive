@@ -15,6 +15,7 @@ public class CarInteraface : MonoBehaviour
     CarEntityTracker carEntityTracker;
     [SerializeField] UIManager uiManager;
     bool trackValidated = false;
+    public static CarInteraface io;
     public UCarData GetCarFromID(string id){
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return cars[i];} }
@@ -23,6 +24,10 @@ public class CarInteraface : MonoBehaviour
     
     // Start is called before the first frame update
     void Start() {
+
+        if(io == null){ io = this; } //singleton
+        else{ Destroy(this); } //destroy if already exists
+
         ws = new NativeWebSocket.WebSocket("ws://localhost:7118/");
 
         ws.OnOpen += () => { 
@@ -45,7 +50,6 @@ public class CarInteraface : MonoBehaviour
 
         cms = FindObjectOfType<CMS>();
         carEntityTracker = GetComponent<CarEntityTracker>();
-        
     }
 
     void Update(){
@@ -196,13 +200,13 @@ public class CarInteraface : MonoBehaviour
         Debug.Log("Updated Cars");
         // Define color values in an array
         var colors = new (int, int, int)[] {
-            (255, 0, 0), // Red
-            (0, 255, 0), // Green
-            (0, 0, 255), // Blue
-            (255, 255, 0), // Yellow
-            (255, 0, 255), // Magenta
-            (0, 255, 255), // Cyan
-            (255, 255, 255),  // White
+            (250, 0, 0), // Red
+            (0, 250, 0), // Green
+            (0, 0, 250), // Blue
+            (250, 250, 0), // Yellow
+            (250, 0, 250), // Magenta
+            (0, 250, 250), // Cyan
+            (250, 250, 250),  // White
             (0, 0, 0)  // Black (not visible on the track) 8 cars = onoh for now
         };
         for(int i = 0; i < cars.Length; i++){

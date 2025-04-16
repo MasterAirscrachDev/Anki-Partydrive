@@ -16,7 +16,7 @@ public class TimeTrialMode : MonoBehaviour
     {
         if(cms == null){
             cms = FindObjectOfType<CMS>();
-            carInteraface = FindObjectOfType<CarInteraface>();
+            carInteraface = CarInteraface.io;
             carEntityTracker = FindObjectOfType<CarEntityTracker>();
         }
         StartMode();
