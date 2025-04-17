@@ -8,8 +8,8 @@ public class CarController : MonoBehaviour
     [SerializeField] int speed;
     [SerializeField] float lane;
     [SerializeField] string carID;
-    public float energy = 75;
-    public float maxEnergy = 100;
+    public float energy = 750;
+    public float maxEnergy = 1000;
     int oldSpeed;
     float oldLane;
     bool isSetup = false;
@@ -32,7 +32,7 @@ public class CarController : MonoBehaviour
     const int maxTargetSpeed = 800;
     const int minTargetSpeed = 50;
     const int baseBoostSpeed = 50;
-    const float baseEnergyGain = 0.1f;
+    const float baseEnergyGain = 0.01f;
     const float baseSteering = 0.7f;
     public float statSpeedMod = 1f;
     public float statSteerMod = 1f;

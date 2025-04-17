@@ -11,6 +11,7 @@ public class AIController : MonoBehaviour
     CarEntityTracker carEntityTracker;
     [SerializeField] int depth = 3; //planning depth
     [SerializeField] float timeout = 2f; //timeout for planning
+    [SerializeField] string setCarID = ""; //debugging variable to set the car ID
 
     float timer = 0f;
     string ourID;
@@ -22,6 +23,7 @@ public class AIController : MonoBehaviour
     {
         carController = GetComponent<CarController>();
         carEntityTracker = FindObjectOfType<CarEntityTracker>();
+        carController.statSteerMod = 2; //AIs have more steering power
     }
     public void SetID(string id){
         ourID = id;
@@ -49,6 +51,11 @@ public class AIController : MonoBehaviour
         }else{
             carController.Isteer = Mathf.Clamp(currentTargetOffset - controllerOffset, -1f, 1f); //set the steering to the difference between the target offset and the current offset
         }
+
+        if(setCarID != ""){ //if we have a car ID set, set the car ID to the one we have set
+            SetID(setCarID);
+            setCarID = ""; //reset the car ID
+        }
     }
 
     void AILogic(){
@@ -70,6 +77,7 @@ public class AIController : MonoBehaviour
 
         int targetSpeed = currentTargetSpeed;
         float targetOffset = currentTargetOffset;
+        carController.Iboost = false; //set the boost to false by default
 
         bool upcomingTurn = futureTrack[0] == SegmentType.Turn || futureTrack[1] == SegmentType.Turn;
         
@@ -77,7 +85,7 @@ public class AIController : MonoBehaviour
             bool onTurnNow = futureTrack[0] == SegmentType.Turn; //check if we are on a turn now
 
             log += "Upcoming Turn"; //add to the log if a turn is upcoming
-            int turnIndex = futureTrack[1] == SegmentType.Turn ? 1 : 0; //check if the next segment is a turn or the one after that
+            int turnIndex = futureTrack[0] == SegmentType.Turn ? 0 : 1; //check if the next segment is a turn or the one after that
             if(carClose){ //try to avoid the preceding car
                 targetSpeed = 550 + (onTurnNow ? 0 : 200); //set the target speed to 550 if we are on a turn, 750 if we are not
                 float opposingOffset = 0f;
@@ -101,6 +109,31 @@ public class AIController : MonoBehaviour
             }
         }else{
             targetSpeed = 800; //set the target speed to the max speed
+            //if there are no turns in the next 3 segments, start Boosting
+            if(futureTrack[0] != SegmentType.Turn && futureTrack[1] != SegmentType.Turn && futureTrack[2] != SegmentType.Turn){
+                carController.Iboost = true; //set the boost to true
+                log += "Boosting\n"; //add to the log if we are boosting
+            }
+
+
+            if(carClose){
+                float opposingOffset = 0f;
+                for (int i = 0; i < positions.Length; i++)
+                { if(positions[i].i == I){ opposingOffset = positions[i].x; break; } } //get the offset of the car in front of us
+                //move away from the car in front of us
+                if(opposingOffset > 0){ //if the car is on the right, move to the left
+                    targetOffset = -50f; //move to the left
+                    log += $"Left {targetOffset}"; //add to the log if we are moving to the left
+                }else if(opposingOffset < 0){ //if the car is on the left, move to the right
+                    targetOffset = 50f; //move to the right
+                    log += $"Right {targetOffset}"; //add to the log if we are moving to the right
+                }
+            }
+            else{ //if there are no cars close, set the target offset to 0
+                targetOffset = 0f; //move to the center of the track
+                log += $"Center {targetOffset}"; //add to the log if we are moving to the center of the track
+                targetSpeed = 1000; //set the target speed to the max speed
+            }
         }
 
         Debug = log; //add the log to the debug string
