@@ -55,7 +55,6 @@ public class TimeTrialMode : MonoBehaviour
         yield return new WaitForSeconds(1);
         showText.text = "GO!";
         cms.TTS("Go!");
-        carEntityTracker.OnCarCrossedFinishLine += CarCrossedFinish;
         cms.SetGlobalLock(false);
         foreach(CarTime ct in carTimes){
             ct.lapStartedTime = Time.time;
@@ -63,6 +62,11 @@ public class TimeTrialMode : MonoBehaviour
         yield return new WaitForSeconds(1);
         showText.text = "";
         StartCoroutine(EndGame());
+        StartCoroutine(StartListeningForFinishLine());
+    }
+    IEnumerator StartListeningForFinishLine(){ //2 seconds after the start
+        yield return new WaitForSeconds(1);
+        carEntityTracker.OnCarCrossedFinishLine += CarCrossedFinish;
     }
     IEnumerator EndGame(){
         //wait 2:59

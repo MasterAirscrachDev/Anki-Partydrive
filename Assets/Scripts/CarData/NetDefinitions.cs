@@ -64,6 +64,26 @@ namespace OverdriveServer{
             public int down {get; set;} //Downhill counter (0-255)
             public bool validated {get; set;} //Is the piece validated (true = validated, false = not validated)
         }
+        [System.Serializable]
+        public enum LightChannel{ RED = 0, TAIL, BLUE, GREEN, FRONTL, FRONTR, LIGHT_COUNT }
+        [System.Serializable]
+        public enum LightEffect{ 
+            STEADY = 0, // Simply set the light intensity to 'start' value
+            FADE, // Fade intensity from 'start' to 'end'
+            THROB, // Fade intensity from 'start' to 'end' and back to 'start'
+            FLASH, // Turn on LED between time 'start' and time 'end' inclusive
+            RANDOM, // Flash the LED erratically - ignoring start/end
+            COUNT 
+        }
+
+        [System.Serializable]
+        public class LightData{
+            public LightChannel channel {get; set;} //Light channel (see LightChannel)
+            public LightEffect effect {get; set;} //Light effect (see LightEffect)
+            public int startStrength {get; set;} //Start strength (0-255)
+            public int endStrength {get; set;} //End strength (0-255)
+            public int cyclesPer10Seconds {get; set;} //Cycles per 10 seconds (0-255)
+        }
         
         // Event types for webhooks
         public const string EVENT_SYSTEM_LOG = "system_log"; //System log string
@@ -79,6 +99,7 @@ namespace OverdriveServer{
         public const string SV_REFRESH_CONFIGS = "refresh_configs"; //Refresh configs (used to reload the car configs, name, speedbalance ect)
         public const string SV_LINEUP = "lineup"; // Request lineup (used to lineup the cars on the track)
         public const string SV_CAR_S_LIGHTS = "car_s_lights"; //Simple lights [id:Red:Green:Blue] (colours are 0-255)
+        public const string SV_CAR_C_LIGHTS = "car_c_lights"; //Complex lights an array of LightData (see LightData) Min 1, Max 3
         public const string SV_GET_TRACK = "get_track"; //Get track (should return EVENT_TRACK_DATA with the track data)
         public const string SV_TR_START_SCAN = "start_track_scan"; //Start track scan (used to start a track scan)
         public const string SV_TR_CANCEL_SCAN = "stop_track_scan"; //Stop track scan (used to stop a track scan)
@@ -86,7 +107,7 @@ namespace OverdriveServer{
         public const string SV_GET_CARS = "request_cars"; //Request cars (should return EVENT_CAR_DATA with the car data)
         public const string SV_CAR_FLASH = "car_flash"; //DONT USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING || Flash car [id:path] (used to flash a car, path should be the ota file)
         public const string SV_TTS = "tts"; //Text to speech [message] (used to send a message to the TTS engine)
-
+        public const string SV_CLIENT_CLOSED = "client_closed"; //Client closed (used to indicate a client has closed the connection intentionally)
         public static class UtilityMessages { //these are ids for the utility messages (parse them as strings)
             public const string MSG_CAR_CONNECTED = "cc"; //:carID:name (used to indicate a car has connected)
             public const string MSG_CAR_DISCONNECTED = "cd";//:carID (used to indicate a car has disconnected)

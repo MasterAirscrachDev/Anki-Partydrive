@@ -9,6 +9,6 @@ Overdrive Server has a basic web interface that can be used to control the cars.
 The server can be controlled using a simple WebSocket API. The WebSocket server is running on local port 7118.  
 The WebSocket server is used to send and receive data.
 
-[Full Data Structures (Maintained in source while in development)](https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/Assets/Scripts/Utils/NetDefinitions.cs)
+[Full Data Structures (Maintained in source while in development)](https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/Assets/Scripts/CarData/NetDefinitions.cs)
 
 [Back To Root](https://github.com/MasterAirscrachDev/Anki-Partydrive?tab=readme-ov-file#anki-partydrive)

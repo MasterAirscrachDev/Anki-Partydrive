@@ -13,7 +13,7 @@ public class AIController : MonoBehaviour
     [SerializeField] float timeout = 2f; //timeout for planning
     [SerializeField] string setCarID = ""; //debugging variable to set the car ID
 
-    float timer = 0f;
+    float timer = 0f, fixCarTimer = 10f; //timer for the AI logic
     string ourID;
 
     int currentTargetSpeed = 0;
@@ -24,19 +24,23 @@ public class AIController : MonoBehaviour
         carController = GetComponent<CarController>();
         carEntityTracker = FindObjectOfType<CarEntityTracker>();
         carController.statSteerMod = 2; //AIs have more steering power
+        string[] names = { "Jimmy Bot", "Bob Bot", "Doug Bot", "Gary Bot", "Jess Bot", "Sam Bot", "Kate Bot", "Dave Bot" };
+
+        carController.pcs.SetPlayerName(names[Random.Range(0, names.Length + 1)]); //set the player name to AI
+        carController.SetColour(new Color(1, 0, 0)); //set the color to red
     }
     public void SetID(string id){
         ourID = id;
         if(carController == null){
             carController = GetComponent<CarController>();
+            carController.SetColour(new Color(1, 0, 0)); //set the color to red
         }
         UCarData carData = CarInteraface.io.GetCarFromID(id);
         carController.SetID(carData);
     }
 
     // Update is called once per frame
-    void Update()
-    { //act on data here
+    void Update() {
         timer += Time.deltaTime;
         if(timer > timeout){
             timer = 0f;
@@ -55,6 +59,14 @@ public class AIController : MonoBehaviour
         if(setCarID != ""){ //if we have a car ID set, set the car ID to the one we have set
             SetID(setCarID);
             setCarID = ""; //reset the car ID
+        }
+
+        if(carController.GetCarID() == ""){ //if we don't have a car ID, set the car ID to the one we have set
+            fixCarTimer -= Time.deltaTime; //decrease the timer
+            if(fixCarTimer < 0f){ //if the timer is less than 0, set the car ID to the one we have set
+                SetID(ourID); //set the car ID to the one we have set
+                fixCarTimer = 10f; //reset the timer
+            }
         }
     }
 

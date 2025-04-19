@@ -45,6 +45,7 @@ public class TrackGenerator : MonoBehaviour
                 StartCoroutine(OnFinalGenerate());
                 return;
             }
+            if(segments == null || segments.Length == 0){ return; } //if there are no segments, do nothing  
             GenerateTrackObjects(lastSegmentCount != segments.Length, false);
             lastSegmentCount = segments.Length;
             hasTrack = validated;
@@ -228,8 +229,8 @@ public class TrackGenerator : MonoBehaviour
 }
 [System.Serializable]
 public class Segment{
-    public readonly SegmentType type;
-    public readonly int internalID;
+    public SegmentType type;
+    public int internalID;
     public readonly bool flipped;
     public int up, down, elevation, X, Y;
     public Segment(SegmentType type, int id, bool flipped){

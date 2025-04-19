@@ -87,6 +87,9 @@ public class CarInteraface : MonoBehaviour
     public void SetCarColours(UCarData car, int r, int g, int b){
         ApiCallV2(SV_CAR_S_LIGHTS, $"{car.id}:{r}:{g}:{b}");
     }
+    public void SetCarColoursComplex(UCarData car, LightData[] lights){
+        ApiCallV2(SV_CAR_C_LIGHTS, new{carID = car.id, lights = lights});
+    }
     
     void ProcessWebhookData(string jsonData) {
         try {
@@ -174,15 +177,15 @@ public class CarInteraface : MonoBehaviour
             }
         } else if(c[0] == MSG_CAR_DISCONNECTED){ //disconnected
             GetCarInfo();
+            ApiCallV2(SV_SCAN, 0); //Start scanning for cars
         } else if(c[0] == MSG_LINEUP){
             string carID = c[1];
             int remainingCars = int.Parse(c[2]);
             OnLineupEvent?.Invoke(carID, remainingCars);
         }
     }
-    
+
     public void TTSCall(string text){ ApiCallV2(SV_TTS, text); }
-    
     public void GetCars(){ GetCarInfo(); }
     public void ApiCallV2(string eventType, object data){
         WebhookData webhookData = new WebhookData {
@@ -197,20 +200,30 @@ public class CarInteraface : MonoBehaviour
         for (int i = 0; i < cars.Length; i++)
         { uCars[i] = new UCarData(cars[i]); }
         this.cars = uCars;
-        Debug.Log("Updated Cars");
-        // Define color values in an array
-        var colors = new (int, int, int)[] {
-            (250, 0, 0), // Red
-            (0, 250, 0), // Green
-            (0, 0, 250), // Blue
-            (250, 250, 0), // Yellow
-            (250, 0, 250), // Magenta
-            (0, 250, 250), // Cyan
-            (250, 250, 250),  // White
-            (0, 0, 0)  // Black (not visible on the track) 8 cars = onoh for now
+        LightData[] colors = new LightData[3];
+        colors[0] = new LightData{
+            channel = LightChannel.RED,
+            effect = LightEffect.THROB,
+            startStrength = 0,
+            endStrength = 250,
+            cyclesPer10Seconds = 5
+        };
+        colors[1] = new LightData{
+            channel = LightChannel.GREEN,
+            effect = LightEffect.THROB,
+            startStrength = 0,
+            endStrength = 250,
+            cyclesPer10Seconds = 6
+        };
+        colors[2] = new LightData{
+            channel = LightChannel.BLUE,
+            effect = LightEffect.THROB,
+            startStrength = 0,
+            endStrength = 250,
+            cyclesPer10Seconds = 7
         };
         for(int i = 0; i < cars.Length; i++){
-            SetCarColours(uCars[i], colors[i].Item1, colors[i].Item2, colors[i].Item3);
+            SetCarColoursComplex(uCars[i], colors); //set the car colours to party mode
         }
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
@@ -218,7 +231,7 @@ public class CarInteraface : MonoBehaviour
     }
     void GetCarInfo(){
         ApiCallV2(SV_GET_CARS, ""); //get the car data
-        Debug.Log("Getting car info");
+        //Debug.Log("Getting car info");
     }
     public int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)
@@ -227,6 +240,12 @@ public class CarInteraface : MonoBehaviour
     }
     public delegate void LineupCallback(string carID, int remainingCars);
     public event LineupCallback OnLineupEvent;
+
+
+    void OnApplicationQuit() {
+        ApiCallV2(SV_CLIENT_CLOSED, 0); //send the client closed message
+        ws.Close();
+    }
 }
 [System.Serializable]
 public class UCarData{ //used for unity (bc it cant serialize properties)
@@ -237,6 +256,7 @@ public class UCarData{ //used for unity (bc it cant serialize properties)
     public bool charging;
     public bool onTrack;
     public int batteryStatus;
+    public ModelName modelName; //used for the car model
     public UCarData(CarData data){
         name = data.name;
         id = data.id;
@@ -245,5 +265,6 @@ public class UCarData{ //used for unity (bc it cant serialize properties)
         charging = data.charging;
         onTrack = data.onTrack;
         batteryStatus = data.batteryStatus;
+        modelName = (ModelName)data.model; //used for the car model
     }
 }

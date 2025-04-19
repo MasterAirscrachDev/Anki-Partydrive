@@ -25,7 +25,7 @@ public class CarEntityTracker : MonoBehaviour
             entity.gameObject.name = $"{id} True Position";
             entity.transform.GetChild(0).gameObject.name = $"{id} Model";
             entity.carModelManager = entity.transform.GetChild(0).GetComponent<CarModelManager>();
-            entity.carModelManager.Setup(); //make this load model and colour later
+            entity.carModelManager.Setup((int)CarInteraface.io.GetCarFromID(id).modelName); //make this load colour later
             trackers.Add(id, entity);
         }
         entity.SetTrust(trust);

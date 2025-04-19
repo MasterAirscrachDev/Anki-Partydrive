@@ -17,7 +17,7 @@ public class CarController : MonoBehaviour
     Color playerColor = Color.white;
     CarInteraface carInterface;
     CMS cms;
-    PlayerCardSystem pcs;
+    public PlayerCardSystem pcs;
     public CarsManagement carsManagement; //used when in the car selection screen
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     //INPUT VALUES======
@@ -168,7 +168,7 @@ public class CarController : MonoBehaviour
     public void CheckCarExists(){
         int idx = carInterface.GetCar(carID);
         if(idx == -1){
-            Debug.LogError($"Car {carID} has disconnected!");
+            //Debug.LogError($"Car {carID} has disconnected!");
             carID = "";
             pcs.SetCarName("Disconnected");
         }

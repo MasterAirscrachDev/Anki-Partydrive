@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8071257299103627806}
   - component: {fileID: 4743858613381119523}
   m_Layer: 0
-  m_Name: Truck
+  m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 8864795295166479573}
   - component: {fileID: 8522085103929347541}
   m_Layer: 0
-  m_Name: Truck
+  m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,7 +293,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2764889587831084856}
-  m_Mesh: {fileID: -7641773100767838360, guid: b5a47b673e87e854bbc0028e6398dd7b, type: 3}
+  m_Mesh: {fileID: 2503859341040908428, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
 --- !u!23 &8522085103929347541
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -315,8 +315,8 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 3f376d5d85c5f6c478ed48fba649fb83, type: 2}
-  - {fileID: -1055364252699146887, guid: b5a47b673e87e854bbc0028e6398dd7b, type: 3}
   - {fileID: -3463143110732916499, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
+  - {fileID: -1055364252699146887, guid: b5a47b673e87e854bbc0028e6398dd7b, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -413,6 +413,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cdf14e6ba3f8724abcc1f1d88cbf699, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  models:
+  - {fileID: 2503859341040908428, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
+  - {fileID: -7641773100767838360, guid: b5a47b673e87e854bbc0028e6398dd7b, type: 3}
 --- !u!1 &5064306947436133692
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,7 +722,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7701812964422263099}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

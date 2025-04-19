@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using static OverdriveServer.NetStructures;
 
 public class CarEntityPosition : MonoBehaviour
 {
@@ -27,7 +27,7 @@ public class CarEntityPosition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        trackPieceProgression += ((speedTuning * speed) * trackPieceLength) * Time.deltaTime;
+        trackPieceProgression += GetProgress(Time.deltaTime); //get the progress of the car on the track
         if(trackSpline != null){
             Vector3 targetPos = trackSpline.GetPoint(trackPieceProgression, horizontalOffset);
             if(!showOnTrack){
@@ -53,7 +53,7 @@ public class CarEntityPosition : MonoBehaviour
             this.trackSpline = trackSpline;
             trackPieceProgression = 0;
             shift = 0;
-            trackPieceLength = trackSpline.GetLength(horizontalOffset);
+            //trackPieceLength = trackSpline.GetLength(horizontalOffset);
         }
     }
     public void SetOffset(float offset){
@@ -74,7 +74,7 @@ public class CarEntityPosition : MonoBehaviour
     }
     public void Delocalise(){
         trackPieceProgression = 0;
-        trackPieceLength = 0;
+        //trackPieceLength = 0;
         trackSpline = null;
         speed = 0;
         shift = 0;
@@ -87,4 +87,28 @@ public class CarEntityPosition : MonoBehaviour
     public (uint i, float x, float y) GetIXY(){
         return ((uint)segmentIdx, horizontalOffset, trackPieceProgression);
     }
+
+    float GetProgress(float deltaTime){
+        //pre start = 340mm
+        //start = 220mm
+        //straight = 560mm
+        //turn inside = 280mm
+        //turn outside = 640mm
+        int distanceMM = 560; //default distance for straight track
+        if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.Turn){
+            //offset is between -65 and 65, so we can use this to determine the distance
+            float offset = horizontalOffset / 65f; //scale offset to -1 to 1
+            if(!TrackGenerator.track.GetSegmentReversed(segmentIdx)){ offset = -offset;  } //reverse the offset if the segment is reversed
+            distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
+        } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.PreFinishLine){
+            distanceMM = 340; //pre start distance
+        } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.FinishLine){
+            distanceMM = 220; //start distance
+        }
+        //speed is in mm/s
+        return ((float)speed / distanceMM) * deltaTime;
+    }
+    // float GetProgressOld(float deltaTime){
+    //     return ((speedTuning * speed) * trackPieceLength) * deltaTime;
+    // }
 }
