@@ -9,13 +9,15 @@
 
   <ItemGroup>
     <None Remove="index.html" />
+    <None Remove="TrackData\offsetInfo.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsyncAwaitBestPractices" Version="9.0.0" />
     <PackageReference Include="Fleck" Version="1.2.0" />
-    <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.37" />
+    <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.41" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Speech" Version="9.0.3" />
+    <PackageReference Include="System.Speech" Version="9.0.4" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -23,6 +25,10 @@
     <Content Include="index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TrackData\offsetInfo.json" />
   </ItemGroup>
 
 </Project>

@@ -18,6 +18,7 @@
             border-radius: 15px;
             margin: 10px;
             max-width: 300px;
+            min-width: 250px;
         }
         .carBlockContent {
             padding: 10px;
@@ -68,12 +69,8 @@
 <body>
     <h1>Overdrive Server</h1>
     <div style="display: flex;">
-        <form action='/scan'>
-            <button type='submit'>Scan for cars</button>
-        </form>
-        <form action='/cars'>
-            <button type='submit'>Get Car Data</button>
-        </form>
+        <button id="func-scan-cars">Scan for cars</button>
+        <button id="func-get-cars">Get Car Data</button>
     </div>
     
     <div id="car-list" style="display: flex;">
@@ -85,70 +82,173 @@
         <div class="carBlockContent">
             <p id="car-name">Name:  Template</p>
             <p id="car-id">ID: 0000000000</p>
-            <p id="car-track-position">Track Position: ?</p>
-            <p id="car-track-id">Track ID: ?</p>
-            <p id="car-lane-offset">Lane Offset: 0.0000 </p>
-            <input type="range" id="car-lane-offset-slider" name="lane-offset" min="-70" max="70" value="0">
-            <p id="car-speed">Speed: 0.000</p>
+            <p id="car-lane-offset-read">Lane Offset: 0.0000 </p>
+            <input type="range" id="car-lane-offset-slider-read" min="-64" max="64" value="0" step="0.01">
+            <p id="car-speed-read">Speed: 0.000</p>
             <p id="car-battery">Battery: </p>
             <p style="display: flex; align-items: center;">Is Charging: <input type="checkbox" id="car-charging"></p>
         </div>
         <div class="carBlockControls">
-            <form action='/controlcar/'>
-                <p>Speed: 0.000 <input type="range" id="car-speed-slider" name="speed" min="0" max="1000" value="0"></p>
-                <p>Lane Offset: 0.0000 <input type="range" id="car-lane-offset-slider" name="lane-offset" min="-70" max="70" value="0"></p>
-                <button type='submit'>Control Car</button>
-            </form>
-            <form action="/setlights/">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <label>R: <input type="checkbox" style="accent-color: red;" name="R"></label>
-                    <label>G: <input type="checkbox" style="accent-color: green;" name="G"></label>
-                    <label>B: <input type="checkbox" style="accent-color: blue;" name="B"></label>
-                </div>
-                <button type="submit">Set Light</button>
-            </form>
+            <p id="car-speed">Speed: 0.000 </p>
+            <input type="range" id="car-speed-slider" name="speed" min="0" max="1000" value="0">
+            <p id="car-lane-offset">Lane Offset: 0.0000 </p>
+            <input type="range" id="car-lane-offset-slider" min="-64" max="64" value="0" step="0.01">
+            <button id="func-car-control">Control Car</button>
         </div>
     </div>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Select all forms
-        refreshFormBindings();
-    });
+    const carList = document.getElementById('car-list');
+    const carData = document.getElementById('car-data');
 
-    function refreshFormBindings() {
-        // Select all forms
-        const forms = document.querySelectorAll('form');
-        //remove all event listeners
-        forms.forEach(form => {
-            form.removeEventListener('submit', onFormSubmit);
-            form.addEventListener('submit', onFormSubmit);
+    const getCarsButton = document.getElementById('func-get-cars');
+    const scanCarsButton = document.getElementById('func-scan-cars');
+    //const lineUpButton = document.getElementById('func-lineup');
+
+
+    getCarsButton.addEventListener('click', function() { GetCars(); });
+    scanCarsButton.addEventListener('click', function() { GetPoint('/scan'); });
+    //lineUpButton.addEventListener('click', function() { GetPoint('/lineup'); });
+    let cars = [];
+
+    function GetCars(){
+        //fetch the cars endpoint and return the data as json
+        const cardata = GetPoint('/cars');
+        console.log(cardata);
+        //iterate through the cars and create a button for each car
+        cardata.then(data => {
+            for (let i = 0; i < data.length; i++) {
+                const car = data[i];
+                //do we have a car with this id already?
+                if (cars.find(c => c.id === car.id)) {
+                    //update the car data in the car data block
+                    const carBlock = cars.find(c => c.id === car.id).htmlelement;
+                    //update laneOffset, speed
+                    const carLaneOffsetRead = carBlock.querySelector('#car-lane-offset-read');
+                    const carLaneOffsetSliderRead = carBlock.querySelector('#car-lane-offset-slider-read');
+                    const carSpeedRead = carBlock.querySelector('#car-speed-read');
+                    const carBattery = carBlock.querySelector('#car-battery');
+                    const carCharging = carBlock.querySelector('#car-charging');
+
+                    carLaneOffsetRead.innerHTML = 'Lane Offset: ' + car.offset;
+                    carLaneOffsetSliderRead.value = car.offset;
+                    carSpeedRead.innerHTML = 'Speed: ' + car.speed;
+                    carCharging.checked = car.charging;
+                    //if car.battery is -1 low, 0 normal, 1 high
+                    if (car.batteryStatus === -1) {
+                        carBattery.innerHTML = 'Battery: Low';
+                    } else if (car.batteryStatus === 0) {
+                        carBattery.innerHTML = 'Battery: Normal';
+                    } else if (car.batteryStatus === 1) {
+                        carBattery.innerHTML = 'Battery: High';
+                    } else {
+                        carBattery.innerHTML = 'Battery: Unknown';
+                    }
+                }else{
+                    //add a clone of the cardata html element to the car list
+                    const carBlock = document.getElementById('car-data').cloneNode(true);
+                    carBlock.style.display = 'block';
+                    //ReadOnly Info
+                    const carName = carBlock.querySelector('#car-name');
+                    const carID = carBlock.querySelector('#car-id');
+                    const carLaneOffsetRead = carBlock.querySelector('#car-lane-offset-read');
+                    const carLaneOffsetSliderRead = carBlock.querySelector('#car-lane-offset-slider-read');
+                    const carBattery = carBlock.querySelector('#car-battery');
+                    const carSpeedRead = carBlock.querySelector('#car-speed-read');
+                    const carCharging = carBlock.querySelector('#car-charging');
+                    carCharging.checked = car.charging;
+
+                    carName.innerHTML = 'Name: ' + car.name;
+                    carID.innerHTML = 'ID: ' + car.id;
+                    carLaneOffsetRead.innerHTML = 'Lane Offset: ' + car.offset;
+                    carLaneOffsetSliderRead.value = car.offset;
+                    carSpeedRead.innerHTML = 'Speed: ' + car.speed;
+                    //if car.battery is -1 low, 0 normal, 1 high
+                    if (car.batteryStatus === -1) {
+                        carBattery.innerHTML = 'Battery: Low';
+                    } else if (car.batteryStatus === 0) {
+                        carBattery.innerHTML = 'Battery: Normal';
+                    } else if (car.batteryStatus === 1) {
+                        carBattery.innerHTML = 'Battery: High';
+                    } else {
+                        carBattery.innerHTML = 'Battery: Unknown';
+                    }
+
+                    //Control Info
+
+                    const carSpeed = carBlock.querySelector('#car-speed');
+                    const carSpeedSlider = carBlock.querySelector('#car-speed-slider');
+
+                    const carLaneOffset = carBlock.querySelector('#car-lane-offset');
+                    const carLaneOffsetSlider = carBlock.querySelector('#car-lane-offset-slider');
+
+                    const carControlButton = carBlock.querySelector('#func-car-control');
+                    carControlButton.addEventListener('click', function() {
+                        //get the values from the sliders and checkboxes
+                        const speed = carBlock.querySelector('#car-speed-slider').value;
+                        const laneOffset = carBlock.querySelector('#car-lane-offset-slider').value;
+                        //send the data to the server
+                        GetPoint(`/controlcar/${car.id}:${speed}:${laneOffset}`)
+                        console.log(`/controlcar/${car.id}:${speed}:${laneOffset}`);
+                    });
+
+                    carSpeedSlider.addEventListener('input', function() {
+                        //update the speed value in the car data block
+                        carSpeed.textContent = 'Speed: ' + carSpeedSlider.value;
+                    });
+
+                    carLaneOffsetSlider.addEventListener('input', function() {
+                        //update the lane offset value in the car data block
+                        carLaneOffset.textContent = 'Lane Offset: ' + carLaneOffsetSlider.value;
+                    });
+
+
+
+                    carList.appendChild(carBlock);
+
+                    //create a new car data object
+                    const carData = {
+                        id: car.id,
+                        name: car.name,
+                        trackPosition: car.trackPosition,
+                        trackID: car.trackID,
+                        speed: car.speed,
+                        battery: car.battery,
+                        charging: car.charging,
+                        htmlelement: carBlock
+                    };
+                    //add the car data to the cars array
+                    cars.push(carData);
+                }
+            }
         });
     }
-    function onFormSubmit(event){
-        event.preventDefault(); // Prevent default form submission
-        let actionUrl = form.getAttribute('action'); // Get the form's action URL
-        const formData = new FormData(form); // Collect form data
 
-        // Construct query string
-        data = '';
-        //if formdata has 1 entry, set data to that entry
-        if(formData.entries().next().value){
-            data = formData.entries().next().value[1];
+    async function GetPoint(endpoint) {
+        try {
+            // prefix localhost:7117 to the endpoint
+            endpoint = 'http://localhost:7117' + endpoint;
+            // fetch the endpoint and return the data as json
+            const response = await fetch(endpoint);
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            //if response is not json then its a string, return it as is
+            if (response.headers.get('content-type') !== 'application/json') {
+                return response.text();
+            }
+            return response.json();
+            
+        } catch (error) {
+            console.error('There has been a problem with your fetch operation:', error);
+            return null;
         }
-        actionUrl += data; // Append data to action URL
-        console.log(actionUrl);
-        // Send the request asynchronously
-        fetch(actionUrl, {
-            method: 'GET',
-        })
-        .then(response => response.text()) // Convert response to text (or JSON if expected)
-        .then(data => {
-            console.log('Success:', data); // Handle success
-        })
-        .catch((error) => {
-            console.error('Error:', error); // Handle errors
-        });
     }
+
+    GetPoint('/scan');
+    //every 5 seconds call the GetCars function
+    setInterval(() => {
+        GetCars();
+    }, 5000);
     </script>
 </body>
 </html>

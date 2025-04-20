@@ -15,12 +15,12 @@ namespace OverdriveServer {
                 short version = BitConverter.ToInt16(content, 2);
                 Program.Log($"[25] Version response: {version} for {car.name}");
                 car.SetCarSoftwareVersion(version);
-            } else if(id == RECV_BATTERY_RESPONSE){ //27 battery response
-                int battery = content[2];
-                int maxBattery = 3800;
-                Program.Log($"[27] Battery response: {battery} / {maxBattery}");
-                Program.UtilLog($"27:{car.id}:{battery}");
-                car.data.battery = battery;
+            } else if(id == RECV_BATTERY_RESPONSE){ //27 battery response (Not actually usfeful)
+                // int battery = content[2];
+                // int maxBattery = 3800;
+                // Program.Log($"[27] Battery response: {battery} / {maxBattery}");
+                // Program.UtilLog($"27:{car.id}:{battery}");
+                // car.data.battery = battery;
             } else if(id == RECV_TRACK_LOCATION){ //39 where is car
                 OnPosition(content, car); //moved to dedicated function bc its complex
             } else if(id == RECV_TRACK_TRANSITION){ //41 car moved between track pieces
@@ -37,17 +37,15 @@ namespace OverdriveServer {
             } else if(id == RECV_CAR_SPEED_UPDATE){ //54 car speed changed
                 Program.Log($"[54] {car.name} speed changed");
                 Program.UtilLog($"54:{car.id}");
-            } else if(id == RECV_CAR_CHARGING_STATUS){ //63 charging status changed
+            } else if(id == RECV_CAR_CHARGING_STATUS){ //63 charging status changed (theres a lot of good data here but i cant say what it is)
                 bool charging = content[3] == 1;
                 Program.UtilLog($"63:{car.id}:{charging}");
                 Program.Log($"[63] {car.name} charging: {charging}");
                 car.data.charging = charging;
-            } else if(id == -1)
-            { //65 Unknown
+            } else if(id == -1) { //65 Unknown
                 Program.UtilLog($"65:{car.id}");
                 //Program.Log($"[65] {car.name} slipped");
-            } else if(id == -1)
-            { //67 Unknown
+            } else if(id == -1) { //67 Unknown
                 Program.UtilLog($"67:{car.id}");
                 //Program.Log($"[67] {car.name} ???");
             } else if(id == RECV_TRACK_JUMP){ //75 car jumped
@@ -61,8 +59,7 @@ namespace OverdriveServer {
             } else if(id == -1){ //78 Unknown
                 Program.UtilLog($"78:{car.id}");
                 //Program.Log($"[78] {car.name} ???");
-            } else if(id == -1)
-            { //79 Unknown
+            } else if(id == -1) { //79 Unknown
                 Program.UtilLog($"79:{car.id}");
                 //Program.Log($"[79] {car.name} ???");
             } else if(id == RECV_TRACK_SPECIAL_TRIGGER){ //83 FnF specialBlock
@@ -85,11 +82,11 @@ namespace OverdriveServer {
             Program.socketMan.Notify(EVENT_CAR_LOCATION, 
                 new LocationData {
                     carID = car.id,
-                    trackLocation = trackLocation,
+                    locationID = trackLocation,
                     trackID = trackID,
                     offset = offset,
                     speed = speed,
-                    clockwise = clockwise
+                    reversed = clockwise
                 }
             );
             //Program.Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
@@ -97,8 +94,8 @@ namespace OverdriveServer {
             car.data.speed = speed;
             CarEventLocationCall?.Invoke(car.id, trackLocation, trackID, offset, speed, clockwise);
 
-            car.lastPositionID = trackID; car.lastFlipped = clockwise; //set the last track piece to the current one
-
+            car.lastPositionID = trackID; car.lastReversed = clockwise; //set the last track piece to the current one
+            car.UpdateValues(trackLocation, trackID, offset, 0, clockwise); //update the car values
         }
         void OnTransition(byte[] content, Car car){
             try{
@@ -126,9 +123,8 @@ namespace OverdriveServer {
                 );
                 CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
                 car.data.offset = offset;
-                car.LaneCheck();
                 
-                SolveSegment(car, car.lastPositionID, car.lastFlipped, leftWheelDistance, rightWheelDistance, crossedStartingLine, offset, uphillCounter, downhillCounter); //solve the segment
+                SolveSegment(car, car.lastPositionID, car.lastReversed, leftWheelDistance, rightWheelDistance, crossedStartingLine, offset, uphillCounter, downhillCounter); //solve the segment
                 car.lastPositionID = 0; //set the last track piece to the current one
             }
             catch{

@@ -1,5 +1,6 @@
 ﻿using System.Speech.Synthesis;
 using static OverdriveServer.NetStructures;
+using OverdriveServer.Tracking;
 namespace OverdriveServer {
     class Program {
         public static WebInterface webInterface = new WebInterface();
@@ -9,6 +10,7 @@ namespace OverdriveServer {
         public static MessageManager messageManager = new MessageManager();
         public static TrackManager trackManager = new TrackManager();
         public static List<TrackScanner> scansInProgress = new List<TrackScanner>();
+        public static Location location = new Location();
         static async Task Main(string[] args) {
             if (args.Length == 1 && args[0] == "-snoop") { Snooper snoop = new Snooper(); await snoop.Start(); }
             else{

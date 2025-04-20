@@ -69,11 +69,6 @@ namespace OverdriveServer {
                                 context.Response.ContentType = "application/json";
                                 await context.Response.WriteAsync(Program.carSystem.CarDataAsJson());
                             });
-                            endpoints.MapGet("/batteries", async context => {
-                                for(int i = 0; i < Program.carSystem.CarCount(); i++){ await Program.carSystem.GetCar(i).RequestCarBattery(); }
-                                context.Response.StatusCode = 200;
-                                await context.Response.WriteAsync("Got battery levels, call /cars to get them");
-                            });
                             endpoints.MapGet("/setlights/{instruct}", async context => {
                                 var instruct = context.Request.RouteValues["instruct"];
                                 try{
@@ -97,11 +92,6 @@ namespace OverdriveServer {
                                     context.Response.StatusCode = 400;
                                     await context.Response.WriteAsync("Bad Request");
                                 }
-                            });
-                            endpoints.MapGet("/clearcardata", async context => {
-                                Program.carSystem.ClearCarData();
-                                context.Response.StatusCode = 200;
-                                await context.Response.WriteAsync("Cleared car data");
                             });
                             endpoints.MapGet("/tts/{message}", async context => {
                                 var message = context.Request.RouteValues["message"];
@@ -133,25 +123,6 @@ namespace OverdriveServer {
                                 await Program.CancelScan(c);
                                 context.Response.StatusCode = 200;
                                 await context.Response.WriteAsync("Cancelled scan");
-                            });
-                            endpoints.MapGet("/disconnectcar/{instruct}", async context => {
-                                var instruct = context.Request.RouteValues["instruct"];
-                                string carID = instruct.ToString();
-                                if(carID == "all"){
-                                    for(int i = 0; i < Program.carSystem.CarCount(); i++){ await Program.carSystem.GetCar(i).RequestCarDisconnect(); }
-                                    context.Response.StatusCode = 200;
-                                    await context.Response.WriteAsync("Disconnected all cars");
-                                    return;
-                                }
-                                Car car = Program.carSystem.GetCar(carID);
-                                if(car == null){
-                                    context.Response.StatusCode = 404;
-                                    await context.Response.WriteAsync("Car not found");
-                                    return;
-                                }
-                                await car.RequestCarDisconnect();
-                                context.Response.StatusCode = 200;
-                                await context.Response.WriteAsync("Disconnected");
                             });
                             endpoints.MapGet("/track", async context => {
                                 context.Response.ContentType = "application/json";

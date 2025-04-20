@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using AsyncAwaitBestPractices;
 using InTheHand.Bluetooth;
 
 namespace OverdriveServer {
@@ -12,56 +9,65 @@ namespace OverdriveServer {
         public async Task InitaliseBletooth(){
             Bluetooth.AvailabilityChanged += (s, e) =>
             { Program.Log($"Bluetooth availability changed"); };
-            Bluetooth.AdvertisementReceived += OnAdvertisementReceived;
+            Bluetooth.AdvertisementReceived += (sender, args) =>
+            { OnAdvertisementReceived(sender, args).SafeFireAndForget(); };
             StartBLEScan();
         }
-        public void ScanForCars(){ GetCars(); }
-        void StartBLEScan(){
+        public void ScanForCars(){ GetCars().SafeFireAndForget(); }
+        async Task StartBLEScan(){
             var leScanOptions = new BluetoothLEScanOptions();
             leScanOptions.AcceptAllAdvertisements = true;
-            var scan = Bluetooth.RequestLEScanAsync(leScanOptions);
+            var scan = await Bluetooth.RequestLEScanAsync(leScanOptions);
             if(scan == null) { Program.Log("Scan failed"); return; }
             Program.Log("Scan started");
         }
         async Task GetCars(){ 
             if(scanningForCars){ Program.Log("Already scanning for cars"); return; }
-            scanningForCars = true;
-            // Use default request options for simplicity
-            var requestOptions = new RequestDeviceOptions();
-            requestOptions.AcceptAllDevices = true;
-            // Create a cancellation token source with a timeout of 5 seconds
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
-            var cancellationToken = cancellationTokenSource.Token;
-            // Scan for devices
-            var devices = await Bluetooth.ScanForDevicesAsync(requestOptions, cancellationToken);
-            if(devices.Count == 0){ Program.Log("No devices found"); return; }
-            //we dont really car about the devices, we just want to wait for the scan to finish
-            scanningForCars = false;
+            scanningForCars = true; 
+            try {
+                // Use default request options for simplicity
+                var requestOptions = new RequestDeviceOptions();
+                requestOptions.AcceptAllDevices = true;
+                // Create a cancellation token source with a timeout of 3 seconds
+                using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                var cancellationToken = cancellationTokenSource.Token;
+                // Scan for devices with the cancellation token
+                var devices = await Bluetooth.ScanForDevicesAsync(requestOptions, cancellationToken);
+                if(devices.Count == 0){ Program.Log("No devices found"); }
+            }
+            catch (OperationCanceledException) {
+                Program.Log("Device scan timed out after 3 seconds");
+            }
+            catch (Exception ex) {
+                Program.Log($"Error during device scan: {ex.Message}");
+            }
+            finally {
+                // Always reset the scanning flag, even if an exception occurs
+                scanningForCars = false;
+            }
         }
-        void OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args){
+        async Task OnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent args){
+           if(args.Device == null) { return; }
+            string Name = args.Name ?? "Unknown";
             try{
-                if(args.Name.Contains("Drive")){
+                if(await args.Device.Gatt.GetPrimaryServiceAsync(CarSystem.ServiceID) != null) { //get by service id
                     if(Program.carSystem.GetCar(args.Device.Id) == null && !checkingIDs.Contains(args.Device.Id)){
                         checkingIDs.Add(args.Device.Id);
-                        //Program.Log($"Advertisement received for car");
-                        //Log($"Manufacturer data: {args.ManufacturerData.Count}, Service data: {args.ServiceData.Count}");
-                        foreach(var data in args.ManufacturerData) { // Assuming data.Value is the byte array containing the anki_vehicle_adv_mfg_t data
-                            if (data.Value.Length >= 6) { // Ensure there are enough bytes
-                                var identifier = BitConverter.ToUInt32(data.Value, 0);
-                                var model_id = data.Value[4];
-                                var product_id = BitConverter.ToUInt16(data.Value, 5);
-                                Program.Log($"car info: Identifier: {identifier}, Model ID: {model_id}, Product ID: {product_id}");
-                            }
-                        }
-                        foreach(var data in args.ServiceData) { Program.Log($"{data.Key}: {Program.BytesToString(data.Value)}"); }
-                        Program.Log($"[0] car name: {args.Name}, id {args.Device.Id}, strength {args.Rssi}");
-                        Program.carSystem.ConnectToCarAsync(args.Device);
+                        //Program.Log($"Found car {Name} ({args.Device.Id})");
+                        int model = 0;
+                        if(args.ManufacturerData.Count > 0){ model = args.ManufacturerData[61374][1]; }
+                        //NetStructures.ModelName modelName = (NetStructures.ModelName)model;
+                        //Console.WriteLine($"Car Model: {modelName} ({model})");
+                        if(args.ManufacturerData.Count == 0) { Program.Log($"No manufacturer data"); }
+                        //foreach(var data in args.ServiceData) { Program.Log($"{data.Key}: {Program.BytesToString(data.Value)}"); }
+                        //Program.Log($"[0] car name: {Name}, id {args.Device.Id}, strength {args.Rssi}");
+                        Program.carSystem.ConnectToCarAsync(args.Device, model, args.Rssi);
                     }
                 } 
             }
-            catch{
-                Program.Log($"Advertisement received, not car {args.Name}");
-                foreach(var data in args.ManufacturerData) { Program.Log($"{data.Key}: {Program.BytesToString(data.Value)}"); }
+            catch(Exception ex){
+                Program.Log($"Advertisement received, not car {Name} ({ex.Message})");
+                //foreach(var data in args.ManufacturerData) { Program.Log($"N: {Name} has data =  {data.Key}: {Program.BytesToString(data.Value)}"); }
             }
         }
         public void RemoveCarCheck(string id){

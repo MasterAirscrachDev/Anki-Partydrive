@@ -7,62 +7,66 @@ using InTheHand.Bluetooth;
 using Newtonsoft.Json;
 using static OverdriveServer.Definitions;
 using static OverdriveServer.NetStructures;
+using static OverdriveServer.NetStructures.UtilityMessages;
+using AsyncAwaitBestPractices;
 
 namespace OverdriveServer {
     class CarSystem {
         public static readonly BluetoothUuid ServiceID = BluetoothUuid.FromGuid(new Guid("BE15BEEF-6186-407E-8381-0BD89C4D8DF4"));
         public static readonly BluetoothUuid ReadID = BluetoothUuid.FromGuid(new Guid("BE15BEE0-6186-407E-8381-0BD89C4D8DF4"));
         public static readonly BluetoothUuid WriteID = BluetoothUuid.FromGuid(new Guid("BE15BEE1-6186-407E-8381-0BD89C4D8DF4"));
-        List<Car> cars = new List<Car>();
-        public Car? GetCar(string id){ return cars.Find(car => car.id == id); }
-        public Car[] GetCarsOffCharge(){
-            List<Car> carsOffCharge = new List<Car>();
-            foreach(Car car in cars){
-                if(!car.data.charging){ carsOffCharge.Add(car); }
+        Dictionary<string, Car> cars = new Dictionary<string, Car>();
+        public Car? GetCar(string id){ return cars.ContainsKey(id) ? cars[id] : null; }
+        public Car[] GetCarsOnTrack(bool all = false){
+            List<Car> toSend = new List<Car>();
+            foreach(Car car in cars.Values){
+                if(all && !car.data.charging){ toSend.Add(car); }
+                else if(!all && car.data.onTrack){ toSend.Add(car); }
             }
-            return carsOffCharge.ToArray();
+            return toSend.ToArray();
         }
-        public async Task ConnectToCarAsync(BluetoothDevice carDevice){
+        public async Task ConnectToCarAsync(BluetoothDevice carDevice, int model, int rssi){
             FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
             Save s = await fs.LoadFile($"{carDevice.Id}.dat");
-            string name = $"Unknown Car({carDevice.Id})";
+            ModelName modelName = (ModelName)model;
+            string name = $"{modelName} ({carDevice.Id})";
             int speedBalance = 0;
             bool hadConfig = false;
             if(s != null) {
                 hadConfig = true;
-                name = s.GetVar("name", $"Unknown Car({carDevice.Id})"); 
+                name = s.GetVar("name", name); 
                 speedBalance = s.GetVar("speedBalance", 0);
             }
-            Program.Log($"[0] Connecting to car {name}");
+            //Program.Log($"[0] Connecting to car {name} [{modelName}], RSSI: {rssi}");
 
             await carDevice.Gatt.ConnectAsync();
             if(carDevice.Gatt.IsConnected){
-                Program.Log($"[0] Connected to car {name}");
+                Program.Log($"[0] Connected to car {name} [{modelName}], Rssi: {rssi}");
                 Car car = new Car(name, carDevice.Id, carDevice, speedBalance);
                 if(!hadConfig){
                     s = new Save();
                     s.SetVar("name", name);
                     s.SetVar("speedBalance", 0);
-                    await fs.SaveFile($"{carDevice.Id}.dat", s);
                 }
+                await fs.SaveFile($"{carDevice.Id}.dat", s); //update/create config file
                 GattService service = await car.device.Gatt.GetPrimaryServiceAsync(ServiceID);
                 if(service == null){ return; }
                 //subscribe to characteristic changed event on read characteristic
                 var characteristic = await service.GetCharacteristicAsync(ReadID);
                 if(characteristic == null){ return; }
-                cars.Add(car);
+                cars.Add(carDevice.Id, car);
                 Program.bluetoothInterface.RemoveCarCheck(carDevice.Id);
-                CheckCarConnection(car);
+                CheckCarConnection(car).SafeFireAndForget();
                 characteristic.CharacteristicValueChanged += (sender, args) => { CarCharacteristicChanged(sender, args, car); };
                 await characteristic.StartNotificationsAsync();
                 await car.EnableSDKMode(true);
                 await car.RequestCarVersion();
                 await car.RequestCarBattery();
                 await Task.Delay(500);
-                Program.UtilLog($"-1:{car.id}:{car.name}");
+                Program.UtilLog($"{MSG_CAR_CONNECTED}:{car.id}:{car.name}");
             }
             else{
-                Program.Log($"[0] Failed to connect to car {name}");
+                Program.Log($"[0] Failed to connect to car {name} [{modelName}]");
                 Program.bluetoothInterface.RemoveCarCheck(carDevice.Id);
             }
         }
@@ -70,7 +74,7 @@ namespace OverdriveServer {
             while(car.device.Gatt.IsConnected){ await Task.Delay(5000);  }
             Program.Log($"[0] Car disconnected {car.name}");
             Program.UtilLog($"-2:{car.id}");
-            cars.Remove(car);
+            cars.Remove(car.device.Id);
         }
         
         static void CarCharacteristicChanged(object sender, GattCharacteristicValueChangedEventArgs args, Car car){
@@ -78,18 +82,16 @@ namespace OverdriveServer {
         }
         public string CarDataAsJson(){
             CarData[] carData = new CarData[cars.Count];
-            for(int i = 0; i < cars.Count; i++){ carData[i] = cars[i].data; }
+            int i = 0;
+            foreach(Car car in cars.Values){
+                carData[i] = car.data; i++;
+            }
             return JsonConvert.SerializeObject(carData);
         }
-        public void ClearCarData(){
-            for(int i = 0; i < cars.Count; i++){ cars[i].data = new CarData(cars[i].name, cars[i].id); }
-        }
         public int CarCount(){ return cars.Count; }
-        public Car GetCar(int index){ return cars[index]; }
-
         public async Task UpdateConfigs(){
             FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
-            foreach(Car car in cars){
+            foreach(Car car in cars.Values){
                 Save s = await fs.LoadFile($"{car.device.Id}.dat");
                 if(s != null){
                     string name = s.GetVar("name", $"Unknown Car({car.device.Id})");
@@ -106,7 +108,7 @@ namespace OverdriveServer {
         int speedBalance = 0;
         float requestedOffset = 0;
         //used by custom tracking
-        public int lastPositionID = 0; public bool lastFlipped = false;
+        public int lastPositionID = 0; public bool lastReversed = false;
         //
         bool V4_MODE = false;
         public CarData data;
@@ -117,7 +119,7 @@ namespace OverdriveServer {
             this.id = id;
             this.device = device;
             this.speedBalance = speedBalance;
-            this.data = new CarData(name, id);
+            this.data = new CarData(name, id, 0);
             GetWriteCharacteristic();
         }
         public void UpdateConfigs(string name, int speedBalance){
@@ -179,11 +181,17 @@ namespace OverdriveServer {
             await WriteToCarAsync(data, true);
             requestedOffset = (int)lane;
         }
-        public void LaneCheck(){
-            if(Math.Abs(requestedOffset - data.offset) > 200 && data.speed > 0){
-                SetCarTrackCenter(0); Console.WriteLine($"{id} Your lane is bogus, expect trouble");
-            } else if((Math.Abs(requestedOffset - data.offset) > 0.3) && data.speed > 0){
-                SetCarLane(requestedOffset);
+        public void UpdateValues(int locationID, int segmentID, float offset, int bits, bool reversed){
+            lastPositionID = segmentID; lastReversed = reversed;
+            data.offset = offset;
+
+            float correctedOffset = Program.location.CorrectOffset(segmentID, locationID, offset, bits, reversed);
+            if(Math.Abs(offset - correctedOffset) > 4){
+                SetCarTrackCenter(correctedOffset);
+                offset = correctedOffset;
+            }
+            if(Math.Abs(offset - requestedOffset) > 4){
+                SetCarLane(requestedOffset, 100, 500);
             }
         }
         public async Task RequestCarBattery(){

@@ -139,7 +139,7 @@ namespace OverdriveServer {
                     trackIndex = car.trackIndex,
                     speed = carspeed,
                     offset = car.horizontalPosition,
-                    positionTrusted = car.positionTrusted,
+                    trustLevel = car.positionTrusted == true ? 2 : 1 //trust level (0 = not trusted, 1 = likely accurate, 2 = certain)
                 }
             );
         }
@@ -151,7 +151,7 @@ namespace OverdriveServer {
         }
 
         public void RequestLineup(){
-            Car[] cars = Program.carSystem.GetCarsOffCharge();
+            Car[] cars = Program.carSystem.GetCarsOnTrack();
             if(cars.Length == 0){ Program.Log("No cars to lineup"); return; }
             if(track == null || !trackValidated){ Program.Log("No track to lineup on"); return; }
             //set the lane offset for each car based on index

@@ -1,6 +1,11 @@
 # Overdrive Server Documentation
 For the Anki Overdrive Bluetooth API see [Overdrive BlootoothLE Protocol](https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/OverdriveServer/Overdrive%20BLE.md#anki-overdrive-bluetooth-api)
 
+# Alert
+This version of the server is outdated and for reasons i cannot disclose will not be maintained publicly.  
+This will be updated to the latest version when possible.  
+Sorry for any inconvenience.  
+
 Overdrive Server is a server that can connect to Anki Overdrive cars and control them. It is written in C# and uses the [32feet.NET](https://inthehand.com/components/32feet/) library to connect to the cars over Bluetooth LE.
 
 Overdrive Server has a basic web interface that can be used to control the cars. 
