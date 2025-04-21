@@ -64,6 +64,7 @@ MeshRenderer:
   - {fileID: 2100000, guid: 3bfa4aebb0c999c4f9a5b8ff0d340f81, type: 2}
   - {fileID: 2100000, guid: 3bfa4aebb0c999c4f9a5b8ff0d340f81, type: 2}
   - {fileID: 2100000, guid: 3bfa4aebb0c999c4f9a5b8ff0d340f81, type: 2}
+  - {fileID: 2100000, guid: 3bfa4aebb0c999c4f9a5b8ff0d340f81, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -315,8 +316,9 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 3f376d5d85c5f6c478ed48fba649fb83, type: 2}
-  - {fileID: -3463143110732916499, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
-  - {fileID: -1055364252699146887, guid: b5a47b673e87e854bbc0028e6398dd7b, type: 3}
+  - {fileID: 1622607766837670959, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
+  - {fileID: -7127551656012209352, guid: ae244f83bbcd6ef48ab32e1bb21bd829, type: 3}
+  - {fileID: 2100000, guid: 048a481230b4eb44cb6d775f3d3430df, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -414,8 +416,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   models:
-  - {fileID: 2503859341040908428, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
-  - {fileID: -7641773100767838360, guid: b5a47b673e87e854bbc0028e6398dd7b, type: 3}
+  - id: 8
+    modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
+    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
+  - id: 9
+    modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
+    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
+  - id: 18
+    modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
+    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
+  - id: 19
+    modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
+    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &5064306947436133692
 GameObject:
   m_ObjectHideFlags: 0

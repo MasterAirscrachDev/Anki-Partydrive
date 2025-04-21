@@ -5,16 +5,18 @@ using UnityEngine.UI;
 
 public class CarModelManager : MonoBehaviour
 {
-    [SerializeField] Mesh[] models;
+    [SerializeField] CarModel[] models;
     GameObject holo, model;
     public void Setup(int modelIndex){
         this.holo = transform.GetChild(0).gameObject;
         this.model = transform.GetChild(1).gameObject;
 
-        //Add more models as available
-        if(modelIndex == 18){ //mammoth
-            holo.transform.GetChild(2).GetComponent<MeshFilter>().mesh = models[1];
-            model.transform.GetChild(2).GetComponent<MeshFilter>().mesh = models[1];
+        for(int i = 0; i < models.Length; i++){
+            if(models[i].id == modelIndex){
+                Destroy(model.transform.GetChild(2).gameObject); // Destroy the old model
+                Instantiate(models[i].modelPref, model.transform); // Instantiate the new model
+                break;
+            }
         }
     }
 
@@ -23,10 +25,9 @@ public class CarModelManager : MonoBehaviour
         this.model.SetActive(!holo);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    [System.Serializable] class CarModel {
+        public int id;
+        public GameObject modelPref;
+        public Color defaultColor;
     }
-    
 }

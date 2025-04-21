@@ -230,8 +230,7 @@ public class CarInteraface : MonoBehaviour
         { cms.controllers[i].CheckCarExists(); }
     }
     void GetCarInfo(){
-        ApiCallV2(SV_GET_CARS, ""); //get the car data
-        //Debug.Log("Getting car info");
+        ApiCallV2(SV_GET_CARS, 0); //get the car data
     }
     public int GetCar(string id){
         for (int i = 0; i < cars.Length; i++)
