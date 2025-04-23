@@ -10,16 +10,9 @@ public class CarEntityTracker : MonoBehaviour
     [SerializeField] Dictionary<string, CarEntityPosition> trackers = new Dictionary<string, CarEntityPosition>();
 
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, CarTrust trust){
-        if(!track.hasTrack){ return; }
+        if(!track.hasTrack){ return; } //if no ttrack or we are on the finish line, do nothing
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
         TrackSpline trackPiece = track.GetTrackSpline(trackIndex);
-        bool trueFin = true;
-        if(trackPiece == null){ //either we are on a PreStart or an error has occured
-            trackIndex++;
-            if(track.GetSegmentType(trackIndex) == SegmentType.FinishLine){
-                trackPiece = track.GetTrackSpline(trackIndex); trueFin = false;
-            }else{ return; }
-        }
         if(entity == null){
             entity = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarEntityPosition>();
             entity.gameObject.name = $"{id} True Position";
@@ -29,10 +22,10 @@ public class CarEntityTracker : MonoBehaviour
             trackers.Add(id, entity);
         }
         entity.SetTrust(trust);
-        entity.SetTrackSpline(trackPiece, trackIndex);
+        if(trackPiece != null){ entity.SetTrackSpline(trackPiece, trackIndex); }
         entity.SetSpeed(speed);
         entity.SetOffset(horizontalOffset);
-        if(trackIndex == 1 && trueFin && trust > 0){ //if we are on the finish line, we have finished the lap
+        if(trackIndex == 1 && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
             OnCarCrossedFinishLine?.Invoke(id);
         }
     }
@@ -52,6 +45,7 @@ public class CarEntityTracker : MonoBehaviour
         }
     }
     public string[] GetActiveCars(string exclude = null){
+        if(trackers.Count == 0){ return new string[0]; } //no cars to show
         string[] activeCars = new string[exclude == null ? trackers.Count : trackers.Count - 1];
         int i = 0;
         foreach(KeyValuePair<string, CarEntityPosition> kvp in trackers){

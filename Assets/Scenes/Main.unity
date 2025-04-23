@@ -700,7 +700,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -120}
+  m_AnchoredPosition: {x: 0, y: -183.2}
   m_SizeDelta: {x: 200, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &125849345
@@ -6906,7 +6906,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1046.5, y: 130.5}
+  m_SizeDelta: {x: 1046.5, y: 262.81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1254656673
 MonoBehaviour:
@@ -6928,7 +6928,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Cars On Track
+  m_text: Place cars on the track
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
   m_sharedMaterial: {fileID: -7548483605016708549, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
@@ -6937,8 +6937,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278226943
-  m_fontColor: {r: 1, g: 0.5615012, b: 0, a: 1}
+    rgba: 4278216631
+  m_fontColor: {r: 0.7169812, g: 0.4020718, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8670,6 +8670,7 @@ MonoBehaviour:
   raceButton: {fileID: 1774805108}
   carListParent: {fileID: 762246243}
   carListItemPrefab: {fileID: 4536891880022926212, guid: 198240a89d6450647a5476fee2a0327d, type: 3}
+  eventSystem: {fileID: 1110400115}
 --- !u!225 &1643385044
 CanvasGroup:
   m_ObjectHideFlags: 0

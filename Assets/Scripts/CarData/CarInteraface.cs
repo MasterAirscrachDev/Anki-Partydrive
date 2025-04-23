@@ -203,14 +203,14 @@ public class CarInteraface : MonoBehaviour
         this.cars = uCars;
         LightData[] colors = new LightData[3];
         //white lights
-        colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
-        colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
-        colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
+        //colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
+        //colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
+        //colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
 
         //Partylights
-        //colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 6 };
-        //colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 5 };
-        //colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 4 };
+        colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 6 };
+        colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 5 };
+        colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 4 };
         for(int i = 0; i < cars.Length; i++){ StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));  } //send the lights with a delay
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)

@@ -51,7 +51,7 @@ public class CarController : MonoBehaviour
         if(isSetup){ return; }
         isSetup = true;
         carInterface = CarInteraface.io;
-        FindObjectOfType<CMS>().AddController(this);
+        FindObjectOfType<CMS>().AddController(this, isAI);
         ControlTicker();
         FindObjectOfType<PlayerCardmanager>().UpdateCardCount();
         int uiLayer = FindObjectOfType<UIManager>().GetUILayer();

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CarsManagement : MonoBehaviour
 {
@@ -10,6 +12,7 @@ public class CarsManagement : MonoBehaviour
     CMS cms;
     CarInteraface carInterface;
     CarPanel[] carPanels;
+    [SerializeField] EventSystem eventSystem;
     // Start is called before the first frame update
     void OnEnable() {
         if(cms == null){
@@ -58,6 +61,17 @@ public class CarsManagement : MonoBehaviour
     }
 
     public void RenderCarList(){
+        //store the index of the currently selected UI element
+        GameObject selected = eventSystem.currentSelectedGameObject;
+        Button[] buttons = FindObjectsOfType<Button>();
+        int selectedIndex = -1;
+        for(int i = 0; i < buttons.Length; i++){
+            if(buttons[i].gameObject == selected){
+                selectedIndex = i;
+                break;
+            }
+        }
+
         foreach (Transform child in carListParent) {
             Destroy(child.gameObject);
         }
@@ -84,5 +98,13 @@ public class CarsManagement : MonoBehaviour
         }
         RectTransform carListRect = carListParent.GetComponent<RectTransform>();
         carListRect.sizeDelta = new Vector2(carListRect.sizeDelta.x, carInterface.cars.Length * 100);
+
+        buttons = FindObjectsOfType<Button>();
+        //select the previously selected button
+        if(selectedIndex != -1 && selectedIndex < buttons.Length){
+            eventSystem.SetSelectedGameObject(buttons[selectedIndex].gameObject);
+        }else{
+            eventSystem.SetSelectedGameObject(buttons[0].gameObject); //select the first button
+        }
     }
 }

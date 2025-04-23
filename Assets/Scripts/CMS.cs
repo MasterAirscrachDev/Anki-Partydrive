@@ -22,8 +22,9 @@ public class CMS : MonoBehaviour
         freeColors.Add(new Color(0, 1, 1)); //Cyan
         freeColors.Add(new Color(1, 1, 0)); //yellow
     }
-    public void AddController(CarController controller){
+    public void AddController(CarController controller, bool isAI = false){
         controllers.Add(controller);
+        if(isAI){ return; } //if the controller is AI, return (Colour is set in AIController)
         Debug.Log($"available colors: {freeColors.Count}");
         Color c = freeColors[0];
         freeColors.RemoveAt(0);

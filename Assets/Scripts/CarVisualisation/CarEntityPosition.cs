@@ -3,7 +3,6 @@ using static OverdriveServer.NetStructures;
 
 public class CarEntityPosition : MonoBehaviour
 {
-    [SerializeField] float speedTuning = 0.0019f;
     [SerializeField] Material solidMaterial, transparentMaterial;
     public CarModelManager carModelManager;
     TrackSpline trackSpline;
@@ -95,18 +94,16 @@ public class CarEntityPosition : MonoBehaviour
         if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.Turn){
             //offset is between -65 and 65, so we can use this to determine the distance
             float offset = horizontalOffset / 65f; //scale offset to -1 to 1
-            if(!TrackGenerator.track.GetSegmentReversed(segmentIdx)){ offset = -offset;  } //reverse the offset if the segment is reversed
+            if(TrackGenerator.track.GetSegmentReversed(segmentIdx)){ offset = -offset;  } //reverse the offset if the segment is reversed
             distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
         }
+        //Debug.Log($"Distance: {distanceMM}mm, Offset: {horizontalOffset}, Segment: {segmentIdx}");
         // } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.PreFinishLine){
         //     distanceMM = 340; //pre start distance
         // } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.FinishLine){
         //     distanceMM = 220; //start distance
         // }
-        //speed is in mm/s
+        //speed is in mm/s  
         return ((float)speed / distanceMM) * deltaTime;
     }
-    // float GetProgressOld(float deltaTime){
-    //     return ((speedTuning * speed) * trackPieceLength) * deltaTime;
-    // }
 }

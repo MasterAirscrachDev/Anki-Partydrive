@@ -18,9 +18,11 @@ public class AIController : MonoBehaviour
 
     int currentTargetSpeed = 0;
     float currentTargetOffset = 0f;
+    bool setup = false; //setup variable to check if the AI is setup
     // Start is called before the first frame update
     void Start()
     {
+        if(setup){ return; } //if the AI is already setup, return
         carController = GetComponent<CarController>();
         carController.isAI = true; //set the car to AI
         carEntityTracker = FindObjectOfType<CarEntityTracker>();
@@ -29,13 +31,12 @@ public class AIController : MonoBehaviour
 
         carController.pcs.SetPlayerName(names[Random.Range(0, names.Length + 1)]); //set the player name to AI
         carController.SetColour(new Color(1, 0, 0)); //set the color to red
+
+        setup = true; //set the setup variable to true
     }
     public void SetID(string id){
         ourID = id;
-        if(carController == null){
-            carController = GetComponent<CarController>();
-            carController.SetColour(new Color(1, 0, 0)); //set the color to red
-        }
+        if(!setup){ Start();}
         UCarData carData = CarInteraface.io.GetCarFromID(id);
         carController.SetID(carData);
     }
@@ -73,6 +74,7 @@ public class AIController : MonoBehaviour
 
     void AILogic(){
         string[] trackedCars = carEntityTracker.GetActiveCars(ourID);
+        if(trackedCars.Length == 0){ return; } //if there are no cars to track, return
         (uint i, float x, float y)[] positions = new (uint, float, float)[trackedCars.Length];
         for (int c = 0; c < trackedCars.Length; c++)
         { positions[c] = carEntityTracker.GetCarIXY(trackedCars[c]); }

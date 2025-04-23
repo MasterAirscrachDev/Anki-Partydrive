@@ -22,7 +22,7 @@ public class TimeTrialMode : MonoBehaviour
         StartMode();
     }
     void StartMode(){
-        showText.text = "Place all cars on the track";
+        showText.text = "Place cars on the track";
         cms.SetGlobalLock(true);
         startButton.SetActive(true);
         menuButton.SetActive(true);
@@ -31,7 +31,7 @@ public class TimeTrialMode : MonoBehaviour
     public void LineupAndStart(){
         FindObjectOfType<UIManager>().SwitchToTrackCamera(true);
         startButton.SetActive(false);
-        FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, "");
+        FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
         cms.TTS("Supercars to the starting line");
         carInteraface.OnLineupEvent += OnLineupUpdate;
     }
