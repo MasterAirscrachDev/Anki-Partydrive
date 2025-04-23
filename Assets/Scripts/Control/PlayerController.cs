@@ -12,6 +12,10 @@ public class PlayerController : MonoBehaviour
     {
         iinput = GetComponent<PlayerInput>();
         carController = GetComponent<CarController>();
+        //get the total number of PlayerControllers in the scene
+        int playerCount = FindObjectsOfType<PlayerController>().Length;
+        carController.pcs.SetPlayerName($"Player {playerCount}");
+
     }
 
     // Update is called once per frame

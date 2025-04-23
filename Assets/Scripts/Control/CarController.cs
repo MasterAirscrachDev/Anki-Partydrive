@@ -14,9 +14,9 @@ public class CarController : MonoBehaviour
     float oldLane;
     bool isSetup = false;
     [SerializeField] bool locked = true;
+    public bool isAI = false;
     Color playerColor = Color.white;
     CarInteraface carInterface;
-    CMS cms;
     public PlayerCardSystem pcs;
     public CarsManagement carsManagement; //used when in the car selection screen
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
@@ -51,8 +51,7 @@ public class CarController : MonoBehaviour
         if(isSetup){ return; }
         isSetup = true;
         carInterface = CarInteraface.io;
-        cms = FindObjectOfType<CMS>();
-        cms.AddController(this);
+        FindObjectOfType<CMS>().AddController(this);
         ControlTicker();
         FindObjectOfType<PlayerCardmanager>().UpdateCardCount();
         int uiLayer = FindObjectOfType<UIManager>().GetUILayer();

@@ -10,16 +10,26 @@ public class CarPanel : MonoBehaviour
     [SerializeField] TMP_InputField nameInput;
     [SerializeField] Image playerColorImage;
     string carID, oldName;
+    bool isAI = false;
     // Start is called before the first frame update
-    public void Setup(string name, string id){
+    public void Setup(string name, string id, CarController currentController){
         nameInput.text = name;
         oldName = name;
         carID = id;
         speedBalanceButton.onClick.AddListener(OnSpeedBalanceButton);
         AIButton.onClick.AddListener(OnAIToggle);
         nameInput.onEndEdit.AddListener(OnNameChanged);
-    }
 
+        if(currentController != null){
+            if(currentController.isAI){
+                isAI = true;
+                AIButton.GetComponentInChildren<TextMeshProUGUI>().text = "Remove AI";
+            }
+            SetPlayerColor(currentController.GetPlayerColor());
+        }else{
+            SetPlayerColor(Color.clear);
+        }
+    }
     public void OnSpeedBalanceButton(){
         speedBalanceButton.interactable = false;
         //initiate speed balance for this car
@@ -29,8 +39,11 @@ public class CarPanel : MonoBehaviour
         FindObjectOfType<CarBalancer>().Setup(carID);
     }
     public void OnAIToggle(){
-        FindObjectOfType<CMS>().SpawnAI(carID);
+        CMS cms = FindObjectOfType<CMS>();
+        if(isAI){ cms.RemoveAI(carID); }
+        else{ cms.SpawnAI(carID); }
         AIButton.interactable = false;
+        FindObjectOfType<CarsManagement>().RenderCarList();
     }
 
     public void OnNameChanged(string name){
@@ -50,7 +63,7 @@ public class CarPanel : MonoBehaviour
         return carID;
     }
 
-    public void SetPlayerColor(Color color){
+    void SetPlayerColor(Color color){
         playerColorImage.color = color;
     }
 }

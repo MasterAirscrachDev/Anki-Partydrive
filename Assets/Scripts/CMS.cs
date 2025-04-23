@@ -35,6 +35,18 @@ public class CMS : MonoBehaviour
         AIController ai = bot.GetComponent<AIController>();
         ai.SetID(id);
     }
+    public void RemoveAI(string id){
+        foreach(CarController controller in controllers){
+            if(controller.GetID() == id){
+                Color c = controller.GetPlayerColor();
+                freeColors.Add(c);
+                usedColors.Remove(c);
+                controllers.Remove(controller);
+                Destroy(controller.gameObject);
+                break;
+            }
+        }
+    }
     public void SetGameMode(int mode){
         gameMode = (GameMode)mode;
     }

@@ -22,6 +22,7 @@ public class AIController : MonoBehaviour
     void Start()
     {
         carController = GetComponent<CarController>();
+        carController.isAI = true; //set the car to AI
         carEntityTracker = FindObjectOfType<CarEntityTracker>();
         carController.statSteerMod = 2; //AIs have more steering power
         string[] names = { "Jimmy Bot", "Bob Bot", "Doug Bot", "Gary Bot", "Jess Bot", "Sam Bot", "Kate Bot", "Dave Bot" };

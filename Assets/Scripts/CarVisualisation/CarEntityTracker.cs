@@ -9,7 +9,7 @@ public class CarEntityTracker : MonoBehaviour
     [SerializeField] GameObject carPrefab;
     [SerializeField] Dictionary<string, CarEntityPosition> trackers = new Dictionary<string, CarEntityPosition>();
 
-    public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, int trust){
+    public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, CarTrust trust){
         if(!track.hasTrack){ return; }
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
         TrackSpline trackPiece = track.GetTrackSpline(trackIndex);

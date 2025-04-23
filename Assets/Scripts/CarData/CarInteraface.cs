@@ -1,5 +1,6 @@
 using UnityEngine;
-using System.Net.Http;
+using System.Collections.Generic;
+using System.Collections;   
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System;
@@ -70,7 +71,7 @@ public class CarInteraface : MonoBehaviour
         ApiCallV2(SV_TR_START_SCAN, fins);
     }
     
-    public void CancelScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //idk on this one
+    public void CancelScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //called from ui
     
     public void ControlCar(UCarData car, int speed, int lane){
         if(car.charging){ return; }
@@ -125,7 +126,7 @@ public class CarInteraface : MonoBehaviour
                     break;
                 case EVENT_CAR_TRACKING_UPDATE:  
                     CarLocationData tracking = JsonConvert.DeserializeObject<CarLocationData>(webhookData.Payload.ToString());
-                    carEntityTracker.SetPosition(tracking.carID, tracking.trackIndex, tracking.speed, tracking.offset, tracking.trustLevel);
+                    carEntityTracker.SetPosition(tracking.carID, tracking.trackIndex, tracking.speed, tracking.offset, tracking.trust);
                     break;
                 case EVENT_CAR_DATA:
                     CarData[] carData = JsonConvert.DeserializeObject<CarData[]>(webhookData.Payload.ToString());
@@ -201,33 +202,23 @@ public class CarInteraface : MonoBehaviour
         { uCars[i] = new UCarData(cars[i]); }
         this.cars = uCars;
         LightData[] colors = new LightData[3];
-        colors[0] = new LightData{
-            channel = LightChannel.RED,
-            effect = LightEffect.THROB,
-            startStrength = 0,
-            endStrength = 250,
-            cyclesPer10Seconds = 5
-        };
-        colors[1] = new LightData{
-            channel = LightChannel.GREEN,
-            effect = LightEffect.THROB,
-            startStrength = 0,
-            endStrength = 250,
-            cyclesPer10Seconds = 6
-        };
-        colors[2] = new LightData{
-            channel = LightChannel.BLUE,
-            effect = LightEffect.THROB,
-            startStrength = 0,
-            endStrength = 250,
-            cyclesPer10Seconds = 7
-        };
-        for(int i = 0; i < cars.Length; i++){
-            SetCarColoursComplex(uCars[i], colors); //set the car colours to party mode
-        }
+        //white lights
+        colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
+        colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
+        colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
+
+        //Partylights
+        //colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 6 };
+        //colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 5 };
+        //colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 4 };
+        for(int i = 0; i < cars.Length; i++){ StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));  } //send the lights with a delay
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
         { cms.controllers[i].CheckCarExists(); }
+    }
+    IEnumerator SendLightsDelayed(UCarData car, LightData[] lights, float delay){
+        yield return new WaitForSeconds(delay);
+        SetCarColoursComplex(car, lights);
     }
     void GetCarInfo(){
         ApiCallV2(SV_GET_CARS, 0); //get the car data
@@ -239,7 +230,6 @@ public class CarInteraface : MonoBehaviour
     }
     public delegate void LineupCallback(string carID, int remainingCars);
     public event LineupCallback OnLineupEvent;
-
 
     void OnApplicationQuit() {
         ApiCallV2(SV_CLIENT_CLOSED, 0); //send the client closed message

@@ -28,8 +28,8 @@ public class TrackGenerator : MonoBehaviour
     }
 
     public TrackSpline GetTrackSpline(int index){
-        if(trackPieces[index] == null){ return null; }
         if(index >= trackPieces.Count){ index-= trackPieces.Count; }
+        if(trackPieces[index] == null){ return null; }
         return trackPieces[index].GetComponent<TrackSpline>();
     }
     public SegmentType GetSegmentType(int index){ index = LoopIndex(index); return segments[index].type; }

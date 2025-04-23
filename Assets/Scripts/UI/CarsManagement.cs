@@ -62,29 +62,24 @@ public class CarsManagement : MonoBehaviour
             Destroy(child.gameObject);
         }
         carPanels = new CarPanel[carInterface.cars.Length];
-        for (int i = 0; i < carInterface.cars.Length; i++){
+        for (int i = 0; i < carInterface.cars.Length; i++){ //for each car connected
             GameObject carItem = Instantiate(carListItemPrefab, carListParent);
             CarPanel carPanel = carItem.GetComponent<CarPanel>();
-            carPanel.Setup(carInterface.cars[i].name, carInterface.cars[i].id);
+            CarController carController = cms.GetController(carInterface.cars[i].id);
+
+
+            carPanel.Setup(carInterface.cars[i].name, carInterface.cars[i].id, carController);
             carPanels[i] = carPanel;
             RectTransform carItemRect = carItem.GetComponent<RectTransform>();
             carItemRect.anchoredPosition = new Vector2(carItemRect.anchoredPosition.x, (-i * 100) - 50);
-            bool found = false;
-            for(int j = 0; j < cms.controllers.Count; j++){
-                if(cms.controllers[j].GetID() == carInterface.cars[i].id){
-                    Color color = cms.controllers[j].GetPlayerColor();
-                    carPanel.SetPlayerColor(color);
-                    //convert the color to a int3
-                    int R = (int)(color.r * 255);
-                    int G = (int)(color.g * 255);
-                    int B = (int)(color.b * 255);
-                    carInterface.SetCarColours(carInterface.cars[i], R, G, B);
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){
-                carPanel.SetPlayerColor(Color.clear);
+            
+            if(carController != null){
+                Color color = carController.GetPlayerColor();
+                //convert the color to a int3
+                int R = (int)(color.r * 200);
+                int G = (int)(color.g * 200);
+                int B = (int)(color.b * 200);
+                carInterface.SetCarColours(carInterface.cars[i], R, G, B);
             }
         }
         RectTransform carListRect = carListParent.GetComponent<RectTransform>();

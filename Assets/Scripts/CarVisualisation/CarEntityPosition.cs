@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static OverdriveServer.NetStructures;
 
@@ -10,7 +8,7 @@ public class CarEntityPosition : MonoBehaviour
     public CarModelManager carModelManager;
     TrackSpline trackSpline;
     int speed = 0, segmentIdx = 0, shift = 0;
-    float trackPieceProgression = 0, trackPieceLength = 0, horizontalOffset = 0;
+    float trackPieceProgression = 0, horizontalOffset = 0;
     Vector3 lastPosition;
     TrackGenerator track;
     bool showOnTrack = true;
@@ -18,9 +16,9 @@ public class CarEntityPosition : MonoBehaviour
     {
         track = TrackGenerator.track;
         //if not the editor, destroy the mesh renderer
-        if(!Application.isEditor || true){
+        if(!Application.isEditor){
             GetComponent<MeshRenderer>().enabled = false;
-            Destroy(GetComponent<MeshFilter>());
+            if(!Application.isEditor){ Destroy(GetComponent<MeshFilter>()); }
         }
     }
 
@@ -40,7 +38,7 @@ public class CarEntityPosition : MonoBehaviour
                 transform.Rotate(0, 180, 0);
             }
         }
-        if(trackPieceProgression >= 1 && shift > 2){
+        if(trackPieceProgression >= 1 && shift < 2){
             trackPieceProgression = 0;
             shift++;
             trackSpline = track.GetTrackSpline(segmentIdx + shift);
@@ -53,7 +51,6 @@ public class CarEntityPosition : MonoBehaviour
             this.trackSpline = trackSpline;
             trackPieceProgression = 0;
             shift = 0;
-            //trackPieceLength = trackSpline.GetLength(horizontalOffset);
         }
     }
     public void SetOffset(float offset){
@@ -62,19 +59,19 @@ public class CarEntityPosition : MonoBehaviour
     public void SetSpeed(int speed){
         this.speed = speed;
     }
-    public void SetTrust(int trust){
-        GetComponent<MeshRenderer>().material = (trust > 1) ? solidMaterial : transparentMaterial;
-        carModelManager.SetHolo(trust < 2);
-        if(trust == 2){ //certainly on track
+    public void SetTrust(CarTrust trust){
+        bool isTrusted = trust == CarTrust.Trusted;
+        GetComponent<MeshRenderer>().material = isTrusted ? solidMaterial : transparentMaterial;
+        carModelManager.ShowTrustedModel(isTrusted);
+        if(isTrusted){ //certainly on track
             showOnTrack = true;
         }
-        else if(trust == 0){ //lost or delocalised
+        else if(trust == CarTrust.Delocalized){ //lost or delocalised
             showOnTrack = false; 
         }
     }
     public void Delocalise(){
         trackPieceProgression = 0;
-        //trackPieceLength = 0;
         trackSpline = null;
         speed = 0;
         shift = 0;
@@ -100,11 +97,12 @@ public class CarEntityPosition : MonoBehaviour
             float offset = horizontalOffset / 65f; //scale offset to -1 to 1
             if(!TrackGenerator.track.GetSegmentReversed(segmentIdx)){ offset = -offset;  } //reverse the offset if the segment is reversed
             distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
-        } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.PreFinishLine){
-            distanceMM = 340; //pre start distance
-        } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.FinishLine){
-            distanceMM = 220; //start distance
         }
+        // } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.PreFinishLine){
+        //     distanceMM = 340; //pre start distance
+        // } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.FinishLine){
+        //     distanceMM = 220; //start distance
+        // }
         //speed is in mm/s
         return ((float)speed / distanceMM) * deltaTime;
     }
