@@ -26,48 +26,74 @@ namespace OverdriveServer {
             return toSend.ToArray();
         }
         public async Task ConnectToCarAsync(BluetoothDevice carDevice, int model, int rssi){
-            FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
-            Save s = await fs.LoadFile($"{carDevice.Id}.dat");
-            ModelName modelName = (ModelName)model;
-            string name = $"{modelName} ({carDevice.Id})";
-            int speedBalance = 0;
-            bool hadConfig = false;
-            if(s != null) {
-                hadConfig = true;
-                name = s.GetVar("name", name); 
-                speedBalance = s.GetVar("speedBalance", 0);
-            }
-            //Program.Log($"[0] Connecting to car {name} [{modelName}], RSSI: {rssi}");
-
-            await carDevice.Gatt.ConnectAsync();
-            if(carDevice.Gatt.IsConnected){
-                Program.Log($"[0] Connected to car {name} [{modelName}], Rssi: {rssi}");
-                Car car = new Car(name, carDevice.Id, carDevice, speedBalance);
-                if(!hadConfig){
-                    s = new Save();
-                    s.SetVar("name", name);
-                    s.SetVar("speedBalance", 0);
+            try{
+                FileSuper fs = new FileSuper("AnkiServer", "ReplayStudios");
+                Save s = await fs.LoadFile($"{carDevice.Id}.dat");
+                ModelName modelName = (ModelName)model;
+                string name = $"{modelName} ({carDevice.Id})";
+                int speedBalance = 0;
+                bool hadConfig = false;
+                if(s != null) {
+                    hadConfig = true;
+                    name = s.GetVar("name", name); 
+                    speedBalance = s.GetVar("speedBalance", 0);
                 }
-                await fs.SaveFile($"{carDevice.Id}.dat", s); //update/create config file
-                GattService service = await car.device.Gatt.GetPrimaryServiceAsync(ServiceID);
-                if(service == null){ return; }
-                //subscribe to characteristic changed event on read characteristic
-                var characteristic = await service.GetCharacteristicAsync(ReadID);
-                if(characteristic == null){ return; }
-                cars.Add(carDevice.Id, car);
-                Program.bluetoothInterface.RemoveCarCheck(carDevice.Id);
-                CheckCarConnection(car).SafeFireAndForget();
-                characteristic.CharacteristicValueChanged += (sender, args) => { CarCharacteristicChanged(sender, args, car); };
-                await characteristic.StartNotificationsAsync();
-                await car.EnableSDKMode(true);
-                await car.RequestCarVersion();
-                await car.RequestCarBattery();
-                await Task.Delay(500);
-                Program.UtilLog($"{MSG_CAR_CONNECTED}:{car.id}:{car.name}");
-            }
-            else{
-                Program.Log($"[0] Failed to connect to car {name} [{modelName}]");
-                Program.bluetoothInterface.RemoveCarCheck(carDevice.Id);
+
+                await carDevice.Gatt.ConnectAsync();
+                if(carDevice.Gatt.IsConnected){
+                    Program.Log($"[0] Connected to car [{modelName}] {name}, Rssi: {rssi}");
+                    Car car = new Car(name, carDevice.Id, carDevice, speedBalance, model);
+                    if(rememberedSpeedOffset.ContainsKey(carDevice.Id)){
+                        (float offset, int speed) = rememberedSpeedOffset[carDevice.Id];
+                        car.SetSpeedOffset(offset, speed); //set the speed and offset to the remembered values
+                    }
+                    if(!hadConfig){
+                        s = new Save();
+                        s.SetVar("name", name);
+                        s.SetVar("speedBalance", 0);
+                    }
+                    await fs.SaveFile($"{carDevice.Id}.dat", s); //update/create config file
+                    GattService service = await car.device.Gatt.GetPrimaryServiceAsync(ServiceID);
+                    if(service == null){ return; }
+                    //subscribe to characteristic changed event on read characteristic
+                    
+                    var readCharacteristic = await service.GetCharacteristicAsync(ReadID);
+                    if(readCharacteristic == null){ 
+                        IReadOnlyList<GattCharacteristic> chars = await service.GetCharacteristicsAsync();
+                        
+                        foreach(GattCharacteristic c in chars){
+                            bool isRead = c.Properties.HasFlag(GattCharacteristicProperties.Read | GattCharacteristicProperties.Notify);
+                            if(isRead){
+                                Console.WriteLine($"Standard read characteristic missing, trying: {c.Uuid}");
+                                readCharacteristic = c; break; //found the read characteristic
+                            }
+                        }
+                        if(readCharacteristic == null){ 
+                            Program.Log($"[0] No read characteristic found for {name}"); 
+                            Program.bluetoothInterface.RemoveCarCheck(carDevice.Id); 
+                            carDevice.Gatt.Disconnect();
+                            car.Dispose(); //dispose of the car
+                            return;
+                        }
+                    }
+                    cars.Add(carDevice.Id, car);
+                    Program.bluetoothInterface.RemoveCarCheck(carDevice.Id);
+                    CheckCarConnection(car);
+                    readCharacteristic.CharacteristicValueChanged += (sender, args) => { CarCharacteristicChanged(sender, args, car); };
+                    await readCharacteristic.StartNotificationsAsync();
+                    await car.EnableSDKMode(true);
+                    await car.RequestCarVersion();
+                    await car.RequestCarBattery();
+                    await Task.Delay(500);
+                    Program.UtilLog($"{MSG_CAR_CONNECTED}:{car.id}:{car.name}");
+                }
+                else{
+                    Program.Log($"[0] Failed to connect to car {name} [{modelName}]");
+                    Program.bluetoothInterface.RemoveCarCheck(carDevice.Id);
+                }
+            }catch(Exception e){
+                Program.Log($"[0] Error connecting to car [{model}] {carDevice.Name}  {e}");
+                return;
             }
         }
         async Task CheckCarConnection(Car car){ //check if car is still connected every 5 seconds

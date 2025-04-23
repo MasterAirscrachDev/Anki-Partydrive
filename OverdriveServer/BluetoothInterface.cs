@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using AsyncAwaitBestPractices;
 using InTheHand.Bluetooth;
 
 namespace OverdriveServer {
@@ -10,10 +9,10 @@ namespace OverdriveServer {
             Bluetooth.AvailabilityChanged += (s, e) =>
             { Program.Log($"Bluetooth availability changed"); };
             Bluetooth.AdvertisementReceived += (sender, args) =>
-            { OnAdvertisementReceived(sender, args).SafeFireAndForget(); };
+            { OnAdvertisementReceived(sender, args); };
             StartBLEScan();
         }
-        public void ScanForCars(){ GetCars().SafeFireAndForget(); }
+        public void ScanForCars(){ GetCars(); }
         async Task StartBLEScan(){
             var leScanOptions = new BluetoothLEScanOptions();
             leScanOptions.AcceptAllAdvertisements = true;
@@ -27,7 +26,8 @@ namespace OverdriveServer {
             try {
                 // Use default request options for simplicity
                 var requestOptions = new RequestDeviceOptions();
-                requestOptions.AcceptAllDevices = true;
+                //requestOptions.AcceptAllDevices = true;
+                requestOptions.Filters.Add(new BluetoothLEScanFilter(){ Services = { CarSystem.ServiceID },  }); // Add the service UUID filter
                 // Create a cancellation token source with a timeout of 3 seconds
                 using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                 var cancellationToken = cancellationTokenSource.Token;
@@ -50,20 +50,19 @@ namespace OverdriveServer {
            if(args.Device == null) { return; }
             string Name = args.Name ?? "Unknown";
             try{
-                if(await args.Device.Gatt.GetPrimaryServiceAsync(CarSystem.ServiceID) != null) { //get by service id
-                    if(Program.carSystem.GetCar(args.Device.Id) == null && !checkingIDs.Contains(args.Device.Id)){
-                        checkingIDs.Add(args.Device.Id);
-                        //Program.Log($"Found car {Name} ({args.Device.Id})");
-                        int model = 0;
-                        if(args.ManufacturerData.Count > 0){ model = args.ManufacturerData[61374][1]; }
-                        //NetStructures.ModelName modelName = (NetStructures.ModelName)model;
-                        //Console.WriteLine($"Car Model: {modelName} ({model})");
-                        if(args.ManufacturerData.Count == 0) { Program.Log($"No manufacturer data"); }
-                        //foreach(var data in args.ServiceData) { Program.Log($"{data.Key}: {Program.BytesToString(data.Value)}"); }
-                        //Program.Log($"[0] car name: {Name}, id {args.Device.Id}, strength {args.Rssi}");
-                        Program.carSystem.ConnectToCarAsync(args.Device, model, args.Rssi);
-                    }
-                } 
+                if(!args.Uuids.Contains(CarSystem.ServiceID)) { return; } //check if the device is a car
+                if(Program.carSystem.GetCar(args.Device.Id) == null && !checkingIDs.Contains(args.Device.Id)){
+                    checkingIDs.Add(args.Device.Id);
+                    //Program.Log($"Found car {Name} ({args.Device.Id})");
+                    int model = 0;
+                    if(args.ManufacturerData.Count > 0){ model = args.ManufacturerData[61374][1]; }
+                    //NetStructures.ModelName modelName = (NetStructures.ModelName)model;
+                    //Console.WriteLine($"Car Model: {modelName} ({model})");
+                    if(args.ManufacturerData.Count == 0) { Program.Log($"No manufacturer data"); }
+                    //foreach(var data in args.ServiceData) { Program.Log($"{data.Key}: {Program.BytesToString(data.Value)}"); }
+                    //Program.Log($"[0] car name: {Name}, id {args.Device.Id}, strength {args.Rssi}");
+                    Program.carSystem.ConnectToCarAsync(args.Device, model, args.Rssi);
+                }
             }
             catch(Exception ex){
                 Program.Log($"Advertisement received, not car {Name} ({ex.Message})");

@@ -12,7 +12,7 @@ public class TrackSpline : MonoBehaviour
 
     Vector3[] PointsFromOffset(float offset){
         offset = Mathf.Clamp(offset, -70, 70);
-        offset *= 0.8f; //we actually dont want the true edges
+        offset *= 0.82f; //we actually dont want the true edges
         //scale offset to 0-1
         offset = (offset + 70) / 140;
 
