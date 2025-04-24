@@ -734,7 +734,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7701812964422263099}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -747,7 +747,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 76ef9830f4733ef4b82b93057b6b2f98, type: 2}
+  - {fileID: 2100000, guid: 342972559360e144982184f6103550c1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -781,10 +781,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c460fd53d8873fd469ef9c261e0bafe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedTuning: 0.0019
-  solidMaterial: {fileID: 2100000, guid: 342972559360e144982184f6103550c1, type: 2}
-  transparentMaterial: {fileID: 2100000, guid: 76ef9830f4733ef4b82b93057b6b2f98, type: 2}
-  carModelManager: {fileID: 0}
+  carModelManager: {fileID: 1918029577551728594}
 --- !u!1 &8127972614697361355
 GameObject:
   m_ObjectHideFlags: 0

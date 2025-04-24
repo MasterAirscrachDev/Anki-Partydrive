@@ -117,6 +117,7 @@ public class TimeTrialMode : MonoBehaviour
         }
     }
     public void OnLineupUpdate(string id, int remaining){
+        Debug.Log($"Lineup update: {id} {remaining}");
         if(remaining == 0){
             StartCoroutine(CountDown());
             carInteraface.OnLineupEvent -= OnLineupUpdate;

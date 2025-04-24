@@ -24,12 +24,12 @@ public class AIController : MonoBehaviour
     {
         if(setup){ return; } //if the AI is already setup, return
         carController = GetComponent<CarController>();
-        carController.isAI = true; //set the car to AI
+        carController.Setup(true); //setup the car controller
         carEntityTracker = FindObjectOfType<CarEntityTracker>();
         carController.statSteerMod = 2; //AIs have more steering power
         string[] names = { "Jimmy Bot", "Bob Bot", "Doug Bot", "Gary Bot", "Jess Bot", "Sam Bot", "Kate Bot", "Dave Bot" };
 
-        carController.pcs.SetPlayerName(names[Random.Range(0, names.Length + 1)]); //set the player name to AI
+        carController.pcs.SetPlayerName(names[Random.Range(0, names.Length)]); //set the player name to AI
         carController.SetColour(new Color(1, 0, 0)); //set the color to red
 
         setup = true; //set the setup variable to true

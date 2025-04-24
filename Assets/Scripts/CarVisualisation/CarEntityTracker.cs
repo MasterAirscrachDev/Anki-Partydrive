@@ -12,7 +12,7 @@ public class CarEntityTracker : MonoBehaviour
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, CarTrust trust){
         if(!track.hasTrack){ return; } //if no ttrack or we are on the finish line, do nothing
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
-        TrackSpline trackPiece = track.GetTrackSpline(trackIndex);
+        TrackSpline trackPiece = track.GetTrackSpline(trackIndex == 0 ? 1 : trackIndex); //track index 0 is the finish line, so we need to get the next piece of track
         if(entity == null){
             entity = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarEntityPosition>();
             entity.gameObject.name = $"{id} True Position";
@@ -21,8 +21,8 @@ public class CarEntityTracker : MonoBehaviour
             entity.carModelManager.Setup((int)CarInteraface.io.GetCarFromID(id).modelName); //make this load colour later
             trackers.Add(id, entity);
         }
+        if(trackPiece != null && trackIndex != 1){ entity.SetTrackSpline(trackPiece, trackIndex); }
         entity.SetTrust(trust);
-        if(trackPiece != null){ entity.SetTrackSpline(trackPiece, trackIndex); }
         entity.SetSpeed(speed);
         entity.SetOffset(horizontalOffset);
         if(trackIndex == 1 && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap

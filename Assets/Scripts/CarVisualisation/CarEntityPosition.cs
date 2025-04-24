@@ -3,7 +3,7 @@ using static OverdriveServer.NetStructures;
 
 public class CarEntityPosition : MonoBehaviour
 {
-    [SerializeField] Material solidMaterial, transparentMaterial;
+    Material ourMaterial;
     public CarModelManager carModelManager;
     TrackSpline trackSpline;
     int speed = 0, segmentIdx = 0, shift = 0;
@@ -18,6 +18,9 @@ public class CarEntityPosition : MonoBehaviour
         if(!Application.isEditor){
             GetComponent<MeshRenderer>().enabled = false;
             if(!Application.isEditor){ Destroy(GetComponent<MeshFilter>()); }
+        }else{
+            ourMaterial = GetComponent<MeshRenderer>().material; //get the material of the car
+            if(ourMaterial == null){ Debug.LogError("No material found on car entity"); }
         }
     }
 
@@ -42,6 +45,7 @@ public class CarEntityPosition : MonoBehaviour
             shift++;
             trackSpline = track.GetTrackSpline(segmentIdx + shift);
             if(trackSpline == null){trackSpline = track.GetTrackSpline(segmentIdx + ++shift); }
+            SetMat(false);
         }
     }
     public void SetTrackSpline(TrackSpline trackSpline, int idx){
@@ -60,13 +64,23 @@ public class CarEntityPosition : MonoBehaviour
     }
     public void SetTrust(CarTrust trust){
         bool isTrusted = trust == CarTrust.Trusted;
-        GetComponent<MeshRenderer>().material = isTrusted ? solidMaterial : transparentMaterial;
+        SetMat(isTrusted);
         carModelManager.ShowTrustedModel(isTrusted);
         if(isTrusted){ //certainly on track
             showOnTrack = true;
         }
         else if(trust == CarTrust.Delocalized){ //lost or delocalised
             showOnTrack = false; 
+        }
+    }
+    void SetMat(bool trusted){
+        if(ourMaterial != null){
+            //if trusted and shift == 0 set colour to solid blue
+            Color c = new Color(0, 0.3f, 1, 0.6f); //blue
+            if(!trusted){
+                c = shift == 0 ? new Color(1, 0.5f, 0, 0.4f) : new Color(0.4f, 0.6f, 0, 0.4f); //red or orange
+            }
+            ourMaterial.color = c;
         }
     }
     public void Delocalise(){
@@ -97,6 +111,7 @@ public class CarEntityPosition : MonoBehaviour
             if(TrackGenerator.track.GetSegmentReversed(segmentIdx)){ offset = -offset;  } //reverse the offset if the segment is reversed
             distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
         }
+        distanceMM = Mathf.RoundToInt(distanceMM * 1.1f); //tolerance
         //Debug.Log($"Distance: {distanceMM}mm, Offset: {horizontalOffset}, Segment: {segmentIdx}");
         // } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.PreFinishLine){
         //     distanceMM = 340; //pre start distance

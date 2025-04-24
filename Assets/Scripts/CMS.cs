@@ -14,6 +14,7 @@ public class CMS : MonoBehaviour
     CarInteraface carInterface;
     void Start() { 
         carInterface = CarInteraface.io;
+        StartCoroutine(GetCarInterface());
         //color list purple, green, red, blue
         freeColors.Add(new Color(1, 0, 1)); //purple/pink
         freeColors.Add(new Color(0, 1, 0)); //green
@@ -21,6 +22,10 @@ public class CMS : MonoBehaviour
         freeColors.Add(new Color(0, 0, 1)); //blue
         freeColors.Add(new Color(0, 1, 1)); //Cyan
         freeColors.Add(new Color(1, 1, 0)); //yellow
+    }
+    IEnumerator GetCarInterface(){
+        yield return new WaitForSeconds(0.5f);
+        carInterface = CarInteraface.io;
     }
     public void AddController(CarController controller, bool isAI = false){
         controllers.Add(controller);

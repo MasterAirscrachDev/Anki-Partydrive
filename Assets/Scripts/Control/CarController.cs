@@ -9,7 +9,7 @@ public class CarController : MonoBehaviour
     [SerializeField] float lane;
     [SerializeField] string carID;
     public float energy = 750;
-    public float maxEnergy = 1000;
+    public float maxEnergy = 100;
     int oldSpeed;
     float oldLane;
     bool isSetup = false;
@@ -42,18 +42,17 @@ public class CarController : MonoBehaviour
     //===================
     bool wasBoostLastFrame = false;
 
-    void Start(){
-        Setup();
-    }
     // Start is called before the first frame update
-    void Setup()
+    public void Setup(bool isAI)
     {
         if(isSetup){ return; }
+        this.isAI = isAI;
         isSetup = true;
         carInterface = CarInteraface.io;
         FindObjectOfType<CMS>().AddController(this, isAI);
-        ControlTicker();
-        FindObjectOfType<PlayerCardmanager>().UpdateCardCount();
+        ControlTicker(); //start the control ticker
+        FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
+
         int uiLayer = FindObjectOfType<UIManager>().GetUILayer();
         if(uiLayer == 2){
             carsManagement = FindObjectOfType<CarsManagement>();
@@ -62,21 +61,15 @@ public class CarController : MonoBehaviour
     }
     public void SetColour(Color c){
         playerColor = c;
-        if(pcs == null){
-            Setup();
-        }
     }
     public void SetCard(PlayerCardSystem pcs){
         //Debug.Log("SetCard");
         this.pcs = pcs;
-        //pcs.SetCharacterName(carInterface.cars[carIndex].characterName);
         UCarData carData = carInterface.GetCarFromID(carID);
+        Debug.Log($"SetCard: id {carID}, cardata {carData != null}, pcs: {pcs != null}");
         string text = "Sitting Out";
-        if(carData != null){
-            text = carData.name;
-        }
+        if(carData != null){ text = carData.name; }
         pcs.SetCarName(text);
-        //pcs.SetPosition(internalControlIndex + 1);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
         pcs.SetColor(playerColor);
     }
@@ -153,7 +146,7 @@ public class CarController : MonoBehaviour
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
 
         lane += Isteer * baseSteering * statSteerMod;
-        lane = Mathf.Clamp(lane, -64, 64);
+        lane = Mathf.Clamp(lane, -72.25f, 72.25f); //clamp lane to -72.25 to 72.25 (track bounds for overdrive track)
         pcs.SetEnergy((int)energy, (int)maxEnergy);
     }
     void Update(){

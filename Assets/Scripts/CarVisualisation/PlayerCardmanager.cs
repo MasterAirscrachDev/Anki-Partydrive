@@ -12,11 +12,9 @@ public class PlayerCardmanager : MonoBehaviour
     public void UpdateCardCount(){
         int count = cms.controllers.Count;
         //clear all cards
-        foreach(Transform child in cardParent){
-            Destroy(child.gameObject);
-        }
+        foreach(Transform child in cardParent){ Destroy(child.gameObject); }
         cards.Clear();
-        //create new cards cented wish 250 spacing
+        //create new cards cented with
         int offset = -10;
         const int spacing = 160;
         for(int i = 0; i < count; i++){

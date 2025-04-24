@@ -117,8 +117,8 @@ public class CarInteraface : MonoBehaviour
                         LocationData locationData = JsonConvert.DeserializeObject<LocationData>(webhookData.Payload.ToString());
                         int index = GetCar(locationData.carID);
                         if(index != -1){
-                            cars[index].offset = locationData.offset;
-                            cars[index].speed = locationData.speed;
+                            cars[index].offset = locationData.offsetMM;
+                            cars[index].speed = locationData.speedMMPS;
                         }
                     } catch (Exception e) {
                         Debug.LogError($"Error processing car position update: {e.Message}");
@@ -126,7 +126,7 @@ public class CarInteraface : MonoBehaviour
                     break;
                 case EVENT_CAR_TRACKING_UPDATE:  
                     CarLocationData tracking = JsonConvert.DeserializeObject<CarLocationData>(webhookData.Payload.ToString());
-                    carEntityTracker.SetPosition(tracking.carID, tracking.trackIndex, tracking.speed, tracking.offset, tracking.trust);
+                    carEntityTracker.SetPosition(tracking.carID, tracking.trackIndex, tracking.speedMMPS, tracking.offsetMM, tracking.trust);
                     break;
                 case EVENT_CAR_DATA:
                     CarData[] carData = JsonConvert.DeserializeObject<CarData[]>(webhookData.Payload.ToString());
@@ -224,6 +224,7 @@ public class CarInteraface : MonoBehaviour
         ApiCallV2(SV_GET_CARS, 0); //get the car data
     }
     public int GetCar(string id){
+        if(cars == null){ return -1; } //if cars is null, return -1 
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return i;} }
         return -1;
@@ -249,8 +250,8 @@ public class UCarData{ //used for unity (bc it cant serialize properties)
     public UCarData(CarData data){
         name = data.name;
         id = data.id;
-        offset = data.offset;
-        speed = data.speed;
+        offset = data.offsetMM;
+        speed = data.speedMMPS;
         charging = data.charging;
         onTrack = data.onTrack;
         batteryStatus = data.batteryStatus;

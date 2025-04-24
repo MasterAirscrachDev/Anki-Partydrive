@@ -59,6 +59,6 @@ public class PlayerCardSystem : MonoBehaviour
         if(attachmentIndex != 0){
             SetAttachment(0);
         }
-        gameObject.transform.GetChild(2).GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
+        gameObject.transform.GetChild(1).GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
     }
 }

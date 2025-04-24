@@ -8,7 +8,7 @@ namespace OverdriveServer{
     public static class NetStructures{
         [System.Serializable]
         public class WebhookData { //This is the data structure used to send and receive data from the server
-            public string EventType { get; set; } //Event type, EVENT_... is to cient, SV_... is to server
+            public string EventType { get; set; } //Event type, EVENT_... is to client, SV_... is to server
             public object Payload { get; set; }
         }
         [System.Serializable]
@@ -16,8 +16,8 @@ namespace OverdriveServer{
             public string name {get; set;} //Custom name
             public int model {get; set;} //ModelName
             public string id {get; set;} //Bluetooth ID
-            public float offset {get; set;} //Horizontal Offset mm +/-
-            public int speed {get; set;} //Speed in mm/s
+            public float offsetMM {get; set;} //Horizontal Offset mm +/-
+            public int speedMMPS {get; set;} //Speed in mm/s
             public bool charging {get; set;} //Is On Charger (should take priority over onTrack)
             public bool onTrack {get; set;} //Is the car on the track (doesnt seem very useful) (Addendum: goated)
             public int batteryStatus {get; set;} //0 = normal, 1 = charged, -1 = low battery
@@ -27,7 +27,7 @@ namespace OverdriveServer{
             public string carID {get; set;} //Car ID (Bluetooth ID)
             public int trackPiece {get; set;} //Track Piece Idx (Will be 0)
             public int oldTrackPiece {get; set;} //Previous Track Piece Idx (Will be 0)
-            public float offset {get; set;} //Offset in mm (may not be accurate)
+            public float offsetMM {get; set;} //Offset in mm (may not be accurate)
             public int uphillCounter {get; set;} //Uphill counter
             public int downhillCounter {get; set;} //Downhill counter
             public int leftWheelDistance {get; set;} //Left Wheel Distance Traveled in mm
@@ -37,18 +37,18 @@ namespace OverdriveServer{
         [System.Serializable]
         public class LocationData { //This is sent, but i reccommend using SegmentData instead
             public string carID {get; set;} //Car ID (Bluetooth ID)
-            public int locationID {get; set;} //Location ID (If you know how this works then you should probably be making your own server)
+            public int locationID {get; set;} //Location ID (If you know how this works then you should probably be making your own software)
             public int trackID {get; set;} //Track ID (resolves to a segmentType with conversion)
-            public float offset {get; set;} //Offset in mm (may not be accurate)
-            public int speed {get; set;} //Speed in mm/s
+            public float offsetMM {get; set;} //Offset from track center in mm (may not be accurate)
+            public int speedMMPS {get; set;} //Speed in mm/s
             public bool reversed {get; set;} //Is the track segment reversed (This doesn't mean the car is reversed)
         }
         [System.Serializable]
         public class CarLocationData { //Sent by OverdriveServer Tracking (Should be the most accurate)
             public string carID {get; set;} //Car ID (Bluetooth ID)
             public int trackIndex {get; set;} //Track Index (you should have a track saved at this point)
-            public int speed {get; set;} //Speed in mm/s
-            public float offset {get; set;} //Offset in mm
+            public int speedMMPS {get; set;} //Speed in mm/s
+            public float offsetMM {get; set;} //Offset in mm
             public CarTrust trust {get; set;} //Car Trust (see CarTrust)
         }
         [System.Serializable]
@@ -70,6 +70,11 @@ namespace OverdriveServer{
         }
         [System.Serializable]
         public enum LightChannel{ RED = 0, TAIL, BLUE, GREEN, FRONTL, FRONTR, LIGHT_COUNT }
+        // STEADY = Simply set the light intensity to 'start' value
+        // FADE = Fade intensity from 'start' to 'end'
+        // THROB = Fade intensity from 'start' to 'end' and back to 'start'
+        // FLASH = Turn on LED between time 'start' and time 'end' inclusive
+        // RANDOM = Flash the LED erratically - ignoring start/end
         [System.Serializable]
         public enum LightEffect{ STEADY = 0, FADE, THROB, FLASH, RANDOM, COUNT }
 
@@ -115,7 +120,9 @@ namespace OverdriveServer{
             MSG_TR_SCAN_UPDATE = "skup", //:carID:trackValidated (true/false/in-progress)
             MSG_CAR_STATUS_UPDATE = "csu", //:carID (a cars status has changed, call /cars)
             MSG_LINEUP = "lu", //:carID:remainingCars (if 0 then lineup is complete)
-            MSG_CAR_FLASH_PROGRESS = "cfp"; //:carID:currBytes:totalBytes (both ints, used to indicate the progress of a car flash)
+            MSG_CAR_FLASH_PROGRESS = "cfp", //:carID:currBytes:totalBytes (both ints, used to indicate the progress of a car flash)
+            MSG_CAR_JUMPED = "jump", //:carID (a car has jumped, used to indicate a car has jumped a segment)
+            MSG_CAR_LANDED = "land"; //:carID:success (a car has landed, used to indicate a car has landed successfully or not after a jump)
         }
         public enum ModelName{
             //Drive
