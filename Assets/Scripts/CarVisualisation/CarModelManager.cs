@@ -15,12 +15,11 @@ public class CarModelManager : MonoBehaviour
             if(models[i].id == modelIndex){
                 Destroy(model.transform.GetChild(2).gameObject); // Destroy the old model
                 Instantiate(models[i].modelPref, model.transform); // Instantiate the new model
-                //set the new models index in heirarchy to 2
-                model.transform.GetChild(2).SetSiblingIndex(2); // Set the new model's index in the hierarchy to 2
 
-                Material[] materials = model.transform.GetChild(0).GetComponent<Renderer>().materials; // Get the materials of the new model
-                model.transform.GetChild(0).GetComponent<Renderer>().material.color = models[i].defaultColor; // Set the default color
-
+                Material[] materials = model.transform.GetChild(2).GetComponent<Renderer>().materials; // Get the materials of the new model
+                //model.transform.GetChild(2).GetComponent<Renderer>().material.color = models[i].defaultColor; // Set the default color
+                materials[0].color = models[i].defaultColor; // Set the default color
+                model.transform.GetChild(2).GetComponent<Renderer>().materials = materials; // Set the new materials
                 break;
             }
         }

@@ -21,33 +21,24 @@ public class CarsManagement : MonoBehaviour
         }   
         backButton.SetActive(!cms.isGame);
         raceButton.SetActive(cms.isGame);
-        foreach(CarController controller in cms.controllers){
-            controller.carsManagement = this;
-        }
+        foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(this); }
         RenderCarList();
     }
     void OnDisable() {
         backButton.SetActive(false);
         raceButton.SetActive(false);
-        foreach(CarController controller in cms.controllers){
-            controller.carsManagement = null;
-        }
+        foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(null); }
     }
-    public void NextCar(CarController change){
-        string ID = change.GetID();
-        int index = carInterface.GetCar(ID);
-        //Debug.Log($"Current Car is {index}");
+    public void NextCar(CarController change) {
+        int index = carInterface.GetCarIndex(change.GetID());
         index++;
-        if(index >= carInterface.cars.Length){
-            index = -1;
-        }
-        //Debug.Log($"Next Car is {index}");
-        if(index == -1){
-            change.SetID(null);
-        }else{
-            change.SetID(carInterface.cars[index]);
-        }
+        //while the index is less than the number of cars, and the car at that index does not have a controller, increment the index
+        //if the index is greater than the number of cars, set it to -1 and break
+        while(index < carInterface.cars.Length && cms.GetController(carInterface.cars[index].id) != null){ index++; }
+        if(index >= carInterface.cars.Length){ index = -1; } //if the index is greater than the number of cars, set it to -1
 
+
+        change.SetCar(index == -1 ? null : carInterface.cars[index]);
         RenderCarList();
     }
     public void LoadGamemode(){

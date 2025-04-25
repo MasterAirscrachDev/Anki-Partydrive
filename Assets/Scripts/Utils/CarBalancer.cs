@@ -171,7 +171,7 @@ public class CarBalancer : MonoBehaviour
         }
         return true;
     }
-    void OnFinish(string id){
+    void OnFinish(string id, bool score){
         if(id == carID){
             if(!trackingLaps){
                 trackingLaps = true;
@@ -260,7 +260,9 @@ public class CarBalancer : MonoBehaviour
             messageText.text = $"Car not found in file system\n";
             return;
         }else{
-            s.SetVar("speedBalance", speedMod);
+            int speedBalance = s.GetVar("speedBalance", 0);
+            speedBalance += speedMod;
+            s.SetVar("speedBalance", speedBalance);
         }
         await fs.SaveFile($"{id}.dat", s);
         messageText.text = $"Car speed mod saved to file\n";

@@ -19,6 +19,7 @@ public class AIController : MonoBehaviour
     int currentTargetSpeed = 0;
     float currentTargetOffset = 0f;
     bool setup = false; //setup variable to check if the AI is setup
+    bool inputsLocked = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,34 +30,50 @@ public class AIController : MonoBehaviour
         carController.statSteerMod = 2; //AIs have more steering power
         string[] names = { "Jimmy Bot", "Bob Bot", "Doug Bot", "Gary Bot", "Jess Bot", "Sam Bot", "Kate Bot", "Dave Bot" };
 
-        carController.pcs.SetPlayerName(names[Random.Range(0, names.Length)]); //set the player name to AI
+        carController.SetPlayerName(names[Random.Range(0, names.Length)]); //set the player name to AI
         carController.SetColour(new Color(1, 0, 0)); //set the color to red
 
         setup = true; //set the setup variable to true
     }
-    public void SetID(string id){
+    public void EnteredCarManagement(){
+        if(carController.GetCarID() == ""){ //if ourID is not set,
+            FindObjectOfType<CMS>().RemoveAI(ourID); //remove this AI and Controller
+        }
+    }
+    public void SetID(string id){ //Sets our Car or tries to reconnect to the car
         ourID = id;
         if(!setup){ Start();}
         UCarData carData = CarInteraface.io.GetCarFromID(id);
-        carController.SetID(carData);
+        carController.SetCar(carData);
+    }
+    public void SetInputsLocked(bool locked){
+        inputsLocked = locked; //set the inputs locked variable to the given value
+        if(!locked){
+            AILogic(); //if the inputs have just been unlocked, run the AI logic once
+            UpdateInputs(); //update the inputs
+            carController.DoControlImmediate(); //update the car controller immediately
+        }
     }
 
     // Update is called once per frame
     void Update() {
-        timer += Time.deltaTime;
-        if(timer > timeout){
-            timer = 0f;
-            AILogic();
-        }
-
-        (int controllerSpeed, float controllerOffset) = carController.GetMetrics(); //get the current speed and offset of the car
-        carController.Iaccel = currentTargetSpeed > controllerSpeed ? 1 : 0; //set the acceleration to 1 if we want to go faster, -1 if we want to go slower
-        
-        if(Mathf.Abs(currentTargetOffset - controllerOffset) < 2f){ //if we are close to the target offset, set the steering to 0
-            carController.Isteer = 0;
+        if(!inputsLocked){
+            timer += Time.deltaTime;
+            if(timer > timeout){
+                timer = 0f;
+                AILogic();
+            }
+            UpdateInputs(); //update the inputs if they are not locked
+            
         }else{
-            carController.Isteer = Mathf.Clamp(currentTargetOffset - controllerOffset, -1f, 1f); //set the steering to the difference between the target offset and the current offset
+            carController.Iaccel = 0; //if the inputs are locked, set the acceleration to 0
+            carController.Isteer = 0; //if the inputs are locked, set the steering to 0
+            carController.Iboost = false; //if the inputs are locked, set the boost to false
+            carController.Idrift = 0; //if the inputs are locked, set the drift to 0
+            carController.IitemA = false; //if the inputs are locked, set the item A to false
+            carController.IitemB = false; //if the inputs are locked, set the item B to false
         }
+        
 
         if(setCarID != ""){ //if we have a car ID set, set the car ID to the one we have set
             SetID(setCarID);
@@ -71,6 +88,19 @@ public class AIController : MonoBehaviour
             }
         }
     }
+    void UpdateInputs(){
+        (int controllerSpeed, float controllerOffset) = carController.GetMetrics(); //get the current speed and offset of the car
+        carController.Iaccel = currentTargetSpeed > controllerSpeed ? 1 : 0; //set the acceleration to 1 if we want to go faster, -1 if we want to go slower
+        
+        if(Mathf.Abs(currentTargetOffset - controllerOffset) < 2f){ //if we are close to the target offset, set the steering to 0
+            carController.Isteer = 0;
+        }else{
+            carController.Isteer = Mathf.Clamp(currentTargetOffset - controllerOffset, -1f, 1f); //set the steering to the difference between the target offset and the current offset
+        }
+    }
+
+    //lane values may seem odd, they are based on the true lanes
+    //{72.25f, 63.75f, 55.25f, 46.75f, 38.25f, 29.75f, 21.25f, 12.75f, 4.25f, -4.25f, -12.75f, -21.25f, -29.75f, -38.25f, -46.75f, -55.25f, -63.75f, -72.25f};
 
     void AILogic(){
         string[] trackedCars = carEntityTracker.GetActiveCars(ourID);
@@ -109,16 +139,16 @@ public class AIController : MonoBehaviour
 
                 //move away from the car in front of us
                 if(opposingOffset > 0){ //if the car is on the right, move to the left
-                    targetOffset = -50f; //move to the left
+                    targetOffset = -55f; //move to the left
                     log += $"Left {targetOffset}"; //add to the log if we are moving to the left
                 }else if(opposingOffset < 0){ //if the car is on the left, move to the right
-                    targetOffset = 50f; //move to the right
+                    targetOffset = 55f; //move to the right
                     log += $"Right {targetOffset}"; //add to the log if we are moving to the right
                 }
 
             }else{ //move to the inside of the turn
                 bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + (int)I); //check if the next segment is reversed
-                targetOffset = turnReversed ? 45f : -45f; //move to the inside of the turn
+                targetOffset = turnReversed ? 46f : -46f; //move to the inside of the turn
                 targetSpeed = 500 + (onTurnNow ? 0 : 100);
                 log += $"Inside Turn {targetOffset}"; //add to the log if we are moving to the inside of the turn
             }
@@ -137,15 +167,15 @@ public class AIController : MonoBehaviour
                 { if(positions[i].i == I){ opposingOffset = positions[i].x; break; } } //get the offset of the car in front of us
                 //move away from the car in front of us
                 if(opposingOffset > 0){ //if the car is on the right, move to the left
-                    targetOffset = -50f; //move to the left
+                    targetOffset = -55f; //move to the left
                     log += $"Left {targetOffset}"; //add to the log if we are moving to the left
                 }else if(opposingOffset < 0){ //if the car is on the left, move to the right
-                    targetOffset = 50f; //move to the right
+                    targetOffset = 55f; //move to the right
                     log += $"Right {targetOffset}"; //add to the log if we are moving to the right
                 }
             }
             else{ //if there are no cars close, set the target offset to 0
-                targetOffset = 0f; //move to the center of the track
+                targetOffset = 4f; //move to the center of the track
                 log += $"Center {targetOffset}"; //add to the log if we are moving to the center of the track
                 targetSpeed = 1000; //set the target speed to the max speed
             }

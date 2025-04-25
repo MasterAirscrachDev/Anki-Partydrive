@@ -62,7 +62,7 @@ Shader "Custom/GridMirror"
             // Existing lighting calculations...
             o.Albedo = gridColor.rgb;
             o.Metallic = _Metallic;
-            o.Smoothness = _Glossiness;
+            o.Smoothness = isOnGridLine ? 0.0 : _Glossiness;
             o.Alpha = gridColor.a;
         }
         ENDCG

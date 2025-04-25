@@ -33,6 +33,7 @@ public class TimeTrialMode : MonoBehaviour
         startButton.SetActive(false);
         FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
         cms.TTS("Supercars to the starting line");
+        carTimes.Clear();
         carInteraface.OnLineupEvent += OnLineupUpdate;
     }
     IEnumerator CountDown(){
@@ -64,8 +65,8 @@ public class TimeTrialMode : MonoBehaviour
         StartCoroutine(EndGame());
         StartCoroutine(StartListeningForFinishLine());
     }
-    IEnumerator StartListeningForFinishLine(){ //2 seconds after the start
-        yield return new WaitForSeconds(1);
+    IEnumerator StartListeningForFinishLine(){ //3 seconds after the start
+        yield return new WaitForSeconds(3);
         carEntityTracker.OnCarCrossedFinishLine += CarCrossedFinish;
     }
     IEnumerator EndGame(){
@@ -90,7 +91,7 @@ public class TimeTrialMode : MonoBehaviour
         menuButton.SetActive(true);
         replayButton.SetActive(true);
     }
-    public void CarCrossedFinish(string carID){
+    public void CarCrossedFinish(string carID, bool score){
         //is there a carTime for this car?
         CarTime ct = carTimes.Find(x => x.id == carID);
         if(ct == null){
@@ -99,13 +100,16 @@ public class TimeTrialMode : MonoBehaviour
             carTimes.Add(ct);
         }
         else{
-            //set the lap time if it is less than the current lap time
-            float newLapTime = Time.time - ct.lapStartedTime;
-            if(ct.bestLapTime == 0 || newLapTime < ct.bestLapTime){
-                ct.bestLapTime = newLapTime;
-                cms.TTS($"{cms.CarNameFromId(carID)} did a new fastest lap");
-                cms.GetController(carID).SetTimeTrialTime(ct.bestLapTime);
+            if(score){
+                //set the lap time if it is less than the current lap time
+                float newLapTime = Time.time - ct.lapStartedTime;
+                if(ct.bestLapTime == 0 || newLapTime < ct.bestLapTime){
+                    ct.bestLapTime = newLapTime;
+                    cms.TTS($"{cms.CarNameFromId(carID)} did a new fastest lap");
+                    cms.GetController(carID).SetTimeTrialTime(ct.bestLapTime);
+                }
             }
+            
             ct.lapStartedTime = Time.time;
         }
         //sort the list by lap time (but put cars with no lap time at the end)
@@ -117,7 +121,7 @@ public class TimeTrialMode : MonoBehaviour
         }
     }
     public void OnLineupUpdate(string id, int remaining){
-        Debug.Log($"Lineup update: {id} {remaining}");
+        //Debug.Log($"Lineup update: {id} {remaining}");
         if(remaining == 0){
             StartCoroutine(CountDown());
             carInteraface.OnLineupEvent -= OnLineupUpdate;

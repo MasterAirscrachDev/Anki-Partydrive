@@ -26,7 +26,8 @@ public class CarEntityTracker : MonoBehaviour
         entity.SetSpeed(speed);
         entity.SetOffset(horizontalOffset);
         if(trackIndex == 1 && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
-            OnCarCrossedFinishLine?.Invoke(id);
+            OnCarCrossedFinishLine?.Invoke(id, entity.wasDelocalisedThisLap);
+            entity.wasDelocalisedThisLap = false; //reset the delocalised flag for the next lap
         }
     }
     public void CarDelocalised(string id){
@@ -61,6 +62,6 @@ public class CarEntityTracker : MonoBehaviour
         }
         return (0, 0, 0);
     }
-    public delegate void CarCrossedFinishLine(string id);
+    public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;
 }

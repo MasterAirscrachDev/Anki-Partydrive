@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
         carController.Setup(false); //setup the car controller
         //get the total number of PlayerControllers in the scene
         int playerCount = FindObjectsOfType<PlayerController>().Length;
-        carController.pcs.SetPlayerName($"Player {playerCount}");
+        carController.SetPlayerName($"Player {playerCount}");
 
     }
 

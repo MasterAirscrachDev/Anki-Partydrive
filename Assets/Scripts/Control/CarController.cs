@@ -16,9 +16,10 @@ public class CarController : MonoBehaviour
     [SerializeField] bool locked = true;
     public bool isAI = false;
     Color playerColor = Color.white;
+    string playerName = "Player";
     CarInteraface carInterface;
     public PlayerCardSystem pcs;
-    public CarsManagement carsManagement; //used when in the car selection screen
+    CarsManagement carsManagement; //used when in the car selection screen
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     //INPUT VALUES======
     public float Iaccel;
@@ -32,6 +33,7 @@ public class CarController : MonoBehaviour
     const int maxTargetSpeed = 800;
     const int minTargetSpeed = 50;
     const int baseBoostSpeed = 50;
+    const float baseBoostCost = 0.5f;
     const float baseEnergyGain = 0.01f;
     const float baseSteering = 0.7f;
     public float statSpeedMod = 1f;
@@ -57,10 +59,15 @@ public class CarController : MonoBehaviour
         if(uiLayer == 2){
             carsManagement = FindObjectOfType<CarsManagement>();
         }
-            
     }
     public void SetColour(Color c){
         playerColor = c;
+        if(pcs == null){ return; }
+        pcs.SetColor(c);
+    }
+    public void SetPlayerName(string name){
+        playerName = name;
+        pcs.SetPlayerName(name);
     }
     public void SetCard(PlayerCardSystem pcs){
         //Debug.Log("SetCard");
@@ -70,8 +77,18 @@ public class CarController : MonoBehaviour
         string text = "Sitting Out";
         if(carData != null){ text = carData.name; }
         pcs.SetCarName(text);
+        pcs.SetPlayerName(playerName);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
         pcs.SetColor(playerColor);
+    }
+    public void AssignCarsManager(CarsManagement carsManagement){
+        this.carsManagement = carsManagement;
+        if(carsManagement != null){ 
+            AIController ai = GetComponent<AIController>();
+            if(ai != null){
+                ai.EnteredCarManagement();
+            }
+        }
     }
 
     public void AddSpeedModifier(int mod, bool isPercentage, float time, string ID = null){
@@ -80,10 +97,11 @@ public class CarController : MonoBehaviour
             for(int i = 0; i < speedModifiers.Count; i++){
                 if(speedModifiers[i].ID == ID){
                     speedModifiers[i] = new SpeedModifer(mod, isPercentage, time, ID);
-                    break;
+                    return;
                 }
             }
         }
+        speedModifiers.Add(new SpeedModifer(mod, isPercentage, time, ID));
     }
     public void StopCar(){
         speed = 0;
@@ -103,9 +121,12 @@ public class CarController : MonoBehaviour
             }
         }
     }
+    public void DoControlImmediate(){
+        carInterface.ControlCar(carInterface.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
+    }
     void FixedUpdate(){
         if(Iaccel > 0 && Iboost && energy > 1){
-            energy -= 6f;
+            energy -= baseBoostCost;
             if(energy < 0){ energy = 0; }
             AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");
         } else if(!Iboost && energy < maxEnergy){
@@ -158,14 +179,14 @@ public class CarController : MonoBehaviour
         wasBoostLastFrame = Iboost;
     }
     public void CheckCarExists(){
-        int idx = carInterface.GetCar(carID);
+        int idx = carInterface.GetCarIndex(carID);
         if(idx == -1){
             //Debug.LogError($"Car {carID} has disconnected!");
             carID = "";
             pcs.SetCarName("Disconnected");
         }
     }
-    public void SetID(UCarData data){
+    public void SetCar(UCarData data){
         if(data == null){
             carID = "";
             pcs.SetCarName("Sitting Out");
@@ -177,7 +198,17 @@ public class CarController : MonoBehaviour
     }
     public (int, float) GetMetrics(){ return (speed, lane); }
     public string GetCarID(){ return carID; }
-    public void SetLocked(bool state){ locked = state; }
+    public void SetLocked(bool state){ 
+        locked = state; 
+        //if we also have a AIController, set the inputs locked to the same value
+        AIController ai = GetComponent<AIController>();
+        if(ai != null){
+            ai.SetInputsLocked(state);
+        }
+        else if(!locked){
+            DoControlImmediate(); //if we are unlocked, set the car to the current speed and lane
+        }
+    }
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
     public void SetPosition(int position){ pcs.SetPosition(position); }

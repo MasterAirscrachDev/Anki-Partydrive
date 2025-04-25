@@ -10,12 +10,14 @@ public class CarEntityPosition : MonoBehaviour
     float trackPieceProgression = 0, horizontalOffset = 0;
     Vector3 lastPosition;
     TrackGenerator track;
-    bool showOnTrack = true;
+    bool showOnTrack = true; 
+    public bool wasDelocalisedThisLap = false;
+    readonly bool SHOW_ANYWAY = false; //Debugging to show hitbox in editor
     void Start()
     {
         track = TrackGenerator.track;
         //if not the editor, destroy the mesh renderer
-        if(!Application.isEditor){
+        if(!Application.isEditor || !SHOW_ANYWAY){
             GetComponent<MeshRenderer>().enabled = false;
             if(!Application.isEditor){ Destroy(GetComponent<MeshFilter>()); }
         }else{
@@ -89,6 +91,7 @@ public class CarEntityPosition : MonoBehaviour
         speed = 0;
         shift = 0;
         showOnTrack = false;
+        wasDelocalisedThisLap = true;
         transform.position = transform.position + new Vector3(0, -10, 0); //reset position to the last known position
     }
     public bool IsDelocalised(){

@@ -74,7 +74,7 @@ public class CarInteraface : MonoBehaviour
     public void CancelScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //called from ui
     
     public void ControlCar(UCarData car, int speed, int lane){
-        if(car.charging){ return; }
+        if(car == null || car.charging){ return; }
         WebhookData data = new WebhookData{
             EventType = SV_CAR_MOVE,
             Payload = $"{car.id}:{speed}:{lane}"
@@ -115,7 +115,7 @@ public class CarInteraface : MonoBehaviour
                 case EVENT_CAR_LOCATION:
                     try {
                         LocationData locationData = JsonConvert.DeserializeObject<LocationData>(webhookData.Payload.ToString());
-                        int index = GetCar(locationData.carID);
+                        int index = GetCarIndex(locationData.carID);
                         if(index != -1){
                             cars[index].offset = locationData.offsetMM;
                             cars[index].speed = locationData.speedMMPS;
@@ -165,14 +165,14 @@ public class CarInteraface : MonoBehaviour
             string carID = c[1];
             int speed = int.Parse(c[2]);
             int trueSpeed = int.Parse(c[3]);
-            int index = GetCar(carID);
+            int index = GetCarIndex(carID);
             if(index != -1){
                 cars[index].speed = speed;
                 carEntityTracker.SetSpeed(cars[index].id, speed);
             }
         } else if(c[0] == MSG_CAR_POWERUP){ //powerup
             string carID = c[1];
-            int index = GetCar(carID);
+            int index = GetCarIndex(carID);
             if(index != -1){
                 
             }
@@ -223,7 +223,7 @@ public class CarInteraface : MonoBehaviour
     void GetCarInfo(){
         ApiCallV2(SV_GET_CARS, 0); //get the car data
     }
-    public int GetCar(string id){
+    public int GetCarIndex(string id){
         if(cars == null){ return -1; } //if cars is null, return -1 
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return i;} }

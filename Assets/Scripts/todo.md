@@ -3,21 +3,18 @@
 
 # For Demo 2.0.0
 ## Just coding
-- Car models dont inherit player color
-- Remove AIs when entering cars management if they dont have a connected car
+- Car Models are blue
 
 ## UI Stuff too
-
 - Car Management Menu
  - Edit Car Names
- - Toggle AI
 
 
 
 # For Demo 3.0.0 and beyond
 
 ## Just coding
-- Speed Balance doesnt account for existing offsets
+- Car models dont inherit player color
 - AI States
  - Speed (just go fast, the current one)
  - Persuit (follow another car)
