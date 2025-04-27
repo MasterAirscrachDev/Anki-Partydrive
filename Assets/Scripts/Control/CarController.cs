@@ -17,8 +17,9 @@ public class CarController : MonoBehaviour
     public bool isAI = false;
     Color playerColor = Color.white;
     string playerName = "Player";
-    CarInteraface carInterface;
-    public PlayerCardSystem pcs;
+    CarInteraface carInterface; //used to send commands to the car
+    CMS cms; //interface for gamemodes
+    public PlayerCardSystem pcs; //used to update the UI
     CarsManagement carsManagement; //used when in the car selection screen
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     //INPUT VALUES======
@@ -51,7 +52,8 @@ public class CarController : MonoBehaviour
         this.isAI = isAI;
         isSetup = true;
         carInterface = CarInteraface.io;
-        FindObjectOfType<CMS>().AddController(this, isAI);
+        cms = FindObjectOfType<CMS>();
+        cms.AddController(this, isAI);
         ControlTicker(); //start the control ticker
         FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
@@ -127,11 +129,15 @@ public class CarController : MonoBehaviour
     void FixedUpdate(){
         if(Iaccel > 0 && Iboost && energy > 1){
             energy -= baseBoostCost;
-            if(energy < 0){ energy = 0; }
             AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");
         } else if(!Iboost && energy < maxEnergy){
             energy += baseEnergyGain * statEnergyMod;
             if(energy > maxEnergy){ energy = maxEnergy; }
+        }
+
+        if(energy < 0){ 
+            energy = 0; 
+            cms.OnCarOutOfEnergyCarCallback(carID, this); //call the event for no energy
         }
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed * statSpeedMod, Iaccel);

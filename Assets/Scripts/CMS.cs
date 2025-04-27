@@ -7,7 +7,7 @@ public class CMS : MonoBehaviour
 {
     [SerializeField] GameObject botPrefab;
     public readonly List<CarController> controllers = new List<CarController>();
-    public GameMode gameMode = GameMode.None;
+    public string gameMode = "";
     public bool isGame = false;
     List<Color> freeColors = new List<Color>();
     List<Color> usedColors = new List<Color>();
@@ -52,9 +52,10 @@ public class CMS : MonoBehaviour
                 break;
             }
         }
+        FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //Remove the card from the UI
     }
-    public void SetGameMode(int mode){
-        gameMode = (GameMode)mode;
+    public void SetGameMode(string mode){ //called from ui
+        gameMode = mode;
     }
     public void SetGame(bool isGame){
         this.isGame = isGame;
@@ -83,8 +84,11 @@ public class CMS : MonoBehaviour
         }
         return "Unknown Car";
     }
-}
-[System.Serializable]
-public enum GameMode{
-    None, TimeTrial, Party
+    public void OnCarOutOfEnergyCarCallback(string id, CarController controller){
+        onCarNoEnergy?.Invoke(id, controller);
+    }
+    
+    //use in gamemode scripts to set the behavior of cars when they run out of energy
+    public delegate void OnCarNoEnergy(string id, CarController controller);
+    public event OnCarNoEnergy onCarNoEnergy;
 }

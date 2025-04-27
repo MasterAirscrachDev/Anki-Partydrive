@@ -20,7 +20,6 @@ public class CarBalancer : MonoBehaviour
     string carID;
     UCarData carData;
     bool waitingForTrack = true, trackingLaps = false;
-
     bool trackUpdateSubbed = false, finishLineSubbed = false;
 
     int step = -1; float timeout;
@@ -88,6 +87,7 @@ public class CarBalancer : MonoBehaviour
             Debug.Log($"Car {carID} not found, disabling balancer");
             return;
         }
+        Debug.Log($"CarBalancer setup for {carData.name}");
         SubTrack(true);
         SubFinishLine(true);
     }
@@ -99,7 +99,7 @@ public class CarBalancer : MonoBehaviour
             messageText.gameObject.SetActive(true);
             messageText.text = $"Please Build this track\n(Straights can be substituted)\n\nThen scan with car: {carData.name}";
             ui.SwitchToTrackCamera(true);
-            if(trackGenerator.hasTrack){
+            if(trackGenerator.hasTrack){ //if we already have a track, check if it matches
                 bool matches = CheckTrack(trackGenerator.GetTrackPieces());
                 if(matches){
                     Debug.Log("Track matches, balancing car");
@@ -112,7 +112,7 @@ public class CarBalancer : MonoBehaviour
                 }
             }
             trackGenerator.Generate(requestedTrack, false);
-            waitingForTrack = true;
+            waitingForTrack = true; //we have a callback for when the track is built
         }else if(step == 1){
             if(waitingForTrack){ timeout = 1.5f; return; }
             else{
@@ -122,18 +122,12 @@ public class CarBalancer : MonoBehaviour
                 timeout = 2.1f;
                 step = 2;
             }
-        } else if(step == 2){
-            Debug.Log($"CarBalancer step 2, wallbounce to left");
-            carInterface.ControlCar(carData, 300, -150);
-            timeout = 2.1f;
+        }else if(step == 2){
+            carInterface.ControlCar(carData, 500, 21);
+            timeout = 8;
             step = 3;
         }else if(step == 3){
-            Debug.Log($"CarBalancer step 3, centering car");
-            carInterface.ControlCar(carData, 500, 0);
-            timeout = 8;
-            step = 4;
-        }else if(step == 4){
-            carInterface.ControlCar(carData, 500, 0);
+            carInterface.ControlCar(carData, 500, 21);
             trackingLaps = false;
             step = -1;
         }
@@ -209,7 +203,7 @@ public class CarBalancer : MonoBehaviour
                         }
                         currentSpeedMod += increment;
                         directionOfIncrement = 1;
-                        carInterface.ControlCar(carInterface.GetCarFromID(carID), 500 + currentSpeedMod, 0);
+                        carInterface.ControlCar(carInterface.GetCarFromID(carID), 500 + currentSpeedMod, 21);
                         lapTimes.Clear();
                         messageText.text += $"Car is too slow, speeding up {currentSpeedMod}\n";
                     }else if(averageLapTime < targetLapTime - targetLapTimeTolerance){ // Too fast
@@ -218,13 +212,13 @@ public class CarBalancer : MonoBehaviour
                         }
                         currentSpeedMod -= increment;
                         directionOfIncrement = -1;
-                        carInterface.ControlCar(carInterface.GetCarFromID(carID), 500 + currentSpeedMod, 0);
+                        carInterface.ControlCar(carInterface.GetCarFromID(carID), 500 + currentSpeedMod, 21);
                         lapTimes.Clear();
                         messageText.text += $"Car is too fast, slowing down {currentSpeedMod}\n";
                     }
                     else{
                         SubFinishLine(false);
-                        carInterface.ControlCar(carInterface.GetCarFromID(carID), 0, 0);
+                        carInterface.ControlCar(carInterface.GetCarFromID(carID), 0, 21);
                         messageText.text += $"Balancing complete!\n";
                         if(currentSpeedMod != 0){
                             messageText.text += $"Car speed mod: {currentSpeedMod}\n";
@@ -267,6 +261,7 @@ public class CarBalancer : MonoBehaviour
         await fs.SaveFile($"{id}.dat", s);
         messageText.text = $"Car speed mod saved to file\n";
         carInterface.ApiCallV2(SV_REFRESH_CONFIGS, 0);
+        backButton.Select();
     }
     public void BackToMenu(){
         ui.SetUILayer(0); //go back to main menu
