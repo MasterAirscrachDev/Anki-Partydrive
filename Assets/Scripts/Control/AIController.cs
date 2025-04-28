@@ -105,19 +105,19 @@ public class AIController : MonoBehaviour
     void AILogic(){
         string[] trackedCars = carEntityTracker.GetActiveCars(ourID);
         if(trackedCars.Length == 0){ return; } //if there are no cars to track, return
-        (uint i, float x, float y)[] positions = new (uint, float, float)[trackedCars.Length];
+        TrackCoordinate[] positions = new TrackCoordinate[trackedCars.Length];
         for (int c = 0; c < trackedCars.Length; c++)
-        { positions[c] = carEntityTracker.GetCarIXY(trackedCars[c]); }
-        (uint I, float X, float Y) = carEntityTracker.GetCarIXY(ourID);
+        { positions[c] = carEntityTracker.GetCarTrackCoordinate(trackedCars[c]); }
+        TrackCoordinate coord = carEntityTracker.GetCarTrackCoordinate(ourID);
 
         SegmentType[] futureTrack = new SegmentType[depth + 1]; //depth + 1 because we want to include the current segment
         for (int i = 0; i < futureTrack.Length; i++)
-        { futureTrack[i] = TrackGenerator.track.GetSegmentType((int)I + i); }
+        { futureTrack[i] = TrackGenerator.track.GetSegmentType(coord.idx + i); }
         string log = "";
         for (int i = 0; i < futureTrack.Length; i++)
         { log += futureTrack[i] + " "; }
 
-        bool carClose = positions.Any(x => x.i == I); //check if any car is on the same segment as us
+        bool carClose = positions.Any(x => x.idx == coord.idx); //check if any car is on the same segment as us
         log += carClose ? "Car Close\n" : "No Car Close\n"; //add to the log if a car is close or not
 
         int targetSpeed = currentTargetSpeed;
@@ -135,7 +135,7 @@ public class AIController : MonoBehaviour
                 targetSpeed = 550 + (onTurnNow ? 0 : 200); //set the target speed to 550 if we are on a turn, 750 if we are not
                 float opposingOffset = 0f;
                 for (int i = 0; i < positions.Length; i++)
-                { if(positions[i].i == I){ opposingOffset = positions[i].x; break; } } //get the offset of the car in front of us
+                { if(positions[i].idx == coord.idx){ opposingOffset = positions[i].offset; break; } } //get the offset of the car in front of us
 
                 //move away from the car in front of us
                 if(opposingOffset > 0){ //if the car is on the right, move to the left
@@ -147,7 +147,7 @@ public class AIController : MonoBehaviour
                 }
 
             }else{ //move to the inside of the turn
-                bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + (int)I); //check if the next segment is reversed
+                bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + coord.idx); //check if the next segment is reversed
                 targetOffset = turnReversed ? 46f : -46f; //move to the inside of the turn
                 targetSpeed = 500 + (onTurnNow ? 0 : 100);
                 log += $"Inside Turn {targetOffset}"; //add to the log if we are moving to the inside of the turn
@@ -160,11 +160,10 @@ public class AIController : MonoBehaviour
                 log += "Boosting\n"; //add to the log if we are boosting
             }
 
-
             if(carClose){
                 float opposingOffset = 0f;
                 for (int i = 0; i < positions.Length; i++)
-                { if(positions[i].i == I){ opposingOffset = positions[i].x; break; } } //get the offset of the car in front of us
+                { if(positions[i].idx == coord.idx){ opposingOffset = positions[i].offset; break; } } //get the offset of the car in front of us
                 //move away from the car in front of us
                 if(opposingOffset > 0){ //if the car is on the right, move to the left
                     targetOffset = -55f; //move to the left

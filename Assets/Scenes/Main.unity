@@ -14902,7 +14902,63 @@ MonoBehaviour:
   trackCamera: {fileID: 1229594995}
   validConfirmedMat: {fileID: 2100000, guid: 69b6995dc9e92fd45ad006cf7c37f9ff, type: 2}
   post: {fileID: 11400000, guid: d501ff19a7f164f4ea1845205c67d1b7, type: 2}
-  segments: []
+  segments:
+  - type: 3
+    internalID: 0
+    up: 0
+    down: 0
+    elevation: 0
+    X: 0
+    Y: 0
+    validated: 0
+  - type: 4
+    internalID: 0
+    up: 0
+    down: 0
+    elevation: 0
+    X: 0
+    Y: 0
+    validated: 0
+  - type: 2
+    internalID: 0
+    up: 0
+    down: 0
+    elevation: 0
+    X: 0
+    Y: 0
+    validated: 0
+  - type: 2
+    internalID: 0
+    up: 0
+    down: 0
+    elevation: 0
+    X: 0
+    Y: 0
+    validated: 0
+  - type: 1
+    internalID: 0
+    up: 0
+    down: 0
+    elevation: 0
+    X: 0
+    Y: 0
+    validated: 0
+  - type: 2
+    internalID: 0
+    up: 0
+    down: 0
+    elevation: 0
+    X: 0
+    Y: 0
+    validated: 0
+  - type: 2
+    internalID: 0
+    up: 0
+    down: 0
+    elevation: 0
+    X: 0
+    Y: 0
+    validated: 0
   trackPrefabs:
   - {fileID: 8254316182376960447, guid: f3956bd3d8db4014aadc8d446fd43bd3, type: 3}
   - {fileID: 2253291087745149315, guid: 11338035dcc803949a28766c9279ecb9, type: 3}

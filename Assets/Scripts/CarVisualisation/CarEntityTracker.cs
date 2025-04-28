@@ -56,11 +56,11 @@ public class CarEntityTracker : MonoBehaviour
         }
         return activeCars;
     }
-    public (uint i, float x, float y) GetCarIXY(string id){
+    public TrackCoordinate GetCarTrackCoordinate(string id){
         if(trackers.ContainsKey(id)){
-            return trackers[id].GetIXY();
+            return trackers[id].GetTrackCoordinate();
         }
-        return (0, 0, 0);
+        return null; //car not found
     }
     public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;

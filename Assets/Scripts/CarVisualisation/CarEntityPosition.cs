@@ -6,8 +6,10 @@ public class CarEntityPosition : MonoBehaviour
     Material ourMaterial;
     public CarModelManager carModelManager;
     TrackSpline trackSpline;
-    int speed = 0, segmentIdx = 0, shift = 0;
-    float trackPieceProgression = 0, horizontalOffset = 0;
+    SegmentType currentSegmentType = SegmentType.Straight;
+    bool isSegmentReversed = false;
+    int speed = 0, shift = 0;
+    TrackCoordinate trackpos = new TrackCoordinate(0, 0, 0);
     Vector3 lastPosition;
     TrackGenerator track;
     bool showOnTrack = true; 
@@ -29,9 +31,9 @@ public class CarEntityPosition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        trackPieceProgression += GetProgress(Time.deltaTime); //get the progress of the car on the track
+        trackpos.Progress(GetProgress(Time.deltaTime)); //get the progress of the car on the track
         if(trackSpline != null){
-            Vector3 targetPos = trackSpline.GetPoint(trackPieceProgression, horizontalOffset);
+            Vector3 targetPos = trackSpline.GetPoint(trackpos);
             if(!showOnTrack){
                 targetPos.y -= 20; //hide the car
             }
@@ -42,24 +44,35 @@ public class CarEntityPosition : MonoBehaviour
                 transform.Rotate(0, 180, 0);
             }
         }
-        if(trackPieceProgression >= 1 && shift < 2){
-            trackPieceProgression = 0;
+        if(trackpos.progression >= 1 && shift < 2){
+            trackpos.progression = 0; //reset the progression
             shift++;
-            trackSpline = track.GetTrackSpline(segmentIdx + shift);
-            if(trackSpline == null){trackSpline = track.GetTrackSpline(segmentIdx + ++shift); }
+            trackSpline = track.GetTrackSpline(trackpos.idx + shift);
+            if(trackSpline == null){trackSpline = track.GetTrackSpline(trackpos.idx + ++shift); }
+            UpdateTrackSpline(trackSpline, trackpos.idx + shift); //updates cached values for movement prediction
             SetMat(false);
         }
     }
+    /// <summary>
+    /// Set the track spline for the car entity. idx must be trusted by server
+    /// </summary>
     public void SetTrackSpline(TrackSpline trackSpline, int idx){
-        if(idx != this.segmentIdx){ //only update if the track spline is different
-            this.segmentIdx = idx;
-            this.trackSpline = trackSpline;
-            trackPieceProgression = 0;
+        if(idx != trackpos.idx){ //only update if the track spline is different
+            UpdateTrackSpline(trackSpline, idx);
+            trackpos.SetIdx(idx);
             shift = 0;
         }
     }
+    /// <summary>
+    /// Update the track spline for the car entity. idx may not be trusted
+    /// </summary>
+    void UpdateTrackSpline(TrackSpline trackSpline, int idx){
+        this.trackSpline = trackSpline;
+        currentSegmentType = track.GetSegmentType(idx);
+        isSegmentReversed = track.GetSegmentReversed(idx);
+    }
     public void SetOffset(float offset){
-        this.horizontalOffset = offset; //change this to smooth when changed
+        trackpos.offset = offset; //change this to smooth when changed
     }
     public void SetSpeed(int speed){
         this.speed = speed;
@@ -85,8 +98,7 @@ public class CarEntityPosition : MonoBehaviour
             ourMaterial.color = c;
         }
     }
-    public void Delocalise(){
-        trackPieceProgression = 0;
+    public void Delocalise(){ //start a timer to despawn the car model
         trackSpline = null;
         speed = 0;
         shift = 0;
@@ -97,8 +109,8 @@ public class CarEntityPosition : MonoBehaviour
     public bool IsDelocalised(){
         return trackSpline == null;
     }
-    public (uint i, float x, float y) GetIXY(){
-        return ((uint)segmentIdx, horizontalOffset, trackPieceProgression);
+    public TrackCoordinate GetTrackCoordinate(){
+        return trackpos;
     }
 
     float GetProgress(float deltaTime){
@@ -108,10 +120,10 @@ public class CarEntityPosition : MonoBehaviour
         //turn inside = 280mm
         //turn outside = 640mm
         int distanceMM = 560; //default distance for straight track
-        if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.Turn){
-            //offset is between -65 and 65, so we can use this to determine the distance
-            float offset = horizontalOffset / 65f; //scale offset to -1 to 1
-            if(TrackGenerator.track.GetSegmentReversed(segmentIdx)){ offset = -offset;  } //reverse the offset if the segment is reversed
+        if(currentSegmentType == SegmentType.Turn){
+            //offset is between -72.25 and 72.25, so we can use this to determine the distance
+            float offset = trackpos.offset / 72.25f; //scale offset to -1 to 1
+            if(isSegmentReversed){ offset = -offset;  } //reverse the offset if the segment is reversed
             distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
         }
         distanceMM = Mathf.RoundToInt(distanceMM * 1.1f); //tolerance
@@ -123,5 +135,22 @@ public class CarEntityPosition : MonoBehaviour
         // }
         //speed is in mm/s  
         return ((float)speed / distanceMM) * deltaTime;
+    }
+}
+public class TrackCoordinate{
+    public int idx;
+    public float offset, progression;
+    public TrackCoordinate(int segmentIdx, float offset, float progression){
+        this.idx = segmentIdx;
+        this.offset = offset;
+        this.progression = progression;
+    }
+    public void Progress(float scaledDistance){
+        progression += scaledDistance;
+        if(progression > 1){ progression = 1; }
+    }
+    public void SetIdx(int idx){
+        this.idx = idx;
+        progression = 0;
     }
 }

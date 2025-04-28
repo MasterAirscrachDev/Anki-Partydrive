@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using static OverdriveServer.NetStructures;
-
-[ExecuteInEditMode]
 public class TrackGenerator : MonoBehaviour
 {
     [SerializeField] TrackCamera trackCamera;
@@ -17,10 +15,21 @@ public class TrackGenerator : MonoBehaviour
     int lastSegmentCount = 0;
     public static TrackGenerator track;
 
-    void Awake(){
-        if(track == null){ track = this; }else{ DestroyImmediate(this); } //make this a singleton
+    [ContextMenu("Generate Track From Segments")]
+    public void TEST_GenerateTrackFromSegments(){
+        if(segments == null || segments.Length == 0){ return; } //if there are no segments, do nothing  
+        //set all segments to validated
+        for(int i = 0; i < segments.Length; i++){
+            segments[i].validated = true;
+        }
+        //generate the track
+        Generate(segments, true);
+        Debug.Log($"Track validated with {segments.Length} segments, {trackPieces.Count} track pieces");
     }
 
+    void Awake(){
+        if(track == null){ track = this; }else{ DestroyImmediate(this); }
+    }
     int LoopIndex(int index){
         if(index < 0){ return segments.Length + index; }
         if(index >= segments.Length){ return index - segments.Length; }
@@ -43,6 +52,7 @@ public class TrackGenerator : MonoBehaviour
         try{
             if(validated){
                 StartCoroutine(OnFinalGenerate());
+                //Debug.Log("Track validated, generating final track...");
                 return;
             }
             if(segments == null || segments.Length == 0){ return; } //if there are no segments, do nothing  
@@ -225,6 +235,32 @@ public class TrackGenerator : MonoBehaviour
             }
         }
         return (false, null); //no match found (should not happen)
+    }
+
+    public TrackCoordinate WorldspaceToTrackCoordinate(Vector3 worldPos){
+        //check if the position is within 0.5m of any track piece
+        float closestDist = Mathf.Infinity;
+        TrackSpline closestSpline = null;
+        int bestIndex = 0;
+        for(int i = 0; i < trackPieces.Count; i++){
+            if(trackPieces[i] == null){ continue; }
+            float dist = Vector3.Distance(worldPos, trackPieces[i].transform.position);
+            if(dist < 0.51f && dist < closestDist){
+                closestDist = dist;
+                closestSpline = trackPieces[i].GetComponent<TrackSpline>();
+                bestIndex = i;
+            }
+        }
+        if(closestSpline != null){
+            TrackCoordinate c = closestSpline.GetTrackCoordinate(worldPos);
+            c.idx = bestIndex; //set the index of the track piece
+            Vector3 pointOnTrack = closestSpline.GetPoint(c.progression, c.offset);
+
+            Debug.DrawLine(worldPos, pointOnTrack, Color.red, 5); //draw a line from the world position to the track position
+
+            return c;//get the track coordinate from the world position
+        }
+        return null;
     }
 }
 [System.Serializable]
