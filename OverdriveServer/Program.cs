@@ -1,53 +1,77 @@
 ﻿using System.Speech.Synthesis;
-using static OverdriveServer.NetStructures;
 using OverdriveServer.Tracking;
-namespace OverdriveServer {
-    class Program {
+using static OverdriveServer.NetStructures;
+namespace OverdriveServer
+{
+    class Program
+    {
+        public static bool requireClient = false, clientClosedGracefully = false;
         public static WebInterface webInterface = new WebInterface();
         public static WebsocketManager socketMan = new WebsocketManager();
         public static BluetoothInterface bluetoothInterface = new BluetoothInterface();
         public static CarSystem carSystem = new CarSystem();
         public static MessageManager messageManager = new MessageManager();
         public static TrackManager trackManager = new TrackManager();
-        public static List<TrackScanner> scansInProgress = new List<TrackScanner>();
         public static Location location = new Location();
-        static async Task Main(string[] args) {
-            if (args.Length == 1 && args[0] == "-snoop") { Snooper snoop = new Snooper(); await snoop.Start(); }
-            else{
-                Console.WriteLine("Overdrive Server By MasterAirscrach");
-                Console.WriteLine("Starting server...");
-                await bluetoothInterface.InitaliseBletooth(); //Start the bluetooth subsystem
-                bluetoothInterface.ScanForCars(); //Start scanning for cars
-                webInterface.Start(); //Start the web interface
-                await Task.Delay(-1); //dont close the program
-            }
+        public static TrackScanner trackScanner = new TrackScanner();
+        static readonly SpeechSynthesizer synth = new SpeechSynthesizer();
+        static async Task Main(string[] args)
+        {
+            if (args.Length == 1 && args[0] == "-client") { requireClient = true; }
+            Console.WriteLine("Overdrive Server By MasterAirscrach \nStarting server...");
+            webInterface.Start(); //Start the web interface
+            await bluetoothInterface.InitaliseBletooth(); //Start the bluetooth subsystem
+            bluetoothInterface.ScanForCars(); //Start scanning for cars
+            Console.WriteLine("Bluetooth scanning started");
+
+            Console.CancelKeyPress += async (s, e) => {
+                e.Cancel = true;
+                await CleanupAndQuit();
+            };
+
+            await new TaskCompletionSource<bool>().Task; //Wait indefinitely
         }
-        public static async Task Log(string message){ 
+        public static void Log(string message, bool consoleAnyway = false)
+        {
             socketMan.Notify(EVENT_SYSTEM_LOG, message);
-            if(!socketMan.HasClients()){ Console.WriteLine(message); } 
+            if (!socketMan.HasClients() || consoleAnyway) { Console.WriteLine(message); }
         }
-        public static async Task UtilLog(string message){ socketMan.Notify(EVENT_UTILITY_LOG, message); }
-        public static void CheckCurrentTrack(){ trackManager.AlertIfTrackIsValid(); }
-        public static void TTS(string message){
-            SpeechSynthesizer synth = new SpeechSynthesizer();
+        public static void UtilLog(string message) { socketMan.Notify(EVENT_UTILITY_LOG, message); }
+        public static void CheckCurrentTrack() { trackManager.AlertIfTrackIsValid(); }
+        public static void TTS(string message)
+        {
             synth.SetOutputToDefaultAudioDevice();
             synth.Speak(message);
         }
-        public static async Task ScanTrack(Car car){
-            TrackScanner scanner = new TrackScanner();
-            scansInProgress.Add(scanner);
-            await scanner.ScanTrack(car);
+        public static string IntToByteString(int number) => $"0x{number:X2}"; // More concise using expression body
+
+        public static string BytesToString(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0) { return string.Empty; }
+            var sb = new System.Text.StringBuilder(bytes.Length * 5);
+            foreach (var b in bytes) { sb.Append(IntToByteString(b)).Append(" "); }
+            if (sb.Length > 0) { sb.Length -= 1; } // Remove the last space
+            return sb.ToString();
         }
-        public static async Task CancelScan(Car car) {
-            foreach(TrackScanner scanner in scansInProgress) {
-                if(await scanner.CancelScan(car)){ scansInProgress.Remove(scanner); return; }
+        static async Task CleanupAndQuit()
+        {
+            try
+            {
+                await carSystem.RequestAllDisconnect(); //request all cars to disconnect
+
+                Console.WriteLine("Cleaning up..."); //cleanup
+                socketMan.Cleanup();
+                Console.WriteLine("Cleanup complete, quitting..."); //cleanup complete
+                await Task.Delay(1000); //wait for 1 second
             }
-        }
-        public static string IntToByteString(int number) { return "0x" + number.ToString("X2"); } //as 0x00
-        public static string BytesToString(byte[] bytes){ 
-            string content = "";
-            for(int i = 0; i < bytes.Length; i++){content += IntToByteString(bytes[i]) + " ";}
-            return content;
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error during cleanup: {e.Message}");
+            }
+            finally
+            {
+                Environment.Exit(0); //exit the program
+            }
         }
     }
 }

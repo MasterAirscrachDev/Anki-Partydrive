@@ -1,158 +1,139 @@
-﻿using static OverdriveServer.Definitions;
-using static OverdriveServer.NetStructures;
+﻿using static OverdriveServer.NetStructures;
+using static OverdriveServer.NetStructures.UtilityMessages;
 using static OverdriveServer.Tracks;
 namespace OverdriveServer {
     class MessageManager {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         public void ParseMessage(byte[] content, Car car){
             byte id = content[1];
-            if(id == RECV_PING){//23 ping response
+            if(id == (int)MSG.RECV_PING){//23 ping response
                 Program.Log($"[23] Ping response: {Program.BytesToString(content)}");
-
-            } else if(id == RECV_VERSION){ //25 version response
+            } else if(id == (int)MSG.RECV_CAR_VERSION){ //25 version response
                 //int8 size, int8 id, int16 version
                 //read the version from the content
                 short version = BitConverter.ToInt16(content, 2);
                 Program.Log($"[25] Version response: {version} for {car.name}");
-                car.SetCarSoftwareVersion(version);
-            } else if(id == RECV_BATTERY_RESPONSE){ //27 battery response (Not actually usfeful)
-                // int battery = content[2];
-                // int maxBattery = 3800;
-                // Program.Log($"[27] Battery response: {battery} / {maxBattery}");
-                // Program.UtilLog($"27:{car.id}:{battery}");
-                // car.data.battery = battery;
-            } else if(id == RECV_TRACK_LOCATION){ //39 where is car
-                OnPosition(content, car); //moved to dedicated function bc its complex
-            } else if(id == RECV_TRACK_TRANSITION){ //41 car moved between track pieces
-                OnTransition(content, car); //moved to dedicated function bc its complex
-            } else if(id == RECV_TRACK_INTERSECTION){ //42 track intersection
+                car.SetCarSoftwareVersion(version); 
+            } else if(id == (int)MSG.RECV_BATTERY_VOLTAGE){ //27 battery response
+                //int battery = content[2];
+                //Program.Log($"[27] Battery response: {battery} / {maxBattery}");
+                //Program.UtilLog($"27:{car.id}:{battery}");
+            } else if(id == (int)MSG.RECV_TR_POSITION_UPDATE){ //39 where is car
+                OnPosition(Parser.RECV_PositionUpdate(content), car); //moved to dedicated function bc its complex
+            } else if(id == (int)MSG.RECV_TR_TRANSITION_UPDATE){ //41 car moved between track pieces
+                OnTransition(Parser.RECV_TransitionUpdate(content), car); //moved to dedicated function bc its complex
+            } else if(id == (int)MSG.RECV_TR_INTERSECTION_POSITION_UPDATE){ //42 track intersection
                 //
-            } else if(id == RECV_CAR_DELOCALIZED){ //43 Off track
-                Program.UtilLog($"43:{car.id}");
+            } else if(id == (int)MSG.RECV_TR_CAR_DELOCALIZED){ //43 Off track
+                Program.UtilLog($"{MSG_CAR_DELOCALIZED}:{car.id}");
+                car.data.onTrack = false; //set the car to off track
                 CarEventDelocalised?.Invoke(car.id);
-            } else if(id == RECV_TRACK_CENTER_UPDATE){ //45 Track center updated
-                //this reads the track center, however this gives us the same info as 39 and 41 making it unhelpful when trying to correct for errors
-                Program.Log($"[45] Track center updated: {Program.BytesToString(content)}, Test as: {BitConverter.ToSingle(content, 2)}");
-                Program.UtilLog($"45:{car.id}:{Program.BytesToString(content)}");
-            } else if(id == RECV_CAR_SPEED_UPDATE){ //54 car speed changed
-                Program.Log($"[54] {car.name} speed changed");
-                Program.UtilLog($"54:{car.id}");
-            } else if(id == RECV_CAR_CHARGING_STATUS){ //63 charging status changed (theres a lot of good data here but i cant say what it is)
-                bool charging = content[3] == 1;
-                Program.UtilLog($"63:{car.id}:{charging}");
-                Program.Log($"[63] {car.name} charging: {charging}");
-                car.data.charging = charging;
-            } else if(id == -1) { //65 Unknown
-                Program.UtilLog($"65:{car.id}");
-                //Program.Log($"[65] {car.name} slipped");
-            } else if(id == -1) { //67 Unknown
-                Program.UtilLog($"67:{car.id}");
-                //Program.Log($"[67] {car.name} ???");
-            } else if(id == RECV_TRACK_JUMP){ //75 car jumped
-                //this provides a lot of data, unsure what any of it means / how to parse
-                Program.UtilLog($"75:{car.id}");
-                Program.Log($"[75] {car.name} jumped");
+            } else if(id == (int)MSG.RECV_OFFSET_FROM_ROAD_CENTER_UPDATE){ //45 Track center updated
+                float offset = BitConverter.ToSingle(content, 2); //get the offset from the content
+                car.data.offsetMM = offset; //set the offset
+            } else if(id == (int)MSG.RECV_SPEED_UPDATE){ //54 car speed changed
+                Structures.SpeedUpdate speed = Parser.RECV_SpeedUpdate(content);
+                Program.UtilLog($"{MSG_CAR_SPEED_UPDATE}:{car.id}:{speed.desiredSpeedMMPS}:{speed.actualSpeedMMPS}");
+                car.data.speedMMPS = speed.desiredSpeedMMPS; //set the speed
+            } else if(id == (int)MSG.RECV_STATUS_UPDATE){ //63 car status changed
+                Structures.CarStatus state = Parser.RECV_CarStatusUpdate(content);
+                Program.UtilLog($"{MSG_CAR_STATUS_UPDATE}:{car.id}");
+                //Program.Log($"[63] {car.name} chargedBattery:{state.hasChargedBattery} lowBattery:{state.hasLowBattery} charger:{state.onCharger} onTrack:{state.onTrack}");
+                car.data.charging = state.onCharger;
+                car.GoIfNotGoing(state.onTrack); //if the car is on the charger, go to the charger
+                car.data.onTrack = state.onCharger? false : state.onTrack; //if the car is on the charger, it is not on track
+                car.data.batteryStatus = state.hasChargedBattery ? 1 : (state.hasLowBattery ? -1 : 0); //0 = normal, 1 = charged, -1 = low battery
+            } else if(id == (int)MSG.RECV_LANE_CHANGE_UPDATE){ //65 car lane change status update
+                //Program.UtilLog($"65:{car.id}");
+            } else if(id == (int)MSG.RECV_TR_FOUND_TRACK){ //68 car auto recovery success
+                car.data.onTrack = true; //set the car to on track
+            }else if(id == (int)MSG.RECV_TR_JUMP_PIECE_BOOST){ //75 car jumped
+                Program.UtilLog($"{MSG_CAR_JUMPED}:{car.id}");
                 CarEventJumpCall?.Invoke(car.id);
-            } else if(id == RECV_CAR_COLLISION){ //77 Collision Detected
-                Program.UtilLog($"77:{car.id}");
-                Program.Log($"[77] {car.name} collision detected");
-            } else if(id == -1){ //78 Unknown
-                Program.UtilLog($"78:{car.id}");
-                //Program.Log($"[78] {car.name} ???");
-            } else if(id == -1) { //79 Unknown
-                Program.UtilLog($"79:{car.id}");
-                //Program.Log($"[79] {car.name} ???");
-            } else if(id == RECV_TRACK_SPECIAL_TRIGGER){ //83 FnF specialBlock
-                Program.UtilLog($"83:{car.id}");
-                Program.Log($"[83] {car.name} hit special block");
-            } else if(id == RECV_CAR_MESSAGE_CYCLE_OVERTIME){ //134 Car message cycle overtime
-                Program.UtilLog($"134:{car.id}");
-                //Program.Log($"[134] {car.name} message cycle overtime"); //commented until we know what this is
+            } else if(id == (int)MSG.RECV_TR_COLLISION_DETECTED){ //77 Collision Detected
+                //Program.UtilLog($"77:{car.id}");
+            } else if(id == (int)MSG.RECV_JUMP_PIECE_RESULT){ //78 Jump Piece Result
+                Structures.JumpPieceResult result = Parser.RECV_JumpPieceResult(content); //get the result from the content
+                Program.UtilLog($"{MSG_CAR_LANDED}:{car.id}:{!result.jumpFailed}"); //log the result
+            } else if(id == (int)MSG.RECV_TR_SPECIAL){ //83 FnF specialBlock
+                Program.UtilLog($"{MSG_CAR_POWERUP}:{car.id}");
             }
             else{
                 Program.Log($"???({id})[{Program.IntToByteString(id)}]:{Program.BytesToString(content)}");
             }
         }
-        void OnPosition(byte[] content, Car car){
-            int trackLocation = content[2], trackID = content[3], speed = BitConverter.ToInt16(content, 8);
-            float offset = BitConverter.ToSingle(content, 4);
-            bool clockwise = content[10] == 0x47; //this is a secret parsing flag, we can use it to decphier turn directions
-            
-            
-            Program.socketMan.Notify(EVENT_CAR_LOCATION, 
-                new LocationData {
-                    carID = car.id,
-                    locationID = trackLocation,
-                    trackID = trackID,
-                    offset = offset,
-                    speed = speed,
-                    reversed = clockwise
-                }
-            );
-            //Program.Log($"[39] {car.name} Track location: {trackLocation}, track ID: {trackID}, offset: {offset}, speed: {speed}, clockwise: {clockwise}");
-            car.data.offset = offset;
-            car.data.speed = speed;
-            CarEventLocationCall?.Invoke(car.id, trackLocation, trackID, offset, speed, clockwise);
-
-            car.lastPositionID = trackID; car.lastReversed = clockwise; //set the last track piece to the current one
-            car.UpdateValues(trackLocation, trackID, offset, 0, clockwise); //update the car values
-        }
-        void OnTransition(byte[] content, Car car){
+        void OnPosition(Structures.PositionUpdate p, Car car){
             try{
-                if(content.Length < 18){ return; } //not enough data
-                int trackPiece = Convert.ToInt32((sbyte)content[2]), oldTrackPiece = Convert.ToInt32((sbyte)content[3]); //0,0 because we are using sdk mode
-                int uphillCounter = content[14], downhillCounter = content[15];
-                int leftWheelDistance = content[16], rightWheelDistance = content[17];
-                float offset = BitConverter.ToSingle(content, 4);
-
-                // There is a shorter segment for the starting line track. (may fail on inside turns) 35, 34
-                bool crossedStartingLine = (leftWheelDistance < 36) && (leftWheelDistance > 32) && (rightWheelDistance < 36) && (rightWheelDistance > 32);
-                //Program.Log($"[41] {car.name} Track: {trackPiece} from {oldTrackPiece}, Y:(+{uphillCounter} -{downhillCounter}), X: {offset} LwheelDist: {leftWheelDistance}, RwheelDist: {rightWheelDistance}, Finish: {crossedStartingLine}");
-                Program.socketMan.Notify(EVENT_CAR_TRANSITION, 
-                    new TransitionData{
+                bool reversed = (p.parsingFlags & (int)ParseflagsMask.REVERSE_PARSING) != 0; //check if the car is reversed
+                int bits = p.parsingFlags & (int)ParseflagsMask.NUM_BITS; //get the parsing flags
+                Program.socketMan.Notify(EVENT_CAR_LOCATION, 
+                    new LocationData {
                         carID = car.id,
-                        trackPiece = trackPiece,
-                        oldTrackPiece = oldTrackPiece,
-                        offset = offset,
-                        uphillCounter = uphillCounter,
-                        downhillCounter = downhillCounter,
-                        leftWheelDistance = leftWheelDistance,
-                        rightWheelDistance = rightWheelDistance,
-                        crossedStartingLine = crossedStartingLine
+                        locationID = p.locationID,
+                        trackID = p.segmentID,
+                        offsetMM = p.offset,
+                        speedMMPS = p.speedMMPS,
+                        reversed = reversed
                     }
                 );
-                CarEventTransitionCall?.Invoke(car.id, trackPiece, oldTrackPiece, offset, uphillCounter, downhillCounter, leftWheelDistance, rightWheelDistance, crossedStartingLine);
-                car.data.offset = offset;
-                
-                SolveSegment(car, car.lastPositionID, car.lastReversed, leftWheelDistance, rightWheelDistance, crossedStartingLine, offset, uphillCounter, downhillCounter); //solve the segment
-                car.lastPositionID = 0; //set the last track piece to the current one
-            }
-            catch{
-                Program.Log($"[41] Error parsing car track update: {Program.BytesToString(content)}");
-                return;
-            }
-        }
-        void SolveSegment(Car car, int ID, bool flipped, int left, int right, bool finish, float offset, int up, int down){
-            TrackPiece segment = new TrackPiece(TrackPieceType.Unknown, 0, false); //create a new track piece
-            if(ID != 0){ 
-                TrackPieceType type = TrackManager.PieceFromID(ID);
-                if(type != TrackPieceType.Unknown){ segment = new TrackPiece(type, ID, flipped); } //if we have a valid ID, set the segment to that
-            }else{
-                //difference can be upwards of 9 on turns
-                // 39, 30 = inside turn
-                // 61, 51 = outside turn
-                // 57,56 = straight
-                // 22, 22 = finish line
-                // 34, 34 = prefinish line
+                car.data.speedMMPS = p.speedMMPS; //set the speed
 
-                TrackPieceType type = (TrackManager.Abs(left - right) < 4) ? TrackPieceType.Straight : TrackPieceType.Turn;
-                if(type == TrackPieceType.Straight && finish){ type = TrackPieceType.PreFinishLine; } //if we are straight and at the finish line, set it to prefinish line
-                flipped = (type == TrackPieceType.Straight) ? false : (left > right);
-                segment = new TrackPiece(type, 0, flipped); //fallback to straight or turn
+                car.UpdateValues(p.locationID, p.segmentID, p.offset, bits, reversed); //check the lane
+
+                CarEventLocationCall?.Invoke(car.id, p.locationID, p.segmentID, p.offset, p.speedMMPS, reversed);
+            }catch (Exception e){
+                Console.WriteLine($"Position error: {e}"); //catch any errors
             }
-            Console.WriteLine($"Car: {car.id} L: {left}, R: {right}, Segment: {segment}");
-            CarEventSegmentCall?.Invoke(car.id, segment, offset, up, down); //call the event
         }
+        void OnTransition(Structures.TransitionUpdate u, Car car){
+            // There is a shorter segment for the starting line track. (may fail on inside turns) 35, 34
+            bool crossedStartingLine = (u.leftWheelDistanceCM < 36) && (u.leftWheelDistanceCM > 32) && (u.rightWheelDistanceCM < 36) && (u.rightWheelDistanceCM > 32);
+            Program.socketMan.Notify(EVENT_CAR_TRANSITION, 
+                new TransitionData{
+                    carID = car.id,
+                    trackPiece = u.currentSegmentIdx,
+                    oldTrackPiece = u.previousSegmentIdx,
+                    offsetMM = u.offset,
+                    uphillCounter = u.uphillCounter,
+                    downhillCounter = u.downhillCounter,
+                    leftWheelDistance = u.leftWheelDistanceCM,
+                    rightWheelDistance = u.rightWheelDistanceCM,
+                    crossedStartingLine = crossedStartingLine
+                }
+            );
+            CarEventTransitionCall?.Invoke(car.id, u.currentSegmentIdx, u.previousSegmentIdx, u.offset, u.uphillCounter, u.downhillCounter, u.leftWheelDistanceCM, u.rightWheelDistanceCM, crossedStartingLine); //call the event
+            car.data.offsetMM = u.offset;
+            
+            SolveSegment(car, u.leftWheelDistanceCM, u.rightWheelDistanceCM, crossedStartingLine, u.offset, u.uphillCounter, u.downhillCounter); //solve the segment
+            car.lastPositionID = 0; //set the last track piece to the current one
+        }
+        void SolveSegment(Car car, int left, int right, bool finish, float offset, int up, int down){
+            Segment segment = new Segment(SegmentType.Unknown, 0, false); //create a new track piece
+            int ID = car.lastPositionID; //get the last track piece ID
+            bool reversed = car.lastReversed; //get the last track piece 
+            if(ID != 0){ 
+                SegmentType type = SegmentTypeFromID(ID);
+                if(type != SegmentType.Unknown){ segment = new Segment(type, ID, reversed); } //if we have a valid ID, set the segment to that
+            }else{
+                SegmentType type = (Abs(left - right) < 4) ? SegmentType.Straight : SegmentType.Turn;
+                if(type == SegmentType.Straight && finish){ type = SegmentType.PreFinishLine; } //if we are straight and at the finish line, set it to prefinish line
+                reversed = (type == SegmentType.Straight) ? false : (left > right);
+                segment = new Segment(type, 0, reversed); //fallback to straight or turn
+            }
+            segment.SetUpDown(up, down); //set the up and down values
+            CarEventSegmentCall?.Invoke(car.id, segment, offset); //call the event
+            Program.socketMan.Notify(EVENT_CAR_SEGMENT,  
+                new SegmentData{
+                    type = segment.type,
+                    internalID = segment.internalID,
+                    reversed = segment.flipped,
+                    up = segment.up,
+                    down = segment.down,
+                    validated = segment.validated
+                }
+            );
+        }
+        int Abs(int i) { return i < 0 ? -i : i; }
 
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         //subscribable event
@@ -160,7 +141,7 @@ namespace OverdriveServer {
         public event CarEventLocation? CarEventLocationCall;
         public delegate void CarEventTransition(string carID, int trackPieceIdx, int oldTrackPieceIdx, float offset, int uphillCounter, int downhillCounter, int leftWheelDistance, int rightWheelDistance, bool crossedStartingLine);
         public event CarEventTransition? CarEventTransitionCall;
-        public delegate void CarEventSegment(string carID, TrackPiece trackPiece, float offset, int uphill, int downhill);
+        public delegate void CarEventSegment(string carID, Segment trackPiece, float offset);
         public event CarEventSegment? CarEventSegmentCall;
         public delegate void CarEventFell(string carID);
         public event CarEventFell? CarEventDelocalised;

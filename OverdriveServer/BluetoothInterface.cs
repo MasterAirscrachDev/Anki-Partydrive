@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using InTheHand.Bluetooth;
+﻿using InTheHand.Bluetooth;
 
 namespace OverdriveServer {
     class BluetoothInterface {
@@ -27,16 +26,18 @@ namespace OverdriveServer {
                 // Use default request options for simplicity
                 var requestOptions = new RequestDeviceOptions();
                 //requestOptions.AcceptAllDevices = true;
+                requestOptions.Timeout = TimeSpan.FromSeconds(5); // Set a timeout for the scan
                 requestOptions.Filters.Add(new BluetoothLEScanFilter(){ Services = { CarSystem.ServiceID },  }); // Add the service UUID filter
                 // Create a cancellation token source with a timeout of 3 seconds
-                using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 var cancellationToken = cancellationTokenSource.Token;
                 // Scan for devices with the cancellation token
                 var devices = await Bluetooth.ScanForDevicesAsync(requestOptions, cancellationToken);
-                if(devices.Count == 0){ Program.Log("No devices found"); }
+                //if(devices.Count == 0){ Program.Log("No devices found"); }
+                Program.Log($"Bluetooth Scan Complete"); // Log the number of devices found
             }
             catch (OperationCanceledException) {
-                Program.Log("Device scan timed out after 3 seconds");
+                Program.Log("Device scan timed out after 5 seconds");
             }
             catch (Exception ex) {
                 Program.Log($"Error during device scan: {ex.Message}");
