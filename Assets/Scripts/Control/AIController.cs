@@ -12,7 +12,11 @@ public class AIController : MonoBehaviour
     [SerializeField] int depth = 3; //planning depth
     [SerializeField] float timeout = 2f; //timeout for planning
     [SerializeField] string setCarID = ""; //debugging variable to set the car ID
-
+    [SerializeField] AIState state = AIState.Speed; //state of the AI
+    const float CAR_SPACING = 45f;
+    TrackCoordinate[] carLocations; //list of other car locations
+    List<TrackCoordinate> obstacles = new List<TrackCoordinate>(); //list of other obsticals
+    TrackCoordinate ourCoord, currentTarget; //current target of the car (may be null)
     float timer = 0f, fixCarTimer = 10f; //timer for the AI logic
     string ourID;
 
@@ -35,6 +39,12 @@ public class AIController : MonoBehaviour
 
         setup = true; //set the setup variable to true
     }
+    public void SetOpponentLocations(TrackCoordinate[] coords){
+        carLocations = coords; //set the car locations to the given coordinates
+    }
+    public void SetOurLocation(TrackCoordinate coord){
+        ourCoord = coord; //set our car location to the given coordinates
+    }
     public void EnteredCarManagement(){
         if(carController.GetCarID() == ""){ //if ourID is not set,
             FindObjectOfType<CMS>().RemoveAI(ourID); //remove this AI and Controller
@@ -46,6 +56,7 @@ public class AIController : MonoBehaviour
         UCarData carData = CarInteraface.io.GetCarFromID(id);
         carController.SetCar(carData);
     }
+    public string GetID() => ourID; //returns the ID of the car
     public void SetInputsLocked(bool locked){
         inputsLocked = locked; //set the inputs locked variable to the given value
         if(!locked){
@@ -103,21 +114,15 @@ public class AIController : MonoBehaviour
     //{72.25f, 63.75f, 55.25f, 46.75f, 38.25f, 29.75f, 21.25f, 12.75f, 4.25f, -4.25f, -12.75f, -21.25f, -29.75f, -38.25f, -46.75f, -55.25f, -63.75f, -72.25f};
 
     void AILogic(){
-        string[] trackedCars = carEntityTracker.GetActiveCars(ourID);
-        if(trackedCars.Length == 0){ return; } //if there are no cars to track, return
-        TrackCoordinate[] positions = new TrackCoordinate[trackedCars.Length];
-        for (int c = 0; c < trackedCars.Length; c++)
-        { positions[c] = carEntityTracker.GetCarTrackCoordinate(trackedCars[c]); }
-        TrackCoordinate coord = carEntityTracker.GetCarTrackCoordinate(ourID);
 
         SegmentType[] futureTrack = new SegmentType[depth + 1]; //depth + 1 because we want to include the current segment
         for (int i = 0; i < futureTrack.Length; i++)
-        { futureTrack[i] = TrackGenerator.track.GetSegmentType(coord.idx + i); }
+        { futureTrack[i] = TrackGenerator.track.GetSegmentType(ourCoord.idx + i); }
         string log = "";
         for (int i = 0; i < futureTrack.Length; i++)
         { log += futureTrack[i] + " "; }
 
-        bool carClose = positions.Any(x => x.idx == coord.idx); //check if any car is on the same segment as us
+        bool carClose = carLocations.Any(x => x.idx == ourCoord.idx); //check if any car is on the same segment as us
         log += carClose ? "Car Close\n" : "No Car Close\n"; //add to the log if a car is close or not
 
         int targetSpeed = currentTargetSpeed;
@@ -134,8 +139,8 @@ public class AIController : MonoBehaviour
             if(carClose){ //try to avoid the preceding car
                 targetSpeed = 550 + (onTurnNow ? 0 : 200); //set the target speed to 550 if we are on a turn, 750 if we are not
                 float opposingOffset = 0f;
-                for (int i = 0; i < positions.Length; i++)
-                { if(positions[i].idx == coord.idx){ opposingOffset = positions[i].offset; break; } } //get the offset of the car in front of us
+                for (int i = 0; i < carLocations.Length; i++)
+                { if(carLocations[i].idx == ourCoord.idx){ opposingOffset = carLocations[i].offset; break; } } //get the offset of the car in front of us
 
                 //move away from the car in front of us
                 if(opposingOffset > 0){ //if the car is on the right, move to the left
@@ -147,7 +152,7 @@ public class AIController : MonoBehaviour
                 }
 
             }else{ //move to the inside of the turn
-                bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + coord.idx); //check if the next segment is reversed
+                bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + ourCoord.idx); //check if the next segment is reversed
                 targetOffset = turnReversed ? 46f : -46f; //move to the inside of the turn
                 targetSpeed = 500 + (onTurnNow ? 0 : 100);
                 log += $"Inside Turn {targetOffset}"; //add to the log if we are moving to the inside of the turn
@@ -162,8 +167,8 @@ public class AIController : MonoBehaviour
 
             if(carClose){
                 float opposingOffset = 0f;
-                for (int i = 0; i < positions.Length; i++)
-                { if(positions[i].idx == coord.idx){ opposingOffset = positions[i].offset; break; } } //get the offset of the car in front of us
+                for (int i = 0; i < carLocations.Length; i++)
+                { if(carLocations[i].idx == ourCoord.idx){ opposingOffset = carLocations[i].offset; break; } } //get the offset of the car in front of us
                 //move away from the car in front of us
                 if(opposingOffset > 0){ //if the car is on the right, move to the left
                     targetOffset = -55f; //move to the left
@@ -184,4 +189,14 @@ public class AIController : MonoBehaviour
         currentTargetSpeed = targetSpeed; //set the target speed to the calculated target speed
         currentTargetOffset = targetOffset; //set the target offset to the calculated target offset
     }
+
+    enum AIState{
+        Speed, //Drive as fast as possible
+        Target, //Drive to the target
+        Persuit, //Stay close behind the target
+        Defence, //Stay as far from other cars as possible
+        Block, //drive in front of the target then slow down
+    }
+
+
 }

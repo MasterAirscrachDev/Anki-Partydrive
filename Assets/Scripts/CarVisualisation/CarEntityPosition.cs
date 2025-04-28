@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using static OverdriveServer.NetStructures;
 
@@ -5,18 +6,20 @@ public class CarEntityPosition : MonoBehaviour
 {
     Material ourMaterial;
     public CarModelManager carModelManager;
+    string id = "";
     TrackSpline trackSpline;
     SegmentType currentSegmentType = SegmentType.Straight;
     bool isSegmentReversed = false;
     int speed = 0, shift = 0;
+    int despawnTimer = 50;
     TrackCoordinate trackpos = new TrackCoordinate(0, 0, 0);
     Vector3 lastPosition;
     TrackGenerator track;
-    bool showOnTrack = true; 
-    public bool wasDelocalisedThisLap = false;
+    bool showOnTrack = true, despawnCancelled = false;
+    public bool wasDelocalisedThisLap = true; //true until set to false
     readonly bool SHOW_ANYWAY = false; //Debugging to show hitbox in editor
-    void Start()
-    {
+    public void Setup(string id) {
+        this.id = id; //set the id of the car entity
         track = TrackGenerator.track;
         //if not the editor, destroy the mesh renderer
         if(!Application.isEditor || !SHOW_ANYWAY){
@@ -43,6 +46,8 @@ public class CarEntityPosition : MonoBehaviour
                 lastPosition = transform.position;
                 transform.Rotate(0, 180, 0);
             }
+        }else if(!showOnTrack){ //if we are not on the track, hide the car
+            transform.position = new Vector3(0, -10, 0); //hide the car
         }
         if(trackpos.progression >= 1 && shift < 2){
             trackpos.progression = 0; //reset the progression
@@ -104,7 +109,18 @@ public class CarEntityPosition : MonoBehaviour
         shift = 0;
         showOnTrack = false;
         wasDelocalisedThisLap = true;
-        transform.position = transform.position + new Vector3(0, -10, 0); //reset position to the last known position
+
+        despawnCancelled = false; //reset the despawn cancelled flag
+        despawnTimer = 50; //reset the despawn timer
+        StartCoroutine(TimeoutCar()); //start the despawn timer
+    }
+    IEnumerator TimeoutCar(){
+        while(despawnTimer > 0){
+            yield return new WaitForSeconds(0.1f);
+            despawnTimer--;
+            if(despawnCancelled){ break; } //if the despawn is cancelled, stop the timer
+        }
+        if(despawnTimer <= 0 && !despawnCancelled){ FindObjectOfType<CarEntityTracker>().RemoveTracker(id); } //destroy the car entity
     }
     public bool IsDelocalised(){
         return trackSpline == null;
