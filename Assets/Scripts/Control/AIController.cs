@@ -75,7 +75,6 @@ public class AIController : MonoBehaviour
                 AILogic();
             }
             UpdateInputs(); //update the inputs if they are not locked
-            
         }else{
             carController.Iaccel = 0; //if the inputs are locked, set the acceleration to 0
             carController.Isteer = 0; //if the inputs are locked, set the steering to 0
@@ -84,13 +83,9 @@ public class AIController : MonoBehaviour
             carController.IitemA = false; //if the inputs are locked, set the item A to false
             carController.IitemB = false; //if the inputs are locked, set the item B to false
         }
-        
-
         if(setCarID != ""){ //if we have a car ID set, set the car ID to the one we have set
-            SetID(setCarID);
-            setCarID = ""; //reset the car ID
+            SetID(setCarID); setCarID = ""; //reset the car ID
         }
-
         if(carController.GetCarID() == ""){ //if we don't have a car ID, set the car ID to the one we have set
             fixCarTimer -= Time.deltaTime; //decrease the timer
             if(fixCarTimer < 0f){ //if the timer is less than 0, set the car ID to the one we have set
@@ -114,14 +109,36 @@ public class AIController : MonoBehaviour
     //{72.25f, 63.75f, 55.25f, 46.75f, 38.25f, 29.75f, 21.25f, 12.75f, 4.25f, -4.25f, -12.75f, -21.25f, -29.75f, -38.25f, -46.75f, -55.25f, -63.75f, -72.25f};
 
     void AILogic(){
-
         SegmentType[] futureTrack = new SegmentType[depth + 1]; //depth + 1 because we want to include the current segment
         for (int i = 0; i < futureTrack.Length; i++)
         { futureTrack[i] = TrackGenerator.track.GetSegmentType(ourCoord.idx + i); }
+        
         string log = "";
         for (int i = 0; i < futureTrack.Length; i++)
         { log += futureTrack[i] + " "; }
 
+        // Find closest cars and their positions relative to us
+        TrackCoordinate closestCarAhead = null;
+        TrackCoordinate closestCarBehind = null;
+        float closestAheadDist = float.MaxValue;
+        float closestBehindDist = float.MaxValue;
+        
+        foreach (var carLoc in carLocations) {
+            if (carLoc.idx > ourCoord.idx) {
+                float dist = carLoc.idx - ourCoord.idx;
+                if (dist < closestAheadDist) {
+                    closestAheadDist = dist;
+                    closestCarAhead = carLoc;
+                }
+            } else if (carLoc.idx < ourCoord.idx) {
+                float dist = ourCoord.idx - carLoc.idx;
+                if (dist < closestBehindDist) {
+                    closestBehindDist = dist;
+                    closestCarBehind = carLoc;
+                }
+            }
+        }
+        
         bool carClose = carLocations.Any(x => x.idx == ourCoord.idx); //check if any car is on the same segment as us
         log += carClose ? "Car Close\n" : "No Car Close\n"; //add to the log if a car is close or not
 
@@ -131,58 +148,165 @@ public class AIController : MonoBehaviour
 
         bool upcomingTurn = futureTrack[0] == SegmentType.Turn || futureTrack[1] == SegmentType.Turn;
         
-        if(upcomingTurn){ //do turn logic
-            bool onTurnNow = futureTrack[0] == SegmentType.Turn; //check if we are on a turn now
+        // State transition logic
+        // Adjust AI state based on race conditions
+        if (closestCarAhead != null && closestAheadDist < 3) {
+            // If someone is closely ahead, try to pursue or block them
+            if (Random.value > 0.3f) {
+                state = AIState.Persuit;
+                log += "State: Pursuing car ahead\n";
+            } else {
+                state = AIState.Block;
+                log += "State: Blocking car ahead\n";
+            }
+        } else if (carClose) {
+            // If a car is very close on same segment, go defensive
+            state = AIState.Defence;
+            log += "State: Defensive mode\n";
+        } else if (upcomingTurn && Random.value > 0.7f) {
+            // Sometimes be cautious on turns
+            state = AIState.Target;
+            log += "State: Taking optimal path\n";
+        } else if (!upcomingTurn && futureTrack.Take(3).All(s => s != SegmentType.Turn)) {
+            // If we have a straight path, go for speed
+            state = AIState.Speed;
+            log += "State: Speed mode\n";
+        }
 
-            log += "Upcoming Turn"; //add to the log if a turn is upcoming
-            int turnIndex = futureTrack[0] == SegmentType.Turn ? 0 : 1; //check if the next segment is a turn or the one after that
-            if(carClose){ //try to avoid the preceding car
-                targetSpeed = 550 + (onTurnNow ? 0 : 200); //set the target speed to 550 if we are on a turn, 750 if we are not
-                float opposingOffset = 0f;
-                for (int i = 0; i < carLocations.Length; i++)
-                { if(carLocations[i].idx == ourCoord.idx){ opposingOffset = carLocations[i].offset; break; } } //get the offset of the car in front of us
-
-                //move away from the car in front of us
-                if(opposingOffset > 0){ //if the car is on the right, move to the left
-                    targetOffset = -55f; //move to the left
-                    log += $"Left {targetOffset}"; //add to the log if we are moving to the left
-                }else if(opposingOffset < 0){ //if the car is on the left, move to the right
-                    targetOffset = 55f; //move to the right
-                    log += $"Right {targetOffset}"; //add to the log if we are moving to the right
+        // Implement state-specific behavior
+        switch (state) {
+            case AIState.Speed:
+                // Focus on maximum speed
+                targetSpeed = 1000;
+                targetOffset = 4f; // Center of track
+                
+                // Boost if we have a clear path ahead
+                if (futureTrack.Take(3).All(s => s != SegmentType.Turn) && !carClose) {
+                    carController.Iboost = true;
+                    log += "Boosting!\n";
                 }
-
-            }else{ //move to the inside of the turn
-                bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + ourCoord.idx); //check if the next segment is reversed
-                targetOffset = turnReversed ? 46f : -46f; //move to the inside of the turn
-                targetSpeed = 500 + (onTurnNow ? 0 : 100);
-                log += $"Inside Turn {targetOffset}"; //add to the log if we are moving to the inside of the turn
-            }
-        }else{
-            targetSpeed = 800; //set the target speed to the max speed
-            //if there are no turns in the next 3 segments, start Boosting
-            if(futureTrack[0] != SegmentType.Turn && futureTrack[1] != SegmentType.Turn && futureTrack[2] != SegmentType.Turn){
-                carController.Iboost = true; //set the boost to true
-                log += "Boosting\n"; //add to the log if we are boosting
-            }
-
-            if(carClose){
-                float opposingOffset = 0f;
-                for (int i = 0; i < carLocations.Length; i++)
-                { if(carLocations[i].idx == ourCoord.idx){ opposingOffset = carLocations[i].offset; break; } } //get the offset of the car in front of us
-                //move away from the car in front of us
-                if(opposingOffset > 0){ //if the car is on the right, move to the left
-                    targetOffset = -55f; //move to the left
-                    log += $"Left {targetOffset}"; //add to the log if we are moving to the left
-                }else if(opposingOffset < 0){ //if the car is on the left, move to the right
-                    targetOffset = 55f; //move to the right
-                    log += $"Right {targetOffset}"; //add to the log if we are moving to the right
+                break;
+                
+            case AIState.Target:
+                // Find optimal path through track
+                if (upcomingTurn) {
+                    bool onTurnNow = futureTrack[0] == SegmentType.Turn;
+                    int turnIndex = onTurnNow ? 0 : 1;
+                    bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + ourCoord.idx);
+                    
+                    // Take ideal racing line
+                    targetOffset = turnReversed ? 38.25f : -38.25f;  // Less extreme than original for better handling
+                    targetSpeed = 600 + (onTurnNow ? 0 : 150);
+                    log += $"Target racing line: {targetOffset}\n";
+                } else {
+                    targetOffset = 4f;
+                    targetSpeed = 850;
                 }
-            }
-            else{ //if there are no cars close, set the target offset to 0
-                targetOffset = 4f; //move to the center of the track
-                log += $"Center {targetOffset}"; //add to the log if we are moving to the center of the track
-                targetSpeed = 1000; //set the target speed to the max speed
-            }
+                break;
+                
+            case AIState.Persuit:
+                // Stay close behind target and look for overtaking opportunities
+                if (closestCarAhead != null) {
+                    // Calculate optimal overtaking position
+                    bool shouldOvertakeLeft = Random.value > 0.5f;
+                    float overtakingOffset;
+                    
+                    // Decide which side to overtake based on track position and available space
+                    if (closestCarAhead.offset > 0) {
+                        // If car ahead is on right side, prefer overtaking on left
+                        overtakingOffset = closestCarAhead.offset - CAR_SPACING;
+                    } else {
+                        // If car ahead is on left side, prefer overtaking on right
+                        overtakingOffset = closestCarAhead.offset + CAR_SPACING;
+                    }
+                    
+                    // Clamp the overtaking position to valid track bounds
+                    overtakingOffset = Mathf.Clamp(overtakingOffset, -72f, 72f);
+                    
+                    // If we're close enough and have a clear path, attempt overtaking
+                    if (closestAheadDist < 2.0f) {
+                        targetOffset = overtakingOffset;
+                        targetSpeed = 1000; // Maximum speed for overtaking
+                        if (!upcomingTurn) carController.Iboost = true;
+                        log += $"Overtaking maneuver at offset {targetOffset}\n";
+                    } else {
+                        // Not close enough to overtake, just follow for now
+                        targetOffset = closestCarAhead.offset;
+                        targetSpeed = 900; // Maintain good speed while following
+                        log += $"Following at distance {closestAheadDist}\n";
+                    }
+                } else {
+                    // No car ahead, revert to speed mode
+                    state = AIState.Speed;
+                }
+                break;
+                
+            case AIState.Defence:
+                // Find safest path away from other cars using CAR_SPACING
+                if (carClose) {
+                    float opposingOffset = 0f;
+                    for (int i = 0; i < carLocations.Length; i++) {
+                        if (carLocations[i].idx == ourCoord.idx) {
+                            opposingOffset = carLocations[i].offset;
+                            break;
+                        }
+                    }
+                    
+                    // Ensure we move a full CAR_SPACING away from the opposing car
+                    if (opposingOffset > 0) {
+                        targetOffset = Mathf.Max(-72f, opposingOffset - CAR_SPACING);
+                        log += $"Defensive move left {targetOffset}\n";
+                    } else {
+                        targetOffset = Mathf.Min(72f, opposingOffset + CAR_SPACING);
+                        log += $"Defensive move right {targetOffset}\n";
+                    }
+                    
+                    // Be cautious with speed in defensive mode
+                    targetSpeed = upcomingTurn ? 500 : 700;
+                } else {
+                    // Revert to target mode if no immediate threats
+                    state = AIState.Target;
+                }
+                break;
+                
+            case AIState.Block:
+                // Block overtaking attempts by staying in the same lane but offsetting slightly
+                if (closestCarBehind != null && closestBehindDist < 2) {
+                    // Check if car behind is attempting to overtake
+                    float behindOffset = closestCarBehind.offset;
+                    bool possibleOvertakeAttempt = Mathf.Abs(behindOffset - ourCoord.offset) > (CAR_SPACING * 0.5f);
+                    
+                    if (possibleOvertakeAttempt) {
+                        // Move in the direction they're trying to overtake
+                        targetOffset = behindOffset;
+                        log += $"Blocking overtake attempt at {targetOffset}\n";
+                    } else {
+                        // Just stay in their path
+                        targetOffset = behindOffset;
+                        log += $"Blocking path at {targetOffset}\n";
+                    }
+                    
+                    // Moderate speed for blocking
+                    targetSpeed = upcomingTurn ? 450 : 550;
+                } else {
+                    // If no suitable car to block, revert to speed mode
+                    state = AIState.Speed;
+                }
+                break;
+        }
+        
+        // Apply turn-specific logic regardless of state
+        if (upcomingTurn && state != AIState.Block) {
+            bool onTurnNow = futureTrack[0] == SegmentType.Turn;
+            
+            // Always be more cautious in turns
+            if (targetSpeed > 750) targetSpeed = 750;
+            
+            // If in turn currently, reduce speed further
+            if (onTurnNow && targetSpeed > 600) targetSpeed = 600;
+            
+            // Ensure we're not boosting in turns
+            carController.Iboost = false;
         }
 
         Debug = log; //add the log to the debug string
