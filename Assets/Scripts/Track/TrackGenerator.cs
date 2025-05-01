@@ -46,6 +46,9 @@ public class TrackGenerator : MonoBehaviour
     public Segment[] GetTrackPieces(){
         return segments;
     }
+    public int GetTrackLength(){
+        return segments.Length;
+    }
 
     public void Generate(Segment[] segments, bool validated){
         this.segments = segments;

@@ -41,10 +41,13 @@ public class CarsManagement : MonoBehaviour
         change.SetCar(index == -1 ? null : carInterface.cars[index]);
         RenderCarList();
     }
-    public void LoadGamemode(){
+    public void LoadGamemode(){ //called from UI
         UIManager ui = FindObjectOfType<UIManager>();
         if(cms.gameMode == "Time Trial"){
             ui.SetUILayer(5);
+        }
+        else if (cms.gameMode == "Laps"){
+            ui.SetUILayer(6);
         }
         else if(cms.gameMode == "Party"){
             Debug.Log("Party Mode not done yet");

@@ -219,6 +219,7 @@ public class CarController : MonoBehaviour
     public Color GetPlayerColor(){ return playerColor; }
     public void SetPosition(int position){ pcs.SetPosition(position); }
     public void SetTimeTrialTime(float time){ pcs.SetTimeTrialTime(time); }
+    public void SetLapCount(int lapCount){ pcs.SetLapCount(lapCount); }
 }
 class SpeedModifer{
     public int modifier;

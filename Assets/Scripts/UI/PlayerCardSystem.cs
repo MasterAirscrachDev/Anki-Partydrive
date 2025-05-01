@@ -61,4 +61,11 @@ public class PlayerCardSystem : MonoBehaviour
         }
         gameObject.transform.GetChild(1).GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
     }
+    public void SetLapCount(int lapCount){
+        //set the lap count using the lapCount value
+        if(attachmentIndex != 1){
+            SetAttachment(1);
+        }
+        gameObject.transform.GetChild(1).GetComponent<TMP_Text>().text = $"{lapCount} Laps";
+    }
 }

@@ -406,6 +406,7 @@ MonoBehaviour:
   energyBar: {fileID: 5679221569545848825}
   attachments:
   - {fileID: 4625807595527549598, guid: 402f20866f5c861449be13b2b72731a6, type: 3}
+  - {fileID: 6606163906884353796, guid: 5921a4c480d15c94289e94d28025328d, type: 3}
 --- !u!1 &6602897202149972098
 GameObject:
   m_ObjectHideFlags: 0

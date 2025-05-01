@@ -169,4 +169,26 @@ public class TrackCoordinate{
         this.idx = idx;
         progression = 0;
     }
+    public float DistanceX(TrackCoordinate other){
+        return Mathf.Abs(offset - other.offset);
+    }
+    public float DistanceY(TrackCoordinate other){
+        float ourDist = idx + progression;
+        float otherDist = other.idx + other.progression;
+
+        return Mathf.Abs(ourDist - otherDist);
+    }
+    public bool IsAhead(TrackCoordinate other){
+        //check if we are ahead of the other car
+        if(idx == other.idx){
+            return progression > other.progression;
+        }
+        int trackLength = TrackGenerator.track.GetTrackLength();
+        //check if we are ahead of the other car (in the future 50% of the track)
+        int distanceAB = (other.idx - idx + trackLength) % trackLength;
+        int distanceBA = (idx - other.idx + trackLength) % trackLength;
+
+        return distanceAB < distanceBA;
+
+    }
 }
