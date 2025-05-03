@@ -11,11 +11,22 @@ public class CarEntityTracker : MonoBehaviour
     [SerializeField] Dictionary<string, CarEntityPosition> trackers = new Dictionary<string, CarEntityPosition>();
 
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, CarTrust trust){
-        if(!track.hasTrack){ return; } //if no ttrack or we are on the finish line, do nothing
+        if(!track.hasTrack){ return; } //if no track or we are on the finish line, do nothing
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
-        TrackSpline trackPiece = track.GetTrackSpline(trackIndex == 0 ? 1 : trackIndex); //track index 0 is the finish line, so we need to get the next piece of track
+
+        //special cases for starting lines (prefinishline doesnt have a spline, its part of finishline)
+        //jumpLanding doesn't have a spline either, stay on jump ramp
+        SegmentType segmentType = track.GetSegmentType(trackIndex);
+        TrackSpline trackPiece;
+        if(segmentType == SegmentType.PreFinishLine){ //if we are on the prefinish line, we need to get the next piece of track
+            trackPiece = track.GetTrackSpline(trackIndex + 1); //get the next piece of track
+        } else if(segmentType == SegmentType.JumpLanding){ //if we are on the jump landing, we need to stay on the jump ramp
+            trackPiece = track.GetTrackSpline(trackIndex - 1); //get the previous piece of track
+        }else{
+            trackPiece = track.GetTrackSpline(trackIndex); //get the current piece of track
+        }
         if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
-        if(trackPiece != null && trackIndex != 1){ entity.SetTrackSpline(trackPiece, trackIndex); }
+        if(trackPiece != null && segmentType != SegmentType.FinishLine){ entity.SetTrackSpline(trackPiece, trackIndex); } //should always be true, but just in case
         entity.SetTrust(trust);
         entity.SetSpeed(speed);
         entity.SetOffset(horizontalOffset);
@@ -37,12 +48,14 @@ public class CarEntityTracker : MonoBehaviour
         UpdateAIOpponentLocations(); //update the AI opponent locations
         return entity;
     }
-    void UpdateAIOpponentLocations(){
+    public void UpdateAIOpponentLocations(){
         //for every AI controller, call SetOpponentLocations with all TrackCoordinates except its own
         AIController[] aiControllers = FindObjectsOfType<AIController>();
         foreach(AIController ai in aiControllers){
             ai.SetOpponentLocations(trackers.Where(x => x.Key != ai.GetID()).Select(x => x.Value.GetTrackCoordinate()).ToArray());
-            ai.SetOurLocation(trackers[ai.GetID()].GetTrackCoordinate()); //set our location to the AI controller
+            if(trackers.ContainsKey(ai.GetID())){ //AIs can be added before they are tracked
+                ai.SetOurLocation(trackers[ai.GetID()].GetTrackCoordinate()); //set our location to the AI controller
+            }
         }
     }
     

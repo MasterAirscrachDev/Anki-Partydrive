@@ -31,12 +31,12 @@ public class CarController : MonoBehaviour
     public bool IitemB;
     //===================
     //BASE MODIFIERS======
-    const int maxTargetSpeed = 800;
+    const int maxTargetSpeed = 750;
     const int minTargetSpeed = 50;
-    const int baseBoostSpeed = 50;
+    const int baseBoostSpeed = 100;
     const float baseBoostCost = 0.5f;
-    const float baseEnergyGain = 0.01f;
-    const float baseSteering = 0.7f;
+    const float baseEnergyGain = 0.02f;
+    const float baseSteering = 1.4f;
     public float statSpeedMod = 1f;
     public float statSteerMod = 1f;
     public float statBoostMod = 1f;

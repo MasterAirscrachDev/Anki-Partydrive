@@ -10,12 +10,12 @@ public class CarEntityPosition : MonoBehaviour
     TrackSpline trackSpline;
     SegmentType currentSegmentType = SegmentType.Straight;
     bool isSegmentReversed = false;
-    int speed = 0, shift = 0;
+    [SerializeField] int speed = 0, shift = 0;
     int despawnTimer = 50;
-    TrackCoordinate trackpos = new TrackCoordinate(0, 0, 0);
+    [SerializeField] TrackCoordinate trackpos = new TrackCoordinate(0, 0, 0);
     Vector3 lastPosition;
     TrackGenerator track;
-    bool showOnTrack = true, despawnCancelled = false;
+    bool showOnTrack = true, despawnCancelled = false, despawnTimerRunning = false;
     public bool wasDelocalisedThisLap = true; //true until set to false
     readonly bool SHOW_ANYWAY = false; //Debugging to show hitbox in editor
     public void Setup(string id) {
@@ -65,8 +65,8 @@ public class CarEntityPosition : MonoBehaviour
         if(idx != trackpos.idx){ //only update if the track spline is different
             UpdateTrackSpline(trackSpline, idx);
             trackpos.SetIdx(idx);
-            shift = 0;
         }
+        shift = 0;
     }
     /// <summary>
     /// Update the track spline for the car entity. idx may not be trusted
@@ -115,12 +115,15 @@ public class CarEntityPosition : MonoBehaviour
         StartCoroutine(TimeoutCar()); //start the despawn timer
     }
     IEnumerator TimeoutCar(){
+        if(despawnTimerRunning){ yield break; } //if the despawn timer is already running, stop it
+        despawnTimerRunning = true; //set the despawn timer running flag
         while(despawnTimer > 0){
             yield return new WaitForSeconds(0.1f);
             despawnTimer--;
-            if(despawnCancelled){ break; } //if the despawn is cancelled, stop the timer
+            if(despawnCancelled){  break; } //if the despawn is cancelled, stop the timer
         }
         if(despawnTimer <= 0 && !despawnCancelled){ FindObjectOfType<CarEntityTracker>().RemoveTracker(id); } //destroy the car entity
+        despawnTimerRunning = false; //reset the despawn timer running flag
     }
     public bool IsDelocalised(){
         return trackSpline == null;
@@ -153,13 +156,18 @@ public class CarEntityPosition : MonoBehaviour
         return ((float)speed / distanceMM) * deltaTime;
     }
 }
+[System.Serializable]
 public class TrackCoordinate{
+    public readonly int SIDE_DISTANCE = 22; //Half the width of this object (22mm is half the width of the car)
+    public readonly float BACK_DISTANCE = 0.2f; //Distance that we need to start avoidance from the back of the car (20% of a segment) (will need to be adjusted for supertrucks)
     public int idx;
     public float offset, progression;
-    public TrackCoordinate(int segmentIdx, float offset, float progression){
+    public TrackCoordinate(int segmentIdx, float offset, float progression, int sideDistance = 22, float backDistance = 0.2f){
         this.idx = segmentIdx;
         this.offset = offset;
         this.progression = progression;
+        this.SIDE_DISTANCE = sideDistance;
+        this.BACK_DISTANCE = backDistance;
     }
     public void Progress(float scaledDistance){
         progression += scaledDistance;
@@ -189,6 +197,10 @@ public class TrackCoordinate{
         int distanceBA = (idx - other.idx + trackLength) % trackLength;
 
         return distanceAB < distanceBA;
-
+    }
+    public bool IntersectsOffset(TrackCoordinate other){
+        int XSpacingSum = SIDE_DISTANCE + other.SIDE_DISTANCE; //sum of the side distances
+        //check if we are within the side distance of the other car
+        return DistanceX(other) < XSpacingSum; //check if we are within the side distance of the other car
     }
 }

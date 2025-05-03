@@ -80,7 +80,8 @@ public class LapsMode : MonoBehaviour
         if(carLaps.ContainsKey(carID)){
             carLaps[carID]++;
             cms.GetController(carID).SetLapCount(carLaps[carID]);
-        }
+            cms.TTS($"{cms.CarNameFromId(carID)} has completed {carLaps[carID]} laps");
+        }else{ return; } //if not, ignore it
         //sort the cars by lap count and set the position
         List<KeyValuePair<string, int>> sortedCars = new List<KeyValuePair<string, int>>(carLaps);
         sortedCars.Sort((x, y) => y.Value.CompareTo(x.Value)); //sort by lap count descending
@@ -91,7 +92,7 @@ public class LapsMode : MonoBehaviour
         }
 
         //if any car has finished 10 laps, end the game
-        if(carLaps[carID] >= 10){
+        if(carLaps[carID] >= 15){
             EndGame();
         }
     }

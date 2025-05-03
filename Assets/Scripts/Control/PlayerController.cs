@@ -16,12 +16,10 @@ public class PlayerController : MonoBehaviour
         //get the total number of PlayerControllers in the scene
         int playerCount = FindObjectsOfType<PlayerController>().Length;
         carController.SetPlayerName($"Player {playerCount}");
-
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         carController.Iaccel = iinput.currentActionMap.actions[0].ReadValue<float>();
         carController.Isteer = iinput.currentActionMap.actions[1].ReadValue<float>();
         carController.IitemA = iinput.currentActionMap.actions[2].ReadValue<bool>();

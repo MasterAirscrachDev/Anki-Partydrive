@@ -280,7 +280,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""id"": ""e5a2af63-f4ba-4f40-bcae-44dde9b2e1d6"",
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""StickDeadzone(min=0.2)"",
                     ""groups"": ""Main"",
                     ""action"": ""UINav"",
                     ""isComposite"": false,

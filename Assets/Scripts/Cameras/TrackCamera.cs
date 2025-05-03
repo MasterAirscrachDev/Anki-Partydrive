@@ -6,6 +6,7 @@ public class TrackCamera : MonoBehaviour
 {
     Vector3 targetPos = new Vector3(0, 5, 0);
     [SerializeField] Vector2 xzOffset = new Vector2(0, 0);
+    [SerializeField][Range(-5, 5)] float zoomOffset = 0f;
     float targetRotation = 0;
     float camSize = 2;
     Camera cam;
@@ -20,7 +21,7 @@ public class TrackCamera : MonoBehaviour
     {
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 2);
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(70, targetRotation - 3, 0), Time.deltaTime * 2);
-        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, camSize, Time.deltaTime * 2);
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, camSize + zoomOffset, Time.deltaTime * 2);
     }
     public void TrackUpdated(Vector3 center, Vector2 size){
         if(!Application.isPlaying){ return; }

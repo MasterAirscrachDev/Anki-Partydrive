@@ -51,6 +51,7 @@ public class TrackGenerator : MonoBehaviour
     }
 
     public void Generate(Segment[] segments, bool validated){
+        hasTrack = false;
         this.segments = segments;
         try{
             if(validated){

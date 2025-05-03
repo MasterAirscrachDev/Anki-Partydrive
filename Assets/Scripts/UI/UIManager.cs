@@ -20,12 +20,13 @@ public class UIManager : MonoBehaviour
     [Header("Other")]
     [SerializeField] GameObject[] UILayers;
     [SerializeField] TMP_Text finishCounterText;
-    [SerializeField] CarInteraface cars;
     [SerializeField] GameObject MainCamera;
     [SerializeField] GameObject TrackCamera;
     int finishCounter = 1;
     int UIlayer = 0;
-    int devCarSpeed = 400, devCarOffset = 0;
+
+    [ContextMenu("Toggle Track Camera")]
+    public void ToggleTrackCamera(){ SwitchToTrackCamera(!TrackCamera.activeSelf); }
 
     // Start is called before the first frame update
     void Start() {

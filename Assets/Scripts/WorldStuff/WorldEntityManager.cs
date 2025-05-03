@@ -7,13 +7,30 @@ public class WorldEntityManager : MonoBehaviour
     [SerializeField] Camera mainCamera;
     [SerializeField] GameObject startGate;
     [SerializeField] Material lightsRed, lightsGreen, lightsYellow;
+    TrackObject[] trackObjects;
+    
     // Start is called before the first frame update
     void Start()
     {
-        //StartCoroutine(RaceStartAnimation());
+
+    }
+    public void SetTrackObjectsPositions(TrackObject[] trackObjects){
+        if(trackObjects != null){
+            //if any have a gameobject, destroy it
+            foreach(TrackObject obj in trackObjects){
+                if(obj.obj != null){
+                    Destroy(obj.obj);
+                }
+            }
+        }
+
+        this.trackObjects = trackObjects;
+    }
+    public void PlayStartSpawnAnimation(){
+        StartCoroutine(StartGateSpawnAnimation());
     }
 
-    IEnumerator RaceStartAnimation(){
+    IEnumerator StartGateSpawnAnimation(){
         mainCamera.GetComponent<Animation>().Play("StartCamera");
         startGate.SetActive(true);
         yield return new WaitForSeconds(1f);
@@ -42,5 +59,11 @@ public class WorldEntityManager : MonoBehaviour
         // Green light
         startGateMaterials[3] = lightsGreen;
         startGateRenderer.materials = startGateMaterials;
+    }
+
+    public class TrackObject{
+        public GameObject obj;
+        public TrackElementSlot.TrackElementType type;
+        public Vector3 worldPos;
     }
 }

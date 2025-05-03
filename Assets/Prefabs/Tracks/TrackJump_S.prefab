@@ -63,7 +63,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 6713adfd0f13c334ea62124fb171ddf1, type: 2}
-  - {fileID: 2100000, guid: 6713adfd0f13c334ea62124fb171ddf1, type: 2}
+  - {fileID: 2100000, guid: 86d7ffe6099e8024cbc4374e548aa658, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,5 +99,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftPoints: []
   rightPoints: []
-  simple: 1
   flipped: 0
