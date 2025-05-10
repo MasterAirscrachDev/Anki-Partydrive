@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using static OverdriveServer.NetStructures;
 using static OverdriveServer.NetStructures.UtilityMessages;
+using System.Linq;
 
 public class CarInteraface : MonoBehaviour
 {
@@ -34,7 +35,7 @@ public class CarInteraface : MonoBehaviour
         ws.OnOpen += () => { 
             Debug.Log("WebSocket connection opened"); 
             FindObjectOfType<UIManager>().ServerConnected(); //show the server connected message
-            ApiCallV2(SV_SCAN, ""); //Start scanning for cars
+            ApiCallV2(SV_SCAN, 0); //Start scanning for cars
             GetCars();
         };
         ws.OnError += (e) => { 
@@ -60,9 +61,7 @@ public class CarInteraface : MonoBehaviour
     }
 
     void OnDestroy() { ws.Close(); }
-
     public void ScanTrack(){ MapTrack(); } //for UI button
-    
     async Task MapTrack(){
         //get the first car that isnt on charge
         int index = 0;
@@ -70,9 +69,8 @@ public class CarInteraface : MonoBehaviour
         int fins = uiManager.GetFinishCounter();
         ApiCallV2(SV_TR_START_SCAN, fins);
     }
-    
-    public void CancelScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //called from ui
-    
+    public void CancelTrackScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //called from ui
+    public void RequestScanForCars(){ ApiCallV2(SV_SCAN, 0); } //called from ui
     public void ControlCar(UCarData car, int speed, int lane){
         if(car == null || car.charging){ return; }
         WebhookData data = new WebhookData{
@@ -197,6 +195,9 @@ public class CarInteraface : MonoBehaviour
         ws.SendText(jsonData);
     }
     void OnCarData(CarData[] cars){
+
+        UCarData[] currentCars = this.cars;
+
         UCarData[] uCars = new UCarData[cars.Length];
         for (int i = 0; i < cars.Length; i++)
         { uCars[i] = new UCarData(cars[i]); }
@@ -206,12 +207,17 @@ public class CarInteraface : MonoBehaviour
         //colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
         //colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
         //colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
-
         //Partylights
         colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 6 };
         colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 5 };
         colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 4 };
-        for(int i = 0; i < cars.Length; i++){ StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));  } //send the lights with a delay
+        for(int i = 0; i < cars.Length; i++){ 
+            //if the car was not in the previous list, send the lights
+            if(currentCars == null || currentCars.FirstOrDefault(x => x.id == cars[i].id) == null){
+                //if the car is not in the current list, send the lights
+                StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));
+            }
+        } //send the lights with a delay
         FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
         { cms.controllers[i].CheckCarExists(); }

@@ -80,7 +80,11 @@ public class CarEntityPosition : MonoBehaviour
         trackpos.offset = offset; //change this to smooth when changed
     }
     public void SetSpeed(int speed){
-        this.speed = speed;
+        StartCoroutine(SetSpeedDelayed(speed)); //set the speed after a delay (account for ble latency + sim lag)
+    }
+    IEnumerator SetSpeedDelayed(int speed){
+        yield return new WaitForSeconds(0.1f); //wait for 0.1 seconds
+        this.speed = speed; //set the speed
     }
     public void SetTrust(CarTrust trust){
         bool isTrusted = trust == CarTrust.Trusted;
