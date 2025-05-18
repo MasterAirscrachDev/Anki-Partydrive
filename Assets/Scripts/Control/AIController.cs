@@ -428,6 +428,4 @@ public class AIController : MonoBehaviour
         Defence, //Stay as far from other cars as possible
         Block, //drive in front of the target then slow down
     }
-
-
 }

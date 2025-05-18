@@ -143,7 +143,7 @@ public class TrackGenerator : MonoBehaviour
                 pos += forward;
             } if(segments[i].type == SegmentType.Turn){
                 track = Instantiate(useFullTrack ? trackPrefabs[3] : scannningPrefabs[3], pos, rot, transform);
-                track.transform.localScale = new Vector3(segments[i].flipped ? -1 : 1, 1, 1);
+                track.transform.localScale = new Vector3(segments[i].flipped ? 1 : -1, 1, 1);
                 forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
                 pos += forward;
             } if(segments[i].type == SegmentType.CrissCross){
