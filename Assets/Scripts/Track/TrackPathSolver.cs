@@ -4,6 +4,7 @@ using static OverdriveServer.NetStructures;
 
 public class TrackPathSolver
 {
+    const float OVERDRIVE_OUTER_LANE = 55.25f; // Outer offset for overdrive
     const float CAR_SPACING = 45f;
     public enum AIState
     {
@@ -23,8 +24,8 @@ public class TrackPathSolver
         public AIState state;
         public int depth;
     }
-    
-    static (int targetSpeed, float targetOffset, bool shouldBoost, string debugString) GetBestPath(PathingInputs inputs)
+
+    public static (int targetSpeed, float targetOffset, bool shouldBoost, string debugString) GetBestPath(PathingInputs inputs)
     {
         SegmentType[] futureTrack = new SegmentType[inputs.depth + 1]; //depth + 1 because we want to include the current segment
         for (int i = 0; i < futureTrack.Length; i++)
@@ -60,26 +61,16 @@ public class TrackPathSolver
                 }
                 else if (XDistance < (carLoc.SIDE_DISTANCE + inputs.ourCoord.SIDE_DISTANCE) && !weAreAheadOf)
                 { //if the car is in our lane and we are behind it, set blocked left or right to true depending on the offset of the car
-                    if (carLoc.offset > inputs.ourCoord.offset)
-                    {
-                        blockedRight = true;
-                    }
-                    else
-                    {
-                        blockedLeft = true;
-                    }
+                    if (carLoc.offset > inputs.ourCoord.offset) { blockedRight = true; }
+                    else { blockedLeft = true; }
                 }
                 carClose = true; //set car close to true if the car is in our lane and we are ahead of it
             }
         }
-        if (!blockedLeft && targetLane >= 55.25)
-        {
-            blockedLeft = true; //if we are close to the left wall, set blocked left to true
-        }
-        if (!blockedRight && targetLane <= -55.25)
-        {
-            blockedRight = true; //if we are close to the right wall, set blocked right to true
-        }
+        if (!blockedLeft && targetLane >= OVERDRIVE_OUTER_LANE)
+        { blockedLeft = true; } //if we are close to the left wall, set blocked left to true
+        if (!blockedRight && targetLane <= -OVERDRIVE_OUTER_LANE)
+        { blockedRight = true; } //if we are close to the right wall, set blocked right to true
         log += carClose ? "Car Close\n" : "No Car Close\n"; //add to the log if a car is close or not
         // Log blocked status
         if (blockedAhead) log += "Blocked Ahead!\n";
@@ -139,7 +130,7 @@ public class TrackPathSolver
 
                         bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
                         // Inside of the turn (negative offset for left turn, positive for right turn)
-                        targetLane = turnReversed ? 55.25f : -55.25f;
+                        targetLane = turnReversed ? OVERDRIVE_OUTER_LANE : -OVERDRIVE_OUTER_LANE;
                         log += $"Positioning for upcoming turn at {targetLane}\n";
                     }
                     else
@@ -244,7 +235,7 @@ public class TrackPathSolver
                     {
                         targetLane = overtakingOffset;
                         targetSpeed = 1000; // Maximum speed for overtaking
-                        if (!upcomingTurn) {shouldBoost = true;} // Boost if not in a turn
+                        if (!upcomingTurn) { shouldBoost = true; } // Boost if not in a turn
                         log += $"Overtaking maneuver at offset {targetLane}\n";
                     }
                     else
@@ -414,5 +405,23 @@ public class TrackPathSolver
         }
 
         return (targetSpeed, targetLane, shouldBoost, log);
+    }
+    
+    public static float GetProgress(SegmentType segment, bool reversed, TrackCoordinate car, float deltaTime){
+        //pre start = 340mm
+        //start = 220mm
+        //straight = 560mm
+        //turn inside = 280mm
+        //turn outside = 640mm
+        int distanceMM = 560; //default distance for straight track
+        if(segment == SegmentType.Turn){
+            //offset is between -72.25 and 72.25, so we can use this to determine the distance
+            float offset = car.offset / 72.25f; //scale offset to -1 to 1
+            if(reversed){ offset = -offset;  } //reverse the offset if the segment is reversed
+            distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
+        }
+        distanceMM = Mathf.RoundToInt(distanceMM * 1.1f); //tolerance
+        //speed is in mm/s  
+        return ((float)car.speed / distanceMM) * deltaTime;
     }
 }

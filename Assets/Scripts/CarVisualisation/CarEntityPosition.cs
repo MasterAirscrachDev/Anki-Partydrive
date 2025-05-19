@@ -10,7 +10,7 @@ public class CarEntityPosition : MonoBehaviour
     TrackSpline trackSpline;
     SegmentType currentSegmentType = SegmentType.Straight;
     bool isSegmentReversed = false;
-    [SerializeField] int speed = 0, shift = 0;
+    [SerializeField] int shift = 0;
     int despawnTimer = 50;
     [SerializeField] TrackCoordinate trackpos = new TrackCoordinate(0, 0, 0);
     Vector3 lastPosition;
@@ -32,9 +32,8 @@ public class CarEntityPosition : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        trackpos.Progress(GetProgress(Time.deltaTime)); //get the progress of the car on the track
+    void Update() {
+        trackpos.Progress(TrackPathSolver.GetProgress(currentSegmentType,isSegmentReversed, trackpos, Time.deltaTime)); //get the progress of the car on the track
         if(trackSpline != null){
             Vector3 targetPos = trackSpline.GetPoint(trackpos);
             if(!showOnTrack){
@@ -84,7 +83,7 @@ public class CarEntityPosition : MonoBehaviour
     }
     IEnumerator SetSpeedDelayed(int speed){
         yield return new WaitForSeconds(0.1f); //wait for 0.1 seconds
-        this.speed = speed; //set the speed
+        trackpos.speed = speed; //set the speed in the track coordinate
     }
     public void SetTrust(CarTrust trust){
         bool isTrusted = trust == CarTrust.Trusted;
@@ -109,7 +108,7 @@ public class CarEntityPosition : MonoBehaviour
     }
     public void Delocalise(){ //start a timer to despawn the car model
         trackSpline = null;
-        speed = 0;
+        trackpos.speed = 0;
         shift = 0;
         showOnTrack = false;
         wasDelocalisedThisLap = true;
@@ -135,36 +134,12 @@ public class CarEntityPosition : MonoBehaviour
     public TrackCoordinate GetTrackCoordinate(){
         return trackpos;
     }
-
-    float GetProgress(float deltaTime){
-        //pre start = 340mm
-        //start = 220mm
-        //straight = 560mm
-        //turn inside = 280mm
-        //turn outside = 640mm
-        int distanceMM = 560; //default distance for straight track
-        if(currentSegmentType == SegmentType.Turn){
-            //offset is between -72.25 and 72.25, so we can use this to determine the distance
-            float offset = trackpos.offset / 72.25f; //scale offset to -1 to 1
-            if(isSegmentReversed){ offset = -offset;  } //reverse the offset if the segment is reversed
-            distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
-        }
-        distanceMM = Mathf.RoundToInt(distanceMM * 1.1f); //tolerance
-        //Debug.Log($"Distance: {distanceMM}mm, Offset: {horizontalOffset}, Segment: {segmentIdx}");
-        // } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.PreFinishLine){
-        //     distanceMM = 340; //pre start distance
-        // } else if(TrackGenerator.track.GetSegmentType(segmentIdx) == SegmentType.FinishLine){
-        //     distanceMM = 220; //start distance
-        // }
-        //speed is in mm/s  
-        return ((float)speed / distanceMM) * deltaTime;
-    }
 }
 [System.Serializable]
 public class TrackCoordinate{
     public readonly int SIDE_DISTANCE = 22; //Half the width of this object (22mm is half the width of the car)
-    public readonly float BACK_DISTANCE = 0.2f; //Distance that we need to start avoidance from the back of the car (20% of a segment) (will need to be adjusted for supertrucks)
-    public int idx;
+    public readonly float BACK_DISTANCE = 0.15f; //Distance that we need to start avoidance from the back of the car (20% of a segment) (will need to be adjusted for supertrucks)
+    public int idx, speed;
     public float offset, progression;
     public TrackCoordinate(int segmentIdx, float offset, float progression, int sideDistance = 22, float backDistance = 0.2f){
         this.idx = segmentIdx;
