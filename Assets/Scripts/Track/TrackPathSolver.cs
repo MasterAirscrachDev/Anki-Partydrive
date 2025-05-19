@@ -4,7 +4,7 @@ using static OverdriveServer.NetStructures;
 
 public class TrackPathSolver
 {
-    const float OVERDRIVE_OUTER_LANE = 55.25f; // Outer offset for overdrive
+    const float OVERDRIVE_OUTER_LANE = 72.25f; // Outer offset for overdrive
     const float CAR_SPACING = 45f;
     public enum AIState
     {
@@ -55,27 +55,41 @@ public class TrackPathSolver
             // Check if the car is ahead of us and in our lane
             if (YDistance < (1.5f * carLoc.BACK_DISTANCE))
             { //dont worry about cars that are far away
-                if (carIsInOurLane && !weAreAheadOf)
+                if (carIsInOurLane && weAreAheadOf)
                 { //if the car is in our lane and we are ahead of it, set blocked ahead to true
                     blockedAhead = true;
+                    TrackGenerator.track.DrawLineBetweenTrackCoordinates(inputs.ourCoord, carLoc, Color.red, 0.01f);
+                    log += $"Blocked Ahead by car at offset {carLoc.offset}\n";
                 }
-                else if (XDistance < (carLoc.SIDE_DISTANCE + inputs.ourCoord.SIDE_DISTANCE) && !weAreAheadOf)
+                else if (XDistance < (carLoc.SIDE_DISTANCE + inputs.ourCoord.SIDE_DISTANCE))
                 { //if the car is in our lane and we are behind it, set blocked left or right to true depending on the offset of the car
-                    if (carLoc.offset > inputs.ourCoord.offset) { blockedRight = true; }
-                    else { blockedLeft = true; }
+                    if (carLoc.offset > inputs.ourCoord.offset)
+                    {
+                        blockedRight = true;
+                        log += $"Blocked Right by car at offset {carLoc.offset}\n";
+                    }
+                    else
+                    {
+                        blockedLeft = true;
+                        log += $"Blocked Left by car at offset {carLoc.offset}\n";
+                    }
                 }
                 carClose = true; //set car close to true if the car is in our lane and we are ahead of it
             }
         }
-        if (!blockedLeft && targetLane >= OVERDRIVE_OUTER_LANE)
-        { blockedLeft = true; } //if we are close to the left wall, set blocked left to true
-        if (!blockedRight && targetLane <= -OVERDRIVE_OUTER_LANE)
-        { blockedRight = true; } //if we are close to the right wall, set blocked right to true
+        if (!blockedLeft && targetLane <= -OVERDRIVE_OUTER_LANE)
+        {
+            blockedLeft = true;
+            log += "Blocked Left by wall\n";
+        } //if we are close to the left wall, set blocked left to true
+        if (!blockedRight && targetLane >= OVERDRIVE_OUTER_LANE)
+        {
+            blockedRight = true;
+            log += "Blocked Right by wall\n";
+        } //if we are close to the right wall, set blocked right to true
         log += carClose ? "Car Close\n" : "No Car Close\n"; //add to the log if a car is close or not
         // Log blocked status
         if (blockedAhead) log += "Blocked Ahead!\n";
-        if (blockedLeft) log += "Blocked Left!\n";
-        if (blockedRight) log += "Blocked Right!\n";
 
 
 
@@ -97,12 +111,12 @@ public class TrackPathSolver
                     // Try to overtake - left by default, right if left is blocked
                     if (!blockedLeft)
                     {
-                        targetLane = inputs.currentTargetOffset - CAR_SPACING;
+                        targetLane = inputs.currentTargetOffset - CAR_SPACING * 2;
                         log += "Overtaking to the left\n";
                     }
                     else if (!blockedRight)
                     {
-                        targetLane = inputs.currentTargetOffset + CAR_SPACING;
+                        targetLane = inputs.currentTargetOffset + CAR_SPACING * 2;
                         log += "Overtaking to the right\n";
                     }
                     else
@@ -403,7 +417,7 @@ public class TrackPathSolver
             // Ensure we're not boosting in turns
             shouldBoost = false;
         }
-
+        targetLane = Mathf.Clamp(targetLane, -OVERDRIVE_OUTER_LANE, OVERDRIVE_OUTER_LANE); // Clamp target lane to valid track bounds
         return (targetSpeed, targetLane, shouldBoost, log);
     }
     

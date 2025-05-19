@@ -136,38 +136,46 @@ public class CarEntityPosition : MonoBehaviour
     }
 }
 [System.Serializable]
-public class TrackCoordinate{
+public class TrackCoordinate
+{
     public readonly int SIDE_DISTANCE = 22; //Half the width of this object (22mm is half the width of the car)
     public readonly float BACK_DISTANCE = 0.15f; //Distance that we need to start avoidance from the back of the car (20% of a segment) (will need to be adjusted for supertrucks)
     public int idx, speed;
     public float offset, progression;
-    public TrackCoordinate(int segmentIdx, float offset, float progression, int sideDistance = 22, float backDistance = 0.2f){
+    public TrackCoordinate(int segmentIdx, float offset, float progression, int sideDistance = 22, float backDistance = 0.2f)
+    {
         this.idx = segmentIdx;
         this.offset = offset;
         this.progression = progression;
         this.SIDE_DISTANCE = sideDistance;
         this.BACK_DISTANCE = backDistance;
     }
-    public void Progress(float scaledDistance){
+    public void Progress(float scaledDistance)
+    {
         progression += scaledDistance;
-        if(progression > 1){ progression = 1; }
+        if (progression > 1) { progression = 1; }
     }
-    public void SetIdx(int idx){
+    public void SetIdx(int idx)
+    {
         this.idx = idx;
         progression = 0;
     }
-    public float DistanceX(TrackCoordinate other){
+    public float DistanceX(TrackCoordinate other)
+    {
         return Mathf.Abs(offset - other.offset);
     }
-    public float DistanceY(TrackCoordinate other){
+    public float DistanceY(TrackCoordinate other)
+    {
         float ourDist = idx + progression;
         float otherDist = other.idx + other.progression;
 
         return Mathf.Abs(ourDist - otherDist);
     }
-    public bool IsAhead(TrackCoordinate other){
+    public bool IsAhead(TrackCoordinate other)
+    {
         //check if we are ahead of the other car
-        if(idx == other.idx){
+        if (idx == other.idx)
+        {
             return progression > other.progression;
         }
         int trackLength = TrackGenerator.track.GetTrackLength();
@@ -177,9 +185,32 @@ public class TrackCoordinate{
 
         return distanceAB < distanceBA;
     }
-    public bool IntersectsOffset(TrackCoordinate other){
+    public bool IntersectsOffset(TrackCoordinate other)
+    {
         int XSpacingSum = SIDE_DISTANCE + other.SIDE_DISTANCE; //sum of the side distances
         //check if we are within the side distance of the other car
         return DistanceX(other) < XSpacingSum; //check if we are within the side distance of the other car
+    }
+
+    public void DebugRender(TrackSpline spline, Color color, float duration = 0.1f)
+    {
+        Vector3 frontLeft = spline.GetPoint(progression, offset - SIDE_DISTANCE);
+        Vector3 frontRight = spline.GetPoint(progression, offset + SIDE_DISTANCE);
+        Vector3 backLeft = spline.GetPoint(progression - BACK_DISTANCE, offset - SIDE_DISTANCE);
+        Vector3 backRight = spline.GetPoint(progression - BACK_DISTANCE, offset + SIDE_DISTANCE);
+
+        Debug.DrawLine(frontLeft, frontRight, color, duration);
+        Debug.DrawLine(backLeft, backRight, color, duration);
+        Debug.DrawLine(frontLeft, backLeft, color, duration);
+        Debug.DrawLine(frontRight, backRight, color, duration);
+        Debug.DrawLine(frontRight, frontLeft + Vector3.up * 0.05f, color, duration);
+        Debug.DrawLine(backLeft, backRight + Vector3.up * 0.05f, color, duration);
+        Debug.DrawLine(backRight, frontRight + Vector3.up * 0.05f, color, duration);
+        Debug.DrawLine(frontLeft, backLeft + Vector3.up * 0.05f, color, duration);
+
+        Debug.DrawLine(frontLeft + Vector3.up * 0.05f, frontRight + Vector3.up * 0.05f, color, duration);
+        Debug.DrawLine(backLeft + Vector3.up * 0.05f, backRight + Vector3.up * 0.05f, color, duration);
+        Debug.DrawLine(frontLeft + Vector3.up * 0.05f, backLeft + Vector3.up * 0.05f, color, duration);
+        Debug.DrawLine(frontRight + Vector3.up * 0.05f, backRight + Vector3.up * 0.05f, color, duration);
     }
 }

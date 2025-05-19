@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using static OverdriveServer.NetStructures;
 
@@ -10,26 +10,48 @@ public class AiTesting : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        requestedTrack = new Segment[9];
-        requestedTrack[0] = new Segment(SegmentType.PreFinishLine, 0, false);
-        requestedTrack[1] = new Segment(SegmentType.FinishLine, 0, false);
-        requestedTrack[2] = new Segment(SegmentType.Straight, 0, true);
-        requestedTrack[3] = new Segment(SegmentType.Turn, 0, false);
-        requestedTrack[4] = new Segment(SegmentType.Turn, 0, false);
-        requestedTrack[5] = new Segment(SegmentType.Straight, 0, false);
-        requestedTrack[6] = new Segment(SegmentType.Straight, 0, false);
-        requestedTrack[7] = new Segment(SegmentType.Turn, 0, false);
-        requestedTrack[8] = new Segment(SegmentType.Turn, 0, false);
-        requestedTrack[0].validated = true;
-        requestedTrack[1].validated = true;
-        requestedTrack[2].validated = true;
-        requestedTrack[3].validated = true;
-        requestedTrack[4].validated = true;
-        requestedTrack[5].validated = true;
-        requestedTrack[6].validated = true;
-        requestedTrack[7].validated = true;
-        requestedTrack[8].validated = true;
-        
+        List<Segment> trackSegments = new List<Segment>
+        {
+            new Segment(SegmentType.PreFinishLine, 0, false),
+            new Segment(SegmentType.FinishLine, 0, false),
+            new Segment(SegmentType.Straight, 0, true),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Turn, 0, true),
+            new Segment(SegmentType.Turn, 0, true),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Turn, 0, true),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Straight, 0, false),
+            new Segment(SegmentType.Turn, 0, false),
+            new Segment(SegmentType.Turn, 0, true),
+            new Segment(SegmentType.Straight, 0, false),
+        };
+
+
+        foreach (Segment s in trackSegments)
+        {
+            s.validated = true; //mark all segments as validated
+        }
+        requestedTrack = trackSegments.ToArray();
+
         StartCoroutine(Tests());
     }
     [ContextMenu("Run Tests")]
@@ -43,29 +65,31 @@ public class AiTesting : MonoBehaviour
         yield return new WaitForSeconds(1f);
         TrackGenerator.track.Generate(requestedTrack, true);
         yield return new WaitForSeconds(3f);
+        const float stepDelta = 0.01f;
+        const float realDelta = 0.01f;
 
         // --- new: support multiple cars ---
-        int carCount = 2;
+        int carCount = 4;
         TrackCoordinate[] testCars = new TrackCoordinate[carCount];
         int[] targetSpeeds = new int[carCount];
         float[] targetOffsets = new float[carCount];
         Color[] carColors = new Color[] { Color.red, Color.green, Color.blue, Color.yellow };
+        string[] colorNames = new string[] { "Red", "Green", "Blue", "Yellow" };
 
         // initialize each car
         for (int i = 0; i < carCount; i++)
         {
-            testCars[i] = new TrackCoordinate(1, 0, 0);
+            testCars[i] = new TrackCoordinate(1, Random.Range(50f, -50f), 0, 22, 0.2f);
+            //testCars[i].SetIdx(i + 1); // set different starting indices for each car
+            testCars[i].progression = Random.Range(0f, 0.5f);
             targetSpeeds[i] = 500;
             targetOffsets[i] = 0f;
             testCars[i].speed = targetSpeeds[i];
         }
         // --- end new ---
 
-        for (int step = 0; step < 900; step++)
-        {
-            // loop each car
-            for (int c = 0; c < carCount; c++)
-            {
+        for (int step = 0; step < Mathf.RoundToInt(80 / realDelta); step++) {
+            for (int c = 0; c < carCount; c++) {
                 TrackCoordinate car = testCars[c];
                 int idx = car.idx;
                 TrackSpline spline = TrackGenerator.track.GetTrackSpline(idx);
@@ -75,15 +99,12 @@ public class AiTesting : MonoBehaviour
                     spline = TrackGenerator.track.GetTrackSpline(idx);
                 }
                 SegmentType segType = TrackGenerator.track.GetSegmentType(idx);
+                bool isReversed = TrackGenerator.track.GetSegmentReversed(idx);
 
                 //create an array of the track coordinates for the other cars
                 List<TrackCoordinate> otherCars = new List<TrackCoordinate>();
                 for (int j = 0; j < carCount; j++)
-                {
-                    if (j != c) // don't include self
-                    {
-                        otherCars.Add(testCars[j]);
-                    }
+                { if (j != c)  { otherCars.Add(testCars[j]); } // don't include self
                 }
 
                 // path inputs
@@ -99,16 +120,19 @@ public class AiTesting : MonoBehaviour
                 };
 
                 (int tSpd, float tOff, bool boost, string log) = TrackPathSolver.GetBestPath(inputs);
-                targetSpeeds[c] = tSpd;
+                targetSpeeds[c] = Mathf.RoundToInt((float)tSpd * (boost ? 1f : 1.1f));
                 targetOffsets[c] = tOff;
-                car.speed = tSpd;
-                car.offset = tOff;
+                car.speed = Mathf.RoundToInt(MoveTowards(car.speed, targetSpeeds[c], 20f));
+                car.offset = MoveTowards(car.offset, tOff, 1f);
 
-                float prog = TrackPathSolver.GetProgress(segType, false, car, 0.05f);
+
+
+                float prog = TrackPathSolver.GetProgress(segType, isReversed, car, stepDelta);
                 car.Progress(prog);
 
-                Vector3 pos = spline.GetPoint(car);
-                Debug.DrawLine(pos, pos + Vector3.up * 0.1f, carColors[c], 0.2f);
+                car.DebugRender(spline, carColors[c], realDelta);
+                //Vector3 pos = spline.GetPoint(car);
+                //Debug.DrawLine(pos, pos + Vector3.up * 0.1f, carColors[c], 0.2f);
 
                 if (car.progression >= 1)
                 {
@@ -118,11 +142,17 @@ public class AiTesting : MonoBehaviour
                 }
 
                 // optional per-car log
-                Debug.Log($"Car {c} Log={log}");
+                Debug.Log($"Car {colorNames[c]} Offset={car.offset} Log={log}");
                 //Debug.Log($"Car {c} Step {step}: Pos={pos} Seg={segType} Prog={car.progression}");
             }
 
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(realDelta);
         }
+    }
+    float MoveTowards(float current, float target, float step)
+    {
+        if (Mathf.Abs(current - target) < step)
+            return target;
+        return current + Mathf.Sign(target - current) * step;
     }
 }
