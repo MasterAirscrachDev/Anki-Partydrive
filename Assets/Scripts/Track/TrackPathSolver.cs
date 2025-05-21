@@ -408,11 +408,11 @@ public class TrackPathSolver
             // If in turn currently, reduce speed further
             if (onTurnNow && targetSpeed > 600) targetSpeed = 600;
             // Further reduce speed in turns if obstacles present
-            if ((blockedLeft || blockedRight) && targetSpeed > 500)
-            {
-                targetSpeed = 500;
-                log += "Reducing speed for turn with obstacles\n";
-            }
+            // if ((blockedLeft || blockedRight) && targetSpeed > 500)
+            // {
+            //     targetSpeed = 500;
+            //     log += "Reducing speed for turn with obstacles\n";
+            // }    
 
             // Ensure we're not boosting in turns
             shouldBoost = false;

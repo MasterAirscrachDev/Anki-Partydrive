@@ -102,6 +102,7 @@ public class TrackGenerator : MonoBehaviour
         }
         size.x -= center.x; size.y -= center.y;
         size.x *= 2; size.y *= 2;
+        FindObjectOfType<UIManager>().SwitchToTrackCamera(true);
         trackCamera.TrackUpdated(center, size);
     }
     IEnumerator OnFinalGenerate()

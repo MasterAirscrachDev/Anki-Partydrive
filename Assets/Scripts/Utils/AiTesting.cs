@@ -69,12 +69,12 @@ public class AiTesting : MonoBehaviour
         const float realDelta = 0.01f;
 
         // --- new: support multiple cars ---
-        int carCount = 4;
+        int carCount = 8;
         TrackCoordinate[] testCars = new TrackCoordinate[carCount];
         int[] targetSpeeds = new int[carCount];
         float[] targetOffsets = new float[carCount];
-        Color[] carColors = new Color[] { Color.red, Color.green, Color.blue, Color.yellow };
-        string[] colorNames = new string[] { "Red", "Green", "Blue", "Yellow" };
+        Color[] carColors = new Color[] { Color.red, Color.green, Color.blue, Color.yellow, Color.cyan, Color.magenta, Color.white, Color.grey };
+        string[] colorNames = new string[] { "Red", "Green", "Blue", "Yellow", "Cyan", "Magenta", "White", "Grey" };
 
         // initialize each car
         for (int i = 0; i < carCount; i++)
@@ -120,7 +120,7 @@ public class AiTesting : MonoBehaviour
                 };
 
                 (int tSpd, float tOff, bool boost, string log) = TrackPathSolver.GetBestPath(inputs);
-                targetSpeeds[c] = Mathf.RoundToInt((float)tSpd * (boost ? 1f : 1.1f));
+                targetSpeeds[c] = Mathf.RoundToInt((float)tSpd * (boost ? 1.1f : 1f));
                 targetOffsets[c] = tOff;
                 car.speed = Mathf.RoundToInt(MoveTowards(car.speed, targetSpeeds[c], 20f));
                 car.offset = MoveTowards(car.offset, tOff, 1f);
