@@ -35,6 +35,7 @@ public class TrackGenerator : MonoBehaviour
     }
     int LoopIndex(int index)
     {
+        if(segments == null || segments.Length == 0) { return 0; } //if there are no segments, return 0
         if (index < 0) { return segments.Length + index; }
         if (index >= segments.Length) { return index - segments.Length; }
         return index;
