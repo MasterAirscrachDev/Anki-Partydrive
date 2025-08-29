@@ -5,12 +5,17 @@ using UnityEngine;
 public class TrackSpline : MonoBehaviour
 {
     [SerializeField] Vector3[] leftPoints, rightPoints;
+    [SerializeField] float[] trackWidths; //should be same length as points
     public bool flipped = false;
     public Vector3 GetPoint(float t, float offset){
         return transform.TransformPoint(CurveInterpolator.Cilp(PointsFromOffset(offset), t));
     }
     public Vector3 GetPoint(TrackCoordinate trackCoordinate){
         return transform.TransformPoint(CurveInterpolator.Cilp(PointsFromOffset(trackCoordinate.offset), trackCoordinate.progression));
+    }
+    public float GetWidth(float t){
+        if(trackWidths.Length == 0){ return 72.25f; } //modular tracks
+        return LerpArray(trackWidths, t); //drive tracks
     }
 
     public TrackCoordinate GetTrackCoordinate(Vector3 position) {
@@ -159,5 +164,14 @@ public class TrackSpline : MonoBehaviour
                 Gizmos.DrawLine(transform.TransformPoint(points[j]), transform.TransformPoint(points[j + 1]));
             }
         }
+    }
+    float LerpArray(float[] arr, float t){
+        if(arr.Length == 0) return 0;
+        if(arr.Length == 1) return arr[0];
+        t = Mathf.Clamp01(t) * (arr.Length - 1);
+        int idx = Mathf.FloorToInt(t);
+        if(idx >= arr.Length - 1) return arr[arr.Length - 1];
+        float frac = t - idx;
+        return Mathf.Lerp(arr[idx], arr[idx + 1], frac);
     }
 }
