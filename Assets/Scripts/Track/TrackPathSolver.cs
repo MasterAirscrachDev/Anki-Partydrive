@@ -4,7 +4,13 @@ using static OverdriveServer.NetStructures;
 
 public class TrackPathSolver
 {
-    const float OVERDRIVE_OUTER_LANE = 72.25f; // Outer offset for overdrive
+    // Dynamic method to get track width based on current position
+    static float GetTrackHalfWidth(TrackCoordinate coord)
+    {
+        TrackSpline spline = TrackGenerator.track.GetTrackSpline(coord.idx);
+        return spline.GetWidth(coord.progression);
+    }
+    
     const float CAR_SPACING = 45f;
     public enum AIState
     {
@@ -77,12 +83,13 @@ public class TrackPathSolver
                 carClose = true; //set car close to true if the car is in our lane and we are ahead of it
             }
         }
-        if (!blockedLeft && targetLane <= -OVERDRIVE_OUTER_LANE)
+        float trackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
+        if (!blockedLeft && targetLane <= -trackHalfWidth)
         {
             blockedLeft = true;
             log += "Blocked Left by wall\n";
         } //if we are close to the left wall, set blocked left to true
-        if (!blockedRight && targetLane >= OVERDRIVE_OUTER_LANE)
+        if (!blockedRight && targetLane >= trackHalfWidth)
         {
             blockedRight = true;
             log += "Blocked Right by wall\n";
@@ -144,7 +151,8 @@ public class TrackPathSolver
 
                         bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
                         // Inside of the turn (negative offset for left turn, positive for right turn)
-                        targetLane = turnReversed ? OVERDRIVE_OUTER_LANE : -OVERDRIVE_OUTER_LANE;
+                        float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
+                        targetLane = turnReversed ? currentTrackHalfWidth : -currentTrackHalfWidth;
                         log += $"Positioning for upcoming turn at {targetLane}\n";
                     }
                     else
@@ -165,7 +173,8 @@ public class TrackPathSolver
                     bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
 
                     // Take ideal racing line but adjust if blocked
-                    float idealOffset = turnReversed ? 38.25f : -38.25f;
+                    float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
+                    float idealOffset = turnReversed ? currentTrackHalfWidth * 0.53f : -currentTrackHalfWidth * 0.53f; // Use ~53% of track width for racing line
                     targetLane = idealOffset;
 
                     // If ideal racing line is blocked, adjust
@@ -242,7 +251,8 @@ public class TrackPathSolver
                     }
 
                     // Clamp the overtaking position to valid track bounds
-                    overtakingOffset = Mathf.Clamp(overtakingOffset, -72f, 72f);
+                    float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
+                    overtakingOffset = Mathf.Clamp(overtakingOffset, -currentTrackHalfWidth, currentTrackHalfWidth);
 
                     // If we're close enough and path isn't blocked, attempt overtaking
                     if (inputs.currentTarget.DistanceY(inputs.ourCoord) < 2.0f && !blockedAhead)
@@ -291,18 +301,19 @@ public class TrackPathSolver
                     }
 
                     // Choose the safest direction based on blocked status
+                    float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
                     if (opposingOffset > 0)
                     {
                         // Threat is on the right, try to move left
                         if (!blockedLeft)
                         {
-                            targetLane = Mathf.Max(-72f, opposingOffset - CAR_SPACING);
+                            targetLane = Mathf.Max(-currentTrackHalfWidth, opposingOffset - CAR_SPACING);
                             log += $"Defensive move left {targetLane}\n";
                         }
                         else if (!blockedRight)
                         {
                             // Left is blocked, try moving right instead (wide turn)
-                            targetLane = Mathf.Min(72f, opposingOffset + CAR_SPACING);
+                            targetLane = Mathf.Min(currentTrackHalfWidth, opposingOffset + CAR_SPACING);
                             log += $"Defensive move right (wide) {targetLane}\n";
                         }
                         else
@@ -317,13 +328,13 @@ public class TrackPathSolver
                         // Threat is on the left, try to move right
                         if (!blockedRight)
                         {
-                            targetLane = Mathf.Min(72f, opposingOffset + CAR_SPACING);
+                            targetLane = Mathf.Min(currentTrackHalfWidth, opposingOffset + CAR_SPACING);
                             log += $"Defensive move right {targetLane}\n";
                         }
                         else if (!blockedLeft)
                         {
                             // Right is blocked, try moving left instead (wide turn)
-                            targetLane = Mathf.Max(-72f, opposingOffset - CAR_SPACING);
+                            targetLane = Mathf.Max(-currentTrackHalfWidth, opposingOffset - CAR_SPACING);
                             log += $"Defensive move left (wide) {targetLane}\n";
                         }
                         else
@@ -417,7 +428,8 @@ public class TrackPathSolver
             // Ensure we're not boosting in turns
             shouldBoost = false;
         }
-        targetLane = Mathf.Clamp(targetLane, -OVERDRIVE_OUTER_LANE, OVERDRIVE_OUTER_LANE); // Clamp target lane to valid track bounds
+        float finalTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
+        targetLane = Mathf.Clamp(targetLane, -finalTrackHalfWidth, finalTrackHalfWidth); // Clamp target lane to valid track bounds
         return (targetSpeed, targetLane, shouldBoost, log);
     }
     
@@ -429,8 +441,9 @@ public class TrackPathSolver
         //turn outside = 640mm
         int distanceMM = 560; //default distance for straight track
         if(segment == SegmentType.Turn){
-            //offset is between -72.25 and 72.25, so we can use this to determine the distance
-            float offset = car.offset / 72.25f; //scale offset to -1 to 1
+            //offset is scaled based on current track width
+            float trackHalfWidth = GetTrackHalfWidth(car);
+            float offset = car.offset / trackHalfWidth; //scale offset to -1 to 1 based on actual track width
             if(reversed){ offset = -offset;  } //reverse the offset if the segment is reversed
             distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
         }

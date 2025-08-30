@@ -173,7 +173,17 @@ public class CarController : MonoBehaviour
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
 
         lane += Isteer * baseSteering * statSteerMod;
-        lane = Mathf.Clamp(lane, -72.25f, 72.25f); //clamp lane to -72.25 to 72.25 (track bounds for overdrive track)
+        // Get dynamic track width, fallback to 72.25f for modular tracks
+        float trackHalfWidth = 72.25f; // Default for modular tracks
+        if (TrackGenerator.track != null && TrackGenerator.track.hasTrack) {
+            // Use average track width since we don't have specific position info here
+            // In the future, this could be improved by tracking the car's current segment
+            TrackSpline firstSpline = TrackGenerator.track.GetTrackSpline(0);
+            if (firstSpline != null) {
+                trackHalfWidth = firstSpline.GetWidth(0.5f);
+            }
+        }
+        lane = Mathf.Clamp(lane, -trackHalfWidth, trackHalfWidth); //clamp lane to track bounds
         pcs.SetEnergy((int)energy, (int)maxEnergy);
     }
     void Update(){

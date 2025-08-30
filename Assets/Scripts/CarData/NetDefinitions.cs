@@ -57,7 +57,10 @@ namespace OverdriveServer{
         }
         [System.Serializable]
         public enum SegmentType{
-            Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding
+            //Overdrive Track Pieces
+            Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding,
+            //Drive Track Pieces
+            Oval, Bottleneck, Crossroads
         }
         [System.Serializable]
         public class SegmentData{
@@ -101,6 +104,7 @@ namespace OverdriveServer{
         public const string SV_CAR_MOVE = "car_move_update", //Car move update [id:speed:offset] (speed and offset may be - meaning keep existing value)
         SV_REFRESH_CONFIGS = "refresh_configs", //Refresh configs (used to reload the car configs, name, speedbalance ect)
         SV_LINEUP = "lineup", // Request lineup (used to lineup the cars on the track)
+        SV_LINEUP_CANCEL = "lineup_cancel", // Cancel lineup (used to cancel the lineup)
         SV_CAR_S_LIGHTS = "car_s_lights", //Simple lights [id:Red:Green:Blue] (colours are 0-255)
         SV_CAR_C_LIGHTS = "car_c_lights", //Complex lights, a string id and array of LightData (see LightData) Min 1, Max 3
         SV_GET_TRACK = "get_track", //Get track (should return EVENT_TRACK_DATA with the track data)
@@ -110,6 +114,8 @@ namespace OverdriveServer{
         SV_GET_CARS = "request_cars", //Request cars (should return EVENT_CAR_DATA with the car data)
         SV_CAR_FLASH = "car_flash", //DONT USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING || Flash car [id:path] (used to flash a car, path should be the ota file)
         SV_TTS = "tts", //Text to speech [message] (used to send a message to the TTS engine)
+        SV_CAR_DIRECT_DRIVE = "car_direct_drive", //Direct drive car [id:left:right] direct drive the wheel motors
+        SV_ENABLE_DIRECT = "enable_direct", //Enable direct mode [id] (used to enable direct drive for a car)
         SV_CLIENT_CLOSED = "client_closed"; //Client closed (used to indicate a client has closed the connection intentionally)
         public static class UtilityMessages { //these are ids for the utility messages (parse them as strings)
             public const string MSG_CAR_CONNECTED = "cc", //:carID:name (used to indicate a car has connected)

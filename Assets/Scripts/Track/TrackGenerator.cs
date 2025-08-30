@@ -134,7 +134,7 @@ public class TrackGenerator : MonoBehaviour
         lastSegmentCount = segments.Length;
     }
 
-    void GenerateTrackObjects(bool animateLastSegment, bool fullyValidated)
+    void GenerateTrackObjects(bool animateLastSegment, bool fullyValidated) //spawns the actual track pieces
     {
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -145,104 +145,128 @@ public class TrackGenerator : MonoBehaviour
         Vector3 pos = Vector3.zero;
         Vector3 lastPos = Vector3.zero;
         Vector3 forward = Vector3.forward;
-        for (int i = 0; i < segments.Length; i++)
-        {
-            GameObject track = null;
-            Quaternion rot = Quaternion.LookRotation(forward);
-            bool useFullTrack = segments[i].validated && fullyValidated;
-
-            //round position to 1 decimal place
-            pos = new Vector3(Mathf.Round(pos.x * 10) / 10, Mathf.Round(pos.y * 10) / 10, Mathf.Round(pos.z * 10) / 10);
-            if (segments[i].type == SegmentType.FinishLine)
-            {
-                track = Instantiate(useFullTrack ? trackPrefabs[0] : scannningPrefabs[0], pos, rot, transform);
-                pos += forward;
+        if(segments[0].type == SegmentType.Oval || segments[0].type == SegmentType.Bottleneck || segments[0].type == SegmentType.Crossroads){
+            //Spawn a mat
+            GameObject mat = null;
+            if(segments[0].type == SegmentType.Oval){
+                mat = Instantiate(trackPrefabs[11], pos, Quaternion.identity, transform);
+                mat.name = "Oval Mat";
+            } else if(segments[0].type == SegmentType.Bottleneck){
+                mat = Instantiate(trackPrefabs[12], pos, Quaternion.identity, transform);
+                mat.name = "Bottleneck Mat";
+            } else if(segments[0].type == SegmentType.Crossroads){
+                mat = Instantiate(trackPrefabs[13], pos, Quaternion.identity, transform);
+                mat.name = "Crossroads Mat";
             }
-            if (segments[i].type == SegmentType.Straight)
-            {
-                track = Instantiate(useFullTrack ? trackPrefabs[1] : scannningPrefabs[1], pos, rot, transform);
-                pos += forward;
-            }
-            if (segments[i].type == SegmentType.FnFSpecial)
-            {
-                track = Instantiate(useFullTrack ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
-                if (segments[i].flipped) { track.transform.localScale = new Vector3(-1, 1, 1); }
-                pos += forward;
-            }
-            if (segments[i].type == SegmentType.Turn)
-            {
-                track = Instantiate(useFullTrack ? trackPrefabs[3] : scannningPrefabs[3], pos, rot, transform);
-                track.transform.localScale = new Vector3(segments[i].flipped ? 1 : -1, 1, 1);
-                forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
-                pos += forward;
-            }
-            if (segments[i].type == SegmentType.CrissCross)
-            {
-                bool hasCrissCross = false;
-                for (int j = 0; j < i; j++)
-                {
-                    if (segments[j].type == SegmentType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y)
-                    {
-                        hasCrissCross = true;
-                        trackPieces[j].name = $"{i} {trackPieces[j].name}";
-                        if (segments[j].validated)
-                        {
-                            track = Instantiate(trackPrefabs[10], pos, rot, transform); //invisible criss cross (for splines)
-                        }
-                        break;
-                    }
+            if(mat != null){
+                //get all the gameObjects with a track spline component and add them to the track pieces list
+                TrackSpline[] splines = mat.GetComponentsInChildren<TrackSpline>();
+                foreach(TrackSpline spline in splines){
+                    trackPieces.Add(spline.gameObject);
                 }
-                if (!hasCrissCross) { track = Instantiate(useFullTrack ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform); }
-                pos += forward;
             }
-            if (segments[i].type == SegmentType.JumpRamp)
+        }else{//Overdrive Modular Track
+            for (int i = 0; i < segments.Length; i++)
             {
-                track = Instantiate(useFullTrack ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
-                pos += forward * 2;
-            }
+                GameObject track = null;
+                Quaternion rot = Quaternion.LookRotation(forward);
+                bool useFullTrack = segments[i].validated && fullyValidated;
 
-            trackPieces.Add(track);
-            if (track != null)
-            {
-                track.name = $"{i} ({segments[i].type})";
-                if (segments[i].validated && fullyValidated)
+                //round position to 1 decimal place
+                pos = new Vector3(Mathf.Round(pos.x * 10) / 10, Mathf.Round(pos.y * 10) / 10, Mathf.Round(pos.z * 10) / 10);
+                if (segments[i].type == SegmentType.FinishLine)
                 {
-                    if (i == 1)
+                    track = Instantiate(useFullTrack ? trackPrefabs[0] : scannningPrefabs[0], pos, rot, transform);
+                    pos += forward;
+                }
+                if (segments[i].type == SegmentType.Straight)
+                {
+                    track = Instantiate(useFullTrack ? trackPrefabs[1] : scannningPrefabs[1], pos, rot, transform);
+                    pos += forward;
+                }
+                if (segments[i].type == SegmentType.FnFSpecial)
+                {
+                    track = Instantiate(useFullTrack ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
+                    if (segments[i].flipped) { track.transform.localScale = new Vector3(-1, 1, 1); }
+                    pos += forward;
+                }
+                if (segments[i].type == SegmentType.Turn)
+                {
+                    track = Instantiate(useFullTrack ? trackPrefabs[3] : scannningPrefabs[3], pos, rot, transform);
+                    track.transform.localScale = new Vector3(segments[i].flipped ? 1 : -1, 1, 1);
+                    forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
+                    pos += forward;
+                }
+                if (segments[i].type == SegmentType.CrissCross)
+                {
+                    bool hasCrissCross = false;
+                    for (int j = 0; j < i; j++)
                     {
-                        track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
-                    }
-                    else if (i > 1)
-                    {
-                        if (trackPieces[i] == null) { continue; }
-                        try
+                        if (segments[j].type == SegmentType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y)
                         {
-                            int offset = 1;
-                            if (trackPieces[i - 1] == null) { offset = 2; }
-                            if (trackPieces[i - offset] == null) { Debug.Log($"Track {i} was null"); continue; }
-                            Vector3 lastTrackEndLink = trackPieces[i - offset].GetComponent<TrackSpline>().GetEndLinkPoint();
-                            Vector3 lastTrackStartLink = trackPieces[i].GetComponent<TrackSpline>().GetStartLinkPoint();
-                            Debug.DrawLine(lastTrackEndLink, lastTrackStartLink, Color.red, 400);
-                            float linkDist = Vector3.Distance(lastTrackEndLink, lastTrackStartLink);
-                            if (linkDist > 0.01f)
+                            hasCrissCross = true;
+                            trackPieces[j].name = $"{i} {trackPieces[j].name}";
+                            if (segments[j].validated)
                             {
-                                track.GetComponent<TrackSpline>().flipped = true;
+                                track = Instantiate(trackPrefabs[10], pos, rot, transform); //invisible criss cross (for splines)
                             }
+                            break;
                         }
-                        catch (System.Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
+                    }
+                    if (!hasCrissCross) { track = Instantiate(useFullTrack ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform); }
+                    pos += forward;
+                }
+                if (segments[i].type == SegmentType.JumpRamp)
+                {
+                    track = Instantiate(useFullTrack ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
+                    pos += forward * 2;
+                }
 
+                trackPieces.Add(track);
+                if (track != null)
+                {
+                    track.name = $"{i} ({segments[i].type})";
+                    if (segments[i].validated && fullyValidated)
+                    {
+                        if (i == 1)
+                        {
+                            track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
+                        }
+                        else if (i > 1)
+                        {
+                            if (trackPieces[i] == null) { continue; }
+                            try
+                            {
+                                int offset = 1;
+                                if (trackPieces[i - 1] == null) { offset = 2; }
+                                if (trackPieces[i - offset] == null) { Debug.Log($"Track {i} was null"); continue; }
+                                Vector3 lastTrackEndLink = trackPieces[i - offset].GetComponent<TrackSpline>().GetEndLinkPoint();
+                                Vector3 lastTrackStartLink = trackPieces[i].GetComponent<TrackSpline>().GetStartLinkPoint();
+                                Debug.DrawLine(lastTrackEndLink, lastTrackStartLink, Color.red, 400);
+                                float linkDist = Vector3.Distance(lastTrackEndLink, lastTrackStartLink);
+                                if (linkDist > 0.01f)
+                                {
+                                    track.GetComponent<TrackSpline>().flipped = true;
+                                }
+                            }
+                            catch (System.Exception e)
+                            {
+                                Debug.LogError(e);
+                            }
+
+                        }
+                    }
+                    if (!fullyValidated && track != null && segments[i].validated)
+                    {
+                        track.GetComponent<MeshRenderer>().material = validConfirmedMat;
                     }
                 }
-                if (!fullyValidated && track != null && segments[i].validated)
-                {
-                    track.GetComponent<MeshRenderer>().material = validConfirmedMat;
-                }
+                Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
+                lastPos = pos;
             }
-            Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
-            lastPos = pos;
         }
+
+        
         if (animateLastSegment && trackPieces.Count > 0)
         {
             if (trackPieces[trackPieces.Count - 1] != null)

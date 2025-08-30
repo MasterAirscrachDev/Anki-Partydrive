@@ -14,6 +14,8 @@
 - Car Management Menu
  - Edit Car Names
 
+- Fix all the bugs that Dynamic lanes is causing
+
 ## UI Stuff too
 - Settings Menu
  - Option to disable Post (for performance)
