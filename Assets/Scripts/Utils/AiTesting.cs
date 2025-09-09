@@ -6,51 +6,75 @@ using static OverdriveServer.NetStructures;
 
 public class AiTesting : MonoBehaviour
 {
+    [SerializeField] bool generateMat = false;
     Segment[] requestedTrack;
     // Start is called before the first frame update
     void Start()
-    {
-        List<Segment> trackSegments = new List<Segment>
-        {
-            new Segment(SegmentType.PreFinishLine, 0, false),
-            new Segment(SegmentType.FinishLine, 0, false),
-            new Segment(SegmentType.Straight, 0, true),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Turn, 0, true),
-            new Segment(SegmentType.Turn, 0, true),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Turn, 0, true),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Straight, 0, false),
-            new Segment(SegmentType.Turn, 0, false),
-            new Segment(SegmentType.Turn, 0, true),
-            new Segment(SegmentType.Straight, 0, false),
-        };
-
-
-        foreach (Segment s in trackSegments)
-        {
-            s.validated = true; //mark all segments as validated
+    {   
+        if(generateMat){
+            List<Segment> trackSegments = new List<Segment>
+            {
+                new Segment(SegmentType.Bottleneck, 78, false),
+                new Segment(SegmentType.Bottleneck, 79, false),
+                new Segment(SegmentType.Bottleneck, 80, false),
+                new Segment(SegmentType.Bottleneck, 81, false),
+                new Segment(SegmentType.Bottleneck, 82, false),
+                new Segment(SegmentType.Bottleneck, 83, false),
+                new Segment(SegmentType.Bottleneck, 84, false),
+                new Segment(SegmentType.Bottleneck, 85, false),
+                new Segment(SegmentType.Bottleneck, 86, false),
+                new Segment(SegmentType.Bottleneck, 87, false),
+                new Segment(SegmentType.Bottleneck, 88, false),
+                new Segment(SegmentType.Bottleneck, 89, false),
+                new Segment(SegmentType.Bottleneck, 90, false),
+                new Segment(SegmentType.Bottleneck, 91, false)
+            };
+            foreach (Segment s in trackSegments)
+            {
+                s.validated = true; //mark all segments as validated
+            }
+            requestedTrack = trackSegments.ToArray();
+        }else{
+            List<Segment> trackSegments = new List<Segment>
+            {
+                new Segment(SegmentType.PreFinishLine, 0, false),
+                new Segment(SegmentType.FinishLine, 0, false),
+                new Segment(SegmentType.Straight, 0, true),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Turn, 0, true),
+                new Segment(SegmentType.Turn, 0, true),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Turn, 0, true),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Straight, 0, false),
+                new Segment(SegmentType.Turn, 0, false),
+                new Segment(SegmentType.Turn, 0, true),
+                new Segment(SegmentType.Straight, 0, false),
+            };
+            foreach (Segment s in trackSegments)
+            {
+                s.validated = true; //mark all segments as validated
+            }
+            requestedTrack = trackSegments.ToArray();
         }
-        requestedTrack = trackSegments.ToArray();
 
         StartCoroutine(Tests());
     }

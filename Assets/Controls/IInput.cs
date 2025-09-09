@@ -89,68 +89,28 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""UINav"",
-                    ""type"": ""Value"",
-                    ""id"": ""e413b2df-a88c-4420-add2-553d4c91b992"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""UISelect"",
-                    ""type"": ""Button"",
-                    ""id"": ""d7cde582-129f-48f5-bc97-063f5589afe7"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""f541128d-a779-4bac-ad6c-f315b8d74998"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""Accelerate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": """",
                     ""id"": ""bda6ecf3-27aa-485e-b4e6-c548469e3ffb"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Accelerate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c8e1a3c7-4401-47c5-b9b4-65e96aa13509"",
-                    ""path"": ""<Gamepad>/leftStick/x"",
+                    ""id"": ""b5b49adc-6015-44ee-a1e8-29284306589a"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""Steer"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""663e94c8-9b0d-4102-b014-c688e145928e"",
-                    ""path"": ""<Gamepad>/rightStick/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""Steer"",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Accelerate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -171,7 +131,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Steer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -182,41 +142,19 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Steer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": """",
-                    ""id"": ""8cf2c3e3-e8b4-4f70-a9f4-bff36c957ece"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""id"": ""2cfca5f0-0ace-40da-84ce-ae2a4e1cedf1"",
+                    ""path"": ""<Gamepad>/leftStick/x"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""ItemA"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""169cd1d6-f352-44e7-be2c-5e3c5135cb72"",
-                    ""path"": ""<Gamepad>/buttonWest"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""ItemB"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f619e277-fa69-4438-8e7f-1baa645eb09a"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""Boost"",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Steer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -226,19 +164,19 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Boost"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""5d5faaeb-0f0d-437f-9706-b9ad4d0fe2ae"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""id"": ""2afa5343-5de7-4bb2-b3ba-d3cf6fcd53ae"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""DriftLeft"",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Boost"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -248,19 +186,19 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""DriftLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""76fc252c-80da-41c5-a22c-2f37458d079d"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""id"": ""a1fe5e44-9e34-4bbf-9e7c-a9c1a8d079f1"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
-                    ""action"": ""DriftRight"",
+                    ""groups"": ""Controller"",
+                    ""action"": ""DriftLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -270,25 +208,91 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""DriftRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""e5a2af63-f4ba-4f40-bcae-44dde9b2e1d6"",
-                    ""path"": ""<Gamepad>/leftStick"",
+                    ""id"": ""a9a72249-de21-47b8-aca1-533b6d13cfef"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
-                    ""processors"": ""StickDeadzone(min=0.2)"",
-                    ""groups"": ""Main"",
-                    ""action"": ""UINav"",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""DriftRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
+                    ""name"": """",
+                    ""id"": ""6a85e1bb-3061-498e-b632-004dd5cffe73"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""ItemA"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ff139d8-4f36-4a5d-8e16-ed6686fa7bb5"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""ItemB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Menu"",
+            ""id"": ""5ab1e670-4a63-4c61-9de1-a108ab658db2"",
+            ""actions"": [
+                {
+                    ""name"": ""UIPoint"",
+                    ""type"": ""Value"",
+                    ""id"": ""e8241cd5-b899-4489-b2c3-be44056c6304"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""UINav"",
+                    ""type"": ""Value"",
+                    ""id"": ""c759ee33-309b-40a0-aa4f-91cdb4fe0b54"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""UISelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""0a57be10-2f01-45b8-be4e-d16ecab6bc4d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UIPointSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""bd8b08bd-72a1-4888-93ea-dc378ae4dc3b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
                     ""name"": ""2D Vector"",
-                    ""id"": ""b2c91b0d-0915-4c81-bf14-70835a65a5ae"",
+                    ""id"": ""b0597da4-989e-40ed-b191-c11a1571b7c3"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -299,67 +303,111 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""up"",
-                    ""id"": ""08b435f1-ffbd-4d74-bf09-5c12242215ac"",
+                    ""id"": ""f5028da9-5b2e-457b-a745-58e9314b6bd3"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""UINav"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""down"",
-                    ""id"": ""782f83aa-cc24-4367-8c8a-e68f4ec82927"",
+                    ""id"": ""6f999307-76da-4603-a14d-5b4aaf4ce161"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""UINav"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""left"",
-                    ""id"": ""ce076711-5cec-4517-a7c7-6d527a51d578"",
+                    ""id"": ""831625b5-f25c-4390-b7f4-cb4abbd397aa"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""UINav"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""right"",
-                    ""id"": ""bb439fa8-2068-4748-ad3c-e943a7a2296c"",
+                    ""id"": ""832bf00c-a991-49ea-8c1f-3ad9df6527f0"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""UINav"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b91321a8-20c8-417e-98e3-84dedf0d831e"",
+                    ""id"": ""d6f9b694-da92-4ac5-a47d-669e99d6fbe4"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""UINav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d0139155-ac73-4f65-9bb6-c8d8c2c80854"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""UINav"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""688f03d2-c1f7-42cd-ada0-846029b406ff"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""UISelect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""dda49cac-5ac1-4f57-8984-ab50a89818f4"",
+                    ""id"": ""0f76e365-24da-44f6-b128-628b7da03851"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Main"",
+                    ""groups"": ""Controller"",
                     ""action"": ""UISelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a099061-2b0f-4de3-b39f-3b9fa01d151b"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""UIPoint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""795c6adb-ebd6-4f52-967b-967e636913c8"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""UIPointSelect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -368,17 +416,28 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     ],
     ""controlSchemes"": [
         {
-            ""name"": ""Main"",
-            ""bindingGroup"": ""Main"",
+            ""name"": ""Keyboard"",
+            ""bindingGroup"": ""Keyboard"",
             ""devices"": [
                 {
                     ""devicePath"": ""<Keyboard>"",
-                    ""isOptional"": true,
+                    ""isOptional"": false,
                     ""isOR"": false
                 },
                 {
+                    ""devicePath"": ""<Mouse>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Controller"",
+            ""bindingGroup"": ""Controller"",
+            ""devices"": [
+                {
                     ""devicePath"": ""<Gamepad>"",
-                    ""isOptional"": true,
+                    ""isOptional"": false,
                     ""isOR"": false
                 }
             ]
@@ -394,8 +453,12 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         m_Racing_Boost = m_Racing.FindAction("Boost", throwIfNotFound: true);
         m_Racing_DriftLeft = m_Racing.FindAction("DriftLeft", throwIfNotFound: true);
         m_Racing_DriftRight = m_Racing.FindAction("DriftRight", throwIfNotFound: true);
-        m_Racing_UINav = m_Racing.FindAction("UINav", throwIfNotFound: true);
-        m_Racing_UISelect = m_Racing.FindAction("UISelect", throwIfNotFound: true);
+        // Menu
+        m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
+        m_Menu_UIPoint = m_Menu.FindAction("UIPoint", throwIfNotFound: true);
+        m_Menu_UINav = m_Menu.FindAction("UINav", throwIfNotFound: true);
+        m_Menu_UISelect = m_Menu.FindAction("UISelect", throwIfNotFound: true);
+        m_Menu_UIPointSelect = m_Menu.FindAction("UIPointSelect", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -464,8 +527,6 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Racing_Boost;
     private readonly InputAction m_Racing_DriftLeft;
     private readonly InputAction m_Racing_DriftRight;
-    private readonly InputAction m_Racing_UINav;
-    private readonly InputAction m_Racing_UISelect;
     public struct RacingActions
     {
         private @IInput m_Wrapper;
@@ -477,8 +538,6 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         public InputAction @Boost => m_Wrapper.m_Racing_Boost;
         public InputAction @DriftLeft => m_Wrapper.m_Racing_DriftLeft;
         public InputAction @DriftRight => m_Wrapper.m_Racing_DriftRight;
-        public InputAction @UINav => m_Wrapper.m_Racing_UINav;
-        public InputAction @UISelect => m_Wrapper.m_Racing_UISelect;
         public InputActionMap Get() { return m_Wrapper.m_Racing; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -509,12 +568,6 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @DriftRight.started += instance.OnDriftRight;
             @DriftRight.performed += instance.OnDriftRight;
             @DriftRight.canceled += instance.OnDriftRight;
-            @UINav.started += instance.OnUINav;
-            @UINav.performed += instance.OnUINav;
-            @UINav.canceled += instance.OnUINav;
-            @UISelect.started += instance.OnUISelect;
-            @UISelect.performed += instance.OnUISelect;
-            @UISelect.canceled += instance.OnUISelect;
         }
 
         private void UnregisterCallbacks(IRacingActions instance)
@@ -540,12 +593,6 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @DriftRight.started -= instance.OnDriftRight;
             @DriftRight.performed -= instance.OnDriftRight;
             @DriftRight.canceled -= instance.OnDriftRight;
-            @UINav.started -= instance.OnUINav;
-            @UINav.performed -= instance.OnUINav;
-            @UINav.canceled -= instance.OnUINav;
-            @UISelect.started -= instance.OnUISelect;
-            @UISelect.performed -= instance.OnUISelect;
-            @UISelect.canceled -= instance.OnUISelect;
         }
 
         public void RemoveCallbacks(IRacingActions instance)
@@ -563,13 +610,92 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         }
     }
     public RacingActions @Racing => new RacingActions(this);
-    private int m_MainSchemeIndex = -1;
-    public InputControlScheme MainScheme
+
+    // Menu
+    private readonly InputActionMap m_Menu;
+    private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
+    private readonly InputAction m_Menu_UIPoint;
+    private readonly InputAction m_Menu_UINav;
+    private readonly InputAction m_Menu_UISelect;
+    private readonly InputAction m_Menu_UIPointSelect;
+    public struct MenuActions
+    {
+        private @IInput m_Wrapper;
+        public MenuActions(@IInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @UIPoint => m_Wrapper.m_Menu_UIPoint;
+        public InputAction @UINav => m_Wrapper.m_Menu_UINav;
+        public InputAction @UISelect => m_Wrapper.m_Menu_UISelect;
+        public InputAction @UIPointSelect => m_Wrapper.m_Menu_UIPointSelect;
+        public InputActionMap Get() { return m_Wrapper.m_Menu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
+        public void AddCallbacks(IMenuActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MenuActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Add(instance);
+            @UIPoint.started += instance.OnUIPoint;
+            @UIPoint.performed += instance.OnUIPoint;
+            @UIPoint.canceled += instance.OnUIPoint;
+            @UINav.started += instance.OnUINav;
+            @UINav.performed += instance.OnUINav;
+            @UINav.canceled += instance.OnUINav;
+            @UISelect.started += instance.OnUISelect;
+            @UISelect.performed += instance.OnUISelect;
+            @UISelect.canceled += instance.OnUISelect;
+            @UIPointSelect.started += instance.OnUIPointSelect;
+            @UIPointSelect.performed += instance.OnUIPointSelect;
+            @UIPointSelect.canceled += instance.OnUIPointSelect;
+        }
+
+        private void UnregisterCallbacks(IMenuActions instance)
+        {
+            @UIPoint.started -= instance.OnUIPoint;
+            @UIPoint.performed -= instance.OnUIPoint;
+            @UIPoint.canceled -= instance.OnUIPoint;
+            @UINav.started -= instance.OnUINav;
+            @UINav.performed -= instance.OnUINav;
+            @UINav.canceled -= instance.OnUINav;
+            @UISelect.started -= instance.OnUISelect;
+            @UISelect.performed -= instance.OnUISelect;
+            @UISelect.canceled -= instance.OnUISelect;
+            @UIPointSelect.started -= instance.OnUIPointSelect;
+            @UIPointSelect.performed -= instance.OnUIPointSelect;
+            @UIPointSelect.canceled -= instance.OnUIPointSelect;
+        }
+
+        public void RemoveCallbacks(IMenuActions instance)
+        {
+            if (m_Wrapper.m_MenuActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMenuActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MenuActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MenuActions @Menu => new MenuActions(this);
+    private int m_KeyboardSchemeIndex = -1;
+    public InputControlScheme KeyboardScheme
     {
         get
         {
-            if (m_MainSchemeIndex == -1) m_MainSchemeIndex = asset.FindControlSchemeIndex("Main");
-            return asset.controlSchemes[m_MainSchemeIndex];
+            if (m_KeyboardSchemeIndex == -1) m_KeyboardSchemeIndex = asset.FindControlSchemeIndex("Keyboard");
+            return asset.controlSchemes[m_KeyboardSchemeIndex];
+        }
+    }
+    private int m_ControllerSchemeIndex = -1;
+    public InputControlScheme ControllerScheme
+    {
+        get
+        {
+            if (m_ControllerSchemeIndex == -1) m_ControllerSchemeIndex = asset.FindControlSchemeIndex("Controller");
+            return asset.controlSchemes[m_ControllerSchemeIndex];
         }
     }
     public interface IRacingActions
@@ -581,7 +707,12 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         void OnBoost(InputAction.CallbackContext context);
         void OnDriftLeft(InputAction.CallbackContext context);
         void OnDriftRight(InputAction.CallbackContext context);
+    }
+    public interface IMenuActions
+    {
+        void OnUIPoint(InputAction.CallbackContext context);
         void OnUINav(InputAction.CallbackContext context);
         void OnUISelect(InputAction.CallbackContext context);
+        void OnUIPointSelect(InputAction.CallbackContext context);
     }
 }

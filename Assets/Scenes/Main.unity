@@ -586,7 +586,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PARTYDRIVE DEMO 2.7.0
+  m_text: PARTYDRIVE DEMO 2.8.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
   m_sharedMaterial: {fileID: -1470650276818706409, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
@@ -3617,63 +3617,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!1001 &467205895
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2245612171523552982, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_Name
-      value: Mat3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_RootOrder
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245612171523552983, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 3ab19db93b55f5d47bde77b94f5c2eac, type: 3}
 --- !u!1 &478739955
 GameObject:
   m_ObjectHideFlags: 0
@@ -5193,6 +5136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c3b1f4101bfb5047be065bd73165591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  generateMat: 0
 --- !u!4 &751969705
 Transform:
   m_ObjectHideFlags: 0
@@ -7329,11 +7273,11 @@ MonoBehaviour:
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
-  m_PointAction: {fileID: 0}
-  m_MoveAction: {fileID: -4869089245245700282, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
-  m_SubmitAction: {fileID: -187474915047203655, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
+  m_PointAction: {fileID: -4950280103761405593, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
+  m_MoveAction: {fileID: 2379310030593848821, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
+  m_SubmitAction: {fileID: -7506480324956149409, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
   m_CancelAction: {fileID: 0}
-  m_LeftClickAction: {fileID: 0}
+  m_LeftClickAction: {fileID: 2298387071441308352, guid: 409a48fdc56d3874bb2261c5ff30b886, type: 3}
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}
   m_ScrollWheelAction: {fileID: 0}
@@ -13447,7 +13391,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 1, g: 0, b: 0, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
