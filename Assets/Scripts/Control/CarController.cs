@@ -21,6 +21,7 @@ public class CarController : MonoBehaviour
     CMS cms; //interface for gamemodes
     public PlayerCardSystem pcs; //used to update the UI
     CarsManagement carsManagement; //used when in the car selection screen
+    CarEntityTracker carTracker; //used to get current position for dynamic width calculation
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     //INPUT VALUES======
     public float Iaccel;
@@ -54,6 +55,7 @@ public class CarController : MonoBehaviour
         carInterface = CarInteraface.io;
         cms = FindObjectOfType<CMS>();
         cms.AddController(this, isAI);
+        carTracker = FindObjectOfType<CarEntityTracker>(); // Cache the tracker reference
         ControlTicker(); //start the control ticker
         FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
@@ -173,16 +175,24 @@ public class CarController : MonoBehaviour
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
 
         lane += Isteer * baseSteering * statSteerMod;
-        // Get dynamic track width, fallback to 72.25f for modular tracks
+        
+        // Get dynamic track width from the car's actual current position
         float trackHalfWidth = 72.25f; // Default for modular tracks
-        if (TrackGenerator.track != null && TrackGenerator.track.hasTrack) {
-            // Use average track width since we don't have specific position info here
-            // In the future, this could be improved by tracking the car's current segment
-            TrackSpline firstSpline = TrackGenerator.track.GetTrackSpline(0);
-            if (firstSpline != null) {
-                trackHalfWidth = firstSpline.GetWidth(0.5f);
+        if (TrackGenerator.track != null && TrackGenerator.track.hasTrack && !string.IsNullOrEmpty(carID)) {
+            // Get the car's current track position from the tracking system
+            if (carTracker != null) {
+                TrackCoordinate currentPos = carTracker.GetCarTrackCoordinate(carID);
+                if (currentPos != null) {
+                    // Get the actual track spline this car is currently on
+                    TrackSpline currentSpline = TrackGenerator.track.GetTrackSpline(currentPos.idx);
+                    if (currentSpline != null) {
+                        // Use the car's current progression to get the precise width at this location
+                        trackHalfWidth = currentSpline.GetWidth(currentPos.progression);
+                    }
+                }
             }
         }
+        
         lane = Mathf.Clamp(lane, -trackHalfWidth, trackHalfWidth); //clamp lane to track bounds
         pcs.SetEnergy((int)energy, (int)maxEnergy);
     }
