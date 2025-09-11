@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using static OverdriveServer.NetStructures;
@@ -8,6 +9,7 @@ public class TrackPathSolver
     static float GetTrackHalfWidth(TrackCoordinate coord)
     {
         TrackSpline spline = TrackGenerator.track.GetTrackSpline(coord.idx);
+        if (spline == null) return 0; // FailCase
         return spline.GetWidth(coord.progression);
     }
     

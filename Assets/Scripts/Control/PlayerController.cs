@@ -25,8 +25,8 @@ public class PlayerController : MonoBehaviour
         carController.IitemA = iinput.currentActionMap.actions[2].ReadValue<bool>();
         carController.IitemB = iinput.currentActionMap.actions[3].ReadValue<bool>();
         carController.Iboost = iinput.currentActionMap.actions[4].ReadValue<float>() > 0.5f;
-        bool leftDrift = iinput.currentActionMap.actions[5].ReadValue<bool>();
-        bool rightDrift = iinput.currentActionMap.actions[6].ReadValue<bool>();
+        bool leftDrift = iinput.currentActionMap.actions[5].ReadValue<float>() > 0.5f;
+        bool rightDrift = iinput.currentActionMap.actions[6].ReadValue<float>() > 0.5f;
         if(leftDrift && rightDrift || (!leftDrift && !rightDrift)){ carController.Idrift = 0; }
         else if(leftDrift){ carController.Idrift = -1; }
         else if(rightDrift){ carController.Idrift = 1; }

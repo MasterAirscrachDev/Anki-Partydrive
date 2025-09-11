@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static OverdriveServer.NetStructures;
 
+//This script manages the car selection UI and interactions with the CMS
 public class CarsManagement : MonoBehaviour
 {
     [SerializeField] GameObject backButton, raceButton;
@@ -43,7 +44,7 @@ public class CarsManagement : MonoBehaviour
         RenderCarList();
     }
     public void LoadGamemode(){ //called from UI
-        UIManager ui = FindObjectOfType<UIManager>();
+        UIManager ui = UIManager.active;
         if(cms.gameMode == "Time Trial"){
             ui.SetUILayer(5);
         }

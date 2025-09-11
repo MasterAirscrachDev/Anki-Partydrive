@@ -1,15 +1,13 @@
 # This is the current list of todos for the Partydrive client.
 
-# For Demo 2.2.0 and beyond
+# For Demo 2.8.0 and beyond
 
 ## Just coding
-- Car Models are blue
-- Car models dont inherit player color
-- AI States
- - Speed (just go fast, the current one)
- - Persuit (follow another car)
- - Blocking (try to block another car)
- - Avoidance (keep as much distance as possible from other cars)
+- Move to more overdrive like car colours
+
+- Show cars further ahead than the pure data (add a 50% segment scaled based on the cars speed)
+
+- Fix cars not having correct length for trucks (truck have 2.5x length of normal cars)
 
 - Car Management Menu
  - Edit Car Names
@@ -19,5 +17,10 @@
 ## UI Stuff too
 - Settings Menu
  - Option to disable Post (for performance)
-
 - Custom player names
+
+## Upgrades
+- Overhaul car selection menu (move to 3D ssb style)
+ - Show car models
+ - Show car colors
+ - Show car names

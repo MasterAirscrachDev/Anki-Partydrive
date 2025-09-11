@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using static OverdriveServer.NetStructures;
 
+//This script manages all cars that exist in the scene, creating and destroying them as needed
 public class CarEntityTracker : MonoBehaviour
 {
     [SerializeField] TrackGenerator track;
@@ -65,6 +66,17 @@ public class CarEntityTracker : MonoBehaviour
             trackers.Remove(id);
             UpdateAIOpponentLocations(); //update the AI opponent locations
         }
+    }
+    
+    public void ClearAllCars(){
+        Debug.Log("Clearing all car entities for track scan");
+        foreach(var tracker in trackers.Values){
+            if(tracker != null && tracker.gameObject != null){
+                Destroy(tracker.gameObject);
+            }
+        }
+        trackers.Clear();
+        UpdateAIOpponentLocations(); //update the AI opponent locations
     }
     public void CarDelocalised(string id){ if(trackers.ContainsKey(id)){ trackers[id].Delocalise(); } }
     public void SetSpeed(string id, int speed){ if(trackers.ContainsKey(id)){ trackers[id].SetSpeed(speed); } }

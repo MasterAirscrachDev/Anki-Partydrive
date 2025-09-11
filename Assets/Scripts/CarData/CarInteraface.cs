@@ -13,9 +13,8 @@ public class CarInteraface : MonoBehaviour
     public UCarData[] cars;
     NativeWebSocket.WebSocket ws;
     [SerializeField] TrackGenerator trackGenerator;
+    [SerializeField] CarEntityTracker carEntityTracker;
     CMS cms;
-    CarEntityTracker carEntityTracker;
-    [SerializeField] UIManager uiManager;
     bool trackValidated = false;
     public static CarInteraface io;
     public UCarData GetCarFromID(string id){
@@ -34,15 +33,14 @@ public class CarInteraface : MonoBehaviour
 
         ws.OnOpen += () => { 
             Debug.Log("WebSocket connection opened"); 
-            FindObjectOfType<UIManager>().ServerConnected(); //show the server connected message
+            UIManager.active.ServerConnected(); //show the server connected message
             ApiCallV2(SV_SCAN, 0); //Start scanning for cars
             GetCars();
         };
         ws.OnError += (e) => { 
             Debug.Log($"WebSocket error: {e}"); 
             if(e.ToString() == "Unable to connect to the remote server" && !Application.isEditor){
-                //
-                FindObjectOfType<UIManager>().NoServerWarning(); //show the no server warning
+                UIManager.active.NoServerWarning(); //show the no server warning
             }
         }; //Unable to connect to the remote server (if server missing)
         ws.OnClose += (e) => { Debug.Log($"WebSocket connection closed: {e}"); };
@@ -51,7 +49,6 @@ public class CarInteraface : MonoBehaviour
         ws.Connect();
 
         cms = FindObjectOfType<CMS>();
-        carEntityTracker = GetComponent<CarEntityTracker>();
     }
 
     void Update(){
@@ -66,7 +63,12 @@ public class CarInteraface : MonoBehaviour
         //get the first car that isnt on charge
         int index = 0;
         while(cars[index].charging){ index++; }
-        int fins = uiManager.GetFinishCounter();
+        int fins = UIManager.active.GetFinishCounter();
+        UIManager.active.SetScanningStatusText("Finding Finish...");
+        
+        // Clear all existing car entities when starting a new track scan
+        carEntityTracker.ClearAllCars();
+        
         ApiCallV2(SV_TR_START_SCAN, fins);
     }
     public void CancelTrackScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //called from ui
@@ -83,7 +85,7 @@ public class CarInteraface : MonoBehaviour
         carEntityTracker.SetOffset(car.id, lane);
     }
     
-    public void SetCarColours(UCarData car, int r, int g, int b){
+    public void SetCarColours(UCarData car, int r, int g, int b){ // 0-255
         ApiCallV2(SV_CAR_S_LIGHTS, $"{car.id}:{r}:{g}:{b}");
     }
     public void SetCarColoursComplex(UCarData car, LightData[] lights){
@@ -151,7 +153,7 @@ public class CarInteraface : MonoBehaviour
             bool valid = false;
             if(c[1] != "in-progress"){
                 valid = c[1] == "True";
-                uiManager.SetIsScanningTrack(false); //set the UI to not scanning
+                UIManager.active.SetIsScanningTrack(false); //set the UI to not scanning
             }
             trackValidated = valid;
             ApiCallV2(SV_GET_TRACK, 0); //request the track data
@@ -218,7 +220,7 @@ public class CarInteraface : MonoBehaviour
                 StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));
             }
         } //send the lights with a delay
-        FindObjectOfType<UIManager>().SetCarsCount(cars.Length);
+        UIManager.active.SetCarsCount(cars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
         { cms.controllers[i].CheckCarExists(); }
     }

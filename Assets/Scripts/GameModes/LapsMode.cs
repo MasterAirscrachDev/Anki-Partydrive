@@ -29,7 +29,7 @@ public class LapsMode : MonoBehaviour
         replayButton.SetActive(false);
     }
     public void LineupAndStart(){
-        FindObjectOfType<UIManager>().SwitchToTrackCamera(true);
+        UIManager.active.SwitchToTrackCamera(true);
         startButton.SetActive(false);
         FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
         cms.TTS("Supercars to the starting line");
@@ -37,7 +37,7 @@ public class LapsMode : MonoBehaviour
         carInteraface.OnLineupEvent += OnLineupUpdate;
     }
     IEnumerator CountDown(){
-        FindObjectOfType<UIManager>().SwitchToTrackCamera(true);
+        UIManager.active.SwitchToTrackCamera(true);
         string[] activeCars = carEntityTracker.GetActiveCars();
         foreach(string carID in activeCars){
             carLaps[carID] = 0; //reset the lap count
@@ -104,7 +104,7 @@ public class LapsMode : MonoBehaviour
         }
     }
     public void BackToMenu(){ //called by ui
-        FindObjectOfType<UIManager>().SetUILayer(0);
+        UIManager.active.SetUILayer(0);
     }
     public void Replay(){ //called by ui
         StartMode();

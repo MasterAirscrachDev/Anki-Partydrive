@@ -14,6 +14,7 @@ public class TrackGenerator : MonoBehaviour
     public bool hasTrack = false;
     int lastSegmentCount = 0;
     public static TrackGenerator track;
+    bool positionCameraOnLoadSet = false; //flag to ensure we correctly position the camera if a track is loaded before the first frame
 
     [ContextMenu("Generate Track From Segments")]
     public void TEST_GenerateTrackFromSegments()
@@ -66,11 +67,12 @@ public class TrackGenerator : MonoBehaviour
         {
             if (validated)
             {
+                UIManager.active.SetScanningStatusText("");
                 StartCoroutine(OnFinalGenerate());
-                //Debug.Log("Track validated, generating final track...");
                 return;
             }
             if (segments == null || segments.Length == 0) { return; } //if there are no segments, do nothing  
+            UIManager.active.SetScanningStatusText(segments[0].validated ? "Double Checking..." : "Scanning...");
             GenerateTrackObjects(lastSegmentCount != segments.Length, false);
             lastSegmentCount = segments.Length;
             hasTrack = validated;
@@ -85,6 +87,9 @@ public class TrackGenerator : MonoBehaviour
             Debug.LogError($"Error generating track: " + e);
             return;
         }
+        PositionTrackCamera();
+    }
+    void PositionTrackCamera(bool autoSwitchCamera = true){
         //calculate the center and size of the track
         Vector3 center = Vector3.zero;
         for (int i = 0; i < trackPieces.Count; i++)
@@ -103,7 +108,9 @@ public class TrackGenerator : MonoBehaviour
         }
         size.x -= center.x; size.y -= center.y;
         size.x *= 2; size.y *= 2;
-        FindObjectOfType<UIManager>().SwitchToTrackCamera(true);
+        if(autoSwitchCamera){
+            UIManager.active.SwitchToTrackCamera(true);
+        }
         trackCamera.TrackUpdated(center, size);
     }
     IEnumerator OnFinalGenerate()

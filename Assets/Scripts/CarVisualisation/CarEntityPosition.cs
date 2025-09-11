@@ -191,6 +191,17 @@ public class TrackCoordinate
         //check if we are within the side distance of the other car
         return DistanceX(other) < XSpacingSum; //check if we are within the side distance of the other car
     }
+    //for shorthand incrementing progression
+    public static TrackCoordinate operator +(TrackCoordinate a, float b)
+    {
+        a.progression += b;
+        if (a.progression > 1)
+        {
+            a.idx++;
+            a.progression -= 1;
+        }
+        return a;
+    }
 
     public void DebugRender(TrackSpline spline, Color color, float duration = 0.1f)
     {

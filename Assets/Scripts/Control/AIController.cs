@@ -99,7 +99,6 @@ public class AIController : MonoBehaviour
                 fixCarTimer = 10f; //reset the timer
             }
         }
-        //ourCoord.DebugRender(carController.GetTrackSpline(), Color.red, Time.deltaTime); //render the car location
     }
     void UpdateInputs(){
         (int controllerSpeed, float controllerOffset) = carController.GetMetrics(); //get the current speed and offset of the car

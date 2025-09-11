@@ -29,7 +29,7 @@ public class TimeTrialMode : MonoBehaviour
         replayButton.SetActive(false);
     }
     public void LineupAndStart(){
-        FindObjectOfType<UIManager>().SwitchToTrackCamera(true);
+        UIManager.active.SwitchToTrackCamera(true);
         startButton.SetActive(false);
         FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
         cms.TTS("Supercars to the starting line");
@@ -37,7 +37,7 @@ public class TimeTrialMode : MonoBehaviour
         carInteraface.OnLineupEvent += OnLineupUpdate;
     }
     IEnumerator CountDown(){
-        FindObjectOfType<UIManager>().SwitchToTrackCamera(true);
+        UIManager.active.SwitchToTrackCamera(true);
         string[] activeCars = carEntityTracker.GetActiveCars();
         foreach(string carID in activeCars){
             carTimes.Add(new CarTime(carID));
@@ -128,7 +128,7 @@ public class TimeTrialMode : MonoBehaviour
         }
     }
     public void BackToMenu(){ //called by ui
-        FindObjectOfType<UIManager>().SetUILayer(0);
+        UIManager.active.SetUILayer(0);
     }
     public void Replay(){ //called by ui
         StartMode();

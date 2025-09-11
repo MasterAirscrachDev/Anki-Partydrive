@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     [Header("Scanning UI")]
     [SerializeField] GameObject TrackScan;
     [SerializeField] GameObject TrackCancelScan;
+    [SerializeField] TMP_Text ScanningStatusText;
     
     [Header("Other")]
     [SerializeField] GameObject[] UILayers;
@@ -25,12 +26,15 @@ public class UIManager : MonoBehaviour
     int finishCounter = 1;
     int UIlayer = 0;
 
+    public static UIManager active;
+
     [ContextMenu("Toggle Track Camera")]
     public void ToggleTrackCamera(){ SwitchToTrackCamera(!TrackCamera.activeSelf); }
 
     // Start is called before the first frame update
     void Start() {
         SetUILayer(0);
+        active = this;
     }
 
     // Update is called once per frame
@@ -93,6 +97,10 @@ public class UIManager : MonoBehaviour
             if(scan){ TrackCancelScan.GetComponent<Button>().Select(); }
             else{ TrackScan.GetComponent<Button>().Select(); }
         }
+    }
+    
+    public void SetScanningStatusText(string text){
+        ScanningStatusText.text = text;
     }
     public void QuitGame(){
         Application.Quit();

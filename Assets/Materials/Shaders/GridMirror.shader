@@ -7,7 +7,7 @@ Shader "Custom/GridMirror"
         _Color2 ("Grid Color", Color) = (0,0,0,1)
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
-        _Gridsize ("Grid Size", Range(0,0.001)) = 0.0
+        _Gridsize ("Grid Size", Range(0,0.2)) = 0.0
         _GridX ("Grid X Offset", Range(0,0.001)) = 0.0
         _GridY ("Grid Y Offset", Range(0,0.001)) = 0.0
     }

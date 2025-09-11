@@ -59,7 +59,7 @@ public class CarController : MonoBehaviour
         ControlTicker(); //start the control ticker
         FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
-        int uiLayer = FindObjectOfType<UIManager>().GetUILayer();
+        int uiLayer = UIManager.active.GetUILayer();
         if(uiLayer == 2){
             carsManagement = FindObjectOfType<CarsManagement>();
         }
