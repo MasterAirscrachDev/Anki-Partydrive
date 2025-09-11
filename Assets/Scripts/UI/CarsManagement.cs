@@ -51,6 +51,9 @@ public class CarsManagement : MonoBehaviour
         else if (cms.gameMode == "Laps"){
             ui.SetUILayer(6);
         }
+        else if (cms.gameMode == "Laps2"){
+            ui.SetUILayer(7);
+        }
         else if(cms.gameMode == "Party"){
             Debug.Log("Party Mode not done yet");
         }

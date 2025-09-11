@@ -44,7 +44,7 @@ public class AIController : MonoBehaviour
         ourCoord = coord; //set our car location to the given coordinates
     }
     public void EnteredCarManagement(){
-        if(carController.GetCarID() == ""){ //if ourID is not set,
+        if(carController.GetCarID() == "" || CarInteraface.io.GetCarIndex(carController.GetCarID()) == -1){ //if ourID is not set,
             FindObjectOfType<CMS>().RemoveAI(ourID); //remove this AI and Controller
         }
     }

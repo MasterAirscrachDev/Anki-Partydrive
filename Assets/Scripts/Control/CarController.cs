@@ -177,7 +177,7 @@ public class CarController : MonoBehaviour
         lane += Isteer * baseSteering * statSteerMod;
         
         // Get dynamic track width from the car's actual current position
-        float trackHalfWidth = 72.25f; // Default for modular tracks
+        float trackHalfWidth = 67.5f; // Default for modular tracks
         if (TrackGenerator.track != null && TrackGenerator.track.hasTrack && !string.IsNullOrEmpty(carID)) {
             // Get the car's current track position from the tracking system
             if (carTracker != null) {

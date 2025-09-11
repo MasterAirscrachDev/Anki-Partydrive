@@ -39,13 +39,13 @@ public class CarEntityTracker : MonoBehaviour
     CarEntityPosition AddTracker(string id){
         if(trackers.ContainsKey(id)){ return trackers[id]; } //return the existing tracker (should never happen)
         CarEntityPosition entity = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarEntityPosition>();
-        entity.Setup(id); //setup the car entity
+        int model = (int)CarInteraface.io.GetCarFromID(id).modelName;
+        entity.Setup(id, model); //setup the car entity
         entity.gameObject.name = $"{id} True Position";
         entity.transform.GetChild(0).gameObject.name = $"{id} Model";
         entity.carModelManager = entity.transform.GetChild(0).GetComponent<CarModelManager>();
-        entity.carModelManager.Setup((int)CarInteraface.io.GetCarFromID(id).modelName); //make this load colour later
+        entity.carModelManager.Setup(model); //make this load colour later
         trackers.Add(id, entity);
-
         UpdateAIOpponentLocations(); //update the AI opponent locations
         return entity;
     }

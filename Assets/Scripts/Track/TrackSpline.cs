@@ -20,7 +20,7 @@ public class TrackSpline : MonoBehaviour
     /// <returns>float half Width</returns>
     // <summary>
     public float GetWidth(float t){
-        if(trackWidths.Length == 0){ return 72.25f; } //modular tracks
+        if(trackWidths.Length == 0){ return 67.5f; } //modular tracks
         return LerpArray(trackWidths, t); //drive tracks
     }
 
@@ -45,10 +45,10 @@ public class TrackSpline : MonoBehaviour
             // Sample a few offset values
             int offsetSteps = 10; // Increase for better accuracy
             for (int j = 0; j <= offsetSteps; j++) {
-                float offset = Mathf.Lerp(-72.25f, 72.25f, (float)j / offsetSteps);
+                float offset = Mathf.Lerp(-67.5f, 67.5f, (float)j / offsetSteps);
                 
                 // Get the point in local space for this progression and offset
-                Vector3[] pointsWithOffset = PointsFromOffset(offset, 72.25f);
+                Vector3[] pointsWithOffset = PointsFromOffset(offset, 67.5f);
                 Vector3 pointOnTrack = CurveInterpolator.Cilp(pointsWithOffset, t);
                 
                 float dist = Vector3.Distance(localPosition, pointOnTrack);
@@ -74,7 +74,7 @@ public class TrackSpline : MonoBehaviour
         //convert the bestOffset to be clamped within the track width at bestProgression
         float halfWidth = GetWidth(bestProgression);
         //scale bestOffset to be within -1 to 1
-        bestOffset = bestOffset / 72.25f;
+        bestOffset = bestOffset / 67.5f;
         bestOffset = bestOffset * halfWidth;
 
         return new TrackCoordinate(0, bestOffset, bestProgression); // Assuming idx is not used in this context
@@ -90,7 +90,7 @@ public class TrackSpline : MonoBehaviour
             float t1 = minT + (maxT - minT) / 3;
             float t2 = minT + 2 * (maxT - minT) / 3;
             
-            Vector3[] pointsWithOffset = PointsFromOffset(offset, 72.25f);
+            Vector3[] pointsWithOffset = PointsFromOffset(offset, 67.5f);
             Vector3 p1 = CurveInterpolator.Cilp(pointsWithOffset, t1);
             Vector3 p2 = CurveInterpolator.Cilp(pointsWithOffset, t2);
             
@@ -118,8 +118,8 @@ public class TrackSpline : MonoBehaviour
             float o1 = minOffset + (maxOffset - minOffset) / 3;
             float o2 = minOffset + 2 * (maxOffset - minOffset) / 3;
             
-            Vector3[] points1 = PointsFromOffset(o1, 72.25f);
-            Vector3[] points2 = PointsFromOffset(o2, 72.25f);
+            Vector3[] points1 = PointsFromOffset(o1, 67.5f);
+            Vector3[] points2 = PointsFromOffset(o2, 67.5f);
             
             Vector3 p1 = CurveInterpolator.Cilp(points1, progression);
             Vector3 p2 = CurveInterpolator.Cilp(points2, progression);
@@ -169,9 +169,9 @@ public class TrackSpline : MonoBehaviour
             Gizmos.DrawLine(transform.TransformPoint(leftPoints[i]), transform.TransformPoint(leftPoints[i + 1]));
             Gizmos.DrawLine(transform.TransformPoint(rightPoints[i]), transform.TransformPoint(rightPoints[i + 1]));
         }
-        float[] lanes = { -72.25f, -21.25f, 21.25f, 72.25f };
+        float[] lanes = { -67.5f, -22.5f, 22.5f, 67.5f };
         for(int i = 0; i < lanes.Length; i++){
-            Vector3[] points = PointsFromOffset(lanes[i], 72.25f);
+            Vector3[] points = PointsFromOffset(lanes[i], 67.5f);
             Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)i / (lanes.Length - 1));
             for(int j = 0; j < points.Length - 1; j++){
                 Gizmos.DrawLine(transform.TransformPoint(points[j]), transform.TransformPoint(points[j + 1]));

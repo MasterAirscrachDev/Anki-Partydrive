@@ -5,12 +5,11 @@
 ## Just coding
 - Move to more overdrive like car colours
 
-- Show cars further ahead than the pure data (add a 50% segment scaled based on the cars speed)
-
-- Fix cars not having correct length for trucks (truck have 2.5x length of normal cars)
+- Fix frogging
 
 - Car Management Menu
  - Edit Car Names
+ - bots not leaving when they should
 
 - Fix all the bugs that Dynamic lanes is causing
 
@@ -23,4 +22,4 @@
 - Overhaul car selection menu (move to 3D ssb style)
  - Show car models
  - Show car colors
- - Show car names
+ - Show car names// 2.5x length for trucks

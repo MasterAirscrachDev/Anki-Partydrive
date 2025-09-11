@@ -12,15 +12,22 @@ public class CarEntityPosition : MonoBehaviour
     bool isSegmentReversed = false;
     [SerializeField] int shift = 0;
     int despawnTimer = 50;
-    [SerializeField] TrackCoordinate trackpos = new TrackCoordinate(0, 0, 0);
+    [SerializeField] TrackCoordinate trackpos;
     Vector3 lastPosition;
     TrackGenerator track;
     bool showOnTrack = true, despawnCancelled = false, despawnTimerRunning = false;
     public bool wasDelocalisedThisLap = true; //true until set to false
     readonly bool SHOW_ANYWAY = false; //Debugging to show hitbox in editor
-    public void Setup(string id) {
+    int carModel = 0; // Store car model for truck length calculations
+    public void Setup(string id, int model) {
         this.id = id; //set the id of the car entity
         track = TrackGenerator.track;
+        carModel = model;
+        float backDistance = 0.2f; // Default for normal cars
+        // Check if this is a supertruck (models 15, 16, 17 = Freewheel, x52, x52Ice)
+        if(carModel == 15 || carModel == 16 || carModel == 17) { backDistance *= 2.5f; } // 2.5x length for trucks
+        trackpos = new TrackCoordinate(0, 0, 0, 22, backDistance);
+        
         //if not the editor, destroy the mesh renderer
         if(!Application.isEditor || !SHOW_ANYWAY){
             GetComponent<MeshRenderer>().enabled = false;
@@ -35,11 +42,27 @@ public class CarEntityPosition : MonoBehaviour
     void Update() {
         trackpos.Progress(TrackPathSolver.GetProgress(currentSegmentType,isSegmentReversed, trackpos, Time.deltaTime)); //get the progress of the car on the track
         if(trackSpline != null){
-            Vector3 targetPos = trackSpline.GetPoint(trackpos);
+            // Calculate predictive position - show cars further ahead based on speed
+            TrackCoordinate displayPos = trackpos.Clone();
+            Vector3 targetPos;
+            // Add 50% of a segment progression scaled by car speed (higher speed = more prediction)
+            if(trackpos.speed > 0)
+            {
+                float speedFactor = Mathf.Clamp01(trackpos.speed / 500.0f); // Normalize speed (500mm/s as reference)
+                float predictiveProgress = 0.5f * speedFactor; // 50% segment scaled by speed
+                displayPos += predictiveProgress;
+                targetPos = trackSpline.GetPoint(displayPos);
+            }
+            else
+            {
+                // No speed, use exact position
+                targetPos = trackSpline.GetPoint(trackpos);
+            }
             if(!showOnTrack){
                 targetPos.y -= 20; //hide the car
             }
             transform.position = targetPos;
+            
             if(Vector3.Distance(transform.position, lastPosition) > 0.01f){ //should fix weirdness when stopping
                 transform.LookAt(lastPosition);
                 lastPosition = transform.position;
@@ -223,5 +246,9 @@ public class TrackCoordinate
         Debug.DrawLine(backLeft + Vector3.up * 0.05f, backRight + Vector3.up * 0.05f, color, duration);
         Debug.DrawLine(frontLeft + Vector3.up * 0.05f, backLeft + Vector3.up * 0.05f, color, duration);
         Debug.DrawLine(frontRight + Vector3.up * 0.05f, backRight + Vector3.up * 0.05f, color, duration);
+    }
+    public TrackCoordinate Clone()
+    {
+        return new TrackCoordinate(idx, offset, progression, SIDE_DISTANCE, BACK_DISTANCE);
     }
 }
