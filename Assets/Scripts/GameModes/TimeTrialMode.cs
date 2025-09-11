@@ -4,94 +4,76 @@ using UnityEngine;
 using TMPro;
 using static OverdriveServer.NetStructures;
 
-public class TimeTrialMode : MonoBehaviour
+public class TimeTrialMode : GameMode
 {
-    [SerializeField] TMP_Text showText;
-    [SerializeField] GameObject startButton, menuButton, replayButton;
-    CarEntityTracker carEntityTracker;
-    CarInteraface carInteraface;
-    CMS cms;
     List<CarTime> carTimes = new List<CarTime>();
-    void OnEnable()
+    
+    void Awake()
     {
-        if(cms == null){
-            cms = FindObjectOfType<CMS>();
-            carInteraface = CarInteraface.io;
-            carEntityTracker = FindObjectOfType<CarEntityTracker>();
-        }
-        StartMode();
+        // Configure time trial settings
+        initialText = "Place cars on the track";
+        lineupMessage = "Supercars to the starting line";
     }
-    void StartMode(){
-        showText.text = "Place cars on the track";
-        cms.SetGlobalLock(true);
-        startButton.SetActive(true);
-        menuButton.SetActive(true);
-        replayButton.SetActive(false);
-    }
-    public void LineupAndStart(){
-        UIManager.active.SwitchToTrackCamera(true);
-        startButton.SetActive(false);
-        FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
-        cms.TTS("Supercars to the starting line");
+    
+    protected override void OnModeStart()
+    {
         carTimes.Clear();
-        carInteraface.OnLineupEvent += OnLineupUpdate;
     }
-    IEnumerator CountDown(){
-        UIManager.active.SwitchToTrackCamera(true);
-        string[] activeCars = carEntityTracker.GetActiveCars();
+    
+    protected override void OnLineupStarted()
+    {
+        carTimes.Clear();
+    }
+    
+    protected override void OnCountdownStarted(string[] activeCars)
+    {
         foreach(string carID in activeCars){
             carTimes.Add(new CarTime(carID));
         }
-        showText.text = "Get Ready!";
-        cms.TTS("Get Ready!");
-        yield return new WaitForSeconds(3);
-        showText.text = "3";
-        cms.TTS("3");
-        yield return new WaitForSeconds(1);
-        showText.text = "2";
-        cms.TTS("2");
-        yield return new WaitForSeconds(1);
-        showText.text = "1";
-        cms.TTS("1");
-        yield return new WaitForSeconds(1);
-        showText.text = "GO!";
-        cms.TTS("Go!");
-        cms.SetGlobalLock(false);
+    }
+    
+    protected override void OnGameStarted(string[] activeCars)
+    {
         foreach(CarTime ct in carTimes){
             ct.lapStartedTime = Time.time;
         }
-        yield return new WaitForSeconds(1);
-        showText.text = "";
-        StartCoroutine(EndGame());
-        StartCoroutine(StartListeningForFinishLine());
+        
+        // Start the 3-minute time trial countdown
+        StartCoroutine(TimeTrialTimeLimit());
     }
-    IEnumerator StartListeningForFinishLine(){ //3 seconds after the start
-        yield return new WaitForSeconds(3);
-        carEntityTracker.OnCarCrossedFinishLine += CarCrossedFinish;
-    }
-    IEnumerator EndGame(){
-        //wait 2:59
-        yield return new WaitForSeconds(59);
+    
+    /// <summary>
+    /// Handles the 3-minute time trial countdown
+    /// </summary>
+    IEnumerator TimeTrialTimeLimit()
+    {
+        // Wait 2 minutes 59 seconds (179 seconds total for 3-minute trial)
+        yield return new WaitForSeconds(60);
         cms.TTS("2 minutes remaining");
+        
         yield return new WaitForSeconds(60);
         cms.TTS("1 minute remaining");
+        
         yield return new WaitForSeconds(50);
+        
+        // Final 10-second countdown
         int seconds = 10;
-        while(seconds > 0){
+        while(seconds > 0 && gameActive)
+        {
             cms.TTS($"{seconds}");
             showText.text = $"{seconds}";
             yield return new WaitForSeconds(1);
             seconds--;
         }
-        showText.text = "Game Over!";
-        cms.SetGlobalLock(true);
-        cms.StopAllCars();
-        cms.TTS("Game Over!");
-        carEntityTracker.OnCarCrossedFinishLine -= CarCrossedFinish;
-        menuButton.SetActive(true);
-        replayButton.SetActive(true);
+        
+        if(gameActive)
+        {
+            EndGame("Time's Up!");
+        }
     }
-    public void CarCrossedFinish(string carID, bool score){
+    
+    protected override void OnCarCrossedFinish(string carID, bool score)
+    {
         //is there a carTime for this car?
         CarTime ct = carTimes.Find(x => x.id == carID);
         if(ct == null){
@@ -120,19 +102,7 @@ public class TimeTrialMode : MonoBehaviour
             }
         }
     }
-    public void OnLineupUpdate(string id, int remaining){
-        //Debug.Log($"Lineup update: {id} {remaining}");
-        if(remaining == 0){
-            StartCoroutine(CountDown());
-            carInteraface.OnLineupEvent -= OnLineupUpdate;
-        }
-    }
-    public void BackToMenu(){ //called by ui
-        UIManager.active.SetUILayer(0);
-    }
-    public void Replay(){ //called by ui
-        StartMode();
-    }
+    
     class CarTime{
         public CarTime(string id) {
             this.id = id;
