@@ -220,6 +220,7 @@ public class CarController : MonoBehaviour
         }
         carID = data.id;
         CheckCarExists();
+        FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor); //set the colour of the car in the tracker
         pcs.SetCarName(data.name);
     }
     public (int, float) GetMetrics(){ return (speed, lane); }

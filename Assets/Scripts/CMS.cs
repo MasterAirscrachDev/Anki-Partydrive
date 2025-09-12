@@ -12,6 +12,7 @@ public class CMS : MonoBehaviour
     List<Color> freeColors = new List<Color>();
     List<Color> usedColors = new List<Color>();
     CarInteraface carInterface;
+    public static CMS cms;
     void Start() { 
         carInterface = CarInteraface.io;
         StartCoroutine(GetCarInterface());
@@ -22,6 +23,8 @@ public class CMS : MonoBehaviour
         freeColors.Add(new Color(0, 0, 1)); //blue
         freeColors.Add(new Color(0, 1, 1)); //Cyan
         freeColors.Add(new Color(1, 1, 0)); //yellow
+
+        cms = this;
     }
     IEnumerator GetCarInterface(){
         yield return new WaitForSeconds(0.5f);

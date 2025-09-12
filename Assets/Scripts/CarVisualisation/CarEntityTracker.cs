@@ -44,7 +44,12 @@ public class CarEntityTracker : MonoBehaviour
         entity.gameObject.name = $"{id} True Position";
         entity.transform.GetChild(0).gameObject.name = $"{id} Model";
         entity.carModelManager = entity.transform.GetChild(0).GetComponent<CarModelManager>();
-        entity.carModelManager.Setup(model); //make this load colour later
+
+        //check if there is a CarController with this ID to get the colour from
+        CarController cc = CMS.cms.GetController(id);
+        Color color = cc != null ? cc.GetPlayerColor() : Color.clear;
+
+        entity.carModelManager.Setup(model, color); //make this load colour later
         trackers.Add(id, entity);
         UpdateAIOpponentLocations(); //update the AI opponent locations
         return entity;
@@ -97,6 +102,11 @@ public class CarEntityTracker : MonoBehaviour
             return trackers[id].GetTrackCoordinate();
         }
         return null; //car not found
+    }
+    public void SetCarIDColor(string id, Color color){
+        if(trackers.ContainsKey(id)){
+            trackers[id].carModelManager.SetColour(color);
+        }
     }
     public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;

@@ -164,16 +164,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &306005734306652821
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,7 +359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &663927585861171588
 Transform:
   m_ObjectHideFlags: 0
@@ -953,7 +949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1222478673811801157
 Transform:
   m_ObjectHideFlags: 0
@@ -1352,16 +1348,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &1365268501496880143
 GameObject:
   m_ObjectHideFlags: 0
@@ -1561,7 +1553,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1410431641865654080
 Transform:
   m_ObjectHideFlags: 0
@@ -1706,16 +1698,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &1479666986824690010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1794,16 +1782,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &1519236462055474226
 GameObject:
   m_ObjectHideFlags: 0
@@ -1821,7 +1805,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1519236462055474190
 Transform:
   m_ObjectHideFlags: 0
@@ -2474,16 +2458,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &1821997580128767853
 GameObject:
   m_ObjectHideFlags: 0
@@ -2562,16 +2542,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &1959661896277979503
 GameObject:
   m_ObjectHideFlags: 0
@@ -3296,7 +3272,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2173667712181710326}
-  m_Mesh: {fileID: 2503859341040908428, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
+  m_Mesh: {fileID: 8178948209639551300, guid: 49f4f46ebfd631e4ea0dadad649b01f8, type: 3}
 --- !u!23 &5634056369369904923
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3760,16 +3736,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &2554481323765767195
 GameObject:
   m_ObjectHideFlags: 0
@@ -4406,7 +4378,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2841659802185343780}
-  m_Mesh: {fileID: 2503859341040908428, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
+  m_Mesh: {fileID: 4676721051297772472, guid: b5a47b673e87e854bbc0028e6398dd7b, type: 3}
 --- !u!23 &8607999183934323145
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4616,16 +4588,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &2924376418816016018
 GameObject:
   m_ObjectHideFlags: 0
@@ -4643,7 +4611,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2924376418816016046
 Transform:
   m_ObjectHideFlags: 0
@@ -4727,7 +4695,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3021763865812408991
 Transform:
   m_ObjectHideFlags: 0
@@ -5405,7 +5373,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3370541264510675754
 Transform:
   m_ObjectHideFlags: 0
@@ -6591,7 +6559,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4652272388511678347
 Transform:
   m_ObjectHideFlags: 0
@@ -7207,16 +7175,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &5559153675891839672
 GameObject:
   m_ObjectHideFlags: 0
@@ -7549,16 +7513,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &5951191618708675573
 GameObject:
   m_ObjectHideFlags: 0
@@ -7576,7 +7536,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5951191618708675529
 Transform:
   m_ObjectHideFlags: 0
@@ -7721,16 +7681,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &6090988877639201082
 GameObject:
   m_ObjectHideFlags: 0
@@ -7979,16 +7935,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &6271261683857223026
 GameObject:
   m_ObjectHideFlags: 0
@@ -8006,7 +7958,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6271261683857222990
 Transform:
   m_ObjectHideFlags: 0
@@ -8090,7 +8042,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6331250347307414644
 Transform:
   m_ObjectHideFlags: 0
@@ -8453,7 +8405,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6460945797979140657}
-  m_Mesh: {fileID: 2503859341040908428, guid: b9cd158edf0ebb746bfed44b07d84077, type: 3}
+  m_Mesh: {fileID: -7365700012509106226, guid: ae244f83bbcd6ef48ab32e1bb21bd829, type: 3}
 --- !u!23 &699105599003764956
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8516,7 +8468,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6493278930264330819
 Transform:
   m_ObjectHideFlags: 0
@@ -8852,7 +8804,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6618649458799110260
 Transform:
   m_ObjectHideFlags: 0
@@ -9702,7 +9654,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7029075115565190787
 Transform:
   m_ObjectHideFlags: 0
@@ -11375,16 +11327,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &7764402804006052736
 GameObject:
   m_ObjectHideFlags: 0
@@ -11463,16 +11411,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &7769572419533640999
 GameObject:
   m_ObjectHideFlags: 0
@@ -11490,7 +11434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7769572419533640987
 Transform:
   m_ObjectHideFlags: 0
@@ -11721,16 +11665,12 @@ MonoBehaviour:
   models:
   - id: 8
     modelPref: {fileID: 4944733265332477550, guid: 350aab50a5a09af428364a859bad69bf, type: 3}
-    defaultColor: {r: 0, g: 0.114930585, b: 0.7924528, a: 1}
   - id: 9
     modelPref: {fileID: 4075329598231024750, guid: 0ee74a9726bbc8a45b82bc466816cf0f, type: 3}
-    defaultColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   - id: 18
     modelPref: {fileID: 6420046108648079622, guid: 4df519273eacd2b47835827589887104, type: 3}
-    defaultColor: {r: 0.28595585, g: 0.34217086, b: 0.3962264, a: 1}
   - id: 19
     modelPref: {fileID: 521737992244347085, guid: 5e0fb9ace84ad45478c0a5ed0830d699, type: 3}
-    defaultColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!1 &7925080528221782650
 GameObject:
   m_ObjectHideFlags: 0
