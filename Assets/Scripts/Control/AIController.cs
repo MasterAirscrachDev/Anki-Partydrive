@@ -62,6 +62,15 @@ public class AIController : MonoBehaviour
             UpdateInputs(); //update the inputs
             carController.DoControlImmediate(); //update the car controller immediately
         }
+        else {
+            // Immediately clear all inputs when locked
+            carController.Iaccel = 0;
+            carController.Isteer = 0;
+            carController.Iboost = false;
+            carController.Idrift = 0;
+            carController.IitemA = false;
+            carController.IitemB = false;
+        }
     }
 
     // Update is called once per frame

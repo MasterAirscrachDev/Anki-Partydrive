@@ -65,6 +65,7 @@ public class CMS : MonoBehaviour
     }
     public void SetGlobalLock(bool isLocked){
         foreach(CarController controller in controllers){
+            if(controller == null){ continue; }
             controller.SetLocked(isLocked);
         }
     }

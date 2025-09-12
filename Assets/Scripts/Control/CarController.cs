@@ -108,11 +108,27 @@ public class CarController : MonoBehaviour
         speedModifiers.Add(new SpeedModifer(mod, isPercentage, time, ID));
     }
     public void StopCar(){
+        // Clear all inputs to stop any ongoing movement
+        Iaccel = 0;
+        Isteer = 0;
+        Iboost = false;
+        Idrift = 0;
+        IitemA = false;
+        IitemB = false;
+        
+        // Reset speed
         speed = 0;
-        lane = 0;
+        oldSpeed = 0;
+        
+        // Send stop command to the physical car
         UCarData carData = carInterface.GetCarFromID(carID);
         if(carData == null){ return; }
-        carInterface.ControlCar(carData, 0, 0);
+        
+        // Send stop command multiple times to ensure it's received
+        for(int i = 0; i < 3; i++)
+        {
+            carInterface.ControlCar(carData, 0, Mathf.RoundToInt(lane));
+        }
     }
     async Task ControlTicker(){
         while(true){
@@ -129,6 +145,9 @@ public class CarController : MonoBehaviour
         carInterface.ControlCar(carInterface.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
     }
     void FixedUpdate(){
+        // Don't process any input or movement if the car is locked (game ended)
+        if(locked){ return; }
+        
         if(Iaccel > 0 && Iboost && energy > 1){
             energy -= baseBoostCost;
             AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");

@@ -28,7 +28,12 @@ public class LapsMode : GameMode
         //is there a lapCount for this carID?
         if(carLaps.ContainsKey(carID)){
             carLaps[carID]++;
-            cms.GetController(carID).SetLapCount(carLaps[carID]);
+            try{
+                cms.GetController(carID).SetLapCount(carLaps[carID]);
+            }catch{
+
+            }
+            
             cms.TTS($"{cms.CarNameFromId(carID)} has completed {carLaps[carID]} laps");
         }else{ return; } //if not, ignore it
         //sort the cars by lap count and set the position
@@ -39,7 +44,7 @@ public class LapsMode : GameMode
             try{
                 cms.GetController(car.Key).SetPosition(position);
             }catch(System.Exception e){
-                Debug.LogError($"Error setting position for car {car.Key}: {e.Message}\n{e.StackTrace}");
+                //Debug.LogError($"Error setting position for car {car.Key}: {e.Message}\n{e.StackTrace}");
             }
             position++;
         }

@@ -449,8 +449,8 @@ public class TrackPathSolver
             if(reversed){ offset = -offset;  } //reverse the offset if the segment is reversed
             distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
         }
-        distanceMM = Mathf.RoundToInt(distanceMM * 1.1f); //tolerance
-        //speed is in mm/s  
+        distanceMM = Mathf.RoundToInt(distanceMM * 0.9f); //tolerance
+        //speed is in mm/s
         return ((float)car.speed / distanceMM) * deltaTime;
     }
 }

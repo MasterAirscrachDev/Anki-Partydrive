@@ -46,7 +46,7 @@ public class CarEntityPosition : MonoBehaviour
             TrackCoordinate displayPos = trackpos.Clone();
             Vector3 targetPos;
             // Add 50% of a segment progression scaled by car speed (higher speed = more prediction)
-            if(trackpos.speed > 0)
+            if(trackpos.speed > 0 && false)
             {
                 float speedFactor = Mathf.Clamp01(trackpos.speed / 500.0f); // Normalize speed (500mm/s as reference)
                 float predictiveProgress = 0.5f * speedFactor; // 50% segment scaled by speed
@@ -94,6 +94,7 @@ public class CarEntityPosition : MonoBehaviour
     /// Update the track spline for the car entity. idx may not be trusted
     /// </summary>
     void UpdateTrackSpline(TrackSpline trackSpline, int idx){
+        //if(idx == 1){ return; } //TEST FIX WILL BREAK DRIVE MATS
         this.trackSpline = trackSpline;
         currentSegmentType = track.GetSegmentType(idx);
         isSegmentReversed = track.GetSegmentReversed(idx);
