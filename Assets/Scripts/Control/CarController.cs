@@ -37,7 +37,7 @@ public class CarController : MonoBehaviour
     const int baseBoostSpeed = 100;
     const float baseBoostCost = 0.5f;
     const float baseEnergyGain = 0.02f;
-    const float baseSteering = 1.4f;
+    const float baseSteering = 2f;
     public float statSpeedMod = 1f;
     public float statSteerMod = 1f;
     public float statBoostMod = 1f;

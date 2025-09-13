@@ -342,6 +342,8 @@ MonoBehaviour:
     modelPref: {fileID: 24107975547393434, guid: 5451d43489a6b3042b1bea1fd9f77995, type: 3}
   - id: 17
     modelPref: {fileID: 7817038044135144904, guid: 4cffeb83b7bd42b4eab321913ec6ba4b, type: 3}
+  - id: 15
+    modelPref: {fileID: 7817038044135144904, guid: 4cffeb83b7bd42b4eab321913ec6ba4b, type: 3}
 --- !u!1 &4673125501126176257
 GameObject:
   m_ObjectHideFlags: 0
