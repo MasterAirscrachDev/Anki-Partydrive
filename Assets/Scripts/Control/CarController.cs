@@ -257,9 +257,26 @@ public class CarController : MonoBehaviour
     }
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
-    public void SetPosition(int position){ pcs.SetPosition(position); }
-    public void SetTimeTrialTime(float time){ pcs.SetTimeTrialTime(time); }
-    public void SetLapCount(int lapCount){ pcs.SetLapCount(lapCount); }
+    public void SetPosition(int position){ 
+        if(pcs == null) {
+            Debug.Log($"PCS was null in SetPosition for carID {carID}");
+            FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
+        }
+        pcs.SetPosition(position); }
+    public void SetTimeTrialTime(float time){ 
+        if(pcs == null) {
+            Debug.Log($"PCS was null in SetTimeTrialTime for carID {carID}");
+            FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
+        }
+        pcs.SetTimeTrialTime(time); 
+    }
+    public void SetLapCount(int lapCount){ 
+        if(pcs == null) {
+            Debug.Log($"PCS was null in SetLapCount for carID {carID}");
+            FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
+        }
+        pcs.SetLapCount(lapCount); 
+    }
 }
 class SpeedModifer{
     public int modifier;
