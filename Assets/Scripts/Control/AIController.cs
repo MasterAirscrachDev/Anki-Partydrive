@@ -29,7 +29,7 @@ public class AIController : MonoBehaviour
         if(setup){ return; } //if the AI is already setup, return
         carController = GetComponent<CarController>();
         carController.Setup(true); //setup the car controller
-        string[] names = { "Jimmy Bot", "Bob Bot", "Doug Bot", "Gary Bot", "Jess Bot", "Sam Bot", "Kate Bot", "Dave Bot" };
+        string[] names = { "Jimmy [Bot]", "Bob [Bot]", "Doug [Bot]", "Gary [Bot]", "Jess [Bot]", "Sam [Bot]", "Kate [Bot]", "Dave [Bot]" };
 
         carController.SetPlayerName(names[Random.Range(0, names.Length)]); //set the player name to AI
         carController.SetColour(new Color(1, 0, 0)); //set the color to red

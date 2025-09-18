@@ -1,3 +1,4 @@
+using System;
 namespace OverdriveServer{
     /// <summary>
     /// This is the Network Structures class, it contains all data structures used in the websocket.
@@ -14,13 +15,24 @@ namespace OverdriveServer{
         [System.Serializable]
         public class CarData{
             public string name {get; set;} //Custom name
-            public int model {get; set;} //ModelName
+            public uint model {get; set;} //ModelName
             public string id {get; set;} //Bluetooth ID
             public float offsetMM {get; set;} //Horizontal Offset mm +/-
             public int speedMMPS {get; set;} //Speed in mm/s
             public bool charging {get; set;} //Is On Charger (should take priority over onTrack)
             public bool onTrack {get; set;} //Is the car on the track (doesnt seem very useful) (Addendum: goated)
             public int batteryStatus {get; set;} //0 = normal, 1 = charged, -1 = low battery
+        }
+        [System.Serializable]
+        public class AvailableCarData{
+            public uint model {get; set;} //ModelName
+            public string id {get; set;} //Bluetooth ID
+            public DateTime lastSeen {get; set;} //Last time the car was seen
+            public AvailableCarData(string id, uint model, DateTime lastSeen){
+                this.id = id;
+                this.model = model;
+                this.lastSeen = lastSeen;
+            }
         }
         [System.Serializable]
         public class TransitionData { //This is sent, but i reccommend using SegmentData instead
@@ -99,7 +111,8 @@ namespace OverdriveServer{
         EVENT_CAR_DELOCALIZED = "car_delocalized", //Car delocalized (currently not used, see MSG_CAR_DELOCALIZED for the time being)
         EVENT_CAR_TRACKING_UPDATE = "car_tracking_update", //Car tracking update (see CarLocationData)
         EVENT_TR_DATA = "track_data", //Track data (an array of SegmentData)
-        EVENT_CAR_DATA = "car_data"; //Car data (an array of CarData)
+        EVENT_CAR_DATA = "car_data", //Car data (an array of CarData)
+        EVENT_AVAILABLE_CARS = "available_cars"; //Available cars data (an array of AvailableCarData)
 
         public const string SV_CAR_MOVE = "car_move_update", //Car move update [id:speed:offset] (speed and offset may be - meaning keep existing value)
         SV_REFRESH_CONFIGS = "refresh_configs", //Refresh configs (used to reload the car configs, name, speedbalance ect)
@@ -112,7 +125,11 @@ namespace OverdriveServer{
         SV_TR_CANCEL_SCAN = "stop_track_scan", //Stop track scan (used to stop a track scan)
         SV_SCAN = "scan", //Scan for cars (used to start a scan for cars)
         SV_GET_CARS = "request_cars", //Request cars (should return EVENT_CAR_DATA with the car data)
+        SV_GET_AVAILABLE_CARS = "get_available_cars", //Get available cars (should return EVENT_AVAILABLE_CARS with the available car data)
+        SV_CONNECT_CAR = "connect_car", //Connect to a car by ID [carID] (used to connect to a specific available car)
+        SV_DISCONNECT_CAR = "disconnect_car", //Disconnect from a car by ID [carID] (used to disconnect from a specific connected car)
         SV_CAR_FLASH = "car_flash", //DONT USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING || Flash car [id:path] (used to flash a car, path should be the ota file)
+        SV_CAR_UPDATE_MODEL = "car_update_model", //Doesnt work on most cars || Update car model [id:newModel] (experimental feature to change car model type)
         SV_TTS = "tts", //Text to speech [message] (used to send a message to the TTS engine)
         SV_CAR_DIRECT_DRIVE = "car_direct_drive", //Direct drive car [id:left:right] direct drive the wheel motors
         SV_ENABLE_DIRECT = "enable_direct", //Enable direct mode [id] (used to enable direct drive for a car)
@@ -139,6 +156,8 @@ namespace OverdriveServer{
             Freewheel = 15, x52 = 16, x52Ice = 17,
             //FnF Cars
             Mammoth = 18, Dynamo = 19,
+            //New Custom Models (Only in partydrive: this is the master list)
+            IceWave = 13,
             Unknown = 0
         }
     }

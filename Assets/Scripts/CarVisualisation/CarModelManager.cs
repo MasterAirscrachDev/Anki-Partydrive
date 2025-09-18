@@ -23,6 +23,7 @@ public class CarModelManager : MonoBehaviour
         SetColour(playerColor);
     }
     public void SetColour(Color color){
+        if(transform.childCount < 3){ return; } //no colour material (modelOnlyCar)
         Material colorMat = transform.GetChild(2).GetComponent<Renderer>().material;
         color.a = Mathf.Min(0.666f, color.a); //cap alpha to 0.666
         colorMat.color = color;

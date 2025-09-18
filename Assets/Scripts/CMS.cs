@@ -45,17 +45,32 @@ public class CMS : MonoBehaviour
         ai.SetID(id);
     }
     public void RemoveAI(string id){
+        Debug.Log($"Attempting to remove AI {id}");
+        bool hasRemovedAI = false;
         foreach(CarController controller in controllers){
-            if(controller.GetID() == id){
-                Color c = controller.GetPlayerColor();
-                freeColors.Add(c);
-                usedColors.Remove(c);
+            if(controller.GetComponent<AIController>() != null && controller.GetComponent<AIController>().GetID() == id){
                 controllers.Remove(controller);
                 Destroy(controller.gameObject);
+                Debug.Log($"Removed AI {id}, available colors: {freeColors.Count}");
+                hasRemovedAI = true;
                 break;
+            }else{
+                Debug.Log($"Checked controller {controller.GetID()}, does not match {id}");
             }
         }
-        FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //Remove the card from the UI
+        if(!hasRemovedAI){
+            Debug.LogWarning($"Attempted to remove AI {id}, but no matching controller was found.");
+        }
+        // Ensure PlayerCard cleanup happens after the controller is removed
+        StartCoroutine(UpdateCardCountDelayed());
+    }
+    
+    System.Collections.IEnumerator UpdateCardCountDelayed(){
+        yield return new WaitForEndOfFrame(); // Wait one frame to ensure cleanup
+        PlayerCardmanager cardManager = FindObjectOfType<PlayerCardmanager>();
+        if(cardManager != null){
+            cardManager.UpdateCardCount();
+        }
     }
     public void SetGameMode(string mode){ //called from ui
         gameMode = mode;
@@ -88,11 +103,18 @@ public class CMS : MonoBehaviour
         }
         return "Unknown Car";
     }
-    public void OnCarOutOfEnergyCarCallback(string id, CarController controller){
-        onCarNoEnergy?.Invoke(id, controller);
-    }
+    public void OnCarOutOfEnergyCarCallback(string id, CarController controller){ onCarNoEnergy?.Invoke(id, controller); }
+    public void OnBackToMenuCallback(){ onBackToMenu?.Invoke(); }
+    public void OnSelectCallback(PlayerController pc){ onSelect?.Invoke(pc); }
+    public void OnAltSelectCallback(PlayerController pc){ onAltSelect?.Invoke(pc); }
     
     //use in gamemode scripts to set the behavior of cars when they run out of energy
     public delegate void OnCarNoEnergy(string id, CarController controller);
     public event OnCarNoEnergy onCarNoEnergy;
+    public delegate void OnUIBackToMenu();
+    public event OnUIBackToMenu onBackToMenu;
+    public delegate void OnUISelect(PlayerController pc);
+    public event OnUISelect onSelect;
+    public delegate void OnUIAltSelect(PlayerController pc);
+    public event OnUIAltSelect onAltSelect;
 }

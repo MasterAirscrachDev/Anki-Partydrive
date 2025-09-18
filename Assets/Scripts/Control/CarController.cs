@@ -257,6 +257,7 @@ public class CarController : MonoBehaviour
     }
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
+    public string GetPlayerName(){ return playerName; }
     public void SetPosition(int position){ 
         if(pcs == null) {
             Debug.Log($"PCS was null in SetPosition for carID {carID}");
@@ -276,6 +277,14 @@ public class CarController : MonoBehaviour
             FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
         }
         pcs.SetLapCount(lapCount); 
+    }
+    
+    void OnDestroy(){
+        // Disconnect car when controller is destroyed
+        if(!string.IsNullOrEmpty(carID) && carInterface != null){
+            carInterface.DisconnectCar(carID);
+            Debug.Log($"CarController destroyed - disconnecting car: {carID}");
+        }
     }
 }
 class SpeedModifer{

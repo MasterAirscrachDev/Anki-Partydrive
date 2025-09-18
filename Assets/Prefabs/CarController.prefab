@@ -77,6 +77,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f5dedb392ea3b449655cd7d123ef6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveInput: {x: 0, y: 0}
+  selectInput: 0
 --- !u!114 &3576805191090509982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,7 +145,7 @@ MonoBehaviour:
     m_ActionId: fd867876-1c32-4fff-8178-351845c55df2
     m_ActionName: Racing/DriftRight[/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Keyboard
-  m_DefaultActionMap: Racing
+  m_DefaultControlScheme: MouseAndKeyboard
+  m_DefaultActionMap: 5ab1e670-4a63-4c61-9de1-a108ab658db2
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

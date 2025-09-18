@@ -11,6 +11,7 @@ using System.Linq;
 public class CarInteraface : MonoBehaviour
 {
     public UCarData[] cars;
+    public UCarAvailable[] availableCars;
     NativeWebSocket.WebSocket ws;
     [SerializeField] TrackGenerator trackGenerator;
     [SerializeField] CarEntityTracker carEntityTracker;
@@ -36,6 +37,7 @@ public class CarInteraface : MonoBehaviour
             UIManager.active.ServerConnected(); //show the server connected message
             ApiCallV2(SV_SCAN, 0); //Start scanning for cars
             GetCars();
+            RefreshAvailableCars(); //Also get available cars
         };
         ws.OnError += (e) => { 
             Debug.Log($"WebSocket error: {e}"); 
@@ -132,6 +134,10 @@ public class CarInteraface : MonoBehaviour
                     CarData[] carData = JsonConvert.DeserializeObject<CarData[]>(webhookData.Payload.ToString());
                     OnCarData(carData); //update the car data
                     break;
+                case EVENT_AVAILABLE_CARS:
+                    AvailableCarData[] availableCarData = JsonConvert.DeserializeObject<AvailableCarData[]>(webhookData.Payload.ToString());
+                    OnAvailableCarData(availableCarData); //update the available car data
+                    break;
                 case EVENT_TR_DATA:
                     Segment[] trackData = JsonConvert.DeserializeObject<Segment[]>(webhookData.Payload.ToString());
                     trackGenerator.Generate(trackData, trackValidated); //generate the track
@@ -188,6 +194,22 @@ public class CarInteraface : MonoBehaviour
 
     public void TTSCall(string text){ ApiCallV2(SV_TTS, text); }
     public void GetCars(){ GetCarInfo(); }
+    public void RefreshAvailableCars(){ 
+        ApiCallV2(SV_GET_AVAILABLE_CARS, 0); //get the available car data
+    }
+    
+    // Connect to a car by ID
+    public void ConnectCar(string carID){
+        ApiCallV2(SV_CONNECT_CAR, carID);
+        Debug.Log($"Sending connection request for car: {carID}");
+    }
+    
+    // Disconnect from a car by ID  
+    public void DisconnectCar(string carID){
+        ApiCallV2(SV_DISCONNECT_CAR, carID);
+        Debug.Log($"Sending disconnection request for car: {carID}");
+    }
+    
     public void ApiCallV2(string eventType, object data){
         WebhookData webhookData = new WebhookData {
             EventType = eventType,
@@ -205,10 +227,6 @@ public class CarInteraface : MonoBehaviour
         { uCars[i] = new UCarData(cars[i]); }
         this.cars = uCars;
         LightData[] colors = new LightData[3];
-        //white lights
-        //colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
-        //colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
-        //colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.STEADY, startStrength = 100, endStrength = 0, cyclesPer10Seconds = 0 };
         //Partylights
         colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 6 };
         colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 5 };
@@ -220,9 +238,17 @@ public class CarInteraface : MonoBehaviour
                 StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));
             }
         } //send the lights with a delay
-        UIManager.active.SetCarsCount(cars.Length);
+        UIManager.active.SetCarsCount(cars.Length + availableCars.Length);
         for (int i = 0; i < cms.controllers.Count; i++)
         { cms.controllers[i].CheckCarExists(); }
+    }
+    void OnAvailableCarData(AvailableCarData[] availableCarData){
+        UCarAvailable[] uAvailableCars = new UCarAvailable[availableCarData.Length];
+        for (int i = 0; i < availableCarData.Length; i++)
+        { uAvailableCars[i] = new UCarAvailable(availableCarData[i]); }
+        this.availableCars = uAvailableCars;
+        UIManager.active.SetCarsCount(cars.Length + availableCars.Length);
+        //Debug.Log($"Updated available cars: {availableCarData.Length} cars found");
     }
     IEnumerator SendLightsDelayed(UCarData car, LightData[] lights, float delay){
         yield return new WaitForSeconds(delay);
@@ -236,6 +262,50 @@ public class CarInteraface : MonoBehaviour
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return i;} }
         return -1;
+    }
+    
+    // Get all cars for selection (both connected and available)
+    public List<CarSelectionData> GetAllCarsForSelection(){
+        List<CarSelectionData> allCars = new List<CarSelectionData>();
+        
+        // Add connected cars
+        if(cars != null){
+            foreach(UCarData car in cars){
+                allCars.Add(new CarSelectionData{
+                    id = car.id,
+                    model = (uint)car.modelName,
+                    name = car.name,
+                    isConnected = true
+                });
+            }
+        }
+        
+        // Add available cars (not already connected)
+        if(availableCars != null){
+            foreach(UCarAvailable car in availableCars){
+                // Check if this car is not already in connected cars
+                bool alreadyConnected = false;
+                if(cars != null){
+                    foreach(UCarData connectedCar in cars){
+                        if(connectedCar.id == car.id){
+                            alreadyConnected = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if(!alreadyConnected){
+                    allCars.Add(new CarSelectionData{
+                        id = car.id,
+                        model = car.model,
+                        name = $"Available Car ({(ModelName)car.model})",
+                        isConnected = false
+                    });
+                }
+            }
+        }
+        
+        return allCars;
     }
     public delegate void LineupCallback(string carID, int remainingCars);
     public event LineupCallback OnLineupEvent;
@@ -265,4 +335,24 @@ public class UCarData{ //used for unity (bc it cant serialize properties)
         batteryStatus = data.batteryStatus;
         modelName = (ModelName)data.model; //used for the car model
     }
+}
+[System.Serializable]
+public class UCarAvailable{ //used for unity (bc it cant serialize properties)
+    public string id;
+    public uint model;
+    public float secondsSinceLastSeen;
+    public UCarAvailable(AvailableCarData data){
+        id = data.id;
+        model = data.model;
+        //convert lastSeen to seconds
+        secondsSinceLastSeen = (float)(DateTime.UtcNow - data.lastSeen.ToUniversalTime()).TotalSeconds;
+    }
+}
+
+[System.Serializable]
+public class CarSelectionData{ //used for car selection in CarSelector
+    public string id;
+    public uint model;
+    public string name;
+    public bool isConnected;
 }

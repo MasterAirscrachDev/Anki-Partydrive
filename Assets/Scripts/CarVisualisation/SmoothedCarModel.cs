@@ -3,7 +3,7 @@ using UnityEngine;
 public class SmoothedCarModel : MonoBehaviour
 {
     Transform followTarget;
-    [SerializeField] float smoothSpeedA = 6f, smoothSpeedB = 2f;
+    [SerializeField] float smoothSpeedA = 8f, smoothSpeedB = 7.5f;
     Vector3 smoothPositionA;
     // Start is called before the first frame update
     void Start()
