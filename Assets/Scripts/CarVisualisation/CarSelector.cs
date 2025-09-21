@@ -47,6 +47,10 @@ public class CarSelector : MonoBehaviour
         SpawnCars();
         RefreshPlayers();
         InitializePlayerMarkers();
+        
+        // Restore markers for controllers that already have active cars
+        RestoreExistingCarSelections();
+        
         FindAnyObjectByType<CarInteraface>().RequestScanForCars(); // Make sure we have the latest car data
         
         // Subscribe to events with delay to avoid accidental selections on page load
@@ -118,14 +122,14 @@ public class CarSelector : MonoBehaviour
         refreshTimer += Time.deltaTime;
         if(refreshTimer > 5f){ //every 5 seconds
             refreshTimer = 0;
-            RefreshCarsDisplay(); //refresh car data and respawn cars
+            RefreshCarsDisplay(); //refresh car data and respawn cars (this will also reposition markers)
         }
     }
     void SpawnCars(){
         // Clear any existing cars
         foreach(Transform child in slectionPlatform){
             if(child != slectionPlatform && child.GetComponent<CarModelManager>() != null){
-                DestroyImmediate(child.gameObject);
+                Destroy(child.gameObject);
             }
         }
         
@@ -198,6 +202,168 @@ public class CarSelector : MonoBehaviour
         // Create initial markers for existing players
         for(int i = 0; i < players.Count; i++){
             CreatePlayerMarker(i);
+        }
+    }
+    
+    void RestoreExistingCarSelections(){
+        if(cms == null || cms.controllers == null) return;
+        
+        // Check each controller in CMS to see if it has an active car
+        foreach(CarController controller in cms.controllers){
+            string desiredCarID = controller.GetDesiredCarID();
+            if(string.IsNullOrEmpty(desiredCarID)) continue;
+            
+            // Check if this is an AI controller
+            if(controller.GetComponent<AIController>() != null){
+                // Handle AI car restoration
+                RestoreAICarSelection(desiredCarID);
+            } else {
+                // Handle player car restoration
+                RestorePlayerCarSelection(controller, desiredCarID);
+            }
+        }
+    }
+    
+    void RestorePlayerCarSelection(CarController controller, string carID){
+        // Find which player index this controller corresponds to
+        int playerIndex = -1;
+        for(int i = 0; i < players.Count; i++){
+            if(players[i] != null && players[i].GetComponent<CarController>() == controller){
+                playerIndex = i;
+                break;
+            }
+        }
+        
+        if(playerIndex == -1) return; // Controller not found in current players
+        
+        // Find the car in our car data
+        int carIndex = FindCarIndex(carID);
+        if(carIndex == -1) return; // Car not found in current data
+        
+        // Calculate grid position for this car
+        Vector2 carGridPos = GetGridPositionForCarIndex(carIndex);
+        if(carGridPos.x < 0) return; // Invalid position
+        
+        // Update player marker to be locked on this car
+        selectedCarIDs[playerIndex] = carID;
+        markerLocked[playerIndex] = true;
+        markerPositions[playerIndex] = carGridPos;
+        
+        // Update marker world position
+        if(playerIndex < playerMarkers.Count && playerMarkers[playerIndex] != null){
+            UpdateMarkerWorldPosition(playerMarkers[playerIndex], carGridPos);
+        }
+        
+        Debug.Log($"Restored player {playerIndex + 1} selection on car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
+    }
+    
+    void RestoreAICarSelection(string carID){
+        // Find the car in our car data
+        int carIndex = FindCarIndex(carID);
+        if(carIndex == -1) return; // Car not found in current data
+        
+        // Calculate grid position for this car
+        Vector2 carGridPos = GetGridPositionForCarIndex(carIndex);
+        if(carGridPos.x < 0) return; // Invalid position
+        
+        // Mark car as AI-selected and create/show marker
+        if(!aiSelectedCarIDs.Contains(carID)){
+            aiSelectedCarIDs.Add(carID);
+            CreateAIMarker(carID, (int)carGridPos.x, (int)carGridPos.y);
+            Debug.Log($"Restored AI selection on car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
+        } else if(aiMarkerDict.ContainsKey(carID)){
+            // AI already exists, just reposition and show the marker
+            GameObject aiMarker = aiMarkerDict[carID];
+            if(aiMarker != null){
+                aiMarker.SetActive(true); // Make sure marker is visible
+                UpdateMarkerWorldPosition(aiMarker, carGridPos);
+                Debug.Log($"Repositioned and showed existing AI marker for car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
+            }
+        }
+    }
+    
+    int FindCarIndex(string carID){
+        for(int i = 0; i < allCarData.Count; i++){
+            if(allCarData[i].id == carID){
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    Vector2 GetGridPositionForCarIndex(int carIndex){
+        if(carIndex < 0 || carIndex >= allCarData.Count) return new Vector2(-1, -1);
+        
+        int totalCars = allCarData.Count;
+        int carsPerRow = Mathf.Min(6, Mathf.CeilToInt(Mathf.Sqrt(totalCars)));
+        int rows = Mathf.CeilToInt((float)totalCars / carsPerRow);
+        int rowOffset = Mathf.RoundToInt((6 - rows) * 0.5f);
+        
+        int row = carIndex / carsPerRow;
+        int col = carIndex % carsPerRow;
+        
+        int carsInThisRow = Mathf.Min(carsPerRow, totalCars - (row * carsPerRow));
+        int colOffset = Mathf.RoundToInt((6 - carsInThisRow) * 0.5f);
+        
+        int gridX = col + colOffset;
+        int gridY = row + rowOffset;
+        
+        gridX = Mathf.Clamp(gridX, 0, 5);
+        gridY = Mathf.Clamp(gridY, 0, 5);
+        
+        return new Vector2(gridX, gridY);
+    }
+    
+    void RepositionMarkersAfterCarRearrangement(){
+        // Reposition player markers that have selected cars
+        for(int i = 0; i < players.Count && i < selectedCarIDs.Count; i++){
+            string selectedCarID = selectedCarIDs[i];
+            if(!string.IsNullOrEmpty(selectedCarID) && markerLocked[i]){
+                // Find new position for this car
+                int carIndex = FindCarIndex(selectedCarID);
+                if(carIndex != -1){
+                    Vector2 newGridPos = GetGridPositionForCarIndex(carIndex);
+                    if(newGridPos.x >= 0){
+                        // Update marker position
+                        markerPositions[i] = newGridPos;
+                        if(i < playerMarkers.Count && playerMarkers[i] != null){
+                            UpdateMarkerWorldPosition(playerMarkers[i], newGridPos);
+                        }
+                        //Debug.Log($"Repositioned player {i + 1} marker to new car position: ({newGridPos.x}, {newGridPos.y})");
+                    }
+                } else {
+                    // Car no longer available - deselect it
+                    Debug.Log($"Car {selectedCarID} no longer available, deselecting player {i + 1}");
+                    DeselectCar(i);
+                }
+            }
+        }
+        
+        // Reposition AI markers (keep AIs while on the page even if cars disconnect)
+        List<string> aiCarsToReposition = new List<string>(aiSelectedCarIDs);
+        foreach(string carID in aiCarsToReposition){
+            int carIndex = FindCarIndex(carID);
+            if(carIndex != -1){
+                Vector2 newGridPos = GetGridPositionForCarIndex(carIndex);
+                if(newGridPos.x >= 0 && aiMarkerDict.ContainsKey(carID)){
+                    // Update AI marker position and make sure it's visible
+                    GameObject aiMarker = aiMarkerDict[carID];
+                    if(aiMarker != null){
+                        aiMarker.SetActive(true); // Ensure marker is visible
+                        UpdateMarkerWorldPosition(aiMarker, newGridPos);
+                        //Debug.Log($"Repositioned AI marker for car {carID} to new position: ({newGridPos.x}, {newGridPos.y})");
+                    }
+                }
+            } else {
+                // Car no longer available - hide marker but keep AI while on the page
+                if(aiMarkerDict.ContainsKey(carID)){
+                    GameObject aiMarker = aiMarkerDict[carID];
+                    if(aiMarker != null){
+                        aiMarker.SetActive(false); // Hide marker but keep AI
+                        Debug.Log($"Car {carID} disconnected while on page, hiding marker but keeping AI");
+                    }
+                }
+            }
         }
     }
     
@@ -308,58 +474,13 @@ public class CarSelector : MonoBehaviour
         marker.transform.position = worldPos;
     }
     
-    // Get the car ID that a player is currently selecting
-    public string GetSelectedCarID(int playerIndex){
-        if(playerIndex >= markerPositions.Count) return "";
-        
-        Vector2 gridPos = markerPositions[playerIndex];
-        int gridX = Mathf.RoundToInt(gridPos.x);
-        int gridY = Mathf.RoundToInt(gridPos.y);
-        
-        // Clamp to valid grid bounds
-        gridX = Mathf.Clamp(gridX, 0, gridSize - 1);
-        gridY = Mathf.Clamp(gridY, 0, gridSize - 1);
-        
-        int carIndex = gridY * gridSize + gridX;
-        
-        if(carIndex < allCarData.Count){
-            return allCarData[carIndex].id;
-        }
-        
-        return ""; // No car selected
-    }
-    
-    // Get the full car data that a player is currently selecting
-    public CarSelectionData GetSelectedCarData(int playerIndex){
-        if(playerIndex >= markerPositions.Count) return null;
-        
-        Vector2 gridPos = markerPositions[playerIndex];
-        int gridX = Mathf.RoundToInt(gridPos.x);
-        int gridY = Mathf.RoundToInt(gridPos.y);
-        
-        // Clamp to valid grid bounds
-        gridX = Mathf.Clamp(gridX, 0, gridSize - 1);
-        gridY = Mathf.Clamp(gridY, 0, gridSize - 1);
-        
-        int carIndex = gridY * gridSize + gridX;
-        
-        if(carIndex < allCarData.Count){
-            return allCarData[carIndex];
-        }
-        
-        return null; // No car selected
-    }
-    
-    // Get grid position for a player (useful for UI or other systems)
-    public Vector2 GetPlayerGridPosition(int playerIndex){
-        if(playerIndex >= markerPositions.Count) return Vector2.zero;
-        return markerPositions[playerIndex];
-    }
-    
     // Public method to refresh car data and respawn cars (can be called when new cars are detected)
     public void RefreshCarsDisplay(){
         RefreshCarData();
         SpawnCars();
+        
+        // Reposition markers that need to be moved due to car layout changes
+        RepositionMarkersAfterCarRearrangement();
     }
     
     // CMS callback for player select input
@@ -469,6 +590,15 @@ public class CarSelector : MonoBehaviour
         selectedCarIDs[playerIndex] = carID;
         markerLocked[playerIndex] = true;
         
+        // Assign car to the player's controller using desiredCarID for delayed connection
+        if(playerIndex < players.Count && players[playerIndex] != null){
+            CarController carController = players[playerIndex].GetComponent<CarController>();
+            if(carController != null){
+                carController.SetDesiredCarID(carID);
+                Debug.Log($"Assigned car {carID} to player {playerIndex + 1} controller");
+            }
+        }
+        
         Debug.Log($"Player {playerIndex + 1} selected car: {carID}");
         
         // Start connection timer (connect after 1 second)
@@ -506,6 +636,15 @@ public class CarSelector : MonoBehaviour
         selectedCarIDs[playerIndex] = "";
         markerLocked[playerIndex] = false;
         
+        // Clear car assignment from the player's controller
+        if(playerIndex < players.Count && players[playerIndex] != null){
+            CarController carController = players[playerIndex].GetComponent<CarController>();
+            if(carController != null){
+                carController.SetDesiredCarID("");
+                Debug.Log($"Cleared car assignment from player {playerIndex + 1} controller");
+            }
+        }
+        
         // Cancel connection timer if it's running
         if(!string.IsNullOrEmpty(previousCarID) && connectionTimers.ContainsKey(previousCarID)){
             StopCoroutine(connectionTimers[previousCarID]);
@@ -536,87 +675,6 @@ public class CarSelector : MonoBehaviour
             Debug.Log($"All {players.Count} players have selected cars! ({aiSelectedCarIDs.Count} AI cars also active)");
             OnAllPlayersSelected?.Invoke();
         }
-    }
-    
-    // Get the car ID that a player has selected (different from GetSelectedCarID which gets car under marker)
-    public string GetPlayerSelectedCarID(int playerIndex){
-        if(playerIndex >= selectedCarIDs.Count) return "";
-        return selectedCarIDs[playerIndex];
-    }
-    
-    // Check if a player's marker is locked
-    public bool IsPlayerMarkerLocked(int playerIndex){
-        if(playerIndex >= markerLocked.Count) return false;
-        return markerLocked[playerIndex];
-    }
-    
-    // Public method to mark a car as AI-controlled (called when AI is spawned externally)
-    public void MarkCarAsAI(string carID){
-        if(string.IsNullOrEmpty(carID) || aiSelectedCarIDs.Contains(carID)) return;
-        
-        // Find the car's grid position
-        int carIndex = -1;
-        for(int i = 0; i < allCarData.Count; i++){
-            if(allCarData[i].id == carID){
-                carIndex = i;
-                break;
-            }
-        }
-        
-        if(carIndex != -1){
-            // Calculate grid position based on spawn logic
-            int totalCars = allCarData.Count;
-            int carsPerRow = Mathf.Min(6, Mathf.CeilToInt(Mathf.Sqrt(totalCars)));
-            int rows = Mathf.CeilToInt((float)totalCars / carsPerRow);
-            int rowOffset = Mathf.RoundToInt((6 - rows) * 0.5f);
-            
-            int row = carIndex / carsPerRow;
-            int col = carIndex % carsPerRow;
-            
-            int carsInThisRow = Mathf.Min(carsPerRow, totalCars - (row * carsPerRow));
-            int colOffset = Mathf.RoundToInt((6 - carsInThisRow) * 0.5f);
-            
-            int gridX = col + colOffset;
-            int gridY = row + rowOffset;
-            
-            gridX = Mathf.Clamp(gridX, 0, 5);
-            gridY = Mathf.Clamp(gridY, 0, 5);
-            
-            SpawnAIForCar(carID, gridX, gridY);
-        }
-    }
-    
-    // Public method to unmark a car as AI-controlled (called when AI is removed externally)
-    public void UnmarkCarAsAI(string carID){
-        if(aiSelectedCarIDs.Contains(carID)){
-            RemoveAIFromCar(carID);
-        }
-    }
-    
-    // Get all selected car IDs (both player and AI)
-    public List<string> GetAllSelectedCarIDs(){
-        List<string> allSelected = new List<string>();
-        
-        // Add player-selected cars
-        foreach(string carID in selectedCarIDs){
-            if(!string.IsNullOrEmpty(carID)){
-                allSelected.Add(carID);
-            }
-        }
-        
-        // Add AI-selected cars
-        foreach(string carID in aiSelectedCarIDs){
-            if(!string.IsNullOrEmpty(carID)){
-                allSelected.Add(carID);
-            }
-        }
-        
-        return allSelected;
-    }
-    
-    // Get count of AI cars
-    public int GetAICarCount(){
-        return aiSelectedCarIDs.Count;
     }
     
     void SpawnAIForCar(string carID, int gridX, int gridY){
@@ -713,7 +771,7 @@ public class CarSelector : MonoBehaviour
         string aiName = "AI";
         if(cms != null){
             foreach(CarController controller in cms.controllers){
-                if(controller.GetCarID() == carID){
+                if(controller.GetDesiredCarID() == carID){
                     aiName = controller.GetPlayerName();
                     Debug.Log($"Found AI controller for car {carID} with name: {aiName}");
                     break;

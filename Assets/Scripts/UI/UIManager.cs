@@ -67,6 +67,9 @@ public class UIManager : MonoBehaviour
             playButton.interactable = canPlay;
             playButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
         }
+        else if(layer == 3){ //if we are entering the track scanning page
+            CheckConnectedCarsOnTrackPage();
+        }
         //find the first button in the layer and select it
         Button[] buttons = UILayers[layer].GetComponentsInChildren<Button>();
         if(buttons.Length > 0){
@@ -102,6 +105,27 @@ public class UIManager : MonoBehaviour
     public void SetScanningStatusText(string text){
         ScanningStatusText.text = text;
     }
+    
+    void CheckConnectedCarsOnTrackPage(){
+        // Check if there are any connected cars when entering the track page
+        CarInteraface carInterface = CarInteraface.io;
+        if(carInterface == null) return;
+        
+        // Check if any cars are currently connected
+        bool hasConnectedCars = false;
+        if(carInterface.cars != null && carInterface.cars.Length > 0){
+            hasConnectedCars = true;
+        }
+        
+        if(!hasConnectedCars){
+            // Show alert using ScanningStatusText
+            SetScanningStatusText("No connected cars detected. Please connect cars to scan the track.");
+        } else {
+            // Clear any previous alert
+            SetScanningStatusText("");
+        }
+    }
+    
     public void QuitGame(){
         Application.Quit();
     }

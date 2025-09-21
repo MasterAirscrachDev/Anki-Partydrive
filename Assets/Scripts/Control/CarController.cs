@@ -7,13 +7,15 @@ public class CarController : MonoBehaviour
 {
     [SerializeField] int speed;
     [SerializeField] float lane;
-    [SerializeField] string carID;
+    [SerializeField] string carID; // Currently connected car ID
+    [SerializeField] string desiredCarID; // Car ID we want to connect to
     public float energy = 750;
     public float maxEnergy = 100;
     int oldSpeed;
     float oldLane;
     bool isSetup = false;
     [SerializeField] bool locked = true;
+    float connectionCheckTimer = 0f; // Timer for checking car connections
     public bool isAI = false;
     Color playerColor = Color.white;
     string playerName = "Player";
@@ -77,9 +79,15 @@ public class CarController : MonoBehaviour
         //Debug.Log("SetCard");
         this.pcs = pcs;
         UCarData carData = carInterface.GetCarFromID(carID);
-        Debug.Log($"SetCard: id {carID}, cardata {carData != null}, pcs: {pcs != null}");
+        Debug.Log($"SetCard: id {carID}, desired {desiredCarID}, cardata {carData != null}, pcs: {pcs != null}");
         string text = "Sitting Out";
-        if(carData != null){ text = carData.name; }
+        if(!string.IsNullOrEmpty(desiredCarID)){
+            if(carData != null){ 
+                text = carData.name; 
+            } else {
+                text = $"Waiting for {desiredCarID}";
+            }
+        }
         pcs.SetCarName(text);
         pcs.SetPlayerName(playerName);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
@@ -134,10 +142,17 @@ public class CarController : MonoBehaviour
         while(true){
             if(!Application.isPlaying){ return; }
             await Task.Delay(500); //approx 2 ticks per second
+            
+            // Check for car connection if we have a desired car but no current car
+            CheckForCarConnection();
+            
             if(!locked && (speed != oldSpeed || lane != oldLane)){
                 oldLane = lane;
                 oldSpeed = speed;
-                carInterface.ControlCar(carInterface.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
+                UCarData carData = carInterface.GetCarFromID(carID);
+                if(carData != null){
+                    carInterface.ControlCar(carData, speed, Mathf.RoundToInt(lane));
+                }
             }
         }
     }
@@ -223,27 +238,97 @@ public class CarController : MonoBehaviour
         }
         wasBoostLastFrame = Iboost;
     }
+    void CheckForCarConnection(){
+        // If we don't have a desired car, nothing to check
+        if(string.IsNullOrEmpty(desiredCarID)) return;
+        
+        // If we already have the desired car connected, nothing to check
+        if(carID == desiredCarID && !string.IsNullOrEmpty(carID)) {
+            // Double check the car still exists
+            UCarData carData = carInterface.GetCarFromID(carID);
+            if(carData == null){
+                Debug.Log($"Car {carID} has disconnected, waiting for reconnection");
+                carID = "";
+                if(pcs != null) pcs.SetCarName("Disconnected");
+            }
+            return;
+        }
+        
+        // Check if desired car is now available
+        UCarData desiredCar = carInterface.GetCarFromID(desiredCarID);
+        if(desiredCar != null){
+            // Car is available, connect to it
+            carID = desiredCarID;
+            Debug.Log($"Successfully connected to desired car: {carID}");
+            FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
+            if(pcs != null) pcs.SetCarName(desiredCar.name);
+        } else {
+            // Car not available yet, update UI to show waiting status
+            if(pcs != null) pcs.SetCarName($"Disconnected");
+        }
+    }
+    
     public void CheckCarExists(){
         int idx = carInterface.GetCarIndex(carID);
         if(idx == -1){
             //Debug.LogError($"Car {carID} has disconnected!");
             carID = "";
-            pcs.SetCarName("Disconnected");
+            if(pcs != null) pcs.SetCarName("Disconnected");
         }
     }
     public void SetCar(UCarData data){
         if(data == null){
             carID = "";
-            pcs.SetCarName("Sitting Out");
+            desiredCarID = "";
+            if(pcs != null) pcs.SetCarName("Sitting Out");
             return;
         }
-        carID = data.id;
-        CheckCarExists();
-        FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor); //set the colour of the car in the tracker
-        pcs.SetCarName(data.name);
+        
+        desiredCarID = data.id;
+        
+        // Try to connect immediately if car is available
+        if(carInterface.GetCarFromID(data.id) != null){
+            carID = data.id;
+            FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
+            if(pcs != null) pcs.SetCarName(data.name);
+            Debug.Log($"Immediately connected to car: {carID}");
+        } else {
+            // Car not available yet, will be checked in ControlTicker
+            carID = "";
+            if(pcs != null) pcs.SetCarName($"Disconnected");
+            Debug.Log($"Car {data.id} not available yet, will wait for connection");
+        }
+    }
+    
+    // Set desired car by ID (for AI controllers)
+    public void SetDesiredCarID(string id){
+        if(string.IsNullOrEmpty(id)){
+            carID = "";
+            desiredCarID = "";
+            if(pcs != null) pcs.SetCarName("Sitting Out");
+            return;
+        }
+        
+        desiredCarID = id;
+        
+        // Try to connect immediately if car is available
+        UCarData carData = carInterface.GetCarFromID(id);
+        if(carData != null){
+            carID = id;
+            FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
+            if(pcs != null) pcs.SetCarName(carData.name);
+            Debug.Log($"Immediately connected to car: {carID}");
+        } else {
+            // Car not available yet, will be checked in ControlTicker
+            carID = "";
+            if(pcs != null) pcs.SetCarName($"Disconnected");
+            Debug.Log($"Car {id} not available yet, will wait for connection");
+        }
     }
     public (int, float) GetMetrics(){ return (speed, lane); }
     public string GetCarID(){ return carID; }
+    public string GetDesiredCarID(){ return desiredCarID; }
+    public bool IsCarConnected(){ return !string.IsNullOrEmpty(carID) && carID == desiredCarID; }
     public void SetLocked(bool state){ 
         locked = state; 
         //if we also have a AIController, set the inputs locked to the same value
@@ -281,9 +366,10 @@ public class CarController : MonoBehaviour
     
     void OnDestroy(){
         // Disconnect car when controller is destroyed
-        if(!string.IsNullOrEmpty(carID) && carInterface != null){
-            carInterface.DisconnectCar(carID);
-            Debug.Log($"CarController destroyed - disconnecting car: {carID}");
+        string carToDisconnect = !string.IsNullOrEmpty(carID) ? carID : desiredCarID;
+        if(!string.IsNullOrEmpty(carToDisconnect) && carInterface != null){
+            carInterface.DisconnectCar(carToDisconnect);
+            Debug.Log($"CarController destroyed - disconnecting car: {carToDisconnect}");
         }
     }
 }

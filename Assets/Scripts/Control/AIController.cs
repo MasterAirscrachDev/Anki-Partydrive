@@ -16,8 +16,7 @@ public class AIController : MonoBehaviour
     TrackCoordinate[] carLocations; //list of other car locations
     List<TrackCoordinate> obstacles = new List<TrackCoordinate>(); //list of other obsticals
     TrackCoordinate ourCoord, currentTarget; //current target of the car (may be null)
-    float timer = 0f, fixCarTimer = 10f; //timer for the AI logic
-    string ourID;
+    float timer = 0f; //timer for the AI logic
 
     int currentTargetSpeed = 0;
     float currentTargetOffset = 0f;
@@ -44,17 +43,19 @@ public class AIController : MonoBehaviour
         ourCoord = coord; //set our car location to the given coordinates
     }
     public void EnteredCarManagement(){
-        if(carController.GetCarID() == "" || CarInteraface.io.GetCarIndex(carController.GetCarID()) == -1){ //if ourID is not set,
-            FindObjectOfType<CMS>().RemoveAI(ourID); //remove this AI and Controller
+        if(!carController.IsCarConnected()){ //if car is not connected when entering
+            string desiredID = carController.GetDesiredCarID();
+            if(!string.IsNullOrEmpty(desiredID)){
+                FindObjectOfType<CMS>().RemoveAI(desiredID); //remove this AI and Controller
+                UnityEngine.Debug.Log($"Removing disconnected AI for car: {desiredID} when entering car management");
+            }
         }
     }
-    public void SetID(string id){ //Sets our Car or tries to reconnect to the car
-        ourID = id;
+    public void SetID(string id){ //Sets our desired Car ID
         if(!setup){ Start();}
-        UCarData carData = CarInteraface.io.GetCarFromID(id);
-        carController.SetCar(carData);
+        carController.SetDesiredCarID(id);
     }
-    public string GetID() => ourID; //returns the ID of the car
+    public string GetID() => carController.GetDesiredCarID(); //returns the desired ID of the car
     public void SetInputsLocked(bool locked){
         inputsLocked = locked; //set the inputs locked variable to the given value
         if(!locked){
@@ -98,15 +99,6 @@ public class AIController : MonoBehaviour
         if (setCarID != "")
         { //if we have a car ID set, set the car ID to the one we have set
             SetID(setCarID); setCarID = ""; //reset the car ID
-        }
-        if (carController.GetCarID() == "")
-        { //if we don't have a car ID, set the car ID to the one we have set
-            fixCarTimer -= Time.deltaTime; //decrease the timer
-            if (fixCarTimer < 0f)
-            { //if the timer is less than 0, set the car ID to the one we have set
-                SetID(ourID); //set the car ID to the one we have set
-                fixCarTimer = 10f; //reset the timer
-            }
         }
     }
     void UpdateInputs(){
