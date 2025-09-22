@@ -50,6 +50,7 @@ public class TrackGenerator : MonoBehaviour
     }
     public SegmentType GetSegmentType(int index) { index = LoopIndex(index); return segments[index].type; }
     public bool GetSegmentReversed(int index) { index = LoopIndex(index); return segments[index].flipped; }
+    public int GetSegmentID(int index) { index = LoopIndex(index); return segments[index].internalID; }
     public Segment[] GetTrackPieces()
     {
         return segments;

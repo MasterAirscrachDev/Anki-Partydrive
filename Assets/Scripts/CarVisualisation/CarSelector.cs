@@ -47,6 +47,8 @@ public class CarSelector : MonoBehaviour
         SpawnCars();
         RefreshPlayers();
         InitializePlayerMarkers();
+        DespawnDisconnectedAIs();
+
         
         // Restore markers for controllers that already have active cars
         RestoreExistingCarSelections();
@@ -55,6 +57,18 @@ public class CarSelector : MonoBehaviour
         
         // Subscribe to events with delay to avoid accidental selections on page load
         StartCoroutine(SubscribeToEventsDelayed());
+    }
+    void DespawnDisconnectedAIs(){
+        AIController[] ais = FindObjectsOfType<AIController>();
+        foreach(AIController ai in ais){
+            if(!ai.GetComponent<CarController>().IsCarConnected()){
+                string desiredID = ai.GetID();
+                if(!string.IsNullOrEmpty(desiredID)){
+                    cms.RemoveAI(desiredID); //remove this AI and Controller
+                    Debug.Log($"Removing disconnected AI for car: {desiredID} on Car Selector enable");
+                }
+            }
+        }
     }
     
     IEnumerator SubscribeToEventsDelayed(){
@@ -254,7 +268,7 @@ public class CarSelector : MonoBehaviour
             UpdateMarkerWorldPosition(playerMarkers[playerIndex], carGridPos);
         }
         
-        Debug.Log($"Restored player {playerIndex + 1} selection on car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
+       // Debug.Log($"Restored player {playerIndex + 1} selection on car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
     }
     
     void RestoreAICarSelection(string carID){
@@ -270,14 +284,14 @@ public class CarSelector : MonoBehaviour
         if(!aiSelectedCarIDs.Contains(carID)){
             aiSelectedCarIDs.Add(carID);
             CreateAIMarker(carID, (int)carGridPos.x, (int)carGridPos.y);
-            Debug.Log($"Restored AI selection on car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
+            //Debug.Log($"Restored AI selection on car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
         } else if(aiMarkerDict.ContainsKey(carID)){
             // AI already exists, just reposition and show the marker
             GameObject aiMarker = aiMarkerDict[carID];
             if(aiMarker != null){
                 aiMarker.SetActive(true); // Make sure marker is visible
                 UpdateMarkerWorldPosition(aiMarker, carGridPos);
-                Debug.Log($"Repositioned and showed existing AI marker for car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
+                //Debug.Log($"Repositioned and showed existing AI marker for car: {carID} at grid ({carGridPos.x}, {carGridPos.y})");
             }
         }
     }
@@ -740,7 +754,7 @@ public class CarSelector : MonoBehaviour
         aiMarkers.Add(aiMarker);
         aiMarkerDict[carID] = aiMarker;
         
-        Debug.Log($"Created AI marker for car {carID} at grid ({gridX}, {gridY})");
+        //Debug.Log($"Created AI marker for car {carID} at grid ({gridX}, {gridY})");
     }
     
     void RemoveAIMarker(string carID){

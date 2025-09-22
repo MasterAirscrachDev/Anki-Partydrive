@@ -124,6 +124,7 @@ public class AiTesting : MonoBehaviour
                 }
                 SegmentType segType = TrackGenerator.track.GetSegmentType(idx);
                 bool isReversed = TrackGenerator.track.GetSegmentReversed(idx);
+                int segID = TrackGenerator.track.GetSegmentID(idx);
 
                 //create an array of the track coordinates for the other cars
                 List<TrackCoordinate> otherCars = new List<TrackCoordinate>();
@@ -151,7 +152,7 @@ public class AiTesting : MonoBehaviour
 
 
 
-                float prog = TrackPathSolver.GetProgress(segType, isReversed, car, stepDelta);
+                float prog = TrackPathSolver.GetProgress(segType, segID, isReversed, car, stepDelta);
                 car.Progress(prog);
 
                 car.DebugRender(spline, carColors[c], realDelta);

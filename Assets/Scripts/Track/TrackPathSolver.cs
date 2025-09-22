@@ -435,7 +435,7 @@ public class TrackPathSolver
         return (targetSpeed, targetLane, shouldBoost, log);
     }
     
-    public static float GetProgress(SegmentType segment, bool reversed, TrackCoordinate car, float deltaTime){
+    public static float GetProgress(SegmentType segment, int id, bool reversed, TrackCoordinate car, float deltaTime){
         //pre start = 340mm
         //start = 220mm
         //straight = 560mm
@@ -448,6 +448,23 @@ public class TrackPathSolver
             float offset = car.offset / trackHalfWidth; //scale offset to -1 to 1 based on actual track width
             if(reversed){ offset = -offset;  } //reverse the offset if the segment is reversed
             distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
+        }
+        if(segment == SegmentType.Bottleneck){ //mat
+            if(id == 87 || id == 85){ distanceMM = 512;}
+            else if(id == 89 || id == 84){ distanceMM = 145;}
+            else if(id == 78 || id == 80){ distanceMM = 300;}
+            else if(id == 79){ distanceMM = 75;}
+            else if(id == 82){ distanceMM = 265;}
+            else if(id == 91){ distanceMM = 430;}
+            else{//turns
+                float trackHalfWidth = GetTrackHalfWidth(car);
+                float offset = car.offset / trackHalfWidth; //scale offset to -1 to 1 based on actual track width
+                if(reversed){ offset = -offset;  } //reverse the offset if the segment is reversed
+                if(id == 90){ distanceMM = (int)Mathf.Lerp(130, 460, offset); }
+                else if(id == 88){ distanceMM = (int)Mathf.Lerp(184, 610, offset); }
+                else if(id == 83){ distanceMM = (int)Mathf.Lerp(132, 580, offset); }
+                else if(id == 81){ distanceMM = (int)Mathf.Lerp(70, 256, offset); }
+            }
         }
         distanceMM = Mathf.RoundToInt(distanceMM * 0.9f); //tolerance
         //speed is in mm/s

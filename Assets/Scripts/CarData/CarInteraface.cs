@@ -100,7 +100,7 @@ public class CarInteraface : MonoBehaviour
             var webhookData = JsonConvert.DeserializeObject<WebhookData>(jsonData);
             switch (webhookData.EventType) {
                 case EVENT_SYSTEM_LOG:
-                    string[] ignore = new string[]{"[39]", "[77]", "[83]", "[41]", "[54]", "[45]"};
+                    string[] ignore = new string[]{"[39]", "[77]", "[83]", "[41]", "[54]", "[45]", "[13]"};
                     string message = webhookData.Payload.ToString();
                     //if message starts with any of the ignore strings, ignore it
                     foreach (string s in ignore){

@@ -61,7 +61,9 @@ public class AIController : MonoBehaviour
         if(!locked){
             AILogic(); //if the inputs have just been unlocked, run the AI logic once
             UpdateInputs(); //update the inputs
-            carController.DoControlImmediate(); //update the car controller immediately
+            if(carController.IsCarConnected()){ //only send commands if car is connected
+                carController.DoControlImmediate(); //update the car controller immediately
+            }
         }
         else {
             // Immediately clear all inputs when locked
@@ -102,6 +104,7 @@ public class AIController : MonoBehaviour
         }
     }
     void UpdateInputs(){
+        if (!carController.IsCarConnected()) { return; } //don't update inputs if car is not connected
         (int controllerSpeed, float controllerOffset) = carController.GetMetrics(); //get the current speed and offset of the car
         carController.Iaccel = currentTargetSpeed > controllerSpeed ? 1 : 0; //set the acceleration to 1 if we want to go faster, -1 if we want to go slower
         
@@ -119,6 +122,7 @@ public class AIController : MonoBehaviour
     {
         if (carLocations == null || carLocations.Length == 0) { return; } //if there are no car locations, return
         if (ourCoord == null) { return; } //if our car location is null, return
+        if (!carController.IsCarConnected()) { return; } //if our car is not connected, wait until it is
         if (!setup) { Start(); } //if the AI is not setup, setup the AI
         PathingInputs inputs = new PathingInputs
         {

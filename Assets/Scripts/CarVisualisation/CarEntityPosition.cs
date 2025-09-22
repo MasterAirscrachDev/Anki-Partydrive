@@ -9,6 +9,7 @@ public class CarEntityPosition : MonoBehaviour
     string id = "";
     TrackSpline trackSpline;
     SegmentType currentSegmentType = SegmentType.Straight;
+    int currentSegmentID;
     bool isSegmentReversed = false;
     [SerializeField] int shift = 0;
     int despawnTimer = 50;
@@ -40,24 +41,10 @@ public class CarEntityPosition : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        trackpos.Progress(TrackPathSolver.GetProgress(currentSegmentType,isSegmentReversed, trackpos, Time.deltaTime)); //get the progress of the car on the track
+        trackpos.Progress(TrackPathSolver.GetProgress(currentSegmentType, currentSegmentID, isSegmentReversed, trackpos, Time.deltaTime)); //get the progress of the car on the track
         if(trackSpline != null){
-            // Calculate predictive position - show cars further ahead based on speed
-            TrackCoordinate displayPos = trackpos.Clone();
             Vector3 targetPos;
-            // Add 50% of a segment progression scaled by car speed (higher speed = more prediction)
-            if(trackpos.speed > 0 && false)
-            {
-                float speedFactor = Mathf.Clamp01(trackpos.speed / 500.0f); // Normalize speed (500mm/s as reference)
-                float predictiveProgress = 0.5f * speedFactor; // 50% segment scaled by speed
-                displayPos += predictiveProgress;
-                targetPos = trackSpline.GetPoint(displayPos);
-            }
-            else
-            {
-                // No speed, use exact position
-                targetPos = trackSpline.GetPoint(trackpos);
-            }
+            targetPos = trackSpline.GetPoint(trackpos);
             if(!showOnTrack){
                 targetPos.y -= 20; //hide the car
             }
@@ -98,6 +85,7 @@ public class CarEntityPosition : MonoBehaviour
         this.trackSpline = trackSpline;
         currentSegmentType = track.GetSegmentType(idx);
         isSegmentReversed = track.GetSegmentReversed(idx);
+        currentSegmentID = track.GetSegmentID(idx);
     }
     public void SetOffset(float offset){
         trackpos.offset = offset; //change this to smooth when changed
