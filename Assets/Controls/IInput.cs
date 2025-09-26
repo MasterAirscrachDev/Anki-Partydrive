@@ -152,7 +152,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""id"": ""2cfca5f0-0ace-40da-84ce-ae2a4e1cedf1"",
                     ""path"": ""<Gamepad>/leftStick/x"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""AxisDeadzone"",
                     ""groups"": ""Controller;Gamepad"",
                     ""action"": ""Steer"",
                     ""isComposite"": false,
@@ -305,6 +305,15 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UIStart"",
+                    ""type"": ""Button"",
+                    ""id"": ""e499104d-43e9-49c3-b229-bca7cb0767e6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -368,7 +377,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""id"": ""d6f9b694-da92-4ac5-a47d-669e99d6fbe4"",
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""StickDeadzone"",
                     ""groups"": ""Controller;Gamepad"",
                     ""action"": ""UINav"",
                     ""isComposite"": false,
@@ -442,12 +451,56 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""52363567-f4ad-45cc-ab2c-e478bc565166"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""UIBack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""05f16a9f-073b-485d-8521-b79688543e93"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MouseAndKeyboard"",
                     ""action"": ""AltSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6187d2a4-2958-455a-a101-d0b3e4a88517"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""AltSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a177f129-d8b7-40cc-867a-ed85ed10d4c5"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""MouseAndKeyboard"",
+                    ""action"": ""UIStart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9863dca4-ae80-4a31-97d7-2c3b97623190"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""UIStart"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -501,6 +554,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         m_Menu_UIPointSelect = m_Menu.FindAction("UIPointSelect", throwIfNotFound: true);
         m_Menu_UIBack = m_Menu.FindAction("UIBack", throwIfNotFound: true);
         m_Menu_AltSelect = m_Menu.FindAction("AltSelect", throwIfNotFound: true);
+        m_Menu_UIStart = m_Menu.FindAction("UIStart", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -662,6 +716,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Menu_UIPointSelect;
     private readonly InputAction m_Menu_UIBack;
     private readonly InputAction m_Menu_AltSelect;
+    private readonly InputAction m_Menu_UIStart;
     public struct MenuActions
     {
         private @IInput m_Wrapper;
@@ -672,6 +727,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         public InputAction @UIPointSelect => m_Wrapper.m_Menu_UIPointSelect;
         public InputAction @UIBack => m_Wrapper.m_Menu_UIBack;
         public InputAction @AltSelect => m_Wrapper.m_Menu_AltSelect;
+        public InputAction @UIStart => m_Wrapper.m_Menu_UIStart;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -699,6 +755,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @AltSelect.started += instance.OnAltSelect;
             @AltSelect.performed += instance.OnAltSelect;
             @AltSelect.canceled += instance.OnAltSelect;
+            @UIStart.started += instance.OnUIStart;
+            @UIStart.performed += instance.OnUIStart;
+            @UIStart.canceled += instance.OnUIStart;
         }
 
         private void UnregisterCallbacks(IMenuActions instance)
@@ -721,6 +780,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @AltSelect.started -= instance.OnAltSelect;
             @AltSelect.performed -= instance.OnAltSelect;
             @AltSelect.canceled -= instance.OnAltSelect;
+            @UIStart.started -= instance.OnUIStart;
+            @UIStart.performed -= instance.OnUIStart;
+            @UIStart.canceled -= instance.OnUIStart;
         }
 
         public void RemoveCallbacks(IMenuActions instance)
@@ -774,5 +836,6 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         void OnUIPointSelect(InputAction.CallbackContext context);
         void OnUIBack(InputAction.CallbackContext context);
         void OnAltSelect(InputAction.CallbackContext context);
+        void OnUIStart(InputAction.CallbackContext context);
     }
 }

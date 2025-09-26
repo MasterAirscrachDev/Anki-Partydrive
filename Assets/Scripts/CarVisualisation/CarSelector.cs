@@ -39,6 +39,9 @@ public class CarSelector : MonoBehaviour
         // Get real car data from CarInterface
         RefreshCarData();
         
+        // Connect to all available cars immediately for faster selection
+        ConnectToAllAvailableCars();
+        
         // Calculate platform size for marker movement
         platformSize = new Vector2(slectionPlatform.localScale.x, slectionPlatform.localScale.z);
         platformSize *= 0.82f;
@@ -49,7 +52,6 @@ public class CarSelector : MonoBehaviour
         InitializePlayerMarkers();
         DespawnDisconnectedAIs();
 
-        
         // Restore markers for controllers that already have active cars
         RestoreExistingCarSelections();
         
@@ -77,6 +79,7 @@ public class CarSelector : MonoBehaviour
             cms.onSelect += OnPlayerSelectPressed;
             cms.onAltSelect += OnPlayerAltSelectPressed;
             cms.onBackToMenu += OnPlayerBackPressed;
+            cms.onStartSelect += OnPlayerStartPressed;
         }
     }
     void RefreshPlayers(){
@@ -91,11 +94,15 @@ public class CarSelector : MonoBehaviour
     void OnDisable(){
         slectionPlatform.gameObject.SetActive(false);
         
+        // Disconnect cars that don't have matching controllers
+        DisconnectUnusedCars();
+        
         // Unsubscribe from CMS events
         if(cms != null){
             cms.onSelect -= OnPlayerSelectPressed;
             cms.onAltSelect -= OnPlayerAltSelectPressed;
             cms.onBackToMenu -= OnPlayerBackPressed;
+            cms.onStartSelect -= OnPlayerStartPressed;
         }
         
         // Clean up player markers
@@ -455,7 +462,7 @@ public class CarSelector : MonoBehaviour
         
         // Rotate input by 95 degrees for side perspective
         // 95 degrees = 95 * (π/180) ≈ 1.658 radians
-        float rotationRad = 95f * Mathf.Deg2Rad;
+        float rotationRad = 80f * Mathf.Deg2Rad;
         Vector2 rotatedInput = new Vector2(
             input.x * Mathf.Cos(rotationRad) - input.y * Mathf.Sin(rotationRad),
             input.x * Mathf.Sin(rotationRad) + input.y * Mathf.Cos(rotationRad)
@@ -518,6 +525,15 @@ public class CarSelector : MonoBehaviour
         // Go back to main menu (UI layer 0)
         UIManager.active.SetUILayer(0);
         Debug.Log("Back button pressed - returning to main menu");
+    }
+    
+    // CMS callback for start button input
+    void OnPlayerStartPressed(PlayerController player){
+        // Trigger gamemode loading when start is pressed in selection menu
+        if(cms != null){
+            cms.LoadGamemode();
+            Debug.Log("Start button pressed - loading gamemode");
+        }
     }
     
     void HandlePlayerAISelection(int playerIndex){
@@ -604,7 +620,7 @@ public class CarSelector : MonoBehaviour
         selectedCarIDs[playerIndex] = carID;
         markerLocked[playerIndex] = true;
         
-        // Assign car to the player's controller using desiredCarID for delayed connection
+        // Assign car to the player's controller (car is already connected)
         if(playerIndex < players.Count && players[playerIndex] != null){
             CarController carController = players[playerIndex].GetComponent<CarController>();
             if(carController != null){
@@ -613,31 +629,10 @@ public class CarSelector : MonoBehaviour
             }
         }
         
-        Debug.Log($"Player {playerIndex + 1} selected car: {carID}");
-        
-        // Start connection timer (connect after 1 second)
-        if(connectionTimers.ContainsKey(carID)){
-            StopCoroutine(connectionTimers[carID]);
-        }
-        connectionTimers[carID] = StartCoroutine(ConnectCarDelayed(carID));
+        Debug.Log($"Player {playerIndex + 1} selected car: {carID} (already connected)");
         
         // Check if all players have selected cars
         CheckAllPlayersSelected();
-    }
-    
-    IEnumerator ConnectCarDelayed(string carID){
-        yield return new WaitForSeconds(1f);
-        
-        // Check if car is still selected (not deselected in the meantime)
-        if(selectedCarIDs.Contains(carID) || aiSelectedCarIDs.Contains(carID)){
-            CarInteraface carInterface = CarInteraface.io;
-            if(carInterface != null){
-                carInterface.ConnectCar(carID);
-            }
-        }
-        
-        // Remove from connection timers
-        connectionTimers.Remove(carID);
     }
     
     IEnumerator SetAIMarkerAppearanceDelayed(GameObject marker, string carID){
@@ -659,21 +654,14 @@ public class CarSelector : MonoBehaviour
             }
         }
         
-        // Cancel connection timer if it's running
+        // Cancel connection timer if it's running (cleanup)
         if(!string.IsNullOrEmpty(previousCarID) && connectionTimers.ContainsKey(previousCarID)){
             StopCoroutine(connectionTimers[previousCarID]);
             connectionTimers.Remove(previousCarID);
         }
         
-        // Disconnect the car if it was connected
-        if(!string.IsNullOrEmpty(previousCarID)){
-            CarInteraface carInterface = CarInteraface.io;
-            if(carInterface != null){
-                carInterface.DisconnectCar(previousCarID);
-            }
-        }
-        
-        Debug.Log($"Player {playerIndex + 1} deselected car: {previousCarID}");
+        // Note: Car disconnection will be handled when leaving selection menu
+        Debug.Log($"Player {playerIndex + 1} deselected car: {previousCarID} (will disconnect on menu exit)");
     }
     
     void CheckAllPlayersSelected(){
@@ -700,31 +688,19 @@ public class CarSelector : MonoBehaviour
         // Mark car as AI-selected
         aiSelectedCarIDs.Add(carID);
         
-        // Start connection timer for AI car (connect after 1 second)
-        if(connectionTimers.ContainsKey(carID)){
-            StopCoroutine(connectionTimers[carID]);
-        }
-        connectionTimers[carID] = StartCoroutine(ConnectCarDelayed(carID));
-        
         // Create AI marker at the car position
         CreateAIMarker(carID, gridX, gridY);
         
-        Debug.Log($"Spawned AI for car: {carID} at grid position ({gridX}, {gridY})");
+        Debug.Log($"Spawned AI for car: {carID} at grid position ({gridX}, {gridY}) (already connected)");
     }
     
     void RemoveAIFromCar(string carID){
         if(cms == null) return;
         
-        // Cancel connection timer if it's running
+        // Cancel connection timer if it's running (cleanup)
         if(connectionTimers.ContainsKey(carID)){
             StopCoroutine(connectionTimers[carID]);
             connectionTimers.Remove(carID);
-        }
-        
-        // Disconnect the car
-        CarInteraface carInterface = CarInteraface.io;
-        if(carInterface != null){
-            carInterface.DisconnectCar(carID);
         }
         
         // Remove AI through CMS
@@ -736,7 +712,8 @@ public class CarSelector : MonoBehaviour
         // Remove AI marker
         RemoveAIMarker(carID);
         
-        Debug.Log($"Removed AI from car: {carID}");
+        // Note: Car disconnection will be handled when leaving selection menu
+        Debug.Log($"Removed AI from car: {carID} (will disconnect on menu exit)");
     }
     
     void CreateAIMarker(string carID, int gridX, int gridY){
@@ -823,5 +800,44 @@ public class CarSelector : MonoBehaviour
         // Set text for all TMP_Text components on the marker
         TMP_Text nametext = marker.GetComponentInChildren<TMP_Text>();
         nametext.text = playerName;
+    }
+    
+    void ConnectToAllAvailableCars(){
+        CarInteraface carInterface = CarInteraface.io;
+        if(carInterface == null) return;
+        
+        Debug.Log("Connecting to all available cars for faster selection...");
+        
+        // Connect to all available cars
+        foreach(CarSelectionData carData in allCarData){
+            if(!string.IsNullOrEmpty(carData.id)){
+                carInterface.ConnectCar(carData.id);
+                Debug.Log($"Connecting to car: {carData.id}");
+            }
+        }
+    }
+    
+    void DisconnectUnusedCars(){
+        CarInteraface carInterface = CarInteraface.io;
+        if(carInterface == null || cms == null) return;
+        
+        Debug.Log("Disconnecting cars without matching controllers...");
+        
+        // Get all car IDs that have controllers
+        HashSet<string> carsWithControllers = new HashSet<string>();
+        foreach(CarController controller in cms.controllers){
+            string carID = controller.GetDesiredCarID();
+            if(!string.IsNullOrEmpty(carID)){
+                carsWithControllers.Add(carID);
+            }
+        }
+        
+        // Disconnect cars that don't have controllers
+        foreach(CarSelectionData carData in allCarData){
+            if(!string.IsNullOrEmpty(carData.id) && !carsWithControllers.Contains(carData.id)){
+                carInterface.DisconnectCar(carData.id);
+                Debug.Log($"Disconnecting unused car: {carData.id}");
+            }
+        }
     }
 }

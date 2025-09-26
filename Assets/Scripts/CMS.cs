@@ -30,6 +30,57 @@ public class CMS : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         carInterface = CarInteraface.io;
     }
+    public void LoadGamemode(){
+        SetAllCarEnginesLights(); // Set engine lights for all cars when gamemode starts
+        
+        UIManager ui = UIManager.active;
+        if(cms.gameMode == "Time Trial"){
+            ui.SetUILayer(5);
+        }
+        else if (cms.gameMode == "Laps"){
+            ui.SetUILayer(6);
+        }
+        else if (cms.gameMode == "Laps2"){
+            ui.SetUILayer(7);
+        }
+        else if(cms.gameMode == "Party"){
+            Debug.Log("Party Mode not done yet");
+        }
+    }
+    
+    public void SetPlayersRacingMode(bool racingMode){
+        foreach(CarController controller in controllers){
+            if(controller == null) continue;
+            
+            PlayerController playerController = controller.GetComponent<PlayerController>();
+            if(playerController != null){
+                playerController.SetRacingMode(racingMode);
+                Debug.Log($"Set {controller.GetPlayerName()} racing mode to: {racingMode}");
+            }
+        }
+    }
+    
+    public void SetAllCarEnginesLights(){
+        if(carInterface == null) return;
+        
+        foreach(CarController controller in controllers){
+            if(controller == null || string.IsNullOrEmpty(controller.GetID())) continue;
+            
+            // Get the car data for this controller
+            UCarData carData = carInterface.GetCarFromID(controller.GetID());
+            if(carData == null) continue;
+            
+            // Get the player color and convert to RGB (0-255)
+            Color playerColor = controller.GetPlayerColor();
+            int r = Mathf.RoundToInt(playerColor.r * 255);
+            int g = Mathf.RoundToInt(playerColor.g * 255);
+            int b = Mathf.RoundToInt(playerColor.b * 255);
+            
+            // Set the car's engine light to match the player color
+            carInterface.SetCarColours(carData, r, g, b);
+            Debug.Log($"Set engine light for {controller.GetPlayerName()}'s car ({controller.GetID()}) to RGB({r},{g},{b})");
+        }
+    }
     public void AddController(CarController controller, bool isAI = false){
         controllers.Add(controller);
         if(isAI){ return; } //if the controller is AI, return (Colour is set in AIController)
@@ -107,6 +158,7 @@ public class CMS : MonoBehaviour
     public void OnBackToMenuCallback(){ onBackToMenu?.Invoke(); }
     public void OnSelectCallback(PlayerController pc){ onSelect?.Invoke(pc); }
     public void OnAltSelectCallback(PlayerController pc){ onAltSelect?.Invoke(pc); }
+    public void OnStartSelectCallback(PlayerController pc){ onStartSelect?.Invoke(pc); }
     
     //use in gamemode scripts to set the behavior of cars when they run out of energy
     public delegate void OnCarNoEnergy(string id, CarController controller);
@@ -117,4 +169,6 @@ public class CMS : MonoBehaviour
     public event OnUISelect onSelect;
     public delegate void OnUIAltSelect(PlayerController pc);
     public event OnUIAltSelect onAltSelect;
+    public delegate void OnUIStartSelect(PlayerController pc);
+    public event OnUIStartSelect onStartSelect;
 }

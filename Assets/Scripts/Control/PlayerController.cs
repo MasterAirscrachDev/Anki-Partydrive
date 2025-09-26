@@ -12,28 +12,88 @@ public class PlayerController : MonoBehaviour
     public bool selectInput;
     public bool altSelectInput;
     public bool backSelectInput;
+    public bool startSelectInput;
+    
+    // Control scheme detection
+    public string currentControlScheme;
     
     // Input debouncing
     bool lastSelectInput = false;
     bool lastAltSelectInput = false;
     bool lastBackSelectInput = false;
+    bool lastStartSelectInput = false;
     // Start is called before the first frame update
     void Start()
     {
         iinput = GetComponent<PlayerInput>();
         carController = GetComponent<CarController>();
-        carController.Setup(false); //setup the car controller
-        //get the total number of PlayerControllers in the scene
+        carController.Setup(false);
         int playerCount = FindObjectsOfType<PlayerController>().Length;
         carController.SetPlayerName($"Player {playerCount}");
+        
+        DetectAndSetControlScheme();
+    }
+    
+    void DetectAndSetControlScheme()
+    {
+        if(iinput != null)
+        {
+            // Try to detect active devices and set appropriate control scheme
+            var devices = iinput.devices;
+            bool hasGamepad = false;
+            bool hasMouseKeyboard = false;
+            
+            // Check what devices are connected to this player
+            foreach(var device in devices)
+            {
+                if(device is UnityEngine.InputSystem.Gamepad)
+                {
+                    hasGamepad = true;
+                }
+                else if(device is UnityEngine.InputSystem.Mouse || device is UnityEngine.InputSystem.Keyboard)
+                {
+                    hasMouseKeyboard = true;
+                }
+            }
+            
+            // Set control scheme based on detected devices
+            string targetScheme = null;
+            if(hasGamepad)
+            {
+                targetScheme = "Gamepad";
+            }
+            else if(hasMouseKeyboard)
+            {
+                targetScheme = "MouseAndKeyboard";
+            }
+            else
+            {
+                // Fallback to current scheme if no devices detected
+                targetScheme = iinput.currentControlScheme;
+            }
+            
+            // Switch to the detected scheme if different
+            if(targetScheme != null && targetScheme != iinput.currentControlScheme)
+            {
+                iinput.SwitchCurrentControlScheme(targetScheme, iinput.devices.ToArray());
+            }
+            
+            // Update our cached values
+            currentControlScheme = iinput.currentControlScheme;
+            
+            Debug.Log($"Player {carController?.GetPlayerName()} detected and set to control scheme: {currentControlScheme}");
+        }
     }
     public void SetRacingMode(bool racing){
         isMenuInputs = !racing;
+        
         if(racing){
             iinput.currentActionMap = iinput.actions.FindActionMap("Racing");
         }else{
             iinput.currentActionMap = iinput.actions.FindActionMap("Menu");
         }
+        
+        Debug.Log($"Player {carController?.GetPlayerName()} set to {(racing ? "Racing" : "Menu")} mode using {currentControlScheme}");
     }
 
     // Update is called once per frame
@@ -56,15 +116,18 @@ public class PlayerController : MonoBehaviour
             carController.IitemB = false;
             carController.Iboost = false;
             carController.Idrift = 0;
-            bool isMK = iinput.currentControlScheme == "MouseAndKeyboard";
+            
             Vector2 Move = iinput.currentActionMap.actions[1].ReadValue<Vector2>();
             bool select = iinput.currentActionMap.actions[2].ReadValue<float>() > 0.5f;
             bool backSelect = iinput.currentActionMap.actions[4].ReadValue<float>() > 0.5f;
             bool altSelect = iinput.currentActionMap.actions[5].ReadValue<float>() > 0.5f;
+            bool startSelect = iinput.currentActionMap.actions[6].ReadValue<float>() > 0.5f;
+            
             moveInput = Move;
             selectInput = select;
             altSelectInput = altSelect;
             backSelectInput = backSelect;
+            startSelectInput = startSelect;
             
             // Handle input debouncing and callbacks
             HandleMenuInputCallbacks();
@@ -95,10 +158,18 @@ public class PlayerController : MonoBehaviour
                 CMS.cms.OnBackToMenuCallback();
             }
         }
+        // Handle start button input with debouncing
+        if(startSelectInput && !lastStartSelectInput){
+            // Rising edge detected - player pressed start
+            if(CMS.cms != null){
+                CMS.cms.OnStartSelectCallback(this);
+            }
+        }
         
         // Update last input states
         lastSelectInput = selectInput;
         lastAltSelectInput = altSelectInput;
         lastBackSelectInput = backSelectInput;
+        lastStartSelectInput = startSelectInput;
     }
 }

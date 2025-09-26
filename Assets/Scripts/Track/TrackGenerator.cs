@@ -208,20 +208,37 @@ public class TrackGenerator : MonoBehaviour
                 if (segments[i].type == SegmentType.CrissCross)
                 {
                     bool hasCrissCross = false;
+                    int matchingCrissCrossIndex = -1;
+                    
+                    // Look for an existing CrissCross at the same X,Y coordinates
                     for (int j = 0; j < i; j++)
                     {
                         if (segments[j].type == SegmentType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y)
                         {
                             hasCrissCross = true;
-                            trackPieces[j].name = $"{i} {trackPieces[j].name}";
-                            if (segments[j].validated)
-                            {
-                                track = Instantiate(trackPrefabs[10], pos, rot, transform); //invisible criss cross (for splines)
-                            }
+                            matchingCrissCrossIndex = j;
                             break;
                         }
                     }
-                    if (!hasCrissCross) { track = Instantiate(useFullTrack ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform); }
+                    
+                    if (hasCrissCross && matchingCrissCrossIndex >= 0 && matchingCrissCrossIndex < trackPieces.Count)
+                    {
+                        // This CrissCross shares the same physical location as a previous one
+                        // Update the name to show it handles multiple segments
+                        if (trackPieces[matchingCrissCrossIndex] != null)
+                        {
+                            trackPieces[matchingCrissCrossIndex].name = $"{matchingCrissCrossIndex},{i} (CrissCross)";
+                        }
+                        
+                        // Create an invisible reference track piece that splines across the intersection
+                        track = Instantiate(trackPrefabs[10], pos, rot, transform); // invisible criss cross (splines across)
+                        track.name = $"{i} (CrissCross Reference)";
+                    }
+                    else
+                    {
+                        // This is the first CrissCross at this position, create the actual track piece
+                        track = Instantiate(useFullTrack ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform);
+                    }
                     pos += forward;
                 }
                 if (segments[i].type == SegmentType.JumpRamp)

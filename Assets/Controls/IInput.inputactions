@@ -130,7 +130,7 @@
                     "id": "2cfca5f0-0ace-40da-84ce-ae2a4e1cedf1",
                     "path": "<Gamepad>/leftStick/x",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "AxisDeadzone",
                     "groups": "Controller;Gamepad",
                     "action": "Steer",
                     "isComposite": false,
@@ -283,6 +283,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "UIStart",
+                    "type": "Button",
+                    "id": "e499104d-43e9-49c3-b229-bca7cb0767e6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -346,7 +355,7 @@
                     "id": "d6f9b694-da92-4ac5-a47d-669e99d6fbe4",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "StickDeadzone",
                     "groups": "Controller;Gamepad",
                     "action": "UINav",
                     "isComposite": false,
@@ -420,12 +429,56 @@
                 },
                 {
                     "name": "",
+                    "id": "52363567-f4ad-45cc-ab2c-e478bc565166",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "UIBack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "05f16a9f-073b-485d-8521-b79688543e93",
                     "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "MouseAndKeyboard",
                     "action": "AltSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6187d2a4-2958-455a-a101-d0b3e4a88517",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "AltSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a177f129-d8b7-40cc-867a-ed85ed10d4c5",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "MouseAndKeyboard",
+                    "action": "UIStart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9863dca4-ae80-4a31-97d7-2c3b97623190",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "UIStart",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

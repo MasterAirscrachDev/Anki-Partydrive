@@ -365,7 +365,12 @@ public class CarController : MonoBehaviour
     }
     
     void OnDestroy(){
-        // Disconnect car when controller is destroyed
+        // Only disconnect car if we're not in car selection mode
+        // The CarSelector will handle disconnections when leaving the menu
+        CarSelector selector = FindObjectOfType<CarSelector>();
+        if(selector != null && selector.gameObject.activeInHierarchy){ return; }
+        
+        // Disconnect car when controller is destroyed (not in selection menu)
         string carToDisconnect = !string.IsNullOrEmpty(carID) ? carID : desiredCarID;
         if(!string.IsNullOrEmpty(carToDisconnect) && carInterface != null){
             carInterface.DisconnectCar(carToDisconnect);

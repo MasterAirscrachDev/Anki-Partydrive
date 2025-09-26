@@ -79,6 +79,7 @@ public abstract class GameMode : MonoBehaviour
         
         OnLineupStarted();
         carInteraface.OnLineupEvent += OnLineupUpdate;
+        cms.SetPlayersRacingMode(true); // Set players to racing mode when lineup starts
     }
     
     /// <summary>
@@ -156,6 +157,7 @@ public abstract class GameMode : MonoBehaviour
         showText.text = endMessage;
         cms.SetGlobalLock(true);
         cms.StopAllCars();
+        cms.SetPlayersRacingMode(false); // Set players back to menu mode
         cms.TTS(endMessage);
         
         carEntityTracker.OnCarCrossedFinishLine -= CarCrossedFinish;
@@ -189,6 +191,12 @@ public abstract class GameMode : MonoBehaviour
         if(carEntityTracker != null)
         {
             carEntityTracker.OnCarCrossedFinishLine -= CarCrossedFinish;
+        }
+        
+        // Ensure players are set back to menu mode when gamemode is disabled
+        if(cms != null)
+        {
+            cms.SetPlayersRacingMode(false);
         }
         
         OnModeCleanup();
