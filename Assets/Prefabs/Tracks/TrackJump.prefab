@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7909314881107390857}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8403528684596855081}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5847797412418200726
 MeshFilter:
@@ -58,6 +58,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -80,6 +85,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -110,6 +116,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9211132806049291155}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.0001, y: 0, z: -2.0002}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -117,7 +124,6 @@ Transform:
   m_Children:
   - {fileID: 7388251216581339955}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4841527129684086412
 MeshFilter:
@@ -144,6 +150,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -166,6 +177,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -186,7 +198,7 @@ MonoBehaviour:
   - {x: -0.2, y: 0, z: -0.5}
   - {x: -0.2, y: 0.06, z: 0}
   - {x: -0.2, y: 0.2, z: 0.35}
-  - {x: -0.2, y: 0.27, z: 0.47}
+  - {x: -0.19999981, y: 0.24375337, z: 0.47000003}
   - {x: -0.2, y: 0.2, z: 0.69}
   - {x: -0.2, y: 0.05, z: 1}
   - {x: -0.2, y: 0, z: 1.5}
@@ -194,8 +206,10 @@ MonoBehaviour:
   - {x: 0.2, y: 0, z: -0.5}
   - {x: 0.2, y: 0.06, z: 0}
   - {x: 0.2, y: 0.2, z: 0.35}
-  - {x: 0.2, y: 0.27, z: 0.47}
+  - {x: 0.2, y: 0.2437534, z: 0.47}
   - {x: 0.2, y: 0.2, z: 0.69}
   - {x: 0.2, y: 0.05, z: 1}
   - {x: 0.2, y: 0, z: 1.5}
+  trackWidths: []
   flipped: 0
+  DEBUG_RenderSmoothCurve: 1

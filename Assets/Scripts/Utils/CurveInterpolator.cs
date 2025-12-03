@@ -10,8 +10,9 @@ public static class CurveInterpolator
         if (indexInPoints == lastPointIndex) indexInPoints = lastPointIndex - 1;
         float localPointTime = t * lastPointIndex - indexInPoints;
         Vector3 firstPoint = points[indexInPoints], nextPoint = points[indexInPoints + 1];
-        Vector3 cTangent1 = indexInPoints > 0 ? points[indexInPoints - 1] : firstPoint + (nextPoint - firstPoint).normalized;
-        Vector3 cTangent2 = indexInPoints < lastPointIndex - 1 ? points[indexInPoints + 2] : nextPoint + (firstPoint - nextPoint).normalized;
+        // For endpoints, mirror the tangent to prevent overshoot
+        Vector3 cTangent1 = indexInPoints > 0 ? points[indexInPoints - 1] : firstPoint - (nextPoint - firstPoint);
+        Vector3 cTangent2 = indexInPoints < lastPointIndex - 1 ? points[indexInPoints + 2] : nextPoint - (firstPoint - nextPoint);
         
         return 0.5f * ((-cTangent1 + 3 * firstPoint - 3 * nextPoint + cTangent2) * Mathf.Pow(localPointTime, 3) +
             (2 * cTangent1 - 5 * firstPoint + 4 * nextPoint - cTangent2) * 

@@ -1,11 +1,11 @@
 # This is the current list of todos for the Partydrive client.
 
-# For Demo 2.8.0 and beyond
+# For Demo 4.0.0 and beyond
 
 ## Just coding
 - Move to more overdrive like car colours
 
-- Fix frogging
+- Fix frogging (splines are being smoothed wrongly)
 
 - Car Management Menu
  - Edit Car Names

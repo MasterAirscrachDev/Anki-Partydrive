@@ -23,6 +23,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 264650282832276375}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -30,8 +31,22 @@ Transform:
   m_Children:
   - {fileID: 264650283485904353}
   - {fileID: 264650283470238895}
+  - {fileID: 3354206922630946988}
+  - {fileID: 5377023632742638157}
+  - {fileID: 5127593697766820608}
+  - {fileID: 1648853202262570688}
+  - {fileID: 6470960376174133342}
+  - {fileID: 4948570766784700419}
+  - {fileID: 3413113447332731882}
+  - {fileID: 6445725876513327183}
+  - {fileID: 7657583016718239596}
+  - {fileID: 1877952311335949934}
+  - {fileID: 3328718459726178083}
+  - {fileID: 6314243709178750139}
+  - {fileID: 1344216796043844975}
+  - {fileID: 6608211470046059187}
+  - {fileID: 1527356950395369977}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &264650283470238894
 GameObject:
@@ -58,13 +73,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 264650283470238894}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 264650282832276368}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &264650283470238889
 MeshFilter:
@@ -91,6 +106,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -112,6 +132,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -141,13 +162,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 264650283485904352}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 264650282832276368}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &264650283485904355
 MeshFilter:
@@ -174,6 +195,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -195,7 +221,856 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &610925908472641054
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1527356950395369977}
+  - component: {fileID: 154431189454903493}
+  m_Layer: 0
+  m_Name: Segment15
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1527356950395369977
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 610925908472641054}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.98864096, z: -0, w: 0.15029658}
+  m_LocalPosition: {x: 2.0864491, y: 0, z: -0.06268075}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &154431189454903493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 610925908472641054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25628224, y: 0, z: 0.002109602}
+  - {x: -0.18994927, y: 0, z: 0.3375274}
+  - {x: 0.016997784, y: 0, z: 0.60038054}
+  - {x: 0.34788483, y: 0, z: 0.7539482}
+  - {x: 0.7027953, y: 0, z: 0.74226975}
+  rightPoints:
+  - {x: 0.256282, y: 0, z: -0.0021095425}
+  - {x: 0.28038394, y: 0, z: 0.110616446}
+  - {x: 0.3419042, y: 0, z: 0.19697887}
+  - {x: 0.44243446, y: 0, z: 0.24602783}
+  - {x: 0.55245554, y: 0, z: 0.24281943}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &1062494992949078490
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6314243709178750139}
+  - component: {fileID: 428225438340802329}
+  m_Layer: 0
+  m_Name: Segment12
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6314243709178750139
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062494992949078490}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.8701839, z: -0, w: 0.4927272}
+  m_LocalPosition: {x: 0.46413225, y: 0, z: 0.4754535}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 120.96, z: 0}
+--- !u!114 &428225438340802329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062494992949078490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.2536441, y: 0, z: -0.0024582744}
+  - {x: -0.26974633, y: 0, z: 0.09810576}
+  - {x: -0.31421605, y: 0, z: 0.1893672}
+  - {x: -0.38749492, y: 0, z: 0.26070258}
+  - {x: -0.47416443, y: 0, z: 0.30548728}
+  rightPoints:
+  - {x: 0.25364417, y: 0, z: 0.0024582744}
+  - {x: 0.21982826, y: 0, z: 0.25375775}
+  - {x: 0.09478369, y: 0, z: 0.49507788}
+  - {x: -0.09309144, y: 0, z: 0.6830336}
+  - {x: -0.33499506, y: 0, z: 0.7956754}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &2485409794152723970
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1344216796043844975}
+  - component: {fileID: 1758305391223712647}
+  m_Layer: 0
+  m_Name: Segment13
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1344216796043844975
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2485409794152723970}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.3945542, z: -0, w: 0.9188727}
+  m_LocalPosition: {x: 1.1444024, y: 0, z: 0.53915036}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 46.476, z: 0}
+--- !u!114 &1758305391223712647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2485409794152723970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25477624, y: 0, z: 0.0014827959}
+  - {x: -0.16451725, y: 0, z: 0.36658633}
+  - {x: 0.09995246, y: 0, z: 0.6456569}
+  - {x: 0.4647436, y: 0, z: 0.75867164}
+  - {x: 0.8192758, y: 0, z: 0.68434143}
+  rightPoints:
+  - {x: 0.2547763, y: 0, z: -0.0014827922}
+  - {x: 0.2872278, y: 0, z: 0.11494318}
+  - {x: 0.373071, y: 0, z: 0.20860583}
+  - {x: 0.48185584, y: 0, z: 0.24511364}
+  - {x: 0.58975863, y: 0, z: 0.22803956}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &2966429617258167720
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3328718459726178083}
+  - component: {fileID: 8869651751069860913}
+  m_Layer: 0
+  m_Name: Segment11
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3328718459726178083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2966429617258167720}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.38253525, z: -0, w: 0.9239409}
+  m_LocalPosition: {x: -0.1956677, y: 0, z: 0.38034862}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8869651751069860913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2966429617258167720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25031754, y: 0, z: -0.000044513494}
+  - {x: -0.21501406, y: 0, z: 0.2582258}
+  - {x: -0.09044066, y: 0, z: 0.49610627}
+  - {x: 0.10302928, y: 0, z: 0.67601323}
+  - {x: 0.33563104, y: 0, z: 0.7791612}
+  rightPoints:
+  - {x: 0.25031754, y: 0, z: 0.000044513494}
+  - {x: 0.26872307, y: 0, z: 0.09205908}
+  - {x: 0.31532127, y: 0, z: 0.18406457}
+  - {x: 0.38540465, y: 0, z: 0.24943623}
+  - {x: 0.4633108, y: 0, z: 0.28817916}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &3580451618370543287
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5127593697766820608}
+  - component: {fileID: 4098581163240649495}
+  m_Layer: 0
+  m_Name: Segment3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5127593697766820608
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3580451618370543287}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.4470125, z: -0, w: 0.89452773}
+  m_LocalPosition: {x: 0.52, y: 0, z: -0.639}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: -53.104, z: 0}
+--- !u!114 &4098581163240649495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3580451618370543287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.26827136, y: 0, z: 0.001986593}
+  - {x: -0.28327835, y: 0, z: 0.7837894}
+  rightPoints:
+  - {x: 0.24956156, y: 0, z: 0.03311906}
+  - {x: 0.22507, y: 0, z: 0.8023088}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &3699594345928925861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3413113447332731882}
+  - component: {fileID: 4752396478722262010}
+  m_Layer: 0
+  m_Name: Segment7
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3413113447332731882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3699594345928925861}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.98123956, z: -0, w: 0.19279256}
+  m_LocalPosition: {x: -2.0858946, y: 0, z: 0.068851486}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 157.768, z: 0}
+--- !u!114 &4752396478722262010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3699594345928925861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.252836, y: 0, z: -0.0028949678}
+  - {x: -0.2522352, y: 0, z: 0.44793963}
+  rightPoints:
+  - {x: 0.25283587, y: 0, z: 0.0028950274}
+  - {x: 0.2624788, y: 0, z: 0.43393165}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &3704242703373428622
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7657583016718239596}
+  - component: {fileID: 7997664222676363514}
+  m_Layer: 0
+  m_Name: Segment9
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7657583016718239596
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3704242703373428622}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.38187665, z: -0, w: 0.92421335}
+  m_LocalPosition: {x: -1.1098073, y: 0, z: -0.53241277}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 44.9, z: 0}
+--- !u!114 &7997664222676363514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3704242703373428622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.2553832, y: 0, z: -0.0024592057}
+  - {x: -0.25307852, y: 0, z: 0.4015684}
+  rightPoints:
+  - {x: 0.25538313, y: 0, z: 0.0024591163}
+  - {x: 0.2570033, y: 0, z: 0.40309513}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &4651124873966663049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6470960376174133342}
+  - component: {fileID: 5853488136456035233}
+  m_Layer: 0
+  m_Name: Segment5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6470960376174133342
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4651124873966663049}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.46152738, z: -0, w: 0.88712597}
+  m_LocalPosition: {x: -0.86087644, y: 0, z: 0.32495752}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5853488136456035233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4651124873966663049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25471142, y: 0, z: 0.0015169382}
+  - {x: -0.25756735, y: 0, z: 0.5622368}
+  rightPoints:
+  - {x: 0.25471145, y: 0, z: -0.0015169308}
+  - {x: 0.24823935, y: 0, z: 0.55772364}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &5446553115302409888
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6445725876513327183}
+  - component: {fileID: 6785376856600243615}
+  m_Layer: 0
+  m_Name: Segment8
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6445725876513327183
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5446553115302409888}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.98234266, z: -0, w: 0.1870907}
+  m_LocalPosition: {x: -1.923807, y: 0, z: -0.3412438}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6785376856600243615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5446553115302409888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25742102, y: 0, z: 0.004014358}
+  - {x: -0.26957712, y: 0, z: 0.123531014}
+  - {x: -0.35443562, y: 0, z: 0.21766035}
+  - {x: -0.46395442, y: 0, z: 0.26741397}
+  - {x: -0.58251905, y: 0, z: 0.24383202}
+  rightPoints:
+  - {x: 0.25742102, y: 0, z: -0.004014358}
+  - {x: 0.18185087, y: 0, z: 0.3635818}
+  - {x: -0.053671718, y: 0, z: 0.629182}
+  - {x: -0.40279454, y: 0, z: 0.7659204}
+  - {x: -0.7909733, y: 0, z: 0.7101508}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &5711583779443603852
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1648853202262570688}
+  - component: {fileID: 921374237876173552}
+  m_Layer: 0
+  m_Name: Segment4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1648853202262570688
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5711583779443603852}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.45836386, z: -0, w: 0.8887646}
+  m_LocalPosition: {x: -0.13169831, y: 0, z: -0.18616079}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &921374237876173552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5711583779443603852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25432754, y: 0, z: -0.0027858242}
+  - {x: -0.2610607, y: 0, z: 0.89015263}
+  rightPoints:
+  - {x: 0.25432754, y: 0, z: 0.0027858242}
+  - {x: 0.24837089, y: 0, z: 0.8907488}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &6121118866035101497
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6608211470046059187}
+  - component: {fileID: 4096696193052507230}
+  m_Layer: 0
+  m_Name: Segment14
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6608211470046059187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6121118866035101497}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.9893733, z: -0, w: 0.14539729}
+  m_LocalPosition: {x: 1.9603503, y: 0, z: 0.34246927}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 163.279, z: 0}
+--- !u!114 &4096696193052507230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6121118866035101497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.2553863, y: 0, z: -0.00044998527}
+  - {x: -0.26049438, y: 0, z: 0.42386967}
+  rightPoints:
+  - {x: 0.2553864, y: 0, z: 0.00044998527}
+  - {x: 0.25208646, y: 0, z: 0.4247288}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &6688630847101968293
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4948570766784700419}
+  - component: {fileID: 495250351324011099}
+  m_Layer: 0
+  m_Name: Segment6
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4948570766784700419
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6688630847101968293}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.4652177, z: -0, w: 0.8851963}
+  m_LocalPosition: {x: -1.3221022, y: 0, z: 0.6425585}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &495250351324011099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6688630847101968293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25287578, y: 0, z: 0.0043628737}
+  - {x: -0.31104875, y: 0, z: 0.16489193}
+  - {x: -0.42169252, y: 0, z: 0.24714124}
+  - {x: -0.55980945, y: 0, z: 0.24768761}
+  - {x: -0.6925876, y: 0, z: 0.1676135}
+  rightPoints:
+  - {x: 0.2528758, y: 0, z: -0.004362859}
+  - {x: 0.10394505, y: 0, z: 0.4682787}
+  - {x: -0.3226393, y: 0, z: 0.74370646}
+  - {x: -0.77943087, y: 0, z: 0.7148934}
+  - {x: -1.1188052, y: 0, z: 0.43978262}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &8243313244777676287
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1877952311335949934}
+  - component: {fileID: 2694578636465160360}
+  m_Layer: 0
+  m_Name: Segment10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1877952311335949934
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8243313244777676287}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.3841294, z: -0, w: 0.9232793}
+  m_LocalPosition: {x: -0.8244229, y: 0, z: -0.24881008}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2694578636465160360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8243313244777676287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.25503415, y: 0, z: -0.002007272}
+  - {x: -0.25338632, y: 0, z: 0.88856554}
+  rightPoints:
+  - {x: 0.25503415, y: 0, z: 0.002007272}
+  - {x: 0.24724543, y: 0, z: 0.89038277}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &8545785263256150932
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5377023632742638157}
+  - component: {fileID: 7600317590252676140}
+  m_Layer: 0
+  m_Name: Segment2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5377023632742638157
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8545785263256150932}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.848, y: 0, z: -0.73}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &7600317590252676140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8545785263256150932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.2619668, y: 0, z: 0.018465132}
+  - {x: -0.229882, y: 0, z: 0.27763885}
+  - {x: -0.1223519, y: 0, z: 0.49064797}
+  rightPoints:
+  - {x: 0.25180104, y: 0, z: 0.024695426}
+  - {x: 0.26431882, y: 0, z: 0.12071064}
+  - {x: 0.31046528, y: 0, z: 0.20465955}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0
+--- !u!1 &8549137618649466783
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3354206922630946988}
+  - component: {fileID: 7926082951426970476}
+  m_Layer: 0
+  m_Name: Segment1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3354206922630946988
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549137618649466783}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 1.649, y: 0, z: -0.714}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 264650282832276368}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &7926082951426970476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549137618649466783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112de44d5f1073b4385f7899ed1e6c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
+  leftPoints:
+  - {x: -0.26627198, y: 0, z: 0.013008505}
+  - {x: -0.27796665, y: 0, z: 0.81946504}
+  rightPoints:
+  - {x: 0.25529188, y: 0, z: 0.017886728}
+  - {x: 0.2358011, y: 0, z: 0.8256954}
+  trackWidths:
+  - 121.5
+  flipped: 1
+  DEBUG_RenderSmoothCurve: 0

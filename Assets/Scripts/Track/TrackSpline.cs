@@ -7,6 +7,7 @@ public class TrackSpline : MonoBehaviour
     [SerializeField] Vector3[] leftPoints, rightPoints;
     [SerializeField] float[] trackWidths; //should be same length as points
     public bool flipped = false;
+    [SerializeField] bool DEBUG_RenderSmoothCurve = false;
     public Vector3 GetPoint(float t, float offset){
         return transform.TransformPoint(CurveInterpolator.Cilp(PointsFromOffset(offset, GetWidth(t)), t));
     }
@@ -170,11 +171,29 @@ public class TrackSpline : MonoBehaviour
             Gizmos.DrawLine(transform.TransformPoint(rightPoints[i]), transform.TransformPoint(rightPoints[i + 1]));
         }
         float[] lanes = { -67.5f, -22.5f, 22.5f, 67.5f };
-        for(int i = 0; i < lanes.Length; i++){
-            Vector3[] points = PointsFromOffset(lanes[i], 67.5f);
-            Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)i / (lanes.Length - 1));
-            for(int j = 0; j < points.Length - 1; j++){
-                Gizmos.DrawLine(transform.TransformPoint(points[j]), transform.TransformPoint(points[j + 1]));
+        
+        if(DEBUG_RenderSmoothCurve){
+            //render each lane but with smoothing 10x per point
+            int smoothSteps = 10;
+            for(int i = 0; i < lanes.Length; i++){
+                Vector3 previousPoint = GetPoint(0, lanes[i]);
+                Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)i / (lanes.Length - 1));
+                for(int j = 1; j <= (leftPoints.Length - 1) * smoothSteps; j++){
+                    float t = (float)j / ((leftPoints.Length - 1) * smoothSteps);
+                    Vector3 currentPoint = GetPoint(t, lanes[i]);
+                    Gizmos.DrawLine(previousPoint, currentPoint);
+                    previousPoint = currentPoint;
+                }
+            }
+        }
+        else
+        {
+            for(int i = 0; i < lanes.Length; i++){
+                Vector3[] points = PointsFromOffset(lanes[i], 67.5f);
+                Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)i / (lanes.Length - 1));
+                for(int j = 0; j < points.Length - 1; j++){
+                    Gizmos.DrawLine(transform.TransformPoint(points[j]), transform.TransformPoint(points[j + 1]));
+                }
             }
         }
     }
