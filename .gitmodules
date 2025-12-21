@@ -1,0 +1,3 @@
+[submodule "Assets/Textures/Cars"]
+	path = Assets/Textures/Cars
+	url = https://github.com/MasterAirscrachDev/anki-cars-textures.git

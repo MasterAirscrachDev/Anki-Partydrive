@@ -11,14 +11,19 @@ public class CarModelManager : MonoBehaviour
     public void Setup(int modelIndex, Color playerColor){
         this.holo = transform.GetChild(0).gameObject;
         this.model = transform.GetChild(1).gameObject;
-
+        bool foundModel = false;
         for(int i = 0; i < models.Length; i++){
             if(models[i].id == modelIndex){
                 Destroy(model.transform.GetChild(2).gameObject); // Destroy the old model
                 Instantiate(models[i].modelPref, model.transform); // Instantiate the new model
-
+                foundModel = true;
                 break;
             }
+        }
+        if(!foundModel){ //for cars that havent been modeled yet or custom cars
+            //use model 0 (Unknown)
+            Destroy(model.transform.GetChild(2).gameObject); // Destroy the old model
+            Instantiate(models[0].modelPref, model.transform); // Instantiate the new model
         }
         SetColour(playerColor);
     }

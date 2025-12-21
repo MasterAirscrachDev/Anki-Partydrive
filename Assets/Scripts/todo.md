@@ -5,13 +5,15 @@
 ## Just coding
 - Move to more overdrive like car colours
 
-- Fix frogging (splines are being smoothed wrongly)
+- Fix frogging (maybe fixed - splines are being smoothed wrongly)
 
 - Car Management Menu
  - Edit Car Names
  - bots not leaving when they should
 
 - Fix all the bugs that Dynamic lanes is causing
+
+- Change TrackPathSolver to cache all possible options for the current track upon scanning (dont hardcode everything, it would take ages)
 
 ## UI Stuff too
 - Settings Menu
@@ -22,4 +24,5 @@
 - Overhaul car selection menu (move to 3D ssb style)
  - Show car models
  - Show car colors
- - Show car names// 2.5x length for trucks
+ - Show car names
+ - 2.5x length for trucks

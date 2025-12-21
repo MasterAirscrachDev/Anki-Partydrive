@@ -81,14 +81,16 @@ public class CarController : MonoBehaviour
         UCarData carData = carInterface.GetCarFromID(carID);
         Debug.Log($"SetCard: id {carID}, desired {desiredCarID}, cardata {carData != null}, pcs: {pcs != null}");
         string text = "Sitting Out";
+        int model = -1;
         if(!string.IsNullOrEmpty(desiredCarID)){
             if(carData != null){ 
                 text = carData.name; 
+                model = (int)carData.modelName;
             } else {
                 text = $"Waiting for {desiredCarID}";
             }
         }
-        pcs.SetCarName(text);
+        pcs.SetCarName(text, model);
         pcs.SetPlayerName(playerName);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
         pcs.SetColor(playerColor);
@@ -261,7 +263,7 @@ public class CarController : MonoBehaviour
             carID = desiredCarID;
             Debug.Log($"Successfully connected to desired car: {carID}");
             FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
-            if(pcs != null) pcs.SetCarName(desiredCar.name);
+            if(pcs != null) pcs.SetCarName(desiredCar.name, (int)desiredCar.modelName);
         } else {
             // Car not available yet, update UI to show waiting status
             if(pcs != null) pcs.SetCarName($"Disconnected");
@@ -290,7 +292,7 @@ public class CarController : MonoBehaviour
         if(carInterface.GetCarFromID(data.id) != null){
             carID = data.id;
             FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
-            if(pcs != null) pcs.SetCarName(data.name);
+            if(pcs != null) pcs.SetCarName(data.name, (int)data.modelName);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
             // Car not available yet, will be checked in ControlTicker
@@ -316,7 +318,7 @@ public class CarController : MonoBehaviour
         if(carData != null){
             carID = id;
             FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
-            if(pcs != null) pcs.SetCarName(carData.name);
+            if(pcs != null) pcs.SetCarName(carData.name, (int)carData.modelName);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
             // Car not available yet, will be checked in ControlTicker

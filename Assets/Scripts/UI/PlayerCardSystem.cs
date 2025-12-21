@@ -6,16 +6,36 @@ using UnityEngine.UI;
 
 public class PlayerCardSystem : MonoBehaviour
 {
-    [SerializeField] TMP_Text playerName, carName, positionText;
-    [SerializeField] Image energyBar;
+    [SerializeField] TMP_Text carName, positionText;
+    Material statusMaterial;
+    [SerializeField] RawImage statusImage;
+    [SerializeField] Image plateImage;
     [SerializeField] GameObject[] attachments;
+    [SerializeField] CarSprite[] statusCarsArray;
+    GameObject currentAttachment;
     float energyPercent = 0.75f;
     int attachmentIndex = -1;
-    public void SetPlayerName(string name){
-        playerName.text = name;
+    void OnEnable()
+    {
+        statusMaterial = new Material(statusImage.material);
+        statusImage.material = statusMaterial;
     }
-    public void SetCarName(string name){
+    public void SetPlayerName(string name){
+        return; //not used
+    }
+    public void SetCarName(string name, int model = -1){
         carName.text = name;
+        Sprite sprite = statusCarsArray[0].sprite; //No car
+        if(model != -1){
+            sprite = statusCarsArray[1].sprite; //Unknown car
+            foreach(CarSprite cs in statusCarsArray){
+                if(cs.id == model){
+                    sprite = cs.sprite;
+                    break;
+                }
+            }
+        }
+        statusImage.texture = sprite.texture;
     }
     public void SetPosition(int position){
         //get the position value and add the suffix
@@ -32,22 +52,28 @@ public class PlayerCardSystem : MonoBehaviour
     public void SetEnergy(int energy, int maxEnergy = 100){
         //set the energyPercent using the energy value and maxEnergy
         energyPercent = (float)energy / (float)maxEnergy;
-        energyBar.fillAmount = energyPercent;
+        statusMaterial.SetFloat("_FillAmount", energyPercent);
+        statusMaterial.SetFloat("_BlinkSpeed", energyPercent < 0.25f ? 1.0f : 0.0f);
     }
     public void SetAttachment(int index){
         //set the attachment active state using the index
         if(index == -1){ //no attachment
-            if(gameObject.transform.childCount > 1){ Destroy(gameObject.transform.GetChild(1).gameObject);  }
+            if(currentAttachment != null){ Destroy(currentAttachment); }
         }
         else{
-            if(attachmentIndex != -1){ Destroy(gameObject.transform.GetChild(1).gameObject); }
+            if(index != attachmentIndex && currentAttachment != null){
+                Destroy(currentAttachment);
+            }
+            if(index == attachmentIndex){ return; }
             Instantiate(attachments[index], gameObject.transform);
             attachmentIndex = index;
         }
     }
     public void SetColor(Color color){
         //set the color of the player card using the color value
-        GetComponent<Image>().color = color;
+        //pastelize the color
+        color = Color.Lerp(color, Color.white, 0.5f);
+        plateImage.color = color;
     }
     public void SetTimeTrialTime(float time){
         //set the time trial time using the time value
@@ -59,13 +85,26 @@ public class PlayerCardSystem : MonoBehaviour
         if(attachmentIndex != 0){
             SetAttachment(0);
         }
-        gameObject.transform.GetChild(1).GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
+        currentAttachment.GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
     }
     public void SetLapCount(int lapCount){
         //set the lap count using the lapCount value
         if(attachmentIndex != 1){
             SetAttachment(1);
         }
-        gameObject.transform.GetChild(1).GetComponent<TMP_Text>().text = $"{lapCount} Laps";
+        currentAttachment.GetComponent<TMP_Text>().text = $"{lapCount} Laps";
+    }
+    void OnDestroy()
+    {
+        //clean up the material instance
+        if (statusMaterial != null)
+        {
+            Destroy(statusMaterial);
+        }
+    }
+    [System.Serializable] class CarSprite
+    {
+        public int id;
+        public Sprite sprite;
     }
 }
