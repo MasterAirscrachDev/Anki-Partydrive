@@ -16,6 +16,7 @@ public class CarEntityPosition : MonoBehaviour
     [SerializeField] TrackCoordinate trackpos;
     Vector3 lastPosition;
     TrackGenerator track;
+    SmoothedCarModel smoothedModel;
     bool showOnTrack = true, despawnCancelled = false, despawnTimerRunning = false;
     public bool wasDelocalisedThisLap = true; //true until set to false
     readonly bool SHOW_ANYWAY = false; //Debugging to show hitbox in editor
@@ -37,6 +38,7 @@ public class CarEntityPosition : MonoBehaviour
             ourMaterial = GetComponent<MeshRenderer>().material; //get the material of the car
             if(ourMaterial == null){ Debug.LogError("No material found on car entity"); }
         }
+        smoothedModel = GetComponentInChildren<SmoothedCarModel>();
     }
 
     // Update is called once per frame
@@ -145,6 +147,12 @@ public class CarEntityPosition : MonoBehaviour
     }
     public TrackCoordinate GetTrackCoordinate(){
         return trackpos;
+    }
+    public Vector3 GetVisualPosition(){
+        if(smoothedModel != null){
+            return smoothedModel.transform.position;
+        }
+        return transform.position;
     }
 }
 [System.Serializable]

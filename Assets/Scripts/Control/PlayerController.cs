@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.DualShock;
 
 public class PlayerController : MonoBehaviour
 {
@@ -94,6 +95,17 @@ public class PlayerController : MonoBehaviour
         }
         
         Debug.Log($"Player {carController?.GetPlayerName()} set to {(racing ? "Racing" : "Menu")} mode using {currentControlScheme}");
+    }
+    public void TrySetGamepadColor(Color color){
+        if(iinput.currentControlScheme == "Gamepad"){
+            var gamepad = iinput.devices[0] as Gamepad;
+            if(gamepad != null){
+                var dsGamepad = gamepad as DualShockGamepad;
+                if(dsGamepad != null){
+                    dsGamepad.SetLightBarColor(color);
+                }
+            }
+        }
     }
 
     // Update is called once per frame

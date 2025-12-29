@@ -683,7 +683,7 @@ public class CarSelector : MonoBehaviour
         if(cms == null) return;
         
         // Spawn AI through CMS
-        cms.SpawnAI(carID);
+        cms.AddAI(carID);
         
         // Mark car as AI-selected
         aiSelectedCarIDs.Add(carID);

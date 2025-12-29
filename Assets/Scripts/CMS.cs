@@ -6,6 +6,7 @@ using UnityEngine;
 public class CMS : MonoBehaviour
 {
     [SerializeField] GameObject botPrefab;
+    [SerializeField] CarEntityTracker carEntityTracker;
     public readonly List<CarController> controllers = new List<CarController>();
     public string gameMode = "";
     public bool isGame = false;
@@ -90,7 +91,7 @@ public class CMS : MonoBehaviour
         usedColors.Add(c);
         controller.SetColour(c);
     }
-    public void SpawnAI(string id){
+    public void AddAI(string id){
         GameObject bot = Instantiate(botPrefab, transform.position, Quaternion.identity);
         AIController ai = bot.GetComponent<AIController>();
         ai.SetID(id);
@@ -153,6 +154,17 @@ public class CMS : MonoBehaviour
             }
         }
         return "Unknown Car";
+    }
+    public List<CarController> GetControllersInRange(Vector3 position, float range){
+        List<CarController> controllersInRange = new List<CarController>();
+        foreach(CarController controller in controllers){
+            if(controller == null){ continue; } //skip null controllers
+            if(controller.GetID() == ""){ continue; } //skip uninitialised cars
+            if(Vector3.Distance(carEntityTracker.GetCarVisualPosition(controller.GetID()), position) <= range){
+                controllersInRange.Add(controller);
+            }
+        }
+        return controllersInRange;
     }
     public void OnCarOutOfEnergyCarCallback(string id, CarController controller){ onCarNoEnergy?.Invoke(id, controller); }
     public void OnBackToMenuCallback(){ onBackToMenu?.Invoke(); }

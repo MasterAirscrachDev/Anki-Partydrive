@@ -103,10 +103,16 @@ public class CarEntityTracker : MonoBehaviour
         }
         return null; //car not found
     }
-    public void SetCarIDColor(string id, Color color){
+    public void SetCarColorByID(string id, Color color){
         if(trackers.ContainsKey(id)){
             trackers[id].carModelManager.SetColour(color);
         }
+    }
+    public Vector3 GetCarVisualPosition(string id){
+        if(trackers.ContainsKey(id)){
+            return trackers[id].GetVisualPosition();
+        }
+        return Vector3.zero; //car not found
     }
     public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;

@@ -20,9 +20,6 @@ public class PlayerCardSystem : MonoBehaviour
         statusMaterial = new Material(statusImage.material);
         statusImage.material = statusMaterial;
     }
-    public void SetPlayerName(string name){
-        return; //not used
-    }
     public void SetCarName(string name, int model = -1){
         carName.text = name;
         Sprite sprite = statusCarsArray[0].sprite; //No car

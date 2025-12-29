@@ -14,6 +14,7 @@ public class TrackGenerator : MonoBehaviour
     public bool hasTrack = false;
     int lastSegmentCount = 0;
     public static TrackGenerator track;
+    Dictionary<int, SegmentLengths> segmentLengthCache = new Dictionary<int, SegmentLengths>();
     bool positionCameraOnLoadSet = false; //flag to ensure we correctly position the camera if a track is loaded before the first frame
 
     [ContextMenu("Generate Track From Segments")]
@@ -113,6 +114,21 @@ public class TrackGenerator : MonoBehaviour
             UIManager.active.SwitchToTrackCamera(true);
         }
         trackCamera.TrackUpdated(center, size);
+        int specialTrack = 0;
+        if(segments.Length > 0){
+            if(segments[0].type == SegmentType.Oval){ specialTrack = 1; }
+            if(segments[0].type == SegmentType.Bottleneck){ specialTrack = 2; }
+            if(segments[0].type == SegmentType.Crossroads){ specialTrack = 3; }
+            //???
+        }
+        if(specialTrack > 0)
+        {
+            Vector3 fixedCenter = new Vector3(-0.27f,0f,-0.024f);
+            Vector2 fixedSize = new Vector2(4.52f,2.75f);
+            float overrideRotation = 189f;
+
+            trackCamera.TrackUpdated(fixedCenter, fixedSize, overrideRotation);
+        }
     }
     IEnumerator OnFinalGenerate()
     {
@@ -139,6 +155,7 @@ public class TrackGenerator : MonoBehaviour
         }
         OnTrackValidated?.Invoke(segments);
         hasTrack = true;
+        PreCacheSegmentLengths();
         lastSegmentCount = segments.Length;
     }
 
@@ -301,6 +318,56 @@ public class TrackGenerator : MonoBehaviour
         }
     }
 
+    void PreCacheSegmentLengths()
+    {
+        //iterate over all segments and cache their lengths 
+        //(we only need to do this once per track, values will never change so we can store them until quit)
+        for(int i = 0; i < segments.Length; i++)
+        {
+            int id = segments[i].internalID;
+            if(!segmentLengthCache.ContainsKey(id))
+            {
+                if(trackPieces[i] == null)
+                {
+                    Debug.LogWarning($"Track piece {i} is null, cannot cache lengths");
+                    continue;
+                }
+                TrackSpline spline = trackPieces[i].GetComponent<TrackSpline>();
+                if(spline == null)
+                {
+                    Debug.LogWarning($"Track piece {i} has no TrackSpline component, cannot cache lengths");
+                    continue;
+                }
+                const int stepCount = 50; //estimate lengths with 50 steps
+                float width = spline.GetWidth(0f);
+                float leftLength = 0f;
+                float rightLength = 0f;
+                Vector3 previousLeftPoint = spline.GetPoint(new TrackCoordinate(0, -width, 0f));
+                Vector3 previousRightPoint = spline.GetPoint(new TrackCoordinate(0, width, 0f));
+                for(int j = 1; j <= stepCount; j++)
+                {
+                    float t = (float)j / (float)stepCount;
+                    Vector3 currentLeftPoint = spline.GetPoint(new TrackCoordinate(0, -width, t));
+                    Vector3 currentRightPoint = spline.GetPoint(new TrackCoordinate(0, width, t));
+                    leftLength += Vector3.Distance(previousLeftPoint, currentLeftPoint);
+                    rightLength += Vector3.Distance(previousRightPoint, currentRightPoint);
+                    previousLeftPoint = currentLeftPoint;
+                    previousRightPoint = currentRightPoint;
+                }
+
+                //if the 2 lengths are within 1% of each other, consider it a straight segment
+                bool isStraight = Mathf.Abs(leftLength - rightLength) / Mathf.Max(leftLength, rightLength) < 0.01f;
+                
+                //convert Unity scale to anki mm (1 unit = 560mm)
+                leftLength *= 560f;
+                rightLength *= 560f;
+
+                SegmentLengths lengths = new SegmentLengths(leftLength, rightLength, isStraight);
+                segmentLengthCache.Add(id, lengths);
+                Debug.Log($"Cached lengths for segment ID {id}: Left = {leftLength}mm, Right = {rightLength}mm, IsStraight = {isStraight}");
+            }
+        }
+    }
     public delegate void OnVerifyTrack(Segment[] segments);
     public event OnVerifyTrack? OnTrackValidated;
 
@@ -386,6 +453,18 @@ public class TrackGenerator : MonoBehaviour
         Vector3 pointA = splineA.GetPoint(a.progression, a.offset);
         Vector3 pointB = splineB.GetPoint(b.progression, b.offset);
         Debug.DrawLine(pointA, pointB + new Vector3(0,0.01f,0), color, duration);
+    }
+}
+public class SegmentLengths
+{
+    public float leftSideLength = 0f;
+    public float rightSideLength = 0f;
+    public bool isStraight = false;
+    public SegmentLengths(float leftLength, float rightLength, bool straight)
+    {
+        leftSideLength = leftLength;
+        rightSideLength = rightLength;
+        isStraight = straight;
     }
 }
 [System.Serializable]

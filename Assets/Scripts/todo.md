@@ -9,9 +9,8 @@
 
 - Car Management Menu
  - Edit Car Names
- - bots not leaving when they should
 
-- Fix all the bugs that Dynamic lanes is causing
+- Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
 
 - Change TrackPathSolver to cache all possible options for the current track upon scanning (dont hardcode everything, it would take ages)
 

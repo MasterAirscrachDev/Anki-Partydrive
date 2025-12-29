@@ -32,7 +32,7 @@ public class CarsManagement : MonoBehaviour
         foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(null); }
     }
     public void NextCar(CarController change) {
-        FindObjectOfType<CarEntityTracker>().SetCarIDColor(change.GetID(), Color.clear); //reset the colour of the old car
+        FindObjectOfType<CarEntityTracker>().SetCarColorByID(change.GetID(), Color.clear); //reset the colour of the old car
         int index = carInterface.GetCarIndex(change.GetID());
         index++;
         //while the index is less than the number of cars, and the car at that index does not have a controller, increment the index

@@ -41,7 +41,7 @@ public class CarPanel : MonoBehaviour
     public void OnAIToggle(){
         CMS cms = FindObjectOfType<CMS>();
         if(isAI){ cms.RemoveAI(carID); }
-        else{ cms.SpawnAI(carID); }
+        else{ cms.AddAI(carID); }
         AIButton.interactable = false;
         FindObjectOfType<CarsManagement>().RenderCarList();
     }

@@ -9,7 +9,7 @@ public class CarController : MonoBehaviour
     [SerializeField] float lane;
     [SerializeField] string carID; // Currently connected car ID
     [SerializeField] string desiredCarID; // Car ID we want to connect to
-    public float energy = 750;
+    public float energy = 75;
     public float maxEnergy = 100;
     int oldSpeed;
     float oldLane;
@@ -68,12 +68,13 @@ public class CarController : MonoBehaviour
     }
     public void SetColour(Color c){
         playerColor = c;
+        if (!isAI)
+        { GetComponent<PlayerController>().TrySetGamepadColor(c); }
         if(pcs == null){ return; }
         pcs.SetColor(c);
     }
     public void SetPlayerName(string name){
         playerName = name;
-        pcs.SetPlayerName(name);
     }
     public void SetCard(PlayerCardSystem pcs){
         //Debug.Log("SetCard");
@@ -91,7 +92,6 @@ public class CarController : MonoBehaviour
             }
         }
         pcs.SetCarName(text, model);
-        pcs.SetPlayerName(playerName);
         pcs.SetEnergy((int)energy, (int)maxEnergy);
         pcs.SetColor(playerColor);
     }
@@ -116,6 +116,17 @@ public class CarController : MonoBehaviour
             }
         }
         speedModifiers.Add(new SpeedModifer(mod, isPercentage, time, ID));
+    }
+    public void UseEnergy(float amount){
+        energy -= amount;
+        if(energy < 0){ 
+            energy = 0;
+            cms.OnCarOutOfEnergyCarCallback(carID, this); //call the event for no energy
+        }
+    }
+    public void ChargeEnergy(float amount){
+        energy += amount;
+        if(energy > maxEnergy){ energy = maxEnergy; }
     }
     public void StopCar(){
         // Clear all inputs to stop any ongoing movement
@@ -166,16 +177,10 @@ public class CarController : MonoBehaviour
         if(locked){ return; }
         
         if(Iaccel > 0 && Iboost && energy > 1){
-            energy -= baseBoostCost;
+            UseEnergy(baseBoostCost);
             AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");
         } else if(!Iboost && energy < maxEnergy){
-            energy += baseEnergyGain * statEnergyMod;
-            if(energy > maxEnergy){ energy = maxEnergy; }
-        }
-
-        if(energy < 0){ 
-            energy = 0; 
-            cms.OnCarOutOfEnergyCarCallback(carID, this); //call the event for no energy
+            ChargeEnergy(baseEnergyGain * statEnergyMod);
         }
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed * statSpeedMod, Iaccel);
@@ -262,7 +267,7 @@ public class CarController : MonoBehaviour
             // Car is available, connect to it
             carID = desiredCarID;
             Debug.Log($"Successfully connected to desired car: {carID}");
-            FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
+            FindObjectOfType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(desiredCar.name, (int)desiredCar.modelName);
         } else {
             // Car not available yet, update UI to show waiting status
@@ -291,7 +296,7 @@ public class CarController : MonoBehaviour
         // Try to connect immediately if car is available
         if(carInterface.GetCarFromID(data.id) != null){
             carID = data.id;
-            FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
+            FindObjectOfType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(data.name, (int)data.modelName);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
@@ -317,7 +322,7 @@ public class CarController : MonoBehaviour
         UCarData carData = carInterface.GetCarFromID(id);
         if(carData != null){
             carID = id;
-            FindObjectOfType<CarEntityTracker>().SetCarIDColor(carID, playerColor);
+            FindObjectOfType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(carData.name, (int)carData.modelName);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
@@ -328,7 +333,6 @@ public class CarController : MonoBehaviour
         }
     }
     public (int, float) GetMetrics(){ return (speed, lane); }
-    public string GetCarID(){ return carID; }
     public string GetDesiredCarID(){ return desiredCarID; }
     public bool IsCarConnected(){ return !string.IsNullOrEmpty(carID) && carID == desiredCarID; }
     public void SetLocked(bool state){ 
@@ -342,6 +346,10 @@ public class CarController : MonoBehaviour
             DoControlImmediate(); //if we are unlocked, set the car to the current speed and lane
         }
     }
+    /// <summary>
+    /// Get the current connected car ID
+    /// </summary>
+    /// <returns>The Currently controlling car ID or an empty string</returns>
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
     public string GetPlayerName(){ return playerName; }

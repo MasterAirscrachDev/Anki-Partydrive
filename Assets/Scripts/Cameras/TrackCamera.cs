@@ -23,7 +23,7 @@ public class TrackCamera : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(70, targetRotation - 3, 0), Time.deltaTime * 2);
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, camSize + zoomOffset, Time.deltaTime * 2);
     }
-    public void TrackUpdated(Vector3 center, Vector2 size){
+    public void TrackUpdated(Vector3 center, Vector2 size, float? overrideRotation = null){
         if(!Application.isPlaying){ return; }
         
         // Set target position from the center parameter

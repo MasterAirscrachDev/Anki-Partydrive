@@ -435,6 +435,7 @@ public class TrackPathSolver
         return (targetSpeed, targetLane, shouldBoost, log);
     }
     
+    //this function is badness
     public static float GetProgress(SegmentType segment, int id, bool reversed, TrackCoordinate car, float deltaTime){
         //pre start = 340mm
         //start = 220mm
