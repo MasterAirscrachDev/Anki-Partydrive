@@ -14,7 +14,7 @@ public class TrackGenerator : MonoBehaviour
     public bool hasTrack = false;
     int lastSegmentCount = 0;
     public static TrackGenerator track;
-    Dictionary<int, SegmentLengths> segmentLengthCache = new Dictionary<int, SegmentLengths>();
+    Dictionary<int, SegmentLength> segmentLengthCache = new Dictionary<int, SegmentLength>();
     bool positionCameraOnLoadSet = false; //flag to ensure we correctly position the camera if a track is loaded before the first frame
 
     [ContextMenu("Generate Track From Segments")]
@@ -362,11 +362,19 @@ public class TrackGenerator : MonoBehaviour
                 leftLength *= 560f;
                 rightLength *= 560f;
 
-                SegmentLengths lengths = new SegmentLengths(leftLength, rightLength, isStraight);
+                SegmentLength lengths = new SegmentLength(leftLength, rightLength, isStraight);
                 segmentLengthCache.Add(id, lengths);
                 Debug.Log($"Cached lengths for segment ID {id}: Left = {leftLength}mm, Right = {rightLength}mm, IsStraight = {isStraight}");
             }
         }
+    }
+    public SegmentLength? GetCachedSegmentLengths(int segmentID)
+    {
+        if(segmentLengthCache.ContainsKey(segmentID))
+        {
+            return segmentLengthCache[segmentID];
+        }
+        return null;
     }
     public delegate void OnVerifyTrack(Segment[] segments);
     public event OnVerifyTrack? OnTrackValidated;
@@ -455,12 +463,12 @@ public class TrackGenerator : MonoBehaviour
         Debug.DrawLine(pointA, pointB + new Vector3(0,0.01f,0), color, duration);
     }
 }
-public class SegmentLengths
+public class SegmentLength
 {
     public float leftSideLength = 0f;
     public float rightSideLength = 0f;
     public bool isStraight = false;
-    public SegmentLengths(float leftLength, float rightLength, bool straight)
+    public SegmentLength(float leftLength, float rightLength, bool straight)
     {
         leftSideLength = leftLength;
         rightSideLength = rightLength;
