@@ -40,7 +40,7 @@ public class AbilityMissile : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, handlingCurve.Evaluate(lifetime) * Time.deltaTime);
 
         if(transform.position.y < 0f){
-            List<CarController> hits = CMS.cms.GetControllersInRange(transform.position, explosionRadius);
+            List<CarController> hits = CMS.cms.SphereCheckControllers(transform.position, explosionRadius);
             foreach(CarController hit in hits){
                 hit.UseEnergy(20f); //Deal 20 energy damage
             }

@@ -50,7 +50,7 @@ public class CarInteraface : MonoBehaviour
 
         ws.Connect();
 
-        cms = FindObjectOfType<CMS>();
+        cms = FindFirstObjectByType<CMS>();
     }
 
     void Update(){

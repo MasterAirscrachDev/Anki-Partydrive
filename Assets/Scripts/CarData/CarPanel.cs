@@ -36,14 +36,14 @@ public class CarPanel : MonoBehaviour
         UIManager ui = UIManager.active;
         ui.SetUILayer(3); //go to track scanning UI
         ui.ToggleUILayer(4, true); //enable balancing UI
-        FindObjectOfType<CarBalancer>().Setup(carID);
+        FindFirstObjectByType<CarBalancer>().Setup(carID);
     }
     public void OnAIToggle(){
-        CMS cms = FindObjectOfType<CMS>();
+        CMS cms = FindFirstObjectByType<CMS>();
         if(isAI){ cms.RemoveAI(carID); }
         else{ cms.AddAI(carID); }
         AIButton.interactable = false;
-        FindObjectOfType<CarsManagement>().RenderCarList();
+        FindFirstObjectByType<CarsManagement>().RenderCarList();
     }
 
     public void OnNameChanged(string name){

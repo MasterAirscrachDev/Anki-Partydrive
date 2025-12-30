@@ -18,7 +18,7 @@ public class CarsManagement : MonoBehaviour
     // Start is called before the first frame update
     void OnEnable() {
         if(cms == null){
-            cms = FindObjectOfType<CMS>();
+            cms = FindFirstObjectByType<CMS>();
             carInterface = CarInteraface.io;
         }   
         backButton.SetActive(!cms.isGame);
@@ -32,7 +32,7 @@ public class CarsManagement : MonoBehaviour
         foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(null); }
     }
     public void NextCar(CarController change) {
-        FindObjectOfType<CarEntityTracker>().SetCarColorByID(change.GetID(), Color.clear); //reset the colour of the old car
+        FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(change.GetID(), Color.clear); //reset the colour of the old car
         int index = carInterface.GetCarIndex(change.GetID());
         index++;
         //while the index is less than the number of cars, and the car at that index does not have a controller, increment the index

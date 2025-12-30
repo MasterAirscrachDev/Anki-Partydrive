@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 363601551530349169}
   - component: {fileID: 75021592523385034}
   - component: {fileID: 8586858445351312908}
+  - component: {fileID: 6056661436097231489}
   - component: {fileID: 2186532429997340112}
   m_Layer: 0
   m_Name: Missile
@@ -91,6 +92,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6056661436097231489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4543867816583399193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 775a4d0cfa4ad054f976340ecf921d82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityController
 --- !u!114 &2186532429997340112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,4 +210,3 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  speed: 1.5

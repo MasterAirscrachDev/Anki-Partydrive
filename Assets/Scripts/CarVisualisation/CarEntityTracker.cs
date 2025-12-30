@@ -14,7 +14,6 @@ public class CarEntityTracker : MonoBehaviour
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, CarTrust trust){
         if(!track.hasTrack){ return; } //if no track or we are on the finish line, do nothing
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
-
         //special cases for starting lines (prefinishline doesnt have a spline, its part of finishline)
         //jumpLanding doesn't have a spline either, stay on jump ramp
         SegmentType segmentType = track.GetSegmentType(trackIndex);

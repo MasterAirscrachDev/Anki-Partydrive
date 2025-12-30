@@ -71,6 +71,7 @@ public class TrackGenerator : MonoBehaviour
             {
                 UIManager.active.SetScanningStatusText("");
                 StartCoroutine(OnFinalGenerate());
+                PositionTrackCamera();
                 return;
             }
             if (segments == null || segments.Length == 0) { return; } //if there are no segments, do nothing  
@@ -92,6 +93,7 @@ public class TrackGenerator : MonoBehaviour
         PositionTrackCamera();
     }
     void PositionTrackCamera(bool autoSwitchCamera = true){
+        Debug.Log("Positioning track camera based on generated track pieces");
         //calculate the center and size of the track
         Vector3 center = Vector3.zero;
         for (int i = 0; i < trackPieces.Count; i++)
@@ -123,11 +125,16 @@ public class TrackGenerator : MonoBehaviour
         }
         if(specialTrack > 0)
         {
-            Vector3 fixedCenter = new Vector3(-0.27f,0f,-0.024f);
+            Debug.Log("Positioning camera for special track type " + specialTrack);
+            Vector3 fixedCenter = new Vector3(0.57f,0f,3.024f);
             Vector2 fixedSize = new Vector2(4.52f,2.75f);
             float overrideRotation = 189f;
 
             trackCamera.TrackUpdated(fixedCenter, fixedSize, overrideRotation);
+        }
+        else
+        {
+            Debug.Log("Positioning camera for normal track");
         }
     }
     IEnumerator OnFinalGenerate()
@@ -165,6 +172,10 @@ public class TrackGenerator : MonoBehaviour
         {
             if (Application.isPlaying) { Destroy(transform.GetChild(i).gameObject); }
             else { DestroyImmediate(transform.GetChild(i).gameObject); }
+        }
+        if(segments == null)
+        {
+            Debug.LogWarning("No segments to generate track from.");
         }
         trackPieces = new List<GameObject>();
         Vector3 pos = Vector3.zero;
@@ -364,7 +375,7 @@ public class TrackGenerator : MonoBehaviour
 
                 SegmentLength lengths = new SegmentLength(leftLength, rightLength, isStraight);
                 segmentLengthCache.Add(id, lengths);
-                Debug.Log($"Cached lengths for segment ID {id}: Left = {leftLength}mm, Right = {rightLength}mm, IsStraight = {isStraight}");
+                //Debug.Log($"Cached lengths for segment ID {id}: Left = {leftLength}mm, Right = {rightLength}mm, IsStraight = {isStraight}");
             }
         }
     }

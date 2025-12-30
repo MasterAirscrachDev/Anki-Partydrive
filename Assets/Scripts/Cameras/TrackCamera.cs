@@ -43,5 +43,8 @@ public class TrackCamera : MonoBehaviour
             targetRotation = 0;
             targetPos += new Vector3(xzOffset.x, 0, xzOffset.y);
         }
+        if(overrideRotation.HasValue){
+            targetRotation = overrideRotation.Value;
+        }
     }
 }

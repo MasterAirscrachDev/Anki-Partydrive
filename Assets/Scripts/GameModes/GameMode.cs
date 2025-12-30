@@ -44,10 +44,10 @@ public abstract class GameMode : MonoBehaviour
     protected virtual void InitializeReferences()
     {
         if(cms == null){
-            cms = FindObjectOfType<CMS>();
+            cms = FindFirstObjectByType<CMS>();
             carInteraface = CarInteraface.io;
-            carEntityTracker = FindObjectOfType<CarEntityTracker>();
-            uiManager = FindObjectOfType<UIManager>();
+            carEntityTracker = FindFirstObjectByType<CarEntityTracker>();
+            uiManager = FindFirstObjectByType<UIManager>();
         }
     }
     
@@ -74,7 +74,7 @@ public abstract class GameMode : MonoBehaviour
     {
         uiManager.SwitchToTrackCamera(true);
         startButton.SetActive(false);
-        FindObjectOfType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
+        FindFirstObjectByType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
         cms.TTS(lineupMessage);
         
         OnLineupStarted();

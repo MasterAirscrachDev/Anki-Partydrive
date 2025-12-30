@@ -9,8 +9,7 @@ public class CarController : MonoBehaviour
     [SerializeField] float lane;
     [SerializeField] string carID; // Currently connected car ID
     [SerializeField] string desiredCarID; // Car ID we want to connect to
-    public float energy = 75;
-    public float maxEnergy = 100;
+    float energy = 75;
     int oldSpeed;
     float oldLane;
     bool isSetup = false;
@@ -34,17 +33,18 @@ public class CarController : MonoBehaviour
     public bool IitemB;
     //===================
     //BASE MODIFIERS======
+    const float maxEnergy = 100;
     const int maxTargetSpeed = 750;
     const int minTargetSpeed = 50;
     const int baseBoostSpeed = 100;
     const float baseBoostCost = 0.5f;
     const float baseEnergyGain = 0.02f;
     const float baseSteering = 2f;
-    public float statSpeedMod = 1f;
-    public float statSteerMod = 1f;
-    public float statBoostMod = 1f;
-    public float statEnergyMod = 1f;
-    public float statDamageMod = 1f;
+    public float statSpeedMod = 0f;
+    public float statSteerMod = 0f;
+    public float statBoostMod = 0f;
+    public float statMaxEnergyMod = 0f;
+    public float statEnergyRechargeMod = 0f;
     //===================
     bool wasBoostLastFrame = false;
 
@@ -55,15 +55,15 @@ public class CarController : MonoBehaviour
         this.isAI = isAI;
         isSetup = true;
         carInterface = CarInteraface.io;
-        cms = FindObjectOfType<CMS>();
+        cms = FindFirstObjectByType<CMS>();
         cms.AddController(this, isAI);
-        carTracker = FindObjectOfType<CarEntityTracker>(); // Cache the tracker reference
+        carTracker = FindFirstObjectByType<CarEntityTracker>(); // Cache the tracker reference
         ControlTicker(); //start the control ticker
-        FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
+        FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
         int uiLayer = UIManager.active.GetUILayer();
         if(uiLayer == 2){
-            carsManagement = FindObjectOfType<CarsManagement>();
+            carsManagement = FindFirstObjectByType<CarsManagement>();
         }
     }
     public void SetColour(Color c){
@@ -95,6 +95,13 @@ public class CarController : MonoBehaviour
         pcs.SetEnergy((int)energy, (int)maxEnergy);
         pcs.SetColor(playerColor);
     }
+    public void SetStatModifiers(int speedModPoints, int steerModPoints, int boostModPoints, int maxEnergyModPoints, int energyRechargeModPoints){
+        statSpeedMod = speedModPoints * 25f; // speed per point
+        statSteerMod = steerModPoints * 0.4f; // steering per point 
+        statBoostMod = boostModPoints * 5f; // speed per point
+        statMaxEnergyMod = maxEnergyModPoints * 9f; // energy per point
+        statEnergyRechargeMod = energyRechargeModPoints * 0.005f; // energycharge per point
+    }
     public void AssignCarsManager(CarsManagement carsManagement){
         this.carsManagement = carsManagement;
         if(carsManagement != null){ 
@@ -104,7 +111,6 @@ public class CarController : MonoBehaviour
             }
         }
     }
-
     public void AddSpeedModifier(int mod, bool isPercentage, float time, string ID = null){
         if(mod == 0){ return; }
         if(ID != null){
@@ -117,7 +123,7 @@ public class CarController : MonoBehaviour
         }
         speedModifiers.Add(new SpeedModifer(mod, isPercentage, time, ID));
     }
-    public void UseEnergy(float amount){
+    public void UseEnergy(float amount, bool isDamage = true){
         energy -= amount;
         if(energy < 0){ 
             energy = 0;
@@ -126,7 +132,7 @@ public class CarController : MonoBehaviour
     }
     public void ChargeEnergy(float amount){
         energy += amount;
-        if(energy > maxEnergy){ energy = maxEnergy; }
+        if(energy > maxEnergy + statMaxEnergyMod){ energy = maxEnergy + statMaxEnergyMod; }
     }
     public void StopCar(){
         // Clear all inputs to stop any ongoing movement
@@ -177,13 +183,13 @@ public class CarController : MonoBehaviour
         if(locked){ return; }
         
         if(Iaccel > 0 && Iboost && energy > 1){
-            UseEnergy(baseBoostCost);
+            UseEnergy(baseBoostCost, false);
             AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");
         } else if(!Iboost && energy < maxEnergy){
-            ChargeEnergy(baseEnergyGain * statEnergyMod);
+            ChargeEnergy(baseEnergyGain * statEnergyRechargeMod);
         }
 
-        int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed * statSpeedMod, Iaccel);
+        int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, Iaccel);
         speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.009f);
 
         int speedModifier = 0;
@@ -215,7 +221,7 @@ public class CarController : MonoBehaviour
         if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
 
-        lane += Isteer * baseSteering * statSteerMod;
+        lane += Isteer * (baseSteering + statSteerMod);
         
         // Get dynamic track width from the car's actual current position
         float trackHalfWidth = 67.5f; // Default for modular tracks
@@ -267,7 +273,7 @@ public class CarController : MonoBehaviour
             // Car is available, connect to it
             carID = desiredCarID;
             Debug.Log($"Successfully connected to desired car: {carID}");
-            FindObjectOfType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
+            FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(desiredCar.name, (int)desiredCar.modelName);
         } else {
             // Car not available yet, update UI to show waiting status
@@ -296,7 +302,7 @@ public class CarController : MonoBehaviour
         // Try to connect immediately if car is available
         if(carInterface.GetCarFromID(data.id) != null){
             carID = data.id;
-            FindObjectOfType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
+            FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(data.name, (int)data.modelName);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
@@ -322,7 +328,7 @@ public class CarController : MonoBehaviour
         UCarData carData = carInterface.GetCarFromID(id);
         if(carData != null){
             carID = id;
-            FindObjectOfType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
+            FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(carData.name, (int)carData.modelName);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
@@ -334,6 +340,7 @@ public class CarController : MonoBehaviour
     }
     public (int, float) GetMetrics(){ return (speed, lane); }
     public string GetDesiredCarID(){ return desiredCarID; }
+    public string GetPlayerName(){ return playerName; }
     public bool IsCarConnected(){ return !string.IsNullOrEmpty(carID) && carID == desiredCarID; }
     public void SetLocked(bool state){ 
         locked = state; 
@@ -352,24 +359,23 @@ public class CarController : MonoBehaviour
     /// <returns>The Currently controlling car ID or an empty string</returns>
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
-    public string GetPlayerName(){ return playerName; }
     public void SetPosition(int position){ 
         if(pcs == null) {
             Debug.Log($"PCS was null in SetPosition for carID {carID}");
-            FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
+            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
         }
         pcs.SetPosition(position); }
     public void SetTimeTrialTime(float time){ 
         if(pcs == null) {
             Debug.Log($"PCS was null in SetTimeTrialTime for carID {carID}");
-            FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
+            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
         }
         pcs.SetTimeTrialTime(time); 
     }
     public void SetLapCount(int lapCount){ 
         if(pcs == null) {
             Debug.Log($"PCS was null in SetLapCount for carID {carID}");
-            FindObjectOfType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
+            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
         }
         pcs.SetLapCount(lapCount); 
     }
@@ -377,7 +383,7 @@ public class CarController : MonoBehaviour
     void OnDestroy(){
         // Only disconnect car if we're not in car selection mode
         // The CarSelector will handle disconnections when leaving the menu
-        CarSelector selector = FindObjectOfType<CarSelector>();
+        CarSelector selector = FindFirstObjectByType<CarSelector>();
         if(selector != null && selector.gameObject.activeInHierarchy){ return; }
         
         // Disconnect car when controller is destroyed (not in selection menu)

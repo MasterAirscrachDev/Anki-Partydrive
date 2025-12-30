@@ -139,7 +139,7 @@ public class CarEntityPosition : MonoBehaviour
             despawnTimer--;
             if(despawnCancelled){  break; } //if the despawn is cancelled, stop the timer
         }
-        if(despawnTimer <= 0 && !despawnCancelled){ FindObjectOfType<CarEntityTracker>().RemoveTracker(id); } //destroy the car entity
+        if(despawnTimer <= 0 && !despawnCancelled){ FindFirstObjectByType<CarEntityTracker>().RemoveTracker(id); } //destroy the car entity
         despawnTimerRunning = false; //reset the despawn timer running flag
     }
     public bool IsDelocalised(){

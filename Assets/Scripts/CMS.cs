@@ -119,7 +119,7 @@ public class CMS : MonoBehaviour
     
     System.Collections.IEnumerator UpdateCardCountDelayed(){
         yield return new WaitForEndOfFrame(); // Wait one frame to ensure cleanup
-        PlayerCardmanager cardManager = FindObjectOfType<PlayerCardmanager>();
+        PlayerCardmanager cardManager = FindFirstObjectByType<PlayerCardmanager>();
         if(cardManager != null){
             cardManager.UpdateCardCount();
         }
@@ -155,12 +155,29 @@ public class CMS : MonoBehaviour
         }
         return "Unknown Car";
     }
-    public List<CarController> GetControllersInRange(Vector3 position, float range){
+    public List<CarController> SphereCheckControllers(Vector3 position, float range){
         List<CarController> controllersInRange = new List<CarController>();
         foreach(CarController controller in controllers){
             if(controller == null){ continue; } //skip null controllers
             if(controller.GetID() == ""){ continue; } //skip uninitialised cars
             if(Vector3.Distance(carEntityTracker.GetCarVisualPosition(controller.GetID()), position) <= range){
+                controllersInRange.Add(controller);
+            }
+        }
+        return controllersInRange;
+    }
+    public List<CarController> CubeCheckControllers(Vector3 center, Vector3 forward, float size)
+    {
+        List<CarController> controllersInRange = new List<CarController>();
+        foreach(CarController controller in controllers){
+            if(controller == null){ continue; } //skip null controllers
+            if(controller.GetID() == ""){ continue; } //skip uninitialised cars
+            Vector3 carPos = carEntityTracker.GetCarVisualPosition(controller.GetID());
+            Vector3 toCar = carPos - center;
+            float forwardDist = Vector3.Dot(toCar, forward.normalized);
+            Vector3 projectedPoint = center + forward.normalized * forwardDist;
+            float sideDist = Vector3.Distance(carPos, projectedPoint);
+            if(Mathf.Abs(forwardDist) <= size / 2 && sideDist <= size / 2){
                 controllersInRange.Add(controller);
             }
         }

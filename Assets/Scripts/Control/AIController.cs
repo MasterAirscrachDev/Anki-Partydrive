@@ -34,7 +34,7 @@ public class AIController : MonoBehaviour
         carController.SetColour(new Color(1, 0, 0)); //set the color to red
 
         setup = true; //set the setup variable to true
-        FindObjectOfType<CarEntityTracker>().UpdateAIOpponentLocations(); //update the AI opponent locations
+        FindFirstObjectByType<CarEntityTracker>().UpdateAIOpponentLocations(); //update the AI opponent locations
     }
     public void SetOpponentLocations(TrackCoordinate[] coords){
         carLocations = coords; //set the car locations to the given coordinates
@@ -46,7 +46,7 @@ public class AIController : MonoBehaviour
         if(!carController.IsCarConnected()){ //if car is not connected when entering
             string desiredID = carController.GetDesiredCarID();
             if(!string.IsNullOrEmpty(desiredID)){
-                FindObjectOfType<CMS>().RemoveAI(desiredID); //remove this AI and Controller
+                FindFirstObjectByType<CMS>().RemoveAI(desiredID); //remove this AI and Controller
                 UnityEngine.Debug.Log($"Removing disconnected AI for car: {desiredID} when entering car management");
             }
         }

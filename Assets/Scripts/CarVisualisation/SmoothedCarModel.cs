@@ -5,12 +5,10 @@ public class SmoothedCarModel : MonoBehaviour
     Transform followTarget;
     [SerializeField] float smoothSpeedA = 8f, smoothSpeedB = 7.5f;
     Vector3 smoothPositionA;
-    CarController controller;
     // Start is called before the first frame update
     void Start()
     {
         followTarget = transform.parent;
-        controller = followTarget.GetComponent<CarController>();
         transform.parent = null;
     }
 
