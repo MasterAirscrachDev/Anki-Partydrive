@@ -18,7 +18,10 @@ namespace OverdriveServer
         static async Task Main(string[] args)
         {
             if (args.Length == 1 && args[0] == "-client") { requireClient = true; }
-            Console.WriteLine("Overdrive Server By MasterAirscrach \nStarting server...");
+            Console.WriteLine(@"[PROTOTYPE] Overdrive Server By MasterAirscrach
+If you intend to use this for a project, use the latest release from
+https://github.com/MasterAirscrachDev/Anki-Partydrive/releases (ctrl+click to open)
+Starting server...");
             webInterface.Start(); //Start the web interface
             await bluetoothInterface.InitaliseBletooth(); //Start the bluetooth subsystem
             bluetoothInterface.ScanForCars(); //Start scanning for cars

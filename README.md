@@ -28,24 +28,29 @@ This is not a remake of the Anki Overdrive app, I am not making a campaign or up
 - [x] Car Tracking (Also with V2 fallback enhancement)
 - [x] Websocket connection (Much faster data transfer, and allows for more data to be sent)
 - [x] Simple graphical web interface
-- [ ] Full Light control (supported in backend, no interface yet)
-- [ ] Race Mode (Full API) support
+- [x] Full Light control
+- [ ] Race Mode (Full API) support (probably useless)
 ## Game
 - [x] Procedural track generation (show the real world track in a 3D game environment)
 - [x] Communication with the server (using NativeWebSocket for Unity)
 - [x] Control the cars
 - [ ] Track Effects (3D enhancements of the game world)
-- [ ] Modular Game Modes (allowing for easy addition of new game modes)
-- [ ] Powerups (Similar to mariokart)
-- [ ] AI for cars (in progress for Demo 2)
+- [x] Modular Game Modes (allowing for easy addition of new game modes)
+- [ ] Powerups (Similar to Sonic & Sega All-Stars Racing)
+- [x] AI for cars (Will be improved over time)
 ### Gamemodes:
 - [x] Demo Time Trial (Drive around the track and try to get the best laptime in 3 minutes)
+- [x] Laps Mode (First to complete X laps wins)
 - [ ] Time Trial (Standard race, use drifts and boost to get the best time)
 - [ ] Cell Deduction (Your battery is dying, keep it topped up by driving over the cells on the track)
 - [ ] Party Mode (Item boxes, boosters, repair station, its on the track and its there for your advantage)
 
 # Credits:
-The server is using InTheHand.BluetoothLE to connect to the Anki Overdrive cars  
+The server is using 
+Windows: UWP Bluetooth / InTheHand.BluetoothLE 
+Linux: InTheHand.BluetoothLE (doesnt really work)
+Mac: InTheHand.BluetoothLE (doesnt really work)
+to connect to the Anki Overdrive cars  
 and Fleck for the Websocket server.  
 
 The game is using Unity for the game engine  

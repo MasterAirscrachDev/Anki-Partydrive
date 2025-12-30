@@ -14,7 +14,7 @@ The cars will advertise openly using Bluetooth LE.
 
 useful notes:
 - The cars will have unique IDs
-- The cars name will end with "Drive"
+- The cars name will end with "Drive" (doesnt apply to v4 firmware cars)
 
 The cars are also supposed to send a model ID in the manufacturer data, but this does not work for me.
 

@@ -21,7 +21,7 @@ For transparency, I don't have much experience with electronics so I am simply l
 The cars have 3 rgb leds on the top of the pcb, 1 for back/charging and 2 for the front.  
 Also the `Linear Technology LTC4054` is used for charging the battery. 
 
-The underside of the PCB is more complex, featuring the contacts for the charging bridge, 2 hall effect sensors to measure the current wheel speed.
+The underside of the PCB is more complex, featuring the contacts for the charging bridge, 2 beam sensors to measure the current wheel speed.
 Also found are the `Nordic Semi RF8001 BLE` module, the `STM32F051K8` microcontroller and motor controller, a `Philips BF547 npn 1GHz wideband transistor`
 and some `Diodes Inc. DMG1016V` mosfets.
 
