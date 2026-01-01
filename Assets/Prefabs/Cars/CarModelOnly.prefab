@@ -357,6 +357,8 @@ MonoBehaviour:
     modelPref: {fileID: 2749781829180464883, guid: dcb67dafdfcebf843a902ae46403cf6d, type: 3}
   - id: 11
     modelPref: {fileID: 1069819924993821589, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+  - id: 12
+    modelPref: {fileID: 8482873896239296507, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
   - id: 13
     modelPref: {fileID: 7656777665597892191, guid: b4236b5c50a2209419e7981f271e03d3, type: 3}
   - id: 14
