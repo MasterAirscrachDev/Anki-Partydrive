@@ -26,14 +26,18 @@ public class CarEntityTracker : MonoBehaviour
             trackPiece = track.GetTrackSpline(trackIndex); //get the current piece of track
         }
         if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
+        
+        // Check for finish line crossing BEFORE updating the spline
+        // This must happen before SetTrackSpline because finish line has no spline
+        if(segmentType == SegmentType.FinishLine && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
+            OnCarCrossedFinishLine?.Invoke(id, !entity.wasDelocalisedThisLap);
+            entity.wasDelocalisedThisLap = false; //reset the delocalised flag for the next lap
+        }
+        
         if(trackPiece != null && segmentType != SegmentType.FinishLine){ entity.SetTrackSpline(trackPiece, trackIndex); } //should always be true, but just in case
         entity.SetTrust(trust);
         entity.SetSpeed(speed);
         entity.SetOffset(horizontalOffset);
-        if(trackIndex == 1 && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
-            OnCarCrossedFinishLine?.Invoke(id, entity.wasDelocalisedThisLap);
-            entity.wasDelocalisedThisLap = false; //reset the delocalised flag for the next lap
-        }
     }
     CarEntityPosition AddTracker(string id){
         if(trackers.ContainsKey(id)){ return trackers[id]; } //return the existing tracker (should never happen)
@@ -83,6 +87,7 @@ public class CarEntityTracker : MonoBehaviour
         UpdateAIOpponentLocations(); //update the AI opponent locations
     }
     public void CarDelocalised(string id){ if(trackers.ContainsKey(id)){ trackers[id].Delocalise(); } }
+    public void ResetLapDelocalizationFlag(string id){ if(trackers.ContainsKey(id)){ trackers[id].wasDelocalisedThisLap = false; } }
     public void SetSpeed(string id, int speed){ if(trackers.ContainsKey(id)){ trackers[id].SetSpeed(speed); } }
     public void SetOffset(string id, float horizontalOffset){ if(trackers.ContainsKey(id)){ trackers[id].SetOffset(horizontalOffset); } }
     public string[] GetActiveCars(string exclude = null){

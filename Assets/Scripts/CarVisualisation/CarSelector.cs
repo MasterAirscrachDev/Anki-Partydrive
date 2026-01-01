@@ -55,8 +55,6 @@ public class CarSelector : MonoBehaviour
         // Restore markers for controllers that already have active cars
         RestoreExistingCarSelections();
         
-        FindAnyObjectByType<CarInteraface>().RequestScanForCars(); // Make sure we have the latest car data
-        
         // Subscribe to events with delay to avoid accidental selections on page load
         StartCoroutine(SubscribeToEventsDelayed());
     }
@@ -532,7 +530,7 @@ public class CarSelector : MonoBehaviour
         // Trigger gamemode loading when start is pressed in selection menu
         if(cms != null){
             cms.LoadGamemode();
-            Debug.Log("Start button pressed - loading gamemode");
+            //Debug.Log("Start button pressed - loading gamemode");
         }
     }
     

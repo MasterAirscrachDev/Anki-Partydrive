@@ -21,20 +21,25 @@ public class LapsMode : GameMode
         foreach(string carID in activeCars){
             carLaps[carID] = 0; //reset the lap count
             cms.GetController(carID).SetPosition(0); //reset the position
+            carEntityTracker.ResetLapDelocalizationFlag(carID); //reset delocalization flag so first lap counts
         }
     }
     
     protected override void OnCarCrossedFinish(string carID, bool score){
         //is there a lapCount for this carID?
         if(carLaps.ContainsKey(carID)){
-            carLaps[carID]++;
-            try{
-                cms.GetController(carID).SetLapCount(carLaps[carID]);
-            }catch{
-
+            // Only count the lap if the car wasn't delocalized
+            if(score){
+                carLaps[carID]++;
+                try{
+                    //Debug.Log($"Car {carID} completed lap {carLaps[carID]}");
+                    cms.GetController(carID).SetLapCount(carLaps[carID]);
+                }catch{
+                    //Debug.LogWarning($"Could not set lap count for car {carID}");
+                }
+                
+                //cms.TTS($"{cms.CarNameFromId(carID)} has completed {carLaps[carID]} laps");
             }
-            
-            cms.TTS($"{cms.CarNameFromId(carID)} has completed {carLaps[carID]} laps");
         }else{ return; } //if not, ignore it
         //sort the cars by lap count and set the position
         List<KeyValuePair<string, int>> sortedCars = new List<KeyValuePair<string, int>>(carLaps);
@@ -51,6 +56,12 @@ public class LapsMode : GameMode
         //if any car has finished the target number of laps, end the game
         if(carLaps[carID] >= targetLaps){
             EndGame("Race Complete!");
+            //debug log the lap counts
+            string results = "Final Lap Counts:\n";
+            foreach(var kvp in carLaps){
+                results += $"{cms.CarNameFromId(kvp.Key)}: {kvp.Value} laps\n";
+            }
+            Debug.Log(results);
         }
     }
 }

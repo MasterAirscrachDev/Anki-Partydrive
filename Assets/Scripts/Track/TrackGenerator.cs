@@ -15,7 +15,6 @@ public class TrackGenerator : MonoBehaviour
     int lastSegmentCount = 0;
     public static TrackGenerator track;
     Dictionary<int, SegmentLength> segmentLengthCache = new Dictionary<int, SegmentLength>();
-    bool positionCameraOnLoadSet = false; //flag to ensure we correctly position the camera if a track is loaded before the first frame
 
     [ContextMenu("Generate Track From Segments")]
     public void TEST_GenerateTrackFromSegments()
@@ -71,7 +70,6 @@ public class TrackGenerator : MonoBehaviour
             {
                 UIManager.active.SetScanningStatusText("");
                 StartCoroutine(OnFinalGenerate());
-                PositionTrackCamera();
                 return;
             }
             if (segments == null || segments.Length == 0) { return; } //if there are no segments, do nothing  
@@ -94,6 +92,10 @@ public class TrackGenerator : MonoBehaviour
     }
     void PositionTrackCamera(bool autoSwitchCamera = true){
         Debug.Log("Positioning track camera based on generated track pieces");
+        if(trackPieces == null || trackPieces.Count == 0){
+            Debug.LogWarning("No track pieces to position camera around.");
+            return;
+        }
         //calculate the center and size of the track
         Vector3 center = Vector3.zero;
         for (int i = 0; i < trackPieces.Count; i++)
@@ -151,6 +153,7 @@ public class TrackGenerator : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         GenerateTrackObjects(false, true);
+        PositionTrackCamera(true);
         time = 0;
         //over 0.5s reduce bloom intensity to 1
         start = b.intensity.value;

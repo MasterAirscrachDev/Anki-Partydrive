@@ -377,6 +377,7 @@ public class CarController : MonoBehaviour
             Debug.Log($"PCS was null in SetLapCount for carID {carID}");
             FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
         }
+        Debug.Log($"Setting lap count to {lapCount} for carID {carID} pcs:{pcs != null}");
         pcs.SetLapCount(lapCount); 
     }
     

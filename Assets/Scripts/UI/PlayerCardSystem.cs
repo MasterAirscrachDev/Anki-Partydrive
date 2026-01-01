@@ -13,7 +13,6 @@ public class PlayerCardSystem : MonoBehaviour
     [SerializeField] GameObject[] attachments;
     [SerializeField] CarSprite[] statusCarsArray;
     GameObject currentAttachment;
-    float energyPercent = 0.75f;
     int attachmentIndex = -1;
     void OnEnable()
     {
@@ -36,23 +35,20 @@ public class PlayerCardSystem : MonoBehaviour
     }
     public void SetPosition(int position){
         //get the position value and add the suffix
+        if(position == 0){ positionText.text = "---"; return; }
         string suffix = "th";
         if(position == 1){ suffix = "st"; }
         else if(position == 2){ suffix = "nd"; }
         else if(position == 3){ suffix = "rd"; }
         positionText.text = $"{position}{suffix}";
     }
-    public int GetEnergy(int maxEnergy = 100){
-        //get the energy value using the energyPercent of maxEnergy
-        return (int)Mathf.Lerp(0, maxEnergy, energyPercent);
-    }
     public void SetEnergy(int energy, int maxEnergy = 100){
         //set the energyPercent using the energy value and maxEnergy
-        energyPercent = (float)energy / (float)maxEnergy;
+        float energyPercent = (float)energy / (float)maxEnergy;
         statusMaterial.SetFloat("_FillAmount", energyPercent);
         statusMaterial.SetFloat("_BlinkSpeed", energyPercent < 0.25f ? 1.0f : 0.0f);
     }
-    public void SetAttachment(int index){
+    void SetAttachment(int index){
         //set the attachment active state using the index
         if(index == -1){ //no attachment
             if(currentAttachment != null){ Destroy(currentAttachment); }
@@ -62,7 +58,7 @@ public class PlayerCardSystem : MonoBehaviour
                 Destroy(currentAttachment);
             }
             if(index == attachmentIndex){ return; }
-            Instantiate(attachments[index], gameObject.transform);
+            currentAttachment = Instantiate(attachments[index], gameObject.transform);
             attachmentIndex = index;
         }
     }
@@ -79,25 +75,24 @@ public class PlayerCardSystem : MonoBehaviour
             time -= 60;
             mins++;
         }
-        if(attachmentIndex != 0){
-            SetAttachment(0);
-        }
+        if(attachmentIndex != 0){ SetAttachment(0); }
         currentAttachment.GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
     }
     public void SetLapCount(int lapCount){
+        Debug.Log($"PlayerCardSystem: Setting lap count to {lapCount} (current attachment index: {attachmentIndex})");
         //set the lap count using the lapCount value
-        if(attachmentIndex != 1){
-            SetAttachment(1);
-        }
+        if(attachmentIndex != 1){ SetAttachment(1); Debug.Log($"Current attachment after SetAttachment: {currentAttachment != null} ({attachmentIndex})"); }
+        Debug.Log($"Current attachment after check: {currentAttachment != null}");
+        TMP_Text tmpText = currentAttachment.GetComponent<TMP_Text>();
+        Debug.Log($"TMP_Text component found: {tmpText != null}");
         currentAttachment.GetComponent<TMP_Text>().text = $"{lapCount} Laps";
+        Debug.Log($"Set lap count attachment to {lapCount} laps");
     }
     void OnDestroy()
     {
         //clean up the material instance
         if (statusMaterial != null)
-        {
-            Destroy(statusMaterial);
-        }
+        { Destroy(statusMaterial); }
     }
     [System.Serializable] class CarSprite
     {

@@ -117,7 +117,7 @@ public class CMS : MonoBehaviour
         StartCoroutine(UpdateCardCountDelayed());
     }
     
-    System.Collections.IEnumerator UpdateCardCountDelayed(){
+    IEnumerator UpdateCardCountDelayed(){
         yield return new WaitForEndOfFrame(); // Wait one frame to ensure cleanup
         PlayerCardmanager cardManager = FindFirstObjectByType<PlayerCardmanager>();
         if(cardManager != null){
@@ -143,9 +143,6 @@ public class CMS : MonoBehaviour
         foreach(CarController controller in controllers){
             controller.StopCar();
         }
-    }
-    public void TTS(string text){
-        carInterface.TTSCall(text);
     }
     public string CarNameFromId(string id){
         for(int i = 0; i < carInterface.cars.Length; i++){

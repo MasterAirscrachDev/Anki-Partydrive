@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using static OverdriveServer.NetStructures;
+using static AudioAnnouncerManager.AnnouncerLine;
 
 /// <summary>
 /// Base class for all game modes. Handles common functionality like setup, countdown, lineup, and UI management.
@@ -75,7 +76,8 @@ public abstract class GameMode : MonoBehaviour
         uiManager.SwitchToTrackCamera(true);
         startButton.SetActive(false);
         FindFirstObjectByType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
-        cms.TTS(lineupMessage);
+        //cms.TTS(lineupMessage);
+        AudioAnnouncerManager.pa.PlayLine(LineupStarting);
         
         OnLineupStarted();
         carInteraface.OnLineupEvent += OnLineupUpdate;
@@ -106,23 +108,23 @@ public abstract class GameMode : MonoBehaviour
         OnCountdownStarted(activeCars);
         
         showText.text = "Get Ready!";
-        cms.TTS("Get Ready!");
+        AudioAnnouncerManager.pa.PlayLine(OnYourMarks);
         yield return new WaitForSeconds(3);
         
         showText.text = "3";
-        cms.TTS("3");
+        AudioAnnouncerManager.pa.PlayLine(Count3);
         yield return new WaitForSeconds(1);
         
         showText.text = "2";
-        cms.TTS("2");
+        AudioAnnouncerManager.pa.PlayLine(Count2);
         yield return new WaitForSeconds(1);
         
         showText.text = "1";
-        cms.TTS("1");
+        AudioAnnouncerManager.pa.PlayLine(Count1);
         yield return new WaitForSeconds(1);
         
         showText.text = "GO!";
-        cms.TTS("Go!");
+        AudioAnnouncerManager.pa.PlayLine(Go);
         cms.SetGlobalLock(false);
         gameActive = true;
         
@@ -148,7 +150,7 @@ public abstract class GameMode : MonoBehaviour
     /// <summary>
     /// Ends the game with the specified message.
     /// </summary>
-    protected virtual void EndGame(string endMessage = "Game Over!")
+    protected virtual void EndGame(string endMessage = "Game Over!", AudioAnnouncerManager.AnnouncerLine line = RaceOver)
     {
         if(gameEnding) return; // Prevent multiple calls
         gameEnding = true;
@@ -158,7 +160,7 @@ public abstract class GameMode : MonoBehaviour
         cms.SetGlobalLock(true);
         cms.StopAllCars();
         cms.SetPlayersRacingMode(false); // Set players back to menu mode
-        cms.TTS(endMessage);
+        AudioAnnouncerManager.pa.PlayLine(line);
         
         carEntityTracker.OnCarCrossedFinishLine -= CarCrossedFinish;
         

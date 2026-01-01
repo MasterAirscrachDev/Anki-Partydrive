@@ -35,7 +35,6 @@ public class CarInteraface : MonoBehaviour
         ws.OnOpen += () => { 
             Debug.Log("WebSocket connection opened"); 
             UIManager.active.ServerConnected(); //show the server connected message
-            ApiCallV2(SV_SCAN, 0); //Start scanning for cars
             GetCars();
             RefreshAvailableCars(); //Also get available cars
         };
@@ -74,7 +73,6 @@ public class CarInteraface : MonoBehaviour
         ApiCallV2(SV_TR_START_SCAN, fins);
     }
     public void CancelTrackScan(){ ApiCallV2(SV_TR_CANCEL_SCAN, 0); } //called from ui
-    public void RequestScanForCars(){ ApiCallV2(SV_SCAN, 0); } //called from ui
     public void ControlCar(UCarData car, int speed, int lane){
         if(car == null || car.charging){ return; }
         WebhookData data = new WebhookData{
@@ -152,9 +150,6 @@ public class CarInteraface : MonoBehaviour
         string[] c = message.Split(':');
         if (c[0] == MSG_CAR_CONNECTED){
             GetCarInfo();
-            if(c[0] == "-1"){
-                TTSCall($"Car {c[2]} has connected"); //this is a test, change to use the car name later
-            }
         } else if(c[0] == MSG_TR_SCAN_UPDATE){
             bool valid = false;
             if(c[1] != "in-progress"){
@@ -184,15 +179,12 @@ public class CarInteraface : MonoBehaviour
             }
         } else if(c[0] == MSG_CAR_DISCONNECTED){ //disconnected
             GetCarInfo();
-            ApiCallV2(SV_SCAN, 0); //Start scanning for cars
         } else if(c[0] == MSG_LINEUP){
             string carID = c[1];
             int remainingCars = int.Parse(c[2]);
             OnLineupEvent?.Invoke(carID, remainingCars);
         }
     }
-
-    public void TTSCall(string text){ ApiCallV2(SV_TTS, text); }
     public void GetCars(){ GetCarInfo(); }
     public void RefreshAvailableCars(){ 
         ApiCallV2(SV_GET_AVAILABLE_CARS, 0); //get the available car data

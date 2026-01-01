@@ -7234,6 +7234,7 @@ GameObject:
   - component: {fileID: 705507996}
   - component: {fileID: 705507999}
   - component: {fileID: 705508000}
+  - component: {fileID: 705508001}
   m_Layer: 0
   m_Name: GAMECORE
   m_TagString: Untagged
@@ -7336,6 +7337,20 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &705508001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705507993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48abef16dc966234f9de89a0d2234705, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioAnnouncerManager
+  audioSource: {fileID: 0}
+  announcerLines: []
 --- !u!1 &713681229
 GameObject:
   m_ObjectHideFlags: 0
@@ -18235,7 +18250,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2115085926}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80ed2ef230e506241adf44cfc5229985, type: 3}
+  m_Script: {fileID: 11500000, guid: 8dc3892033a465a45b1edc187b3f39fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 6052796548185656707, guid: 91e4ce2562c83164390f49f9a4dfa6e0, type: 3}

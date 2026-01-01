@@ -1,4 +1,4 @@
-using System;
+using System; //requred for Partydrive
 namespace OverdriveServer{
     /// <summary>
     /// This is the Network Structures class, it contains all data structures used in the websocket.
@@ -72,7 +72,7 @@ namespace OverdriveServer{
             //Overdrive Track Pieces
             Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding,
             //Drive Track Pieces
-            Oval, Bottleneck, Crossroads
+            Oval, Bottleneck, Crossroads, F1, DoubleCross
         }
         [System.Serializable]
         public class SegmentData{
@@ -123,14 +123,12 @@ namespace OverdriveServer{
         SV_GET_TRACK = "get_track", //Get track (should return EVENT_TRACK_DATA with the track data)
         SV_TR_START_SCAN = "start_track_scan", //Start track scan (used to start a track scan)
         SV_TR_CANCEL_SCAN = "stop_track_scan", //Stop track scan (used to stop a track scan)
-        SV_SCAN = "scan", //Scan for cars (used to start a scan for cars)
         SV_GET_CARS = "request_cars", //Request cars (should return EVENT_CAR_DATA with the car data)
         SV_GET_AVAILABLE_CARS = "get_available_cars", //Get available cars (should return EVENT_AVAILABLE_CARS with the available car data)
         SV_CONNECT_CAR = "connect_car", //Connect to a car by ID [carID] (used to connect to a specific available car)
         SV_DISCONNECT_CAR = "disconnect_car", //Disconnect from a car by ID [carID] (used to disconnect from a specific connected car)
         SV_CAR_FLASH = "car_flash", //DONT USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING || Flash car [id:path] (used to flash a car, path should be the ota file)
         SV_CAR_UPDATE_MODEL = "car_update_model", //Doesnt work on most cars || Update car model [id:newModel] (experimental feature to change car model type)
-        SV_TTS = "tts", //Text to speech [message] (used to send a message to the TTS engine)
         SV_CAR_DIRECT_DRIVE = "car_direct_drive", //Direct drive car [id:left:right] direct drive the wheel motors
         SV_ENABLE_DIRECT = "enable_direct", //Enable direct mode [id] (used to enable direct drive for a car)
         SV_CLIENT_CLOSED = "client_closed"; //Client closed (used to indicate a client has closed the connection intentionally)
@@ -144,6 +142,8 @@ namespace OverdriveServer{
             MSG_CAR_STATUS_UPDATE = "csu", //:carID (a cars status has changed, call /cars)
             MSG_LINEUP = "lu", //:carID:remainingCars (if 0 then lineup is complete)
             MSG_CAR_FLASH_PROGRESS = "cfp", //:carID:currBytes:totalBytes (both ints, used to indicate the progress of a car flash)
+            MSG_CAR_FLASH_SUCCESS = "cfs", //:carID (used to indicate a car firmware flash completed successfully)
+            MSG_CAR_FLASH_FAILED = "cff", //:carID (used to indicate a car firmware flash failed)
             MSG_CAR_JUMPED = "jump", //:carID (a car has jumped, used to indicate a car has jumped a segment)
             MSG_CAR_LANDED = "land"; //:carID:success (a car has landed, used to indicate a car has landed successfully or not after a jump)
         }
@@ -157,9 +157,8 @@ namespace OverdriveServer{
             //FnF Cars
             Mammoth = 18, Dynamo = 19,
             //New Custom Models (Only in partydrive: this is the master list)
-            IceWave = 13,
+            IceWave = 13, NeonPrime = 21,
             Unknown = 0
         }
     }
-    
 }

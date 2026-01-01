@@ -27,6 +27,7 @@ public class TimeTrialMode : GameMode
     {
         foreach(string carID in activeCars){
             carTimes.Add(new CarTime(carID));
+            carEntityTracker.ResetLapDelocalizationFlag(carID); //reset delocalization flag so first lap counts
         }
     }
     
@@ -47,18 +48,31 @@ public class TimeTrialMode : GameMode
     {
         // Wait 2 minutes 59 seconds (179 seconds total for 3-minute trial)
         yield return new WaitForSeconds(60);
-        cms.TTS("2 minutes remaining");
+        AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.RemainingTime2Mins);
         
         yield return new WaitForSeconds(60);
-        cms.TTS("1 minute remaining");
+        AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.RemainingTime1Min);
         
         yield return new WaitForSeconds(50);
         
         // Final 10-second countdown
         int seconds = 10;
+        AudioAnnouncerManager.AnnouncerLine[] announcerLines = new AudioAnnouncerManager.AnnouncerLine[]
+        {
+            AudioAnnouncerManager.AnnouncerLine.Count10,
+            AudioAnnouncerManager.AnnouncerLine.Count9,
+            AudioAnnouncerManager.AnnouncerLine.Count8,
+            AudioAnnouncerManager.AnnouncerLine.Count7,
+            AudioAnnouncerManager.AnnouncerLine.Count6,
+            AudioAnnouncerManager.AnnouncerLine.Count5,
+            AudioAnnouncerManager.AnnouncerLine.Count4,
+            AudioAnnouncerManager.AnnouncerLine.Count3,
+            AudioAnnouncerManager.AnnouncerLine.Count2,
+            AudioAnnouncerManager.AnnouncerLine.Count1
+        };
         while(seconds > 0 && gameActive)
         {
-            cms.TTS($"{seconds}");
+            AudioAnnouncerManager.pa.PlayLine(announcerLines[10 - seconds]);
             showText.text = $"{seconds}";
             yield return new WaitForSeconds(1);
             seconds--;
@@ -66,7 +80,7 @@ public class TimeTrialMode : GameMode
         
         if(gameActive)
         {
-            EndGame("Time's Up!");
+            EndGame("Time's Up!", AudioAnnouncerManager.AnnouncerLine.TimesUp);
         }
     }
     
@@ -85,7 +99,7 @@ public class TimeTrialMode : GameMode
                 float newLapTime = Time.time - ct.lapStartedTime;
                 if(ct.bestLapTime == 0 || newLapTime < ct.bestLapTime){
                     ct.bestLapTime = newLapTime;
-                    cms.TTS($"{cms.CarNameFromId(carID)} did a new fastest lap");
+                    //cms.TTS($"{cms.CarNameFromId(carID)} did a new fastest lap");
                     cms.GetController(carID).SetTimeTrialTime(ct.bestLapTime);
                 }
             }
