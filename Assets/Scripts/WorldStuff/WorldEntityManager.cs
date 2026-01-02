@@ -5,14 +5,30 @@ using UnityEngine;
 public class WorldEntityManager : MonoBehaviour
 {
     [SerializeField] Camera mainCamera;
-    [SerializeField] GameObject startGate;
-    [SerializeField] Material lightsRed, lightsGreen, lightsYellow;
+    [SerializeField] GameObject startGate, DayLight, NightLight;
+    [SerializeField] Material lightsRed, lightsGreen, lightsYellow, skyboxMaterial;
+    [SerializeField] Texture2D daySkybox, nightSkybox;
     TrackObject[] trackObjects;
     
     // Start is called before the first frame update
     void Start()
     {
-
+        PickRandomSkybox();
+    }
+    void PickRandomSkybox(){
+        int r = Random.Range(0, 2);
+        if(r == 0){
+            RenderSettings.skybox = skyboxMaterial;
+            skyboxMaterial.SetTexture("_MainTex", daySkybox);
+            DayLight.SetActive(true);
+            NightLight.SetActive(false);
+        }
+        else{
+            RenderSettings.skybox = skyboxMaterial;
+            skyboxMaterial.SetTexture("_MainTex", nightSkybox);
+            DayLight.SetActive(false);
+            NightLight.SetActive(true);
+        }
     }
     public void SetTrackObjectsPositions(TrackObject[] trackObjects){
         if(trackObjects != null){
