@@ -69,10 +69,18 @@ public class AudioAnnouncerManager : MonoBehaviour
     [Serializable]
     public enum AnnouncerLine
     {
-        LineupStarting = 0, OnYourMarks = 7, Go = 4,
+        PlaceCarsOnTrack = 20, LineupStarting = 0, OnYourMarks = 7, Go = 4,
         Count10 = 1, Count9 = 2, Count8 = 3, Count7 = 8, Count6 = 9, Count5 = 10, Count4 = 11, Count3 = 12, Count2 = 13, Count1 = 14,
         RemainingTime5Mins = 7, RemainingTime4Mins = 15, RemainingTime3Mins = 16, RemainingTime2Mins = 17, RemainingTime1Min = 18,
-        CarLapComplete = 5, RaceOver = 6, TimesUp = 19
+        CarLapComplete = 5, RaceOver = 6, TimesUp = 19,
+        CarOvertakes = 21, CarTakesLead = 22,
+        TrackSmall = 23, TrackMedium = 24, TrackLarge = 25, TrackMatOval = 26, TrackMatBottleneck = 27, TrackMatCrossroads = 28,
+        TrackHasJump = 29, TrackHasManyJumps = 30, TrackHasCrossroad = 31, TrackHasManyCrossroads = 32,
+        RaceBanter = 33,
+        CarDisabled = 34, CarRepaired = 35,
+        CarBoosting = 36,
+        CarWins = 37, CarSelected = 40,
+        CarGetsOverdriveAbility = 38, CarUsesOverdriveAbility = 39
     }
     
     [Serializable]

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static OverdriveServer.NetStructures;
 
 //Central Management System
 public class CMS : MonoBehaviour
@@ -85,7 +86,7 @@ public class CMS : MonoBehaviour
     public void AddController(CarController controller, bool isAI = false){
         controllers.Add(controller);
         if(isAI){ return; } //if the controller is AI, return (Colour is set in AIController)
-        Debug.Log($"available colors: {freeColors.Count}");
+        //Debug.Log($"available colors: {freeColors.Count}");
         Color c = freeColors[0];
         freeColors.RemoveAt(0);
         usedColors.Add(c);
@@ -151,6 +152,14 @@ public class CMS : MonoBehaviour
             }
         }
         return "Unknown Car";
+    }
+    public ModelName CarModelFromId(string id){
+        for(int i = 0; i < carInterface.cars.Length; i++){
+            if(carInterface.cars[i].id == id){
+                return carInterface.cars[i].modelName;
+            }
+        }
+        return ModelName.Unknown;
     }
     public List<CarController> SphereCheckControllers(Vector3 position, float range){
         List<CarController> controllersInRange = new List<CarController>();

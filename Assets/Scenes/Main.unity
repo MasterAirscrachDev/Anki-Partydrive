@@ -738,6 +738,135 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 45664381}
   m_CullTransparentMesh: 1
+--- !u!1 &48807209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 48807210}
+  - component: {fileID: 48807211}
+  m_Layer: 0
+  m_Name: MUSIC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &48807210
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48807209}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 705507995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &48807211
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48807209}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 9b9fc5bc5274d6841b92646c0e467fe4, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.15
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &51487653
 GameObject:
   m_ObjectHideFlags: 0
@@ -949,6 +1078,1216 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 65327509}
   m_CullTransparentMesh: 1
+--- !u!1 &72388608
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 72388609}
+  - component: {fileID: 72388610}
+  - component: {fileID: 72388611}
+  m_Layer: 0
+  m_Name: ANNOUNCER
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &72388609
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72388608}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 705507995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &72388610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72388608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48abef16dc966234f9de89a0d2234705, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioAnnouncerManager
+  audioSource: {fileID: 72388611}
+  announcerLines:
+  - line: 7
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: cbefbdd324654f945bb77b9250371ce3, type: 3}
+    - {fileID: 8300000, guid: 368328913f7c03c4da929c8a9211f9d5, type: 3}
+    carSpecificClips:
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+  - line: 1
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+    - carModel: 0
+      clips: []
+  - line: 2
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: 22fbf3928fd41734ba42a3eb5a325cf1, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 3
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: c5ba4d4903eee70448f48351d875af5a, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 8
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: b44425c7c806fea4aa51dd3ab0cce5cb, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 9
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: 59fc44d2591d4d246b33ba78575217d7, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 10
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: d9588033f2bc97040b656f30f8bcd98e, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 11
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: 88c1edcfa6b9189439b9ec96d8a9dbaa, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 12
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: 8743d7d116b149f4280c7c71f9a39268, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 13
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: bdb821f184335c442a9d2e8410e19e7e, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 14
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: 0f60892d65228b8459505cd8893979bf, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 4
+    lineType: 0
+    uniqueClips:
+    - {fileID: 8300000, guid: 82ee255e2b6311142b7a12173b3a69e2, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 40
+    lineType: 1
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 967de715cfe52fe48bd5c2c9d0d51829, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 1aee0e28b0df61646924f8dc401779e2, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 321dd47b51a76b44392742d2e6442301, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 5e2a7c8402ce5c647a3cfd43a189f017, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 6ff117b9d43183045810da4cdd387240, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 0a86ff54dddae5d4b99c0c5e6431488b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: e851733e2d58c064585e2626ac3ac8f9, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: f274e9a05773a404fa2c5f0e6a73fb13, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 2e9b136d20769fd4ab4df6f8a27659b5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: e2739cea855ddc94dabcee0ff84592cd, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 4c6ba85bd8b84ca4ba383d2ed8fea950, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 98e0a31f3fc46bb4983d7119ca661203, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: e37ebde0c6e9df042bcd73d13b14ff94, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 728c88560fba60f449e3403c4393a7e0, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 92072bd8eff445a4492aea7d4ca5dfc7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 079dae72e809e444ab8b3ac45713f999, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: af708789ea3209e4db97d84f04629765, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 5ecb387756435a14ca5974271eb022af, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a1996b02b4a317b449b5f6dac0e27409, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: a2d93fb1a70f32543b1cbf0a000545b8, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
+  - line: 37
+    lineType: 1
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: d12f25c56db4d0c47a5011180c133831, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: aaea28bfd8832f24b893eeef76f3fde4, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: eff60ce21620db742aefc1ac84e5bf9b, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: e3b6fd76c3a64a244abb898573866d52, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 61ae3b25403c1e340980dc51400e9562, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 6867d5a5e163b2446914d2d979f343f1, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: 3ff34726ef1f3914c93c1f068a08654e, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: 9b0237b992818104cabbb55bf5c3b3ca, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: e79275068f81afe44b0cd02a4e2b1b92, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: ea9bb89198169c44f8e0bae4fb772c38, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: be36fb4757981b843a66acfb7e1a4a57, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 58957c0fd8dfea344bf2cc240e2caba9, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: fbd771f2b2a251c4da191d53550555d9, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 92963b10bfdd0b04d9081ae1d9f54a22, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: cb61c788aaab94042a06c264168392be, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 953166d047101ef4490fec2f952039b8, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: 03ec8c526862ffd4ea89f1ccc2fc2fdb, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 703c1a5ae102b704893ac0383fcb5541, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: 5d6ba35844a2a7a42bc571b3bdc9719c, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: b2d7d0f32dd52a64d826f1a82f6c237b, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 96f9bdbe27fd3aa44b8475979cf01d92, type: 3}
+  - line: 21
+    lineType: 1
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 7ab5aad3d46a5864d9ce86ed037765cd, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: ca2ee621b4b9a15449ec240e5f22c6de, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 0597ef0302009a642923c153122a1feb, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: fa894c8eea2ec8b4ca20d32c9cd8325b, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: dcdbf0f800b2eed4b91a549af062eca7, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: 38de8f782ea25a74da1c34766003c741, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: ce97df4ca4c7ca94ea847a7cb696d1ba, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: 3f73f4cae1f86de4d835064a35c52a3e, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 9f872c0122c65324f98cdf7ecbefc233, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 2c1b2c7983429c9449ff927982164a4b, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 80a61dd4d3a40bc418a30307627557eb, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: ad569891741dc1e489f361fb26095bb5, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: 2009071785f5fa540971ad2f2953e7f3, type: 3}
+  - line: 5
+    lineType: 1
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: cde16e775e0c3934e8405da86cfbf9f2, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 938c66b9a1e53e144b56ef745fdcc5d8, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 21d93573f0d6f804ca40a51e13d8cf7a, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: e3e6a6331aab66542840f51c638bcf0c, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 96885fb1a8d272943a35fb488c91da11, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: 22195330a3534e041919f9290fc263f7, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: 5363b0e3e6a46b942b4d1494bca8f0a5, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: 01d1a1080579f784a997b3314c2ddf40, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 2222da42b9cea164c9b559c5da6b6d40, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: b5ab0313b58360f4f8de08864e4a76a7, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 521df61b527822e4f837aa0073139078, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 804e051bd1c83f045b7a3e2749e74f21, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: 25f32f5d7387a4b4d9ada08733447a24, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 8d109a6cd7eca254ca80559ee5fb9d91, type: 3}
+  - line: 22
+    lineType: 1
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 52a4f53f13fe00e48895462af658aa5d, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: eca7401ab7edfc847a16888236688502, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 61fdbdc589a1a9e47b50936a0b844615, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: ea6e2d854d08c82499210af63b5aace1, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: efcacd0fd70b5fd4496352562d56d9bb, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: 18adb8299139ee74c98900d9878b085d, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: 0d4d025f1e930ba4fab005550fde7293, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 8488be8e99a122f419f4834d02444679, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: 7c86ccd25c74a1d49bdf849943d476b7, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: ca403aa5c46df9948942c6de8289a445, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 06bff54bb91a2a343b9bca87b993e4fa, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 17b88787af8739e4a824f096391582dc, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 3a2a3ab1c1129c94cb1beb83a28be0f0, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: 200c48fe8b8e64244ac8f0f678eee4e1, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: bdbab7051567f82448a12cd51443a4de, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: e07b544da0779bf4f96a272985d51d64, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: a7e189a1b6d198d4388304a11c96f3a8, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: f9ec628165b8af44d813fd528394affc, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 2be0fb9a1a2d64f4da07f6ca5b5939e1, type: 3}
+--- !u!82 &72388611
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72388608}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &97499543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2435,6 +3774,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 236103967}
   m_CullTransparentMesh: 1
+--- !u!1001 &236600485
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 820304861}
+    m_Modifications:
+    - target: {fileID: 4365739505304124361, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_Name
+      value: CarModelOnly (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.099999994
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 8.9425
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5334
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 48.1275
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5129895
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.067225605
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.81211597
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.2697965
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 30.476
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 112.377
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -11.215
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 1766816751501928147, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1620993045995595149, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1160694050}
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+--- !u!4 &236600486 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+  m_PrefabInstance: {fileID: 236600485}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &236600487 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1620993045995595149, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+  m_PrefabInstance: {fileID: 236600485}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &245540243
 GameObject:
   m_ObjectHideFlags: 0
@@ -2803,7 +4217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &271596826
 Transform:
   m_ObjectHideFlags: 0
@@ -7592,7 +9006,6 @@ GameObject:
   - component: {fileID: 705507996}
   - component: {fileID: 705507999}
   - component: {fileID: 705508000}
-  - component: {fileID: 705508001}
   m_Layer: 0
   m_Name: GAMECORE
   m_TagString: Untagged
@@ -7617,6 +9030,8 @@ Transform:
   - {fileID: 1229594994}
   - {fileID: 963194228}
   - {fileID: 1377473482}
+  - {fileID: 72388609}
+  - {fileID: 48807210}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &705507996
@@ -7695,20 +9110,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!114 &705508001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705507993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48abef16dc966234f9de89a0d2234705, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioAnnouncerManager
-  audioSource: {fileID: 0}
-  announcerLines: []
 --- !u!1 &713681229
 GameObject:
   m_ObjectHideFlags: 0
@@ -8104,6 +9505,41 @@ MonoBehaviour:
   skyboxMaterial: {fileID: 2100000, guid: f0fabd642ab3d8e4e82589a3e65fdf7c, type: 2}
   daySkybox: {fileID: 2800000, guid: 1837d36c2589fa34bb49af4d612574a1, type: 3}
   nightSkybox: {fileID: 2800000, guid: d3c16f82ee1eca74e8f80444143360a0, type: 3}
+--- !u!1 &820304860
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 820304861}
+  m_Layer: 0
+  m_Name: TEMP
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &820304861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820304860}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1875131798}
+  - {fileID: 1544585464}
+  - {fileID: 236600486}
+  - {fileID: 1506933437}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &826250338
 GameObject:
   m_ObjectHideFlags: 0
@@ -11230,6 +12666,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1159746991}
   m_CullTransparentMesh: 1
+--- !u!1001 &1160694049
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 236600487}
+    m_Modifications:
+    - target: {fileID: 1069819924993821589, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_Name
+      value: SupercarNuke
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+--- !u!4 &1160694050 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7927831422045220552, guid: 743dff4b554f7c04cbb41bafbeb6ce88, type: 3}
+  m_PrefabInstance: {fileID: 1160694049}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1178640625
 GameObject:
   m_ObjectHideFlags: 0
@@ -14947,6 +16445,178 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -183.2}
   m_SizeDelta: {x: 200, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1506933436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1506933437}
+  - component: {fileID: 1506933438}
+  m_Layer: 0
+  m_Name: Point Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1506933437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506933436}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.936, y: 1.809, z: 47.84}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 820304861}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &1506933438
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506933436}
+  m_Enabled: 1
+  serializedVersion: 11
+  m_Type: 2
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
+--- !u!1001 &1544585463
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 820304861}
+    m_Modifications:
+    - target: {fileID: 4365739505304124361, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_Name
+      value: CarModelOnly
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.099999994
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.0906
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.4721
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 48.142
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5129895
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.067225605
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.81211597
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.2697965
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 30.476
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 112.377
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -11.215
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 1766816751501928147, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1620993045995595149, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1799377816}
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+--- !u!4 &1544585464 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+  m_PrefabInstance: {fileID: 1544585463}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1544585465 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1620993045995595149, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
+  m_PrefabInstance: {fileID: 1544585463}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1548077889
 GameObject:
   m_ObjectHideFlags: 0
@@ -16165,7 +17835,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1704226857
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16862,6 +18532,68 @@ MonoBehaviour:
   ModelCarPrefab: {fileID: 4365739505304124361, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
   PlayerMarkerPrefab: {fileID: 7631762172155676985, guid: 59d39c1c61c36a243acdc1b8d055b19c, type: 3}
   slectionPlatform: {fileID: 1114561404}
+--- !u!1001 &1799377815
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1544585465}
+    m_Modifications:
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8482873896239296507, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+      propertyPath: m_Name
+      value: SupercarGuardian
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+--- !u!4 &1799377816 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5536014935789446487, guid: ecaf1673ff9209d4ca737e626d43072c, type: 3}
+  m_PrefabInstance: {fileID: 1799377815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1803712899
 GameObject:
   m_ObjectHideFlags: 0
@@ -17736,6 +19468,68 @@ RectTransform:
   m_AnchoredPosition: {x: 478, y: -47}
   m_SizeDelta: {x: 166.5, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &1875131797
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 820304861}
+    m_Modifications:
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 48.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.85106635
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.04663747
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.5216602
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.037171654
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -2.327
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -63.143
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 6.432
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211132806049291155, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+      propertyPath: m_Name
+      value: TrackJump
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+--- !u!4 &1875131798 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8403528684596855081, guid: 1e39f73d9702b3d4d8a84457418ea977, type: 3}
+  m_PrefabInstance: {fileID: 1875131797}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1885164663
 GameObject:
   m_ObjectHideFlags: 0
@@ -18177,7 +19971,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &2002053044
 Light:
   m_ObjectHideFlags: 0
@@ -18623,7 +20417,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2034552061
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20471,3 +22265,4 @@ SceneRoots:
   - {fileID: 803553872}
   - {fileID: 206438949}
   - {fileID: 1628722563}
+  - {fileID: 820304861}

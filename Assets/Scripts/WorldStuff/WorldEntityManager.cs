@@ -18,13 +18,11 @@ public class WorldEntityManager : MonoBehaviour
     void PickRandomSkybox(){
         int r = Random.Range(0, 2);
         if(r == 0){
-            RenderSettings.skybox = skyboxMaterial;
             skyboxMaterial.SetTexture("_MainTex", daySkybox);
             DayLight.SetActive(true);
             NightLight.SetActive(false);
         }
         else{
-            RenderSettings.skybox = skyboxMaterial;
             skyboxMaterial.SetTexture("_MainTex", nightSkybox);
             DayLight.SetActive(false);
             NightLight.SetActive(true);

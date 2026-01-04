@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
             // Update our cached values
             currentControlScheme = iinput.currentControlScheme;
             
-            Debug.Log($"Player {carController?.GetPlayerName()} detected and set to control scheme: {currentControlScheme}");
+            //Debug.Log($"Player {carController?.GetPlayerName()} detected and set to control scheme: {currentControlScheme}");
         }
     }
     public void SetRacingMode(bool racing){

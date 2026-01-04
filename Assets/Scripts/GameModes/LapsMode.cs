@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using static OverdriveServer.NetStructures;
+using static AudioAnnouncerManager.AnnouncerLine;
 using UnityEngine;
 
 public class LapsMode : GameMode
@@ -32,7 +34,6 @@ public class LapsMode : GameMode
             if(score){
                 carLaps[carID]++;
                 try{
-                    //Debug.Log($"Car {carID} completed lap {carLaps[carID]}");
                     cms.GetController(carID).SetLapCount(carLaps[carID]);
                 }catch{
                     //Debug.LogWarning($"Could not set lap count for car {carID}");
@@ -62,6 +63,9 @@ public class LapsMode : GameMode
                 results += $"{cms.CarNameFromId(kvp.Key)}: {kvp.Value} laps\n";
             }
             Debug.Log(results);
+            //get the model of the winning car
+            ModelName winningCarModel = cms.CarModelFromId(carID);
+            AudioAnnouncerManager.pa.PlayLine(CarWins, winningCarModel);
         }
     }
 }

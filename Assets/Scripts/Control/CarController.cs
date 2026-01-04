@@ -80,7 +80,7 @@ public class CarController : MonoBehaviour
         //Debug.Log("SetCard");
         this.pcs = pcs;
         UCarData carData = carInterface.GetCarFromID(carID);
-        Debug.Log($"SetCard: id {carID}, desired {desiredCarID}, cardata {carData != null}, pcs: {pcs != null}");
+        //Debug.Log($"SetCard: id {carID}, desired {desiredCarID}, cardata {carData != null}, pcs: {pcs != null}");
         string text = "Sitting Out";
         int model = -1;
         if(!string.IsNullOrEmpty(desiredCarID)){
@@ -272,6 +272,7 @@ public class CarController : MonoBehaviour
         if(desiredCar != null){
             // Car is available, connect to it
             carID = desiredCarID;
+            AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, desiredCar.modelName);
             Debug.Log($"Successfully connected to desired car: {carID}");
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(desiredCar.name, (int)desiredCar.modelName);
@@ -296,8 +297,12 @@ public class CarController : MonoBehaviour
             if(pcs != null) pcs.SetCarName("Sitting Out");
             return;
         }
+        if(desiredCarID != data.id)
+        {
+            desiredCarID = data.id;
+            AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, data.modelName);
+        }
         
-        desiredCarID = data.id;
         
         // Try to connect immediately if car is available
         if(carInterface.GetCarFromID(data.id) != null){
@@ -321,11 +326,17 @@ public class CarController : MonoBehaviour
             if(pcs != null) pcs.SetCarName("Sitting Out");
             return;
         }
-        
-        desiredCarID = id;
+        UCarData carData = carInterface.GetCarFromID(id);
+        if(desiredCarID != id)
+        {
+            desiredCarID = id;
+            if(carData != null)
+            {
+                AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, carData.modelName);
+            }
+        }
         
         // Try to connect immediately if car is available
-        UCarData carData = carInterface.GetCarFromID(id);
         if(carData != null){
             carID = id;
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
@@ -374,10 +385,9 @@ public class CarController : MonoBehaviour
     }
     public void SetLapCount(int lapCount){ 
         if(pcs == null) {
-            Debug.Log($"PCS was null in SetLapCount for carID {carID}");
             FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
         }
-        Debug.Log($"Setting lap count to {lapCount} for carID {carID} pcs:{pcs != null}");
+        //Debug.Log($"Setting lap count to {lapCount} for carID {carID} pcs:{pcs != null}");
         pcs.SetLapCount(lapCount); 
     }
     

@@ -11,6 +11,8 @@
 
 - Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
 
+- 2 boost starts
+
 ## UI Stuff too
 - Settings Menu
  - Option to disable Post (for performance)

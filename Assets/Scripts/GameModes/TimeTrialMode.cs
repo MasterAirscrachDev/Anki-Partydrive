@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using static OverdriveServer.NetStructures;
+using static AudioAnnouncerManager.AnnouncerLine;
 using UnityEngine;
 
 public class TimeTrialMode : GameMode
@@ -58,18 +60,7 @@ public class TimeTrialMode : GameMode
         // Final 10-second countdown
         int seconds = 10;
         AudioAnnouncerManager.AnnouncerLine[] announcerLines = new AudioAnnouncerManager.AnnouncerLine[]
-        {
-            AudioAnnouncerManager.AnnouncerLine.Count10,
-            AudioAnnouncerManager.AnnouncerLine.Count9,
-            AudioAnnouncerManager.AnnouncerLine.Count8,
-            AudioAnnouncerManager.AnnouncerLine.Count7,
-            AudioAnnouncerManager.AnnouncerLine.Count6,
-            AudioAnnouncerManager.AnnouncerLine.Count5,
-            AudioAnnouncerManager.AnnouncerLine.Count4,
-            AudioAnnouncerManager.AnnouncerLine.Count3,
-            AudioAnnouncerManager.AnnouncerLine.Count2,
-            AudioAnnouncerManager.AnnouncerLine.Count1
-        };
+        { Count10, Count9, Count8, Count7, Count6, Count5, Count4, Count3, Count2, Count1 };
         while(seconds > 0 && gameActive)
         {
             AudioAnnouncerManager.pa.PlayLine(announcerLines[10 - seconds]);
@@ -80,7 +71,11 @@ public class TimeTrialMode : GameMode
         
         if(gameActive)
         {
-            EndGame("Time's Up!", AudioAnnouncerManager.AnnouncerLine.TimesUp);
+            EndGame("Time's Up!", TimesUp);
+            
+            //get the model of the winning car
+            ModelName winningCarModel = cms.CarModelFromId(carTimes[0].id);
+            AudioAnnouncerManager.pa.PlayLine(CarWins, winningCarModel);
         }
     }
     
