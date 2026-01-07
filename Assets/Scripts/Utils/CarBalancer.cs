@@ -26,7 +26,7 @@ public class CarBalancer : MonoBehaviour
     const float targetLapTime = 7.75f; //7.75 is the target laptime
     const float targetLapTimeTolerance = 0.02f; //0.02 seconds tolerance for lap time
     int currentSpeedMod = 0; //car mod value, used to calculate the target lap time
-    int increment = 10; //increment for speed mod
+    int increment = 20; //increment for speed mod
     int directionOfIncrement = 0; //direction of increment, 1 for up, -1 for down
 
     //7.75 is the target laptime
@@ -49,7 +49,7 @@ public class CarBalancer : MonoBehaviour
         waitingForTrack = false;
         trackingLaps = false;
         currentSpeedMod = 0;
-        increment = 10;
+        increment = 20;
         directionOfIncrement = 0;
         step = -1;
         saveButton.interactable = false;
@@ -175,7 +175,7 @@ public class CarBalancer : MonoBehaviour
                 float lapTime = Time.time - startTime;
                 startTime = Time.time;
                 lapTimes.Add(lapTime);
-                string lapTimeString = "Lap Times:\n";
+                string lapTimeString = $"{carData.name} @{currentSpeedMod}\nTarget 7.75±0.02\nLap Times:\n";
                 for(int i = 0; i < lapTimes.Count; i++){
                     lapTimeString += $"{i + 1}: {lapTimes[i]:F2}s\n";
                 }
@@ -198,7 +198,7 @@ public class CarBalancer : MonoBehaviour
 
                     if(averageLapTime > targetLapTime + targetLapTimeTolerance){ // Too slow
                         if(directionOfIncrement == -1){ //if we were slowing down, half the increment
-                            increment = Mathf.Clamp(Mathf.RoundToInt(increment / 2), 1, 10);
+                            increment = Mathf.Clamp(Mathf.RoundToInt(increment / 2), 1, 20);
                         }
                         currentSpeedMod += increment;
                         directionOfIncrement = 1;
@@ -207,7 +207,7 @@ public class CarBalancer : MonoBehaviour
                         messageText.text += $"Car is too slow, speeding up {currentSpeedMod}\n";
                     }else if(averageLapTime < targetLapTime - targetLapTimeTolerance){ // Too fast
                         if(directionOfIncrement == 1){ //if we were speeding up, half the increment
-                            increment = Mathf.Clamp(Mathf.RoundToInt(increment / 2), 1, 10);
+                            increment = Mathf.Clamp(Mathf.RoundToInt(increment / 2), 1, 20);
                         }
                         currentSpeedMod -= increment;
                         directionOfIncrement = -1;
@@ -237,7 +237,7 @@ public class CarBalancer : MonoBehaviour
         waitingForTrack = false;
         trackingLaps = false;
         currentSpeedMod = 0;
-        increment = 10;
+        increment = 20;
         directionOfIncrement = 0;
         step = 1;
     }
@@ -258,7 +258,7 @@ public class CarBalancer : MonoBehaviour
             s.SetVar("speedBalance", speedBalance);
         }
         await fs.SaveFile($"{id}.dat", s);
-        messageText.text = $"Car speed mod saved to file\n";
+        messageText.text = $"Car speed mod ({speedMod}) saved to file\n";
         carInterface.ApiCallV2(SV_REFRESH_CONFIGS, 0);
         backButton.Select();
     }

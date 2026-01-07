@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
     [Header("Menu UI")]
     [SerializeField] TMP_Text menuCarCount;
     [SerializeField] GameObject NoServerWarningText;
-    [SerializeField] GameObject CarsLoadingIcon;
+    [SerializeField] GameObject CarsLoadingIcon, settingsPanel, creditsPanel;
     [SerializeField] Button playButton;
     [SerializeField] Button carsMenuButton;
     [SerializeField] Button trackMenuButton;
@@ -69,6 +69,11 @@ public class UIManager : MonoBehaviour
         }
         else if(layer == 3){ //if we are entering the track scanning page
             CheckConnectedCarsOnTrackPage();
+        }
+        if(layer != 0)
+        {
+            settingsPanel.SetActive(false);
+            creditsPanel.SetActive(false);
         }
         //find the first button in the layer and select it
         Button[] buttons = UILayers[layer].GetComponentsInChildren<Button>();

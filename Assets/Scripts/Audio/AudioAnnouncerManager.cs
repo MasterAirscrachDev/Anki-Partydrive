@@ -24,6 +24,13 @@ public class AudioAnnouncerManager : MonoBehaviour
             }
         }
     }
+    public void OnSettingsChanged(SettingsState settings)
+    {
+        if(audioSource != null)
+        {
+            audioSource.volume = settings.announcerVolume;
+        }
+    }
     
     /// <summary>
     /// Play an announcer line with optional car model for car-specific lines

@@ -220,9 +220,9 @@ public class CarInteraface : MonoBehaviour
         this.cars = uCars;
         LightData[] colors = new LightData[3];
         //Partylights
-        colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 6 };
-        colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 5 };
-        colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 4 };
+        colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 10 };
+        colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 8 };
+        colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 6 };
         for(int i = 0; i < cars.Length; i++){ 
             //if the car was not in the previous list, send the lights
             if(currentCars == null || currentCars.FirstOrDefault(x => x.id == cars[i].id) == null){

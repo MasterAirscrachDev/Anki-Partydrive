@@ -91,7 +91,7 @@ public class TrackGenerator : MonoBehaviour
         PositionTrackCamera();
     }
     void PositionTrackCamera(bool autoSwitchCamera = true){
-        Debug.Log("Positioning track camera based on generated track pieces");
+        //Debug.Log("Positioning track camera based on generated track pieces");
         if(trackPieces == null || trackPieces.Count == 0){
             Debug.LogWarning("No track pieces to position camera around.");
             return;
@@ -133,10 +133,6 @@ public class TrackGenerator : MonoBehaviour
             float overrideRotation = 189f;
 
             trackCamera.TrackUpdated(fixedCenter, fixedSize, overrideRotation);
-        }
-        else
-        {
-            Debug.Log("Positioning camera for normal track");
         }
     }
     IEnumerator OnFinalGenerate()
