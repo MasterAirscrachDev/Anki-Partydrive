@@ -471,8 +471,8 @@ public class TrackPathSolver
                 distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
             } 
         }
-        distanceMM = Mathf.RoundToInt(distanceMM * 0.95f); //tolerance
+        //distanceMM = Mathf.RoundToInt(distanceMM * 0.95f); //tolerance
         //speed is in mm/s
-        return ((float)car.speed / distanceMM) * deltaTime;
+        return (((float)car.speed / distanceMM) * 1.01f) * deltaTime;
     }
 }

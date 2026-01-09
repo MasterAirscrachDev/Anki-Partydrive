@@ -320,8 +320,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7b80529524e08d45ad2dcf9fe8c0218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothSpeedA: 8
-  smoothSpeedB: 7.5
+  smoothSpeedA: 9
+  smoothSpeedB: 8
 --- !u!65 &7913803558611405064
 BoxCollider:
   m_ObjectHideFlags: 0
