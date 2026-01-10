@@ -1,0 +1,632 @@
+/* Overdrive Server Control Panel - Angular Neon Theme */
+
+:root {
+    --neon-orange: #ff6b00;
+    --neon-purple: #b026ff;
+    --dark-bg: #0a0a0a;
+    --card-bg: #151515;
+    --border-color: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --success-color: #00ff88;
+    --error-color: #ff3366;
+    --warning-color: #ffaa00;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    background: var(--dark-bg);
+    color: var(--text-primary);
+}
+
+body {
+    margin: 0;
+    padding: 10px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 100%);
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Header */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 12px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-left: 4px solid var(--neon-orange);
+    clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%);
+}
+
+.header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Connection Status */
+.connectionStatus {
+    padding: 8px 16px;
+    border-radius: 0;
+    font-weight: bold;
+    clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.connected { 
+    background: linear-gradient(135deg, var(--success-color) 0%, #00cc66 100%);
+    color: var(--dark-bg);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.disconnected { 
+    background: linear-gradient(135deg, var(--error-color) 0%, #cc0044 100%);
+    color: var(--text-primary);
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+}
+
+.connecting { 
+    background: linear-gradient(135deg, var(--warning-color) 0%, #ff8800 100%);
+    color: var(--dark-bg);
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.5);
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(135deg, var(--neon-orange) 0%, var(--neon-purple) 100%);
+    border: none;
+    color: var(--text-primary);
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 0;
+    clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 30px rgba(255, 107, 0, 0.6), 0 5px 30px rgba(176, 38, 255, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Button Container */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Car Blocks */
+.carBlock {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-left: 4px solid var(--neon-purple);
+    border-radius: 0;
+    margin: 8px;
+    max-width: 300px;
+    min-width: 250px;
+    clip-path: polygon(0 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.carBlock:hover {
+    border-left: 4px solid var(--neon-orange);
+    box-shadow: 0 10px 30px rgba(255, 107, 0, 0.3);
+}
+
+.carBlockContent {
+    padding: 10px;
+}
+
+.carBlockContent p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.carBlockControls {
+    background: rgba(255, 107, 0, 0.1);
+    border-top: 1px solid var(--border-color);
+    padding: 10px;
+}
+
+/* Available Cars Section */
+#available-cars-section {
+    margin: 15px 0;
+    padding: 12px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-left: 4px solid var(--neon-orange);
+    clip-path: polygon(0 0, 100% 0, 99% 100%, 0 100%);
+}
+
+#available-cars-section h3 {
+    color: var(--neon-orange);
+    margin-bottom: 10px;
+}
+
+#available-cars-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Connected Cars Section */
+#car-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Track Progress Line */
+.track-progress-container {
+    margin: 20px 0;
+    width: 100%;
+}
+
+.track-progress-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.track-progress-line {
+    width: 100%;
+    height: 72px;
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    border-left: 4px solid var(--neon-purple);
+    border-radius: 0;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 99% 100%, 0 100%);
+    box-shadow: inset 0 0 20px rgba(176, 38, 255, 0.2);
+}
+
+.track-segment {
+    flex: 1;
+    border-right: 1px solid var(--border-color);
+    position: relative;
+    transition: background-color 0.3s;
+    min-width: 2px;
+}
+
+.track-segment:last-child {
+    border-right: none;
+}
+
+.track-segment:hover {
+    background: rgba(255, 107, 0, 0.1);
+}
+
+.track-segment-index {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: var(--text-secondary);
+    font-family: 'Syne Mono', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    pointer-events: none;
+}
+
+.car-dot {
+    position: absolute;
+    width: 20px;
+    height: 12px;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 12px currentColor;
+    border: 2px solid var(--dark-bg);
+    transition: left 0.016s linear, top 0.1s linear;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.car-dot:hover {
+    transform: translate(-50%, -50%) scale(1.3);
+    box-shadow: 0 0 20px currentColor;
+}
+
+/* Log Container */
+.logContainer {
+    background: #000000;
+    color: var(--text-primary);
+    font-family: 'Syne Mono', monospace;
+    padding: 15px;
+    border-radius: 0;
+    height: 250px;
+    overflow-y: auto;
+    margin: 10px 0;
+    border: 2px solid var(--border-color);
+    border-left: 4px solid var(--neon-purple);
+    clip-path: polygon(0 0, 100% 0, 99% 100%, 0 100%);
+    box-shadow: inset 0 0 20px rgba(176, 38, 255, 0.2);
+}
+
+.log-entry {
+    margin: 4px 0;
+    font-size: 12px;
+    padding: 2px 0;
+}
+
+.log-system { color: var(--success-color); }
+.log-utility { color: var(--warning-color); }
+.log-location { color: #00ffff; }
+.log-transition { color: var(--neon-orange); }
+.log-tracking { color: var(--neon-purple); }
+
+/* Logs Container */
+#logs-container {
+    margin: 15px 0;
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+#high-contrast-toggle {
+    padding: 8px 16px;
+    font-size: 12px;
+    background: linear-gradient(135deg, #333 0%, #555 100%);
+    color: var(--text-primary);
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+}
+
+#high-contrast-toggle:hover {
+    background: linear-gradient(135deg, var(--neon-orange) 0%, var(--neon-purple) 100%);
+}
+
+/* Input Elements */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, var(--neon-purple) 0%, var(--neon-orange) 100%);
+    outline: none;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    border-radius: 0;
+}
+
+input[type="range"]:hover {
+    opacity: 1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--neon-orange);
+    cursor: pointer;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.8);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--neon-orange);
+    cursor: pointer;
+    border: none;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.8);
+}
+
+input[type="checkbox"] {
+    height: 20px;
+    width: 20px;
+    accent-color: var(--neon-orange);
+    cursor: pointer;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 0;
+    border: 2px solid var(--border-color);
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%);
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+}
+
+/* Joystick */
+.joystick-container {
+    width: 200px;
+    height: 200px;
+    border: 3px solid var(--neon-purple);
+    border-radius: 50%;
+    position: relative;
+    background: radial-gradient(circle, rgba(176, 38, 255, 0.2) 0%, var(--dark-bg) 70%);
+    margin: 15px auto;
+    cursor: grab;
+    box-shadow: inset 0 0 30px rgba(176, 38, 255, 0.3), 0 0 20px rgba(176, 38, 255, 0.5);
+}
+
+.joystick-knob {
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, var(--neon-orange) 0%, var(--neon-purple) 100%);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.8);
+    border: 2px solid var(--neon-orange);
+}
+
+.joystick-knob:active {
+    cursor: grabbing;
+}
+
+/* Direct Drive Section */
+.direct-drive-section {
+    background: rgba(176, 38, 255, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    padding: 15px;
+    margin-top: 10px;
+    clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%);
+}
+
+.direct-drive-section h4 {
+    color: var(--neon-purple);
+    margin-bottom: 10px;
+}
+
+.default-drive-section {
+    margin-bottom: 15px;
+}
+
+.countdown {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--neon-orange);
+    text-align: center;
+    margin: 15px 0;
+    text-shadow: 0 0 20px rgba(255, 107, 0, 0.8);
+    font-family: 'Syne Mono', monospace;
+}
+
+#motor-values {
+    text-align: center;
+    font-family: 'Syne Mono', monospace;
+    color: var(--neon-orange);
+    margin: 10px 0;
+}
+
+/* Firmware Section */
+#firmware-control,
+#model-update-control {
+    max-width: 500px;
+}
+
+.firmware-option {
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.firmware-option:hover {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 15px rgba(255, 107, 0, 0.5);
+}
+
+.firmware-option.active {
+    background: linear-gradient(135deg, var(--neon-orange) 0%, var(--neon-purple) 100%);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
+}
+
+#firmware-button-controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+/* Progress Bar */
+#firmware-progress-container {
+    margin-top: 15px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 0;
+    height: 30px;
+    overflow: hidden;
+    position: relative;
+}
+
+#firmware-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-orange) 0%, var(--neon-purple) 100%);
+    transition: width 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
+}
+
+#firmware-progress-text {
+    color: var(--neon-orange);
+    font-weight: bold;
+    font-family: 'Syne Mono', monospace;
+}
+
+/* Track Section */
+#track-section {
+    margin-top: 15px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-left: 4px solid var(--neon-orange);
+    padding: 12px;
+    clip-path: polygon(0 0, 100% 0, 99% 100%, 0 100%);
+}
+
+#track-section h3 {
+    color: var(--neon-orange);
+    margin-bottom: 10px;
+}
+
+#track-image-container {
+    margin: 10px 0;
+    min-height: 200px;
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#track-image {
+    max-width: 100%;
+    max-height: 500px;
+    display: none;
+    border: 2px solid var(--border-color);
+}
+
+#track-loading {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+#track-status {
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Special Buttons */
+#disconnect-car-btn {
+    background: linear-gradient(135deg, var(--error-color) 0%, #aa0033 100%);
+    width: 100%;
+    margin-top: 10px;
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+}
+
+#disconnect-car-btn:hover {
+    box-shadow: 0 5px 25px rgba(255, 51, 102, 0.7);
+}
+
+#firmware-warning-btn,
+#model-warning-btn {
+    background: linear-gradient(135deg, var(--error-color) 0%, #aa0033 100%);
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+}
+
+#firmware-flash-btn,
+#model-update-btn {
+    background: linear-gradient(135deg, #ff6600 0%, #cc3300 100%);
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+}
+
+#model-cancel-btn {
+    background: linear-gradient(135deg, #444 0%, #666 100%);
+    box-shadow: 0 0 10px rgba(100, 100, 100, 0.5);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--neon-orange) 0%, var(--neon-purple) 100%);
+    border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .button-container {
+        flex-direction: column;
+    }
+    
+    button {
+        width: 100%;
+    }
+    
+    .carBlock {
+        max-width: 100%;
+    }
+}

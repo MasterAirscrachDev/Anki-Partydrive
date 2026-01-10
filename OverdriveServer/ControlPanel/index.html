@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Overdrive Server Control Panel</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Syne+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header-container">
+        <h1>Overdrive Server Control Panel</h1>
+        <div class="header-controls">
+            <button id="func-scan-track">Scan Track</button>
+            <button id="func-lineup">Lineup</button>
+            <div id="connection-status" class="connectionStatus disconnected" style="cursor: pointer;">WebSocket: Disconnected</div>
+        </div>
+    </div>
+    
+    <div id="available-cars-section">
+        <h3>Available Cars</h3>
+        <div id="available-cars-list">
+            <!-- Available cars will be populated here -->
+        </div>
+    </div>
+
+    <h3>Connected Cars</h3>
+    <div id="car-list"></div>
+
+    <!-- Track Progress Line -->
+    <div class="track-progress-container">
+        <div class="track-progress-label">TRACK PROGRESS</div>
+        <div class="track-progress-line" id="trackProgressLine">
+            <!-- Segments will be dynamically added here -->
+        </div>
+    </div>
+
+    <div id="logs-container">
+        <h3>Real-time Logs</h3>
+        <div id="system-logs" class="logContainer">
+            <div class="log-entry log-system">System logs will appear here...</div>
+        </div>
+    </div>
+
+    <!-- Template for car blocks (hidden) -->
+    <div id="car-data" class="carBlock" style="display: none;">
+        <div class="carBlockContent">
+            <p id="car-name">Name: Template</p>
+            <p id="car-id">ID: 0000000000</p>
+            <p id="car-lane-offset-read">Lane Offset: 0.0000</p>
+            <input type="range" id="car-lane-offset-slider-read" min="-67.5" max="67.5" value="4.5" step="4.5">
+            <p id="car-speed-read">Speed: 0</p>
+            <p id="car-battery">Battery:</p>
+            <p>Is Charging: <input type="checkbox" id="car-charging" disabled></p>
+            <p>On Track: <input type="checkbox" id="car-on-track" disabled></p>
+            <button id="disconnect-car-btn">Disconnect Car</button>
+        </div>
+        <div class="carBlockControls">
+            <div class="default-drive-section">
+                <p id="car-speed">Speed: 0</p>
+                <input type="range" id="car-speed-slider" name="speed" min="0" max="1000" value="0" step="10">
+                <p id="car-lane-offset">Lane Offset: 9.0000</p>
+                <input type="range" id="car-lane-offset-slider" min="-117" max="117" value="9" step="9">
+                <button id="func-car-control">Control Car</button>
+            </div>
+            
+            <div class="direct-drive-section">
+                <h4>Experimental Direct Drive</h4>
+                <button id="func-enable-direct">Enable Direct Mode</button>
+                <div id="direct-countdown" class="countdown" style="display: none;"></div>
+                <div id="joystick-control" style="display: none;">
+                    <div class="joystick-container" id="joystick">
+                        <div class="joystick-knob" id="joystick-knob"></div>
+                    </div>
+                    <p id="motor-values">Left: 0, Right: 0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firmware and Model Controls -->
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div id="firmware-control" class="carBlock">
+            <div class="carBlockContent">
+                <h3>Change Firmware</h3>
+                <button id="firmware-warning-btn">Flash Firmware (ADVANCED)</button>
+                
+                <div id="firmware-controls" style="display: none;">
+                    <p><strong>Car:</strong></p>
+                    <select id="firmware-car-dropdown">
+                        <option value="">Select a car...</option>
+                    </select>
+                    
+                    <p><strong>Firmware:</strong></p>
+                    <div id="firmware-button-controls">
+                        <button id="firmware-stable-btn" class="firmware-option">Legacy</button>
+                        <button id="firmware-latest-btn" class="firmware-option">Latest</button>
+                        <button id="firmware-toggle-text" class="firmware-option">T</button>
+                    </div>
+                    <input type="text" id="firmware-path-input" placeholder="Enter custom firmware path" style="display: none;">
+                    
+                    <div id="firmware-progress-container" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <span>Progress:</span>
+                            <span id="firmware-progress-text">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="firmware-progress-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button id="firmware-flash-btn">Flash Firmware</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="model-update-control" class="carBlock">
+            <div class="carBlockContent">
+                <h3>Update Car Model</h3>
+                <button id="model-warning-btn">Update Model</button>
+                
+                <div id="model-controls" style="display: none;">
+                    <p><strong>Car:</strong></p>
+                    <select id="model-car-dropdown">
+                        <option value="">Select a car...</option>
+                    </select>
+                    
+                    <p><strong>New Model Number:</strong></p>
+                    <input type="number" id="model-number-input" placeholder="Enter model number (0-255)" min="0" max="255">
+                    
+                    <div>
+                        <button id="model-update-btn">Update Model</button>
+                        <button id="model-cancel-btn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Track Visualization -->
+    <div id="track-section">
+        <h3>Track Visualization</h3>
+        <div>
+            <div id="track-image-container">
+                <img id="track-image" alt="Track visualization">
+                <div id="track-loading">Click "Refresh Track" to load visualization</div>
+            </div>
+            <button id="refresh-track-btn">Refresh Track</button>
+            <div id="track-status"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

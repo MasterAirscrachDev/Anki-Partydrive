@@ -18,7 +18,7 @@ I am unsure at this time if it is possible to dissasemble the gearbox.
 
 For transparency, I don't have much experience with electronics so I am simply listing the components that are known.  
 
-The cars have 3 rgb leds on the top of the pcb, 1 for back/charging and 2 for the front.  
+The cars have a rgb led on the top of the pcb, and 2 for back and 2 for the front.  
 Also the `Linear Technology LTC4054` is used for charging the battery. 
 
 The underside of the PCB is more complex, featuring the contacts for the charging bridge, 2 beam sensors to measure the current wheel speed.

@@ -1,3 +1,4 @@
+using System; //requred for Partydrive
 namespace OverdriveServer{
     /// <summary>
     /// This is the Network Structures class, it contains all data structures used in the websocket.
@@ -14,14 +15,16 @@ namespace OverdriveServer{
         [System.Serializable]
         public class CarData{
             public string name {get; set;} //Custom name
-            public int model {get; set;} //ModelName
+            public uint model {get; set;} //ModelName
             public string id {get; set;} //Bluetooth ID
             public float offsetMM {get; set;} //Horizontal Offset mm +/-
             public int speedMMPS {get; set;} //Speed in mm/s
             public bool charging {get; set;} //Is On Charger (should take priority over onTrack)
             public bool onTrack {get; set;} //Is the car on the track (doesnt seem very useful) (Addendum: goated)
             public int batteryStatus {get; set;} //0 = normal, 1 = charged, -1 = low battery
-            public CarData(string name, string id, int model){
+            public bool hasPFeatures {get; set;} //Does the car have Partydrive features (newer firmware)
+            /// REMOVE IN PARTYDRIVE
+            public CarData(string name, string id, uint model){
                 this.name = name;
                 this.id = id;
                 this.model = model;
@@ -30,6 +33,18 @@ namespace OverdriveServer{
                 this.name = copyBase.name;
                 this.id = copyBase.id;
                 this.model = copyBase.model;
+            }
+            /// END REMOVE IN PARTYDRIVE
+        }
+        [System.Serializable]
+        public class AvailableCarData{
+            public uint model {get; set;} //ModelName
+            public string id {get; set;} //Bluetooth ID
+            public DateTime lastSeen {get; set;} //Last time the car was seen
+            public AvailableCarData(string id, uint model, DateTime lastSeen){
+                this.id = id;
+                this.model = model;
+                this.lastSeen = lastSeen;
             }
         }
         [System.Serializable]
@@ -67,7 +82,10 @@ namespace OverdriveServer{
         }
         [System.Serializable]
         public enum SegmentType{
-            Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding
+            //Overdrive Track Pieces
+            Unknown, Straight, Turn, PreFinishLine, FinishLine, FnFSpecial, CrissCross, JumpRamp, JumpLanding,
+            //Drive Track Pieces
+            Oval, Bottleneck, Crossroads, F1, DoubleCross
         }
         [System.Serializable]
         public class SegmentData{
@@ -92,9 +110,9 @@ namespace OverdriveServer{
         public class LightData{
             public LightChannel channel {get; set;} //Light channel (see LightChannel)
             public LightEffect effect {get; set;} //Light effect (see LightEffect)
-            public int startStrength {get; set;} //Start strength (0-255)
-            public int endStrength {get; set;} //End strength (0-255)
-            public int cyclesPer10Seconds {get; set;} //Cycles per 10 seconds (0-255)
+            public int startStrength {get; set;} //The starting intensity (0-14) or starting time (0-11) for this effect
+            public int endStrength {get; set;} //The ending intensity (0-14) or ending time (0-11) for this effect
+            public int cyclesPer10Seconds {get; set;} //Cycles per 10 seconds (0-255) (10 = 1 cycle per second, 100 = 10 cycles per second)
         }
         
         // Event types for webhooks
@@ -102,25 +120,31 @@ namespace OverdriveServer{
         EVENT_UTILITY_LOG = "utility_log", //Utility log string
         EVENT_CAR_LOCATION = "car_location", //Car location data (see LocationData)
         EVENT_CAR_TRANSITION = "car_transition", //Car transition data (see TransitionData)
-        EVENT_CAR_SEGMENT = "car_segment", //Car segment data (see NetSegment)
+        EVENT_CAR_SEGMENT = "car_segment", //Car segment data, most accurate, extrapolated from both Location and Transition (see SegmentData)
         EVENT_CAR_DELOCALIZED = "car_delocalized", //Car delocalized (currently not used, see MSG_CAR_DELOCALIZED for the time being)
         EVENT_CAR_TRACKING_UPDATE = "car_tracking_update", //Car tracking update (see CarLocationData)
         EVENT_TR_DATA = "track_data", //Track data (an array of SegmentData)
-        EVENT_CAR_DATA = "car_data"; //Car data (an array of CarData)
+        EVENT_CAR_DATA = "car_data", //Car data (an array of CarData)
+        EVENT_AVAILABLE_CARS = "available_cars"; //Available cars data (an array of AvailableCarData)
 
         public const string SV_CAR_MOVE = "car_move_update", //Car move update [id:speed:offset] (speed and offset may be - meaning keep existing value)
         SV_REFRESH_CONFIGS = "refresh_configs", //Refresh configs (used to reload the car configs, name, speedbalance ect)
         SV_LINEUP = "lineup", // Request lineup (used to lineup the cars on the track)
         SV_LINEUP_CANCEL = "lineup_cancel", // Cancel lineup (used to cancel the lineup)
-        SV_CAR_S_LIGHTS = "car_s_lights", //Simple lights [id:Red:Green:Blue] (colours are 0-255)
+        SV_CAR_S_LIGHTS = "car_s_lights", //Simple lights [id:Red:Green:Blue] (colours are 0-14)
         SV_CAR_C_LIGHTS = "car_c_lights", //Complex lights, a string id and array of LightData (see LightData) Min 1, Max 3
         SV_GET_TRACK = "get_track", //Get track (should return EVENT_TRACK_DATA with the track data)
         SV_TR_START_SCAN = "start_track_scan", //Start track scan (used to start a track scan)
         SV_TR_CANCEL_SCAN = "stop_track_scan", //Stop track scan (used to stop a track scan)
-        SV_SCAN = "scan", //Scan for cars (used to start a scan for cars)
         SV_GET_CARS = "request_cars", //Request cars (should return EVENT_CAR_DATA with the car data)
+        SV_GET_AVAILABLE_CARS = "get_available_cars", //Get available cars (should return EVENT_AVAILABLE_CARS with the available car data)
+        SV_CONNECT_CAR = "connect_car", //Connect to a car by ID [carID] (used to connect to a specific available car)
+        SV_DISCONNECT_CAR = "disconnect_car", //Disconnect from a car by ID [carID] (used to disconnect from a specific connected car)
         SV_CAR_FLASH = "car_flash", //DONT USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING || Flash car [id:path] (used to flash a car, path should be the ota file)
-        SV_TTS = "tts", //Text to speech [message] (used to send a message to the TTS engine)
+        SV_CAR_UPDATE_MODEL = "car_update_model", //Doesnt work on most cars || Update car model [id:newModel] (experimental feature to change car model type)
+        SV_CAR_DIRECT_DRIVE = "car_direct_drive", //Direct drive car [id:left:right] direct drive the wheel motors
+        SV_ENABLE_DIRECT = "enable_direct", //Enable direct mode [id] (used to enable direct drive for a car)
+        SV_UPDATE_CAR_CONFIG = "update_car_config", //Update car config [id:newName:speedBalanceChange] (used to update a cars config)
         SV_CLIENT_CLOSED = "client_closed"; //Client closed (used to indicate a client has closed the connection intentionally)
         public static class UtilityMessages { //these are ids for the utility messages (parse them as strings)
             public const string MSG_CAR_CONNECTED = "cc", //:carID:name (used to indicate a car has connected)
@@ -128,10 +152,12 @@ namespace OverdriveServer{
             MSG_CAR_DELOCALIZED = "deloc", //:carID (used to indicate a car is not on the track)
             MSG_CAR_SPEED_UPDATE = "sud", //:carID:speed:trueSpeed (Something internal has changed the speed)
             MSG_CAR_POWERUP = "pup", //:carID (a car has driven on a FnF powerup)
-            MSG_TR_SCAN_UPDATE = "skup", //:carID:trackValidated (true/false/in-progress)
+            MSG_TR_SCAN_UPDATE = "skup", //:trackValidated (true/false/in-progress)
             MSG_CAR_STATUS_UPDATE = "csu", //:carID (a cars status has changed, call /cars)
             MSG_LINEUP = "lu", //:carID:remainingCars (if 0 then lineup is complete)
             MSG_CAR_FLASH_PROGRESS = "cfp", //:carID:currBytes:totalBytes (both ints, used to indicate the progress of a car flash)
+            MSG_CAR_FLASH_SUCCESS = "cfs", //:carID (used to indicate a car firmware flash completed successfully)
+            MSG_CAR_FLASH_FAILED = "cff", //:carID (used to indicate a car firmware flash failed)
             MSG_CAR_JUMPED = "jump", //:carID (a car has jumped, used to indicate a car has jumped a segment)
             MSG_CAR_LANDED = "land"; //:carID:success (a car has landed, used to indicate a car has landed successfully or not after a jump)
         }
@@ -144,6 +170,8 @@ namespace OverdriveServer{
             Freewheel = 15, x52 = 16, x52Ice = 17,
             //FnF Cars
             Mammoth = 18, Dynamo = 19,
+            //New Custom Models (Only in partydrive: this is the master list)
+            IceWave = 13, NeonPrime = 21,
             Unknown = 0
         }
     }
