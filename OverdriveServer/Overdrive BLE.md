@@ -3,11 +3,12 @@ This is subject to change/improvement as I learn more about the Anki Overdrive A
 All expansion on this is welcome.
 
 ### Usful Links
+
+[Protocol (internal) in C#, this is the most complete SDK](https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/OverdriveServer/Protocol.cs)
+
 [Offical Anki SDK in C](https://github.com/anki/drive-sdk)
 
 [AnkiNodeDrive SDK in Node.js](https://github.com/gravesjohnr/AnkiNodeDrive)
-
-[Protocol (internal) in C#](https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/OverdriveServer/Protcol.cs)
 
 ## Getting Started
 The cars will advertise openly using Bluetooth LE.
@@ -34,6 +35,6 @@ Commands have a variable byte length but follow the format
 `length,commandID,data1,data2,...`
 
 for the most complete list of commands see 
-[Protocol.cs](https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/OverdriveServer/Program.cs)
+[Protocol.cs](https://github.com/MasterAirscrachDev/Anki-Partydrive/blob/main/OverdriveServer/Protocol.cs)
 
 [Back To Root](https://github.com/MasterAirscrachDev/Anki-Partydrive?tab=readme-ov-file#anki-partydrive)
