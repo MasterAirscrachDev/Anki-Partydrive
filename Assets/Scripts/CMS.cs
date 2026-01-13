@@ -46,7 +46,7 @@ public class CMS : MonoBehaviour
             ui.SetUILayer(7);
         }
         else if(cms.gameMode == "Party"){
-            Debug.Log("Party Mode not done yet");
+            ui.SetUILayer(9);
         }
     }
     

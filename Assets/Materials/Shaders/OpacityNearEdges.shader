@@ -6,6 +6,7 @@ Shader "Custom/OpacityNearEdges"
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
+        _Emmisive ("Emmisive", Range(0,1)) = 0.0
         _PropEdgeSharpness ("Edge Sharpness", Range(1, 10)) = 5
     }
     SubShader
@@ -32,6 +33,7 @@ Shader "Custom/OpacityNearEdges"
 
         half _Glossiness;
         half _Metallic;
+        half _Emmisive;
         half _PropEdgeSharpness;
         fixed4 _Color;
 
@@ -69,6 +71,7 @@ Shader "Custom/OpacityNearEdges"
             edgeOpacity = 1 - edgeOpacity;
             o.Alpha = min(edgeOpacity, c.a); // Ensure we don't reduce the texture's inherent alpha
             o.Metallic = min(edgeOpacity, _Metallic); // Ensure we don't reduce the texture's inherent alpha
+            o.Emission = o.Albedo * _Emmisive;
 
         }
         ENDCG

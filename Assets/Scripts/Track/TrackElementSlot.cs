@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TrackElementSlot : MonoBehaviour
 {
-    [SerializeField] TrackElementType type = TrackElementType.Any;
+    public TrackElementType type = TrackElementType.Any;
     void OnDrawGizmos(){
         Gizmos.color = type == TrackElementType.Any ? Color.blue : Color.green;
         Gizmos.DrawSphere(transform.position, 0.01f);
@@ -12,6 +12,6 @@ public class TrackElementSlot : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + transform.forward * 0.1f);
     }
     public enum TrackElementType{
-        Any, Positive
+        Any = 0, Energy = 1, Powerup = 2
     }
 }

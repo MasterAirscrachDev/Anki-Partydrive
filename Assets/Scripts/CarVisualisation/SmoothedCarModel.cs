@@ -34,4 +34,8 @@ public class SmoothedCarModel : MonoBehaviour
             transform.position = targetPos;
         }
     }
+    public string GetCarID()
+    {
+        return followTarget.GetComponent<CarEntityPosition>().GetID();
+    }
 }

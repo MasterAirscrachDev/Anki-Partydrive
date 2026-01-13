@@ -154,6 +154,9 @@ public class CarEntityPosition : MonoBehaviour
         }
         return transform.position;
     }
+    public string GetID(){
+        return id;
+    }
 }
 [System.Serializable]
 public class TrackCoordinate

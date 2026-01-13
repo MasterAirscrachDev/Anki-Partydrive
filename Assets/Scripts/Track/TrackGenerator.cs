@@ -201,39 +201,33 @@ public class TrackGenerator : MonoBehaviour
                 }
             }
         }else{//Overdrive Modular Track
-            for (int i = 0; i < segments.Length; i++)
-            {
+            for (int i = 0; i < segments.Length; i++) {
                 GameObject track = null;
                 Quaternion rot = Quaternion.LookRotation(forward);
                 bool useFullTrack = segments[i].validated && fullyValidated;
 
                 //round position to 1 decimal place
                 pos = new Vector3(Mathf.Round(pos.x * 10) / 10, Mathf.Round(pos.y * 10) / 10, Mathf.Round(pos.z * 10) / 10);
-                if (segments[i].type == SegmentType.FinishLine)
-                {
+                if (segments[i].type == SegmentType.FinishLine) {
                     track = Instantiate(useFullTrack ? trackPrefabs[0] : scannningPrefabs[0], pos, rot, transform);
                     pos += forward;
                 }
-                if (segments[i].type == SegmentType.Straight)
-                {
+                if (segments[i].type == SegmentType.Straight) {
                     track = Instantiate(useFullTrack ? trackPrefabs[1] : scannningPrefabs[1], pos, rot, transform);
                     pos += forward;
                 }
-                if (segments[i].type == SegmentType.FnFSpecial)
-                {
+                if (segments[i].type == SegmentType.FnFSpecial) {
                     track = Instantiate(useFullTrack ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
                     if (segments[i].flipped) { track.transform.localScale = new Vector3(-1, 1, 1); }
                     pos += forward;
                 }
-                if (segments[i].type == SegmentType.Turn)
-                {
+                if (segments[i].type == SegmentType.Turn) {
                     track = Instantiate(useFullTrack ? trackPrefabs[3] : scannningPrefabs[3], pos, rot, transform);
                     track.transform.localScale = new Vector3(segments[i].flipped ? 1 : -1, 1, 1);
                     forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
                     pos += forward;
                 }
-                if (segments[i].type == SegmentType.CrissCross)
-                {
+                if (segments[i].type == SegmentType.CrissCross) {
                     bool hasCrissCross = false;
                     int matchingCrissCrossIndex = -1;
                     
@@ -268,27 +262,20 @@ public class TrackGenerator : MonoBehaviour
                     }
                     pos += forward;
                 }
-                if (segments[i].type == SegmentType.JumpRamp)
-                {
+                if (segments[i].type == SegmentType.JumpRamp) {
                     track = Instantiate(useFullTrack ? trackPrefabs[9] : scannningPrefabs[5], pos, rot, transform);
                     pos += forward * 2;
                 }
 
                 trackPieces.Add(track);
-                if (track != null)
-                {
+                if (track != null) {
                     track.name = $"{i} ({segments[i].type})";
-                    if (segments[i].validated && fullyValidated)
-                    {
+                    if (segments[i].validated && fullyValidated) {
                         if (i == 1)
-                        {
-                            track.GetComponent<TrackSpline>().flipped = segments[i].flipped;
-                        }
-                        else if (i > 1)
-                        {
+                        { track.GetComponent<TrackSpline>().flipped = segments[i].flipped; }
+                        else if (i > 1) {
                             if (trackPieces[i] == null) { continue; }
-                            try
-                            {
+                            try {
                                 int offset = 1;
                                 if (trackPieces[i - 1] == null) { offset = 2; }
                                 if (trackPieces[i - offset] == null) { Debug.Log($"Track {i} was null"); continue; }
@@ -297,21 +284,14 @@ public class TrackGenerator : MonoBehaviour
                                 Debug.DrawLine(lastTrackEndLink, lastTrackStartLink, Color.red, 400);
                                 float linkDist = Vector3.Distance(lastTrackEndLink, lastTrackStartLink);
                                 if (linkDist > 0.01f)
-                                {
-                                    track.GetComponent<TrackSpline>().flipped = true;
-                                }
+                                { track.GetComponent<TrackSpline>().flipped = true; }
                             }
                             catch (System.Exception e)
-                            {
-                                Debug.LogError(e);
-                            }
-
+                            { Debug.LogError(e); }
                         }
                     }
                     if (!fullyValidated && track != null && segments[i].validated)
-                    {
-                        track.GetComponent<MeshRenderer>().material = validConfirmedMat;
-                    }
+                    { track.GetComponent<MeshRenderer>().material = validConfirmedMat; }
                 }
                 Debug.DrawRay(lastPos + (Vector3.up * 0.1f), forward * 0.5f, Color.blue, 5);
                 lastPos = pos;
@@ -319,12 +299,9 @@ public class TrackGenerator : MonoBehaviour
         }
 
         
-        if (animateLastSegment && trackPieces.Count > 0)
-        {
+        if (animateLastSegment && trackPieces.Count > 0) { //Animation for last segment only
             if (trackPieces[trackPieces.Count - 1] != null)
-            {
-                trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>();
-            }
+            { trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>(); }
         }
     }
 
@@ -471,6 +448,21 @@ public class TrackGenerator : MonoBehaviour
         Vector3 pointA = splineA.GetPoint(a.progression, a.offset);
         Vector3 pointB = splineB.GetPoint(b.progression, b.offset);
         Debug.DrawLine(pointA, pointB + new Vector3(0,0.01f,0), color, duration);
+    }
+    public List<GameObject> GetSegmentsWithTrackElementSlots()
+    {
+        List<GameObject> segmentsWithSlots = new List<GameObject>();
+        //for each segment in the track
+        foreach (GameObject segment in trackPieces)
+        {
+            //get all element slots in the segment
+            TrackElementSlot[] segmentSlots = segment.GetComponentsInChildren<TrackElementSlot>();
+            if(segmentSlots != null && segmentSlots.Length > 0)
+            {
+                segmentsWithSlots.Add(segment);
+            }
+        }
+        return segmentsWithSlots;
     }
 }
 public class SegmentLength
