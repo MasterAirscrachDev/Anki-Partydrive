@@ -13,7 +13,6 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] List<GameObject> trackPieces;
     public bool hasTrack = false;
     int lastSegmentCount = 0;
-    public static TrackGenerator track;
     Dictionary<int, SegmentLength> segmentLengthCache = new Dictionary<int, SegmentLength>();
 
     [ContextMenu("Generate Track From Segments")]
@@ -28,11 +27,6 @@ public class TrackGenerator : MonoBehaviour
         //generate the track
         Generate(segments, true);
         Debug.Log($"Track validated with {segments.Length} segments, {trackPieces.Count} track pieces");
-    }
-
-    void Awake()
-    {
-        if (track == null) { track = this; } else { DestroyImmediate(this); }
     }
     int LoopIndex(int index)
     {
@@ -68,12 +62,12 @@ public class TrackGenerator : MonoBehaviour
         {
             if (validated)
             {
-                UIManager.active.SetScanningStatusText("");
+                SR.ui.SetScanningStatusText("");
                 StartCoroutine(OnFinalGenerate());
                 return;
             }
             if (segments == null || segments.Length == 0) { return; } //if there are no segments, do nothing  
-            UIManager.active.SetScanningStatusText(segments[0].validated ? "Double Checking..." : "Scanning...");
+            SR.ui.SetScanningStatusText(segments[0].validated ? "Double Checking..." : "Scanning...");
             GenerateTrackObjects(lastSegmentCount != segments.Length, false);
             lastSegmentCount = segments.Length;
             hasTrack = validated;
@@ -115,7 +109,7 @@ public class TrackGenerator : MonoBehaviour
         size.x -= center.x; size.y -= center.y;
         size.x *= 2; size.y *= 2;
         if(autoSwitchCamera){
-            UIManager.active.SwitchToTrackCamera(true);
+            SR.ui.SwitchToTrackCamera(true);
         }
         trackCamera.TrackUpdated(center, size);
         int specialTrack = 0;
@@ -455,6 +449,7 @@ public class TrackGenerator : MonoBehaviour
         //for each segment in the track
         foreach (GameObject segment in trackPieces)
         {
+            if(segment == null) { continue; }
             //get all element slots in the segment
             TrackElementSlot[] segmentSlots = segment.GetComponentsInChildren<TrackElementSlot>();
             if(segmentSlots != null && segmentSlots.Length > 0)

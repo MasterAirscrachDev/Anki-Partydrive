@@ -50,10 +50,10 @@ public class TimeTrialMode : GameMode
     {
         // Wait 2 minutes 59 seconds (179 seconds total for 3-minute trial)
         yield return new WaitForSeconds(60);
-        AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.RemainingTime2Mins);
+        SR.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.RemainingTime2Mins);
         
         yield return new WaitForSeconds(60);
-        AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.RemainingTime1Min);
+        SR.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.RemainingTime1Min);
         
         yield return new WaitForSeconds(50);
         
@@ -63,7 +63,7 @@ public class TimeTrialMode : GameMode
         { Count10, Count9, Count8, Count7, Count6, Count5, Count4, Count3, Count2, Count1 };
         while(seconds > 0 && gameActive)
         {
-            AudioAnnouncerManager.pa.PlayLine(announcerLines[10 - seconds]);
+            SR.pa.PlayLine(announcerLines[10 - seconds]);
             showText.text = $"{seconds}";
             yield return new WaitForSeconds(1);
             seconds--;
@@ -75,7 +75,7 @@ public class TimeTrialMode : GameMode
             
             //get the model of the winning car
             ModelName winningCarModel = cms.CarModelFromId(carTimes[0].id);
-            AudioAnnouncerManager.pa.PlayLine(CarWins, winningCarModel);
+            SR.pa.PlayLine(CarWins, winningCarModel);
         }
     }
     

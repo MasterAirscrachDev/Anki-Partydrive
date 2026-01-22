@@ -19,7 +19,7 @@ public class CarsManagement : MonoBehaviour
     void OnEnable() {
         if(cms == null){
             cms = FindFirstObjectByType<CMS>();
-            carInterface = CarInteraface.io;
+            carInterface = SR.io;
         }   
         backButton.SetActive(!cms.isGame);
         raceButton.SetActive(cms.isGame);
@@ -45,7 +45,7 @@ public class CarsManagement : MonoBehaviour
         RenderCarList();
     }
     public void LoadGamemode(){ //called from UI
-        UIManager ui = UIManager.active;
+        UIManager ui = SR.ui;
         if(cms.gameMode == "Time Trial"){
             ui.SetUILayer(5);
         }

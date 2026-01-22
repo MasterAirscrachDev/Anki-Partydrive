@@ -7,23 +7,22 @@ using static OverdriveServer.NetStructures;
 //This script manages all cars that exist in the scene, creating and destroying them as needed
 public class CarEntityTracker : MonoBehaviour
 {
-    [SerializeField] TrackGenerator track;
     [SerializeField] GameObject carPrefab;
     [SerializeField] Dictionary<string, CarEntityPosition> trackers = new Dictionary<string, CarEntityPosition>();
 
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, CarTrust trust){
-        if(!track.hasTrack){ return; } //if no track or we are on the finish line, do nothing
+        if(!SR.track.hasTrack){ return; } //if no track or we are on the finish line, do nothing
         CarEntityPosition entity = trackers.ContainsKey(id) ? trackers[id] : null;
         //special cases for starting lines (prefinishline doesnt have a spline, its part of finishline)
         //jumpLanding doesn't have a spline either, stay on jump ramp
-        SegmentType segmentType = track.GetSegmentType(trackIndex);
+        SegmentType segmentType = SR.track.GetSegmentType(trackIndex);
         TrackSpline trackPiece;
         if(segmentType == SegmentType.PreFinishLine){ //if we are on the prefinish line, we need to get the next piece of track
-            trackPiece = track.GetTrackSpline(trackIndex + 1); //get the next piece of track
+            trackPiece = SR.track.GetTrackSpline(trackIndex + 1); //get the next piece of track
         } else if(segmentType == SegmentType.JumpLanding){ //if we are on the jump landing, we need to stay on the jump ramp
-            trackPiece = track.GetTrackSpline(trackIndex - 1); //get the previous piece of track
+            trackPiece = SR.track.GetTrackSpline(trackIndex - 1); //get the previous piece of track
         }else{
-            trackPiece = track.GetTrackSpline(trackIndex); //get the current piece of track
+            trackPiece = SR.track.GetTrackSpline(trackIndex); //get the current piece of track
         }
         if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
         
@@ -42,14 +41,14 @@ public class CarEntityTracker : MonoBehaviour
     CarEntityPosition AddTracker(string id){
         if(trackers.ContainsKey(id)){ return trackers[id]; } //return the existing tracker (should never happen)
         CarEntityPosition entity = Instantiate(carPrefab, Vector3.zero, Quaternion.identity).GetComponent<CarEntityPosition>();
-        int model = (int)CarInteraface.io.GetCarFromID(id).modelName;
+        int model = (int)SR.io.GetCarFromID(id).modelName;
         entity.Setup(id, model); //setup the car entity
         entity.gameObject.name = $"{id} True Position";
         entity.transform.GetChild(0).gameObject.name = $"{id} Model";
         entity.carModelManager = entity.transform.GetChild(0).GetComponent<CarModelManager>();
 
         //check if there is a CarController with this ID to get the colour from
-        CarController cc = CMS.cms.GetController(id);
+        CarController cc = SR.cms.GetController(id);
         Color color = cc != null ? cc.GetPlayerColor() : Color.clear;
 
         entity.carModelManager.Setup(model, color); //make this load colour later
@@ -117,6 +116,12 @@ public class CarEntityTracker : MonoBehaviour
             return trackers[id].GetVisualPosition();
         }
         return Vector3.zero; //car not found
+    }
+    public Transform GetCarVisualTransform(string id){
+        if(trackers.ContainsKey(id)){
+            return trackers[id].GetVisualTransform();
+        }
+        return null; //car not found
     }
     public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;

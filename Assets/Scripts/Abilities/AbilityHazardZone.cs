@@ -32,7 +32,7 @@ public class AbilityHazardZone : MonoBehaviour
     }
     void ApplyHazardEffect()
     {
-        List<CarController> hits = CMS.cms.CubeCheckControllers(transform.position, transform.forward, hazardRange);
+        List<CarController> hits = SR.cms.CubeCheckControllers(transform.position, transform.forward, hazardRange);
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
             if(energyChange != 0){

@@ -8,7 +8,7 @@ public class TrackPathSolver
     // Dynamic method to get track width based on current position
     static float GetTrackHalfWidth(TrackCoordinate coord)
     {
-        TrackSpline spline = TrackGenerator.track.GetTrackSpline(coord.idx);
+        TrackSpline spline = SR.track.GetTrackSpline(coord.idx);
         if (spline == null) return 0; // FailCase
         return spline.GetWidth(coord.progression);
     }
@@ -37,7 +37,7 @@ public class TrackPathSolver
     {
         SegmentType[] futureTrack = new SegmentType[inputs.depth + 1]; //depth + 1 because we want to include the current segment
         for (int i = 0; i < futureTrack.Length; i++)
-        { futureTrack[i] = TrackGenerator.track.GetSegmentType(inputs.ourCoord.idx + i); }
+        { futureTrack[i] = SR.track.GetSegmentType(inputs.ourCoord.idx + i); }
 
         string log = "";
         for (int i = 0; i < futureTrack.Length; i++)
@@ -66,7 +66,7 @@ public class TrackPathSolver
                 if (carIsInOurLane && weAreAheadOf)
                 { //if the car is in our lane and we are ahead of it, set blocked ahead to true
                     blockedAhead = true;
-                    TrackGenerator.track.DrawLineBetweenTrackCoordinates(inputs.ourCoord, carLoc, Color.red, 0.01f);
+                    SR.track.DrawLineBetweenTrackCoordinates(inputs.ourCoord, carLoc, Color.red, 0.01f);
                     log += $"Blocked Ahead by car at offset {carLoc.offset}\n";
                 }
                 else if (XDistance < (carLoc.SIDE_DISTANCE + inputs.ourCoord.SIDE_DISTANCE))
@@ -151,7 +151,7 @@ public class TrackPathSolver
                             }
                         }
 
-                        bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
+                        bool turnReversed = SR.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
                         // Inside of the turn (negative offset for left turn, positive for right turn)
                         float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
                         targetLane = turnReversed ? currentTrackHalfWidth : -currentTrackHalfWidth;
@@ -172,7 +172,7 @@ public class TrackPathSolver
                 {
                     bool onTurnNow = futureTrack[0] == SegmentType.Turn;
                     int turnIndex = onTurnNow ? 0 : 1;
-                    bool turnReversed = TrackGenerator.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
+                    bool turnReversed = SR.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
 
                     // Take ideal racing line but adjust if blocked
                     float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
@@ -444,7 +444,7 @@ public class TrackPathSolver
         //turn outside = 640mm
         int distanceMM = 560; //default distance for straight track
 
-        TrackGenerator trackGenerator = TrackGenerator.track;
+        TrackGenerator trackGenerator = SR.track;
 
         SegmentLength sl = trackGenerator.GetCachedSegmentLengths(id);
         if(sl != null)

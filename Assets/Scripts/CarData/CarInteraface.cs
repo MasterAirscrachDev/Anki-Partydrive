@@ -13,11 +13,7 @@ public class CarInteraface : MonoBehaviour
     public UCarData[] cars;
     public UCarAvailable[] availableCars;
     NativeWebSocket.WebSocket ws;
-    [SerializeField] TrackGenerator trackGenerator;
-    [SerializeField] CarEntityTracker carEntityTracker;
-    CMS cms;
     bool trackValidated = false;
-    public static CarInteraface io;
     public UCarData GetCarFromID(string id){
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return cars[i];} }
@@ -27,29 +23,24 @@ public class CarInteraface : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
 
-        if(io == null){ io = this; } //singleton
-        else{ Destroy(this); } //destroy if already exists
-
         ws = new NativeWebSocket.WebSocket("ws://localhost:7118/");
 
         ws.OnOpen += () => { 
             Debug.Log("WebSocket connection opened"); 
-            UIManager.active.ServerConnected(); //show the server connected message
+            SR.ui.ServerConnected(); //show the server connected message
             GetCars();
             RefreshAvailableCars(); //Also get available cars
         };
         ws.OnError += (e) => { 
             Debug.Log($"WebSocket error: {e}"); 
             if(e.ToString() == "Unable to connect to the remote server" && !Application.isEditor){
-                UIManager.active.NoServerWarning(); //show the no server warning
+                SR.ui.NoServerWarning(); //show the no server warning
             }
         }; //Unable to connect to the remote server (if server missing)
         ws.OnClose += (e) => { Debug.Log($"WebSocket connection closed: {e}"); };
         ws.OnMessage += (bytes) => { ProcessWebhookData(System.Text.Encoding.UTF8.GetString(bytes)); };
 
         ws.Connect();
-
-        cms = FindFirstObjectByType<CMS>();
     }
 
     void Update(){
@@ -64,11 +55,11 @@ public class CarInteraface : MonoBehaviour
         //get the first car that isnt on charge
         int index = 0;
         while(cars[index].charging){ index++; }
-        int fins = UIManager.active.GetFinishCounter();
-        UIManager.active.SetScanningStatusText("Finding Finish...");
+        int fins = SR.ui.GetFinishCounter();
+        SR.ui.SetScanningStatusText("Finding Finish...");
         
         // Clear all existing car entities when starting a new track scan
-        carEntityTracker.ClearAllCars();
+        SR.cet.ClearAllCars();
         
         ApiCallV2(SV_TR_START_SCAN, fins);
     }
@@ -81,8 +72,8 @@ public class CarInteraface : MonoBehaviour
         };
         string jsonData = JsonConvert.SerializeObject(data);
         ws.SendText(jsonData);
-        carEntityTracker.SetSpeed(car.id, speed);
-        carEntityTracker.SetOffset(car.id, lane);
+        SR.cet.SetSpeed(car.id, speed);
+        SR.cet.SetOffset(car.id, lane);
     }
     
     public void SetCarColours(UCarData car, int r, int g, int b){ // 0-255
@@ -126,7 +117,7 @@ public class CarInteraface : MonoBehaviour
                     break;
                 case EVENT_CAR_TRACKING_UPDATE:  
                     CarLocationData tracking = JsonConvert.DeserializeObject<CarLocationData>(webhookData.Payload.ToString());
-                    carEntityTracker.SetPosition(tracking.carID, tracking.trackIndex, tracking.speedMMPS, tracking.offsetMM, tracking.trust);
+                    SR.cet.SetPosition(tracking.carID, tracking.trackIndex, tracking.speedMMPS, tracking.offsetMM, tracking.trust);
                     break;
                 case EVENT_CAR_DATA:
                     CarData[] carData = JsonConvert.DeserializeObject<CarData[]>(webhookData.Payload.ToString());
@@ -138,7 +129,7 @@ public class CarInteraface : MonoBehaviour
                     break;
                 case EVENT_TR_DATA:
                     Segment[] trackData = JsonConvert.DeserializeObject<Segment[]>(webhookData.Payload.ToString());
-                    trackGenerator.Generate(trackData, trackValidated); //generate the track
+                    SR.track.Generate(trackData, trackValidated); //generate the track
                     break;
             
             }
@@ -154,12 +145,12 @@ public class CarInteraface : MonoBehaviour
             bool valid = false;
             if(c[1] != "in-progress"){
                 valid = c[1] == "True";
-                UIManager.active.SetIsScanningTrack(false); //set the UI to not scanning
+                SR.ui.SetIsScanningTrack(false); //set the UI to not scanning
             }
             trackValidated = valid;
             ApiCallV2(SV_GET_TRACK, 0); //request the track data
         } else if(c[0] == MSG_CAR_DELOCALIZED){ 
-            carEntityTracker.CarDelocalised(c[1]);
+            SR.cet.CarDelocalised(c[1]);
         } else if(c[0] == MSG_CAR_STATUS_UPDATE){ // status
             GetCarInfo();
         } else if(c[0] == MSG_CAR_SPEED_UPDATE){
@@ -169,7 +160,7 @@ public class CarInteraface : MonoBehaviour
             int index = GetCarIndex(carID);
             if(index != -1){
                 cars[index].speed = speed;
-                carEntityTracker.SetSpeed(cars[index].id, speed);
+                SR.cet.SetSpeed(cars[index].id, speed);
             }
         } else if(c[0] == MSG_CAR_POWERUP){ //powerup
             string carID = c[1];
@@ -230,16 +221,16 @@ public class CarInteraface : MonoBehaviour
                 StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));
             }
         } //send the lights with a delay
-        UIManager.active.SetCarsCount(cars.Length + availableCars.Length);
-        for (int i = 0; i < cms.controllers.Count; i++)
-        { cms.controllers[i].CheckCarExists(); }
+        SR.ui.SetCarsCount(cars.Length + availableCars.Length);
+        for (int i = 0; i < SR.cms.controllers.Count; i++)
+        { SR.cms.controllers[i].CheckCarExists(); }
     }
     void OnAvailableCarData(AvailableCarData[] availableCarData){
         UCarAvailable[] uAvailableCars = new UCarAvailable[availableCarData.Length];
         for (int i = 0; i < availableCarData.Length; i++)
         { uAvailableCars[i] = new UCarAvailable(availableCarData[i]); }
         this.availableCars = uAvailableCars;
-        UIManager.active.SetCarsCount(cars.Length + availableCars.Length);
+        SR.ui.SetCarsCount(cars.Length + availableCars.Length);
         //Debug.Log($"Updated available cars: {availableCarData.Length} cars found");
     }
     IEnumerator SendLightsDelayed(UCarData car, LightData[] lights, float delay){

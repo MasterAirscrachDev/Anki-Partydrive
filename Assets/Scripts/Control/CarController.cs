@@ -5,32 +5,28 @@ using System.Threading.Tasks;
 
 public class CarController : MonoBehaviour
 {
+#region FIELDS
     [SerializeField] int speed;
     [SerializeField] float lane;
     [SerializeField] string carID; // Currently connected car ID
     [SerializeField] string desiredCarID; // Car ID we want to connect to
     float energy = 75;
-    int oldSpeed;
-    float oldLane;
+    int oldSpeed; float oldLane;
+    bool wasBoostLastFrame = false;
     bool isSetup = false;
     [SerializeField] bool locked = true;
-    float connectionCheckTimer = 0f; // Timer for checking car connections
     public bool isAI = false;
     Color playerColor = Color.white;
     string playerName = "Player";
-    CarInteraface carInterface; //used to send commands to the car
+    Ability currentAbility = Ability.None; bool doingPickupAnim;
     CMS cms; //interface for gamemodes
     public PlayerCardSystem pcs; //used to update the UI
     CarsManagement carsManagement; //used when in the car selection screen
     CarEntityTracker carTracker; //used to get current position for dynamic width calculation
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     //INPUT VALUES======
-    public float Iaccel;
-    public float Isteer;
-    public bool Iboost;
-    public int Idrift;
-    public bool IitemA;
-    public bool IitemB;
+    public float Iaccel, Isteer;
+    public bool Iboost, IitemA, IitemB;
     //===================
     //BASE MODIFIERS======
     const float maxEnergy = 100;
@@ -46,22 +42,21 @@ public class CarController : MonoBehaviour
     public float statMaxEnergyMod = 0f;
     public float statEnergyRechargeMod = 0f;
     //===================
-    bool wasBoostLastFrame = false;
-
+#endregion
+#region INITIALIZATION & CONFIGURATION
     // Start is called before the first frame update
     public void Setup(bool isAI)
     {
         if(isSetup){ return; }
         this.isAI = isAI;
         isSetup = true;
-        carInterface = CarInteraface.io;
         cms = FindFirstObjectByType<CMS>();
         cms.AddController(this, isAI);
         carTracker = FindFirstObjectByType<CarEntityTracker>(); // Cache the tracker reference
         ControlTicker(); //start the control ticker
         FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
-        int uiLayer = UIManager.active.GetUILayer();
+        int uiLayer = SR.ui.GetUILayer();
         if(uiLayer == 2){
             carsManagement = FindFirstObjectByType<CarsManagement>();
         }
@@ -79,7 +74,7 @@ public class CarController : MonoBehaviour
     public void SetCard(PlayerCardSystem pcs){
         //Debug.Log("SetCard");
         this.pcs = pcs;
-        UCarData carData = carInterface.GetCarFromID(carID);
+        UCarData carData = SR.io.GetCarFromID(carID);
         //Debug.Log($"SetCard: id {carID}, desired {desiredCarID}, cardata {carData != null}, pcs: {pcs != null}");
         string text = "Sitting Out";
         int model = -1;
@@ -111,6 +106,8 @@ public class CarController : MonoBehaviour
             }
         }
     }
+#endregion
+#region GAMEPLAY HELPERS
     public void AddSpeedModifier(int mod, bool isPercentage, float time, string ID = null){
         if(mod == 0){ return; }
         if(ID != null){
@@ -139,7 +136,6 @@ public class CarController : MonoBehaviour
         Iaccel = 0;
         Isteer = 0;
         Iboost = false;
-        Idrift = 0;
         IitemA = false;
         IitemB = false;
         
@@ -148,15 +144,15 @@ public class CarController : MonoBehaviour
         oldSpeed = 0;
         
         // Send stop command to the physical car
-        UCarData carData = carInterface.GetCarFromID(carID);
+        UCarData carData = SR.io.GetCarFromID(carID);
         if(carData == null){ return; }
         
         // Send stop command multiple times to ensure it's received
         for(int i = 0; i < 3; i++)
-        {
-            carInterface.ControlCar(carData, 0, Mathf.RoundToInt(lane));
-        }
+        { SR.io.ControlCar(carData, 0, Mathf.RoundToInt(lane)); }
     }
+#endregion
+#region CONTROL TICKER
     async Task ControlTicker(){
         while(true){
             if(!Application.isPlaying){ return; }
@@ -168,15 +164,15 @@ public class CarController : MonoBehaviour
             if(!locked && (speed != oldSpeed || lane != oldLane)){
                 oldLane = lane;
                 oldSpeed = speed;
-                UCarData carData = carInterface.GetCarFromID(carID);
+                UCarData carData = SR.io.GetCarFromID(carID);
                 if(carData != null){
-                    carInterface.ControlCar(carData, speed, Mathf.RoundToInt(lane));
+                    SR.io.ControlCar(carData, speed, Mathf.RoundToInt(lane));
                 }
             }
         }
     }
     public void DoControlImmediate(){
-        carInterface.ControlCar(carInterface.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
+        SR.io.ControlCar(SR.io.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
     }
     void FixedUpdate(){
         // Don't process any input or movement if the car is locked (game ended)
@@ -190,7 +186,7 @@ public class CarController : MonoBehaviour
         }
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, Iaccel);
-        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.009f);
+        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.01f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
 
         int speedModifier = 0;
         List<int> speedPercentModifierList = null;
@@ -224,14 +220,20 @@ public class CarController : MonoBehaviour
         lane += Isteer * (baseSteering + statSteerMod);
         
         // Get dynamic track width from the car's actual current position
+        float trackHalfWidth = GetTrackHalfWidth();
+        lane = Mathf.Clamp(lane, -trackHalfWidth, trackHalfWidth); //clamp lane to track bounds
+        pcs.SetEnergy((int)energy, (int)maxEnergy);
+    }
+    float GetTrackHalfWidth() {
+        // Get dynamic track width from the car's actual current position
         float trackHalfWidth = 67.5f; // Default for modular tracks
-        if (TrackGenerator.track != null && TrackGenerator.track.hasTrack && !string.IsNullOrEmpty(carID)) {
+        if (SR.track.hasTrack && !string.IsNullOrEmpty(carID)) {
             // Get the car's current track position from the tracking system
             if (carTracker != null) {
                 TrackCoordinate currentPos = carTracker.GetCarTrackCoordinate(carID);
                 if (currentPos != null) {
                     // Get the actual track spline this car is currently on
-                    TrackSpline currentSpline = TrackGenerator.track.GetTrackSpline(currentPos.idx);
+                    TrackSpline currentSpline = SR.track.GetTrackSpline(currentPos.idx);
                     if (currentSpline != null) {
                         // Use the car's current progression to get the precise width at this location
                         trackHalfWidth = currentSpline.GetWidth(currentPos.progression);
@@ -239,9 +241,7 @@ public class CarController : MonoBehaviour
                 }
             }
         }
-        
-        lane = Mathf.Clamp(lane, -trackHalfWidth, trackHalfWidth); //clamp lane to track bounds
-        pcs.SetEnergy((int)energy, (int)maxEnergy);
+        return trackHalfWidth;
     }
     void Update(){
         if(Iboost && !wasBoostLastFrame){
@@ -251,6 +251,8 @@ public class CarController : MonoBehaviour
         }
         wasBoostLastFrame = Iboost;
     }
+#endregion
+#region CAR CONNECTION MANAGEMENT
     void CheckForCarConnection(){
         // If we don't have a desired car, nothing to check
         if(string.IsNullOrEmpty(desiredCarID)) return;
@@ -258,7 +260,7 @@ public class CarController : MonoBehaviour
         // If we already have the desired car connected, nothing to check
         if(carID == desiredCarID && !string.IsNullOrEmpty(carID)) {
             // Double check the car still exists
-            UCarData carData = carInterface.GetCarFromID(carID);
+            UCarData carData = SR.io.GetCarFromID(carID);
             if(carData == null){
                 Debug.Log($"Car {carID} has disconnected, waiting for reconnection");
                 carID = "";
@@ -268,11 +270,11 @@ public class CarController : MonoBehaviour
         }
         
         // Check if desired car is now available
-        UCarData desiredCar = carInterface.GetCarFromID(desiredCarID);
+        UCarData desiredCar = SR.io.GetCarFromID(desiredCarID);
         if(desiredCar != null){
             // Car is available, connect to it
             carID = desiredCarID;
-            AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, desiredCar.modelName);
+            SR.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, desiredCar.modelName);
             Debug.Log($"Successfully connected to desired car: {carID}");
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(desiredCar.name, (int)desiredCar.modelName);
@@ -283,7 +285,7 @@ public class CarController : MonoBehaviour
     }
     
     public void CheckCarExists(){
-        int idx = carInterface.GetCarIndex(carID);
+        int idx = SR.io.GetCarIndex(carID);
         if(idx == -1){
             //Debug.LogError($"Car {carID} has disconnected!");
             carID = "";
@@ -300,12 +302,12 @@ public class CarController : MonoBehaviour
         if(desiredCarID != data.id)
         {
             desiredCarID = data.id;
-            AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, data.modelName);
+            SR.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, data.modelName);
         }
         
         
         // Try to connect immediately if car is available
-        if(carInterface.GetCarFromID(data.id) != null){
+        if(SR.io.GetCarFromID(data.id) != null){
             carID = data.id;
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(data.name, (int)data.modelName);
@@ -326,13 +328,13 @@ public class CarController : MonoBehaviour
             if(pcs != null) pcs.SetCarName("Sitting Out");
             return;
         }
-        UCarData carData = carInterface.GetCarFromID(id);
+        UCarData carData = SR.io.GetCarFromID(id);
         if(desiredCarID != id)
         {
             desiredCarID = id;
             if(carData != null)
             {
-                AudioAnnouncerManager.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, carData.modelName);
+                SR.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, carData.modelName);
             }
         }
         
@@ -349,6 +351,8 @@ public class CarController : MonoBehaviour
             Debug.Log($"Car {id} not available yet, will wait for connection");
         }
     }
+#endregion
+#region PUBLIC GETTERS & SETTERS
     public (int, float) GetMetrics(){ return (speed, lane); }
     public string GetDesiredCarID(){ return desiredCarID; }
     public string GetPlayerName(){ return playerName; }
@@ -370,6 +374,8 @@ public class CarController : MonoBehaviour
     /// <returns>The Currently controlling car ID or an empty string</returns>
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
+#endregion
+#region UI UPDATE FUNCTIONS
     public void SetPosition(int position){ 
         if(pcs == null) {
             Debug.Log($"PCS was null in SetPosition for carID {carID}");
@@ -390,6 +396,62 @@ public class CarController : MonoBehaviour
         //Debug.Log($"Setting lap count to {lapCount} for carID {carID} pcs:{pcs != null}");
         pcs.SetLapCount(lapCount); 
     }
+#endregion
+
+    public void OnCollectElement(TrackCarCollider.EType type)
+    {
+        // Handle element collection logic here
+        switch(type)
+        {
+            case TrackCarCollider.EType.EnergyCore:
+                ChargeEnergy(25); // TEMP VALUSE
+                break;
+            case TrackCarCollider.EType.ItemBox:
+                OnItembox();
+                break;
+            // Add cases for other element types as needed
+            default:
+                break;
+        }
+    }
+
+    void OnItembox()
+    {
+        if(currentAbility != Ability.None || doingPickupAnim){ return; } //already have an ability
+        else
+        {
+            doingPickupAnim = true;
+            StartCoroutine(DoNewAbilityAnimation());
+        }
+    }
+    IEnumerator DoNewAbilityAnimation()
+    {
+        Ability[] validAbilities = new Ability[] { Ability.Missle3, Ability.MissleSeeking3, Ability.EMP, Ability.Shield, Ability.TrailDamage, Ability.TrailSlow, Ability.CrasherBoost };
+        //over 1 second, cycle through abilities every 0.1 second
+        float animationDuration = 1f;
+        float cycleInterval = 0.1f;
+        float elapsed = 0f;
+        while(elapsed < animationDuration)
+        {
+            Ability prospectiveAbility = validAbilities[Random.Range(0, validAbilities.Length)];
+            //update UI here
+            if(pcs != null)
+            { pcs.SetAbilityIcon(prospectiveAbility); }
+            yield return new WaitForSeconds(cycleInterval);
+            elapsed += cycleInterval;
+        }
+        //final ability
+        currentAbility = validAbilities[Random.Range(0, validAbilities.Length)];
+        if(pcs != null)
+        { pcs.SetAbilityIcon(currentAbility); }
+        doingPickupAnim = false;
+    }
+    public void SetAbilityImmediate(Ability ability)
+    {
+        currentAbility = ability;
+        if(pcs != null)
+        { pcs.SetAbilityIcon(currentAbility); }
+    }
     
     void OnDestroy(){
         // Only disconnect car if we're not in car selection mode
@@ -399,8 +461,8 @@ public class CarController : MonoBehaviour
         
         // Disconnect car when controller is destroyed (not in selection menu)
         string carToDisconnect = !string.IsNullOrEmpty(carID) ? carID : desiredCarID;
-        if(!string.IsNullOrEmpty(carToDisconnect) && carInterface != null){
-            carInterface.DisconnectCar(carToDisconnect);
+        if(!string.IsNullOrEmpty(carToDisconnect) && SR.io != null){
+            SR.io.DisconnectCar(carToDisconnect);
             Debug.Log($"CarController destroyed - disconnecting car: {carToDisconnect}");
         }
     }

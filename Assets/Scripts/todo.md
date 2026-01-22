@@ -4,8 +4,6 @@
 
 ## Just coding
 
-- Fix frogging (maybe fixed - splines are being smoothed wrongly)
-
 - Car Management Menu
  - Edit Car Names
 
@@ -13,10 +11,11 @@
 
 - 2 boost starts
 
+
 ## UI Stuff too
 - Settings Menu
  - Option to disable Post (for performance)
-
+UI for powerups
 ## Audio
 recordings
 

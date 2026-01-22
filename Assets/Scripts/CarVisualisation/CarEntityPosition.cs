@@ -15,7 +15,6 @@ public class CarEntityPosition : MonoBehaviour
     int despawnTimer = 50;
     [SerializeField] TrackCoordinate trackpos;
     Vector3 lastPosition;
-    TrackGenerator track;
     SmoothedCarModel smoothedModel;
     bool showOnTrack = true, despawnCancelled = false, despawnTimerRunning = false;
     public bool wasDelocalisedThisLap = true; //true until set to false
@@ -23,7 +22,6 @@ public class CarEntityPosition : MonoBehaviour
     int carModel = 0; // Store car model for truck length calculations
     public void Setup(string id, int model) {
         this.id = id; //set the id of the car entity
-        track = TrackGenerator.track;
         carModel = model;
         float backDistance = 0.2f; // Default for normal cars
         // Check if this is a supertruck (models 15, 16, 17 = Freewheel, x52, x52Ice)
@@ -63,8 +61,8 @@ public class CarEntityPosition : MonoBehaviour
         if(trackpos.progression >= 1 && shift < 2){
             trackpos.progression = 0; //reset the progression
             shift++;
-            trackSpline = track.GetTrackSpline(trackpos.idx + shift);
-            if(trackSpline == null){trackSpline = track.GetTrackSpline(trackpos.idx + ++shift); }
+            trackSpline = SR.track.GetTrackSpline(trackpos.idx + shift);
+            if(trackSpline == null){trackSpline = SR.track.GetTrackSpline(trackpos.idx + ++shift); }
             UpdateTrackSpline(trackSpline, trackpos.idx + shift); //updates cached values for movement prediction
             SetMat(false);
         }
@@ -83,11 +81,10 @@ public class CarEntityPosition : MonoBehaviour
     /// Update the track spline for the car entity. idx may not be trusted
     /// </summary>
     void UpdateTrackSpline(TrackSpline trackSpline, int idx){
-        //if(idx == 1){ return; } //TEST FIX WILL BREAK DRIVE MATS
         this.trackSpline = trackSpline;
-        currentSegmentType = track.GetSegmentType(idx);
-        isSegmentReversed = track.GetSegmentReversed(idx);
-        currentSegmentID = track.GetSegmentID(idx);
+        currentSegmentType = SR.track.GetSegmentType(idx);
+        isSegmentReversed = SR.track.GetSegmentReversed(idx);
+        currentSegmentID = SR.track.GetSegmentID(idx);
     }
     public void SetOffset(float offset){
         trackpos.offset = offset; //change this to smooth when changed
@@ -149,10 +146,12 @@ public class CarEntityPosition : MonoBehaviour
         return trackpos;
     }
     public Vector3 GetVisualPosition(){
-        if(smoothedModel != null){
-            return smoothedModel.transform.position;
-        }
+        if(smoothedModel != null){ return smoothedModel.transform.position; }
         return transform.position;
+    }
+    public Transform GetVisualTransform(){
+        if(smoothedModel != null){ return smoothedModel.transform; }
+        return null;
     }
     public string GetID(){
         return id;
@@ -201,7 +200,7 @@ public class TrackCoordinate
         {
             return progression > other.progression;
         }
-        int trackLength = TrackGenerator.track.GetTrackLength();
+        int trackLength = SR.track.GetTrackLength();
         //check if we are ahead of the other car (in the future 50% of the track)
         int distanceAB = (other.idx - idx + trackLength) % trackLength;
         int distanceBA = (idx - other.idx + trackLength) % trackLength;

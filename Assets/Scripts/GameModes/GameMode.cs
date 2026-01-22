@@ -46,7 +46,7 @@ public abstract class GameMode : MonoBehaviour
     {
         if(cms == null){
             cms = FindFirstObjectByType<CMS>();
-            carInteraface = CarInteraface.io;
+            carInteraface = SR.io;
             carEntityTracker = FindFirstObjectByType<CarEntityTracker>();
             uiManager = FindFirstObjectByType<UIManager>();
         }
@@ -76,8 +76,7 @@ public abstract class GameMode : MonoBehaviour
         uiManager.SwitchToTrackCamera(true);
         startButton.SetActive(false);
         FindFirstObjectByType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
-        //cms.TTS(lineupMessage);
-        AudioAnnouncerManager.pa.PlayLine(LineupStarting);
+        SR.pa.PlayLine(LineupStarting);
         
         OnLineupStarted();
         carInteraface.OnLineupEvent += OnLineupUpdate;
@@ -108,23 +107,23 @@ public abstract class GameMode : MonoBehaviour
         OnCountdownStarted(activeCars);
         
         showText.text = "Get Ready!";
-        AudioAnnouncerManager.pa.PlayLine(OnYourMarks);
+        SR.pa.PlayLine(OnYourMarks);
         yield return new WaitForSeconds(3);
         
         showText.text = "3";
-        AudioAnnouncerManager.pa.PlayLine(Count3);
+        SR.pa.PlayLine(Count3);
         yield return new WaitForSeconds(1);
         
         showText.text = "2";
-        AudioAnnouncerManager.pa.PlayLine(Count2);
+        SR.pa.PlayLine(Count2);
         yield return new WaitForSeconds(1);
         
         showText.text = "1";
-        AudioAnnouncerManager.pa.PlayLine(Count1);
+        SR.pa.PlayLine(Count1);
         yield return new WaitForSeconds(1);
         
         showText.text = "GO!";
-        AudioAnnouncerManager.pa.PlayLine(Go);
+        SR.pa.PlayLine(Go);
         cms.SetGlobalLock(false);
         gameActive = true;
         
@@ -160,7 +159,7 @@ public abstract class GameMode : MonoBehaviour
         cms.SetGlobalLock(true);
         cms.StopAllCars();
         cms.SetPlayersRacingMode(false); // Set players back to menu mode
-        AudioAnnouncerManager.pa.PlayLine(line);
+        SR.pa.PlayLine(line);
         
         carEntityTracker.OnCarCrossedFinishLine -= CarCrossedFinish;
         

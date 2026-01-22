@@ -65,7 +65,7 @@ public class LapsMode : GameMode
             Debug.Log(results);
             //get the model of the winning car
             ModelName winningCarModel = cms.CarModelFromId(carID);
-            AudioAnnouncerManager.pa.PlayLine(CarWins, winningCarModel);
+            SR.pa.PlayLine(CarWins, winningCarModel);
         }
     }
 }

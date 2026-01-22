@@ -16,7 +16,7 @@ public class PartyMode : GameMode
     protected override void OnModeStart()
     { 
         carLaps.Clear(); 
-        TrackElementManager.tem.SpawnElements(); //spawn powerups and energy elements
+        SR.tem.SpawnElements(); //spawn powerups and energy elements
     }
     
     protected override void OnLineupStarted()
@@ -68,7 +68,7 @@ public class PartyMode : GameMode
             Debug.Log(results);
             //get the model of the winning car
             ModelName winningCarModel = cms.CarModelFromId(carID);
-            AudioAnnouncerManager.pa.PlayLine(CarWins, winningCarModel);
+            SR.pa.PlayLine(CarWins, winningCarModel);
         }
     }
 }

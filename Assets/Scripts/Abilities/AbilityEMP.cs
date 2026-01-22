@@ -35,7 +35,7 @@ public class AbilityEMP : MonoBehaviour
         }
     }
     void ActivateEMP(){
-        List<CarController> hits = CMS.cms.SphereCheckControllers(transform.position, 0.6f);
+        List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, 0.6f);
         CarController owner = GetComponent<AbilityController>().GetCarController();
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self

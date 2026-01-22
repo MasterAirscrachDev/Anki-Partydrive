@@ -26,15 +26,12 @@ public class UIManager : MonoBehaviour
     int finishCounter = 1;
     int UIlayer = 0;
 
-    public static UIManager active;
-
     [ContextMenu("Toggle Track Camera")]
     public void ToggleTrackCamera(){ SwitchToTrackCamera(!TrackCamera.activeSelf); }
 
     // Start is called before the first frame update
     void Start() {
         SetUILayer(0);
-        active = this;
     }
 
     // Update is called once per frame
@@ -63,7 +60,7 @@ public class UIManager : MonoBehaviour
 
         if(layer == 0){ //if we are in the main menu, disable the play button
             SwitchToTrackCamera(false);
-            bool canPlay = TrackGenerator.track.hasTrack;
+            bool canPlay = SR.track.hasTrack;
             playButton.interactable = canPlay;
             playButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
         }
@@ -113,7 +110,7 @@ public class UIManager : MonoBehaviour
     
     void CheckConnectedCarsOnTrackPage(){
         // Check if there are any connected cars when entering the track page
-        CarInteraface carInterface = CarInteraface.io;
+        CarInteraface carInterface = SR.io;
         if(carInterface == null) return;
         
         // Check if any cars are currently connected

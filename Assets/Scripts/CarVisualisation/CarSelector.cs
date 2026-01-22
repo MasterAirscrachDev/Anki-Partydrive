@@ -25,17 +25,13 @@ public class CarSelector : MonoBehaviour
     Vector2 platformSize;
     int gridSize = 6;
     float refreshTimer = 0;
-    CMS cms;
     
     // Event triggered when all players have selected cars
     public System.Action OnAllPlayersSelected;
     
     void OnEnable(){
         slectionPlatform.gameObject.SetActive(true);
-        
-        // Get CMS reference
-        cms = CMS.cms;
-        
+
         // Get real car data from CarInterface
         RefreshCarData();
         
@@ -64,7 +60,7 @@ public class CarSelector : MonoBehaviour
             if(!ai.GetComponent<CarController>().IsCarConnected()){
                 string desiredID = ai.GetID();
                 if(!string.IsNullOrEmpty(desiredID)){
-                    cms.RemoveAI(desiredID); //remove this AI and Controller
+                    SR.cms.RemoveAI(desiredID); //remove this AI and Controller
                     Debug.Log($"Removing disconnected AI for car: {desiredID} on Car Selector enable");
                 }
             }
@@ -73,11 +69,11 @@ public class CarSelector : MonoBehaviour
     
     IEnumerator SubscribeToEventsDelayed(){
         yield return new WaitForSeconds(0.5f);
-        if(cms != null){
-            cms.onSelect += OnPlayerSelectPressed;
-            cms.onAltSelect += OnPlayerAltSelectPressed;
-            cms.onBackToMenu += OnPlayerBackPressed;
-            cms.onStartSelect += OnPlayerStartPressed;
+        if(SR.cms != null){
+            SR.cms.onSelect += OnPlayerSelectPressed;
+            SR.cms.onAltSelect += OnPlayerAltSelectPressed;
+            SR.cms.onBackToMenu += OnPlayerBackPressed;
+            SR.cms.onStartSelect += OnPlayerStartPressed;
         }
     }
     void RefreshPlayers(){
@@ -96,11 +92,11 @@ public class CarSelector : MonoBehaviour
         DisconnectUnusedCars();
         
         // Unsubscribe from CMS events
-        if(cms != null){
-            cms.onSelect -= OnPlayerSelectPressed;
-            cms.onAltSelect -= OnPlayerAltSelectPressed;
-            cms.onBackToMenu -= OnPlayerBackPressed;
-            cms.onStartSelect -= OnPlayerStartPressed;
+        if(SR.cms != null){
+            SR.cms.onSelect -= OnPlayerSelectPressed;
+            SR.cms.onAltSelect -= OnPlayerAltSelectPressed;
+            SR.cms.onBackToMenu -= OnPlayerBackPressed;
+            SR.cms.onStartSelect -= OnPlayerStartPressed;
         }
         
         // Clean up player markers
@@ -201,7 +197,7 @@ public class CarSelector : MonoBehaviour
         allCarIDs.Clear();
         
         // Get car interface
-        CarInteraface carInterface = CarInteraface.io;
+        CarInteraface carInterface = SR.io;
         if(carInterface == null) return;
         
         // Refresh available cars from server
@@ -225,10 +221,10 @@ public class CarSelector : MonoBehaviour
     }
     
     void RestoreExistingCarSelections(){
-        if(cms == null || cms.controllers == null) return;
+        if(SR.cms == null || SR.cms.controllers == null) return;
         
         // Check each controller in CMS to see if it has an active car
-        foreach(CarController controller in cms.controllers){
+        foreach(CarController controller in SR.cms.controllers){
             string desiredCarID = controller.GetDesiredCarID();
             if(string.IsNullOrEmpty(desiredCarID)) continue;
             
@@ -521,15 +517,15 @@ public class CarSelector : MonoBehaviour
     // CMS callback for back button input
     void OnPlayerBackPressed(){
         // Go back to main menu (UI layer 0)
-        UIManager.active.SetUILayer(0);
+        SR.ui.SetUILayer(0);
         Debug.Log("Back button pressed - returning to main menu");
     }
     
     // CMS callback for start button input
     void OnPlayerStartPressed(PlayerController player){
         // Trigger gamemode loading when start is pressed in selection menu
-        if(cms != null){
-            cms.LoadGamemode();
+        if(SR.cms != null){
+            SR.cms.LoadGamemode();
             //Debug.Log("Start button pressed - loading gamemode");
         }
     }
@@ -678,10 +674,10 @@ public class CarSelector : MonoBehaviour
     }
     
     void SpawnAIForCar(string carID, int gridX, int gridY){
-        if(cms == null) return;
+        if(SR.cms == null) return;
         
         // Spawn AI through CMS
-        cms.AddAI(carID);
+        SR.cms.AddAI(carID);
         
         // Mark car as AI-selected
         aiSelectedCarIDs.Add(carID);
@@ -693,7 +689,7 @@ public class CarSelector : MonoBehaviour
     }
     
     void RemoveAIFromCar(string carID){
-        if(cms == null) return;
+        if(SR.cms == null) return;
         
         // Cancel connection timer if it's running (cleanup)
         if(connectionTimers.ContainsKey(carID)){
@@ -702,7 +698,7 @@ public class CarSelector : MonoBehaviour
         }
         
         // Remove AI through CMS
-        cms.RemoveAI(carID);
+        SR.cms.RemoveAI(carID);
         
         // Remove from AI selected list
         aiSelectedCarIDs.Remove(carID);
@@ -758,8 +754,8 @@ public class CarSelector : MonoBehaviour
         
         // Get AI name from the CarController
         string aiName = "AI";
-        if(cms != null){
-            foreach(CarController controller in cms.controllers){
+        if(SR.cms != null){
+            foreach(CarController controller in SR.cms.controllers){
                 if(controller.GetDesiredCarID() == carID){
                     aiName = controller.GetPlayerName();
                     Debug.Log($"Found AI controller for car {carID} with name: {aiName}");
@@ -801,7 +797,7 @@ public class CarSelector : MonoBehaviour
     }
     
     void ConnectToAllAvailableCars(){
-        CarInteraface carInterface = CarInteraface.io;
+        CarInteraface carInterface = SR.io;
         if(carInterface == null) return;
         
         Debug.Log("Connecting to all available cars for faster selection...");
@@ -816,14 +812,14 @@ public class CarSelector : MonoBehaviour
     }
     
     void DisconnectUnusedCars(){
-        CarInteraface carInterface = CarInteraface.io;
-        if(carInterface == null || cms == null) return;
+        CarInteraface carInterface = SR.io;
+        if(carInterface == null || SR.cms == null) return;
         
         Debug.Log("Disconnecting cars without matching controllers...");
         
         // Get all car IDs that have controllers
         HashSet<string> carsWithControllers = new HashSet<string>();
-        foreach(CarController controller in cms.controllers){
+        foreach(CarController controller in SR.cms.controllers){
             string carID = controller.GetDesiredCarID();
             if(!string.IsNullOrEmpty(carID)){
                 carsWithControllers.Add(carID);

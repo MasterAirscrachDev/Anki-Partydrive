@@ -71,22 +71,19 @@ public class PlayerCardSystem : MonoBehaviour
     public void SetTimeTrialTime(float time){
         //set the time trial time using the time value
         int mins = 0;
-        while(time >= 60){
-            time -= 60;
-            mins++;
-        }
+        while(time >= 60){ time -= 60; mins++; }
         if(attachmentIndex != 0){ SetAttachment(0); }
         currentAttachment.GetComponent<TMP_Text>().text = $"{mins}:{time.ToString("00.00")}";
     }
     public void SetLapCount(int lapCount){
-        //Debug.Log($"PlayerCardSystem: Setting lap count to {lapCount} (current attachment index: {attachmentIndex})");
-        //set the lap count using the lapCount value
-        if(attachmentIndex != 1){ SetAttachment(1); /*Debug.Log($"Current attachment after SetAttachment: {currentAttachment != null} ({attachmentIndex})");*/ }
-        //Debug.Log($"Current attachment after check: {currentAttachment != null}");
-        TMP_Text tmpText = currentAttachment.GetComponent<TMP_Text>();
-        //Debug.Log($"TMP_Text component found: {tmpText != null}");
+        if(attachmentIndex != 1){ SetAttachment(1);}
         currentAttachment.GetComponent<TMP_Text>().text = $"{lapCount} Laps";
-        //Debug.Log($"Set lap count attachment to {lapCount} laps");
+    }
+    public void SetAbilityIcon(Ability ab) {
+        if(attachmentIndex != 2){ SetAttachment(2); }
+        Sprite abilitySprite = SR.gas.GetAbilityTexture(ab);
+        Image abilityImage = currentAttachment.transform.GetChild(0).GetChild(1).GetComponent<Image>();
+        abilityImage.sprite = abilitySprite;
     }
     void OnDestroy()
     {

@@ -8,7 +8,6 @@ public class WorldEntityManager : MonoBehaviour
     [SerializeField] GameObject startGate, DayLight, NightLight;
     [SerializeField] Material lightsRed, lightsGreen, lightsYellow, skyboxMaterial;
     [SerializeField] Texture2D daySkybox, nightSkybox;
-    TrackObject[] trackObjects;
     
     // Start is called before the first frame update
     void Start()
@@ -27,18 +26,6 @@ public class WorldEntityManager : MonoBehaviour
             DayLight.SetActive(false);
             NightLight.SetActive(true);
         }
-    }
-    public void SetTrackObjectsPositions(TrackObject[] trackObjects){
-        if(trackObjects != null){
-            //if any have a gameobject, destroy it
-            foreach(TrackObject obj in trackObjects){
-                if(obj.obj != null){
-                    Destroy(obj.obj);
-                }
-            }
-        }
-
-        this.trackObjects = trackObjects;
     }
     public void PlayStartSpawnAnimation(){
         StartCoroutine(StartGateSpawnAnimation());

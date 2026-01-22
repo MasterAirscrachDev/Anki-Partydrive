@@ -5,17 +5,12 @@ using static OverdriveServer.NetStructures;
 
 public class AudioAnnouncerManager : MonoBehaviour
 {
-    public static AudioAnnouncerManager pa;
     
     [SerializeField] AudioSource audioSource;
     [SerializeField] List<AnnouncerLineData> announcerLines = new List<AnnouncerLineData>();
     
     void Start()
     {
-        if(pa == null){
-            pa = this;
-        }
-        
         // Ensure audio source exists
         if(audioSource == null){
             audioSource = GetComponent<AudioSource>();

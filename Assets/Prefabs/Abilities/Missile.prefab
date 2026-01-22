@@ -69,7 +69,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 04547c5807dc82a409fc7555d9fd0ddc, type: 2}
-  - {fileID: -3846018093981099296, guid: 3399eefeb9c14ac49830831b53bb46b1, type: 3}
+  - {fileID: 2100000, guid: fe6b56c22baf265408ef70d81ebd3066, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -210,3 +210,5 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  normalMaterial: {fileID: 2100000, guid: fe6b56c22baf265408ef70d81ebd3066, type: 2}
+  seekingMaterial: {fileID: 2100000, guid: 7cf78c3e97d667746be2765e30c07597, type: 2}

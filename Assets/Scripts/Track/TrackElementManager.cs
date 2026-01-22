@@ -1,25 +1,23 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class TrackElementManager : MonoBehaviour
 {
     [SerializeField] GameObject energyElementPrefab, powerupElementPrefab;
-    public static TrackElementManager tem;
-    TrackGenerator trackGenerator;
     TrackElementSlot[] elementSlots;
     //index in elementSlots, spawned GameObject
     List<(int, GameObject)> spawnedElements = new List<(int, GameObject)>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        trackGenerator = TrackGenerator.track;
-        tem = this;
+        
     }
-    public void SpawnElements(float distribution = 0.8f)
+    public void SpawnElements(float distribution = 0.1f)
     {
         ClearElements();
         List<TrackElementSlot> slots = new List<TrackElementSlot>();
-        List<GameObject> segments = trackGenerator.GetSegmentsWithTrackElementSlots();
+        List<GameObject> segments = SR.track.GetSegmentsWithTrackElementSlots();
         //for each segment in the track
         bool firstSegment = true;
         foreach(GameObject segment in segments)
@@ -38,32 +36,35 @@ public class TrackElementManager : MonoBehaviour
         elementSlots = slots.ToArray();
         //for each slot, spawn an element
         for(int i = 0; i < elementSlots.Length; i++)
-        {
-            if(elementSlots[i].type == TrackElementSlot.TrackElementType.Energy)
-            {
-                GameObject element = Instantiate(energyElementPrefab, elementSlots[i].transform.position, elementSlots[i].transform.rotation, elementSlots[i].transform);
-                spawnedElements.Add((i, element));
+        { SpawnElementAtSlot(i); }
+    }
+    void SpawnElementAtSlot(int index)
+    {
+        TrackElementSlot slot = elementSlots[index];
+        GameObject element;
+        if(slot.type == TrackElementSlot.TrackElementType.Energy) {
+            element = Instantiate(energyElementPrefab, slot.transform.position, slot.transform.rotation, slot.transform);
+            
+        }
+        else if(slot.type == TrackElementSlot.TrackElementType.Powerup) {
+            element = Instantiate(powerupElementPrefab, slot.transform.position, slot.transform.rotation, slot.transform);
+        }
+        else{ //Any type
+            float r = Random.Range(0f, 1f);
+            if(r < 0.1f){//10% chance to spawn energy
+                element = Instantiate(energyElementPrefab, slot.transform.position, slot.transform.rotation, slot.transform);
             }
-            else if(elementSlots[i].type == TrackElementSlot.TrackElementType.Powerup)
-            {
-                GameObject element = Instantiate(powerupElementPrefab, elementSlots[i].transform.position, elementSlots[i].transform.rotation, elementSlots[i].transform);
-                spawnedElements.Add((i, element));
-            }
-            else //Any type
-            {
-                float r = Random.Range(0f, 1f);
-                if(r < 0.1f)//10% chance to spawn energy
-                {
-                    GameObject element = Instantiate(energyElementPrefab, elementSlots[i].transform.position, elementSlots[i].transform.rotation, elementSlots[i].transform);
-                    spawnedElements.Add((i, element));
-                }
-                else
-                {
-                    GameObject element = Instantiate(powerupElementPrefab, elementSlots[i].transform.position, elementSlots[i].transform.rotation, elementSlots[i].transform);
-                    spawnedElements.Add((i, element));
-                }
+            else {
+                element = Instantiate(powerupElementPrefab, slot.transform.position, slot.transform.rotation, slot.transform);
             }
         }
+        element.GetComponent<TrackCarCollider>().SetElementValue(index);
+        spawnedElements.Add((index, element));
+    }
+    IEnumerator RespawnElementAfterDelay(int slotIndex)
+    {
+        yield return new WaitForSeconds(5f);
+        SpawnElementAtSlot(slotIndex);
     }
 
     public void ElementCollected(int slotIndex)
@@ -74,6 +75,7 @@ public class TrackElementManager : MonoBehaviour
             {
                 Destroy(spawnedElements[i].Item2);
                 spawnedElements.RemoveAt(i);
+                StartCoroutine(RespawnElementAfterDelay(slotIndex));
                 return;
             }
         }

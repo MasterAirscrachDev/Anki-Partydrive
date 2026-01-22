@@ -13,11 +13,7 @@ public class CMS : MonoBehaviour
     public bool isGame = false;
     List<Color> freeColors = new List<Color>();
     List<Color> usedColors = new List<Color>();
-    CarInteraface carInterface;
-    public static CMS cms;
     void Start() { 
-        carInterface = CarInteraface.io;
-        StartCoroutine(GetCarInterface());
         //color list purple, green, red, blue
         freeColors.Add(new Color(1, 0, 1)); //purple/pink
         freeColors.Add(new Color(0, 1, 0)); //green
@@ -25,27 +21,21 @@ public class CMS : MonoBehaviour
         freeColors.Add(new Color(0, 0, 1)); //blue
         freeColors.Add(new Color(0, 1, 1)); //Cyan
         freeColors.Add(new Color(1, 1, 0)); //yellow
-
-        cms = this;
     }
-    IEnumerator GetCarInterface(){
-        yield return new WaitForSeconds(0.5f);
-        carInterface = CarInteraface.io;
-    }
-    public void LoadGamemode(){
+    public void LoadGamemode(){ 
         SetAllCarEnginesLights(); // Set engine lights for all cars when gamemode starts
         
-        UIManager ui = UIManager.active;
-        if(cms.gameMode == "Time Trial"){
+        UIManager ui = SR.ui;
+        if(gameMode == "Time Trial"){
             ui.SetUILayer(5);
         }
-        else if (cms.gameMode == "Laps"){
+        else if (gameMode == "Laps"){
             ui.SetUILayer(6);
         }
-        else if (cms.gameMode == "Laps2"){
+        else if (gameMode == "Laps2"){
             ui.SetUILayer(7);
         }
-        else if(cms.gameMode == "Party"){
+        else if(gameMode == "Party"){
             ui.SetUILayer(9);
         }
     }
@@ -63,13 +53,13 @@ public class CMS : MonoBehaviour
     }
     
     public void SetAllCarEnginesLights(){
-        if(carInterface == null) return;
+        if(SR.io == null) return;
         
         foreach(CarController controller in controllers){
             if(controller == null || string.IsNullOrEmpty(controller.GetID())) continue;
             
             // Get the car data for this controller
-            UCarData carData = carInterface.GetCarFromID(controller.GetID());
+            UCarData carData = SR.io.GetCarFromID(controller.GetID());
             if(carData == null) continue;
             
             // Get the player color and convert to RGB (0-255)
@@ -79,7 +69,7 @@ public class CMS : MonoBehaviour
             int b = Mathf.RoundToInt(playerColor.b * 255);
             
             // Set the car's engine light to match the player color
-            carInterface.SetCarColours(carData, r, g, b);
+            SR.io.SetCarColours(carData, r, g, b);
             Debug.Log($"Set engine light for {controller.GetPlayerName()}'s car ({controller.GetID()}) to RGB({r},{g},{b})");
         }
     }
@@ -146,17 +136,17 @@ public class CMS : MonoBehaviour
         }
     }
     public string CarNameFromId(string id){
-        for(int i = 0; i < carInterface.cars.Length; i++){
-            if(carInterface.cars[i].id == id){
-                return carInterface.cars[i].name;
+        for(int i = 0; i < SR.io.cars.Length; i++){
+            if(SR.io.cars[i].id == id){
+                return SR.io.cars[i].name;
             }
         }
         return "Unknown Car";
     }
     public ModelName CarModelFromId(string id){
-        for(int i = 0; i < carInterface.cars.Length; i++){
-            if(carInterface.cars[i].id == id){
-                return carInterface.cars[i].modelName;
+        for(int i = 0; i < SR.io.cars.Length; i++){
+            if(SR.io.cars[i].id == id){
+                return SR.io.cars[i].modelName;
             }
         }
         return ModelName.Unknown;
@@ -188,6 +178,13 @@ public class CMS : MonoBehaviour
             }
         }
         return controllersInRange;
+    }
+    public void CarCollectedElement(string id, TrackCarCollider.EType type)
+    {
+        CarController controller = GetController(id);
+        if(controller != null){
+            controller.OnCollectElement(type);
+        }
     }
     public void OnCarOutOfEnergyCarCallback(string id, CarController controller){ onCarNoEnergy?.Invoke(id, controller); }
     public void OnBackToMenuCallback(){ onBackToMenu?.Invoke(); }

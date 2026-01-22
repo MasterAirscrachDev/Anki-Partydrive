@@ -293,6 +293,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83aff9ed194faa448a90aecd2bf0367, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackCarCollider
+  elementType: 0
+  spawnOnCollect: {fileID: 0}
 --- !u!1 &6849636812439277140
 GameObject:
   m_ObjectHideFlags: 0

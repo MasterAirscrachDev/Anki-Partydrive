@@ -118,7 +118,7 @@ public class SettingsManager : MonoBehaviour
     }
     public void OnSettingsRendered()
     {
-        CarInteraface carInterface = CarInteraface.io;
+        CarInteraface carInterface = SR.io;
         if(carInterface != null)
         {
             carBalanceDropdown.ClearOptions();
@@ -140,7 +140,7 @@ public class SettingsManager : MonoBehaviour
         if(separatorIndex >= 0)
         {
             string carIdStr = selectedOption.Substring(separatorIndex + 3);
-            UIManager ui = UIManager.active;
+            UIManager ui = SR.ui;
             ui.SetUILayer(3); //go to track scanning UI
             ui.ToggleUILayer(4, true); //enable balancing UI
             FindFirstObjectByType<CarBalancer>().Setup(carIdStr);

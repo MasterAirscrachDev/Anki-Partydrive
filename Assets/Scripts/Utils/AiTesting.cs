@@ -87,7 +87,7 @@ public class AiTesting : MonoBehaviour
     IEnumerator Tests()
     {
         yield return new WaitForSeconds(1f);
-        TrackGenerator.track.Generate(requestedTrack, true);
+        SR.track.Generate(requestedTrack, true);
         yield return new WaitForSeconds(3f);
         const float stepDelta = 0.01f;
         const float realDelta = 0.01f;
@@ -116,15 +116,15 @@ public class AiTesting : MonoBehaviour
             for (int c = 0; c < carCount; c++) {
                 TrackCoordinate car = testCars[c];
                 int idx = car.idx;
-                TrackSpline spline = TrackGenerator.track.GetTrackSpline(idx);
+                TrackSpline spline = SR.track.GetTrackSpline(idx);
                 if (spline == null)
                 {
                     idx++;
-                    spline = TrackGenerator.track.GetTrackSpline(idx);
+                    spline = SR.track.GetTrackSpline(idx);
                 }
-                SegmentType segType = TrackGenerator.track.GetSegmentType(idx);
-                bool isReversed = TrackGenerator.track.GetSegmentReversed(idx);
-                int segID = TrackGenerator.track.GetSegmentID(idx);
+                SegmentType segType = SR.track.GetSegmentType(idx);
+                bool isReversed = SR.track.GetSegmentReversed(idx);
+                int segID = SR.track.GetSegmentID(idx);
 
                 //create an array of the track coordinates for the other cars
                 List<TrackCoordinate> otherCars = new List<TrackCoordinate>();
@@ -162,7 +162,7 @@ public class AiTesting : MonoBehaviour
                 if (car.progression >= 1)
                 {
                     car.SetIdx(car.idx + 1);
-                    if (car.idx >= TrackGenerator.track.GetTrackLength())
+                    if (car.idx >= SR.track.GetTrackLength())
                         car.idx = 1;
                 }
 

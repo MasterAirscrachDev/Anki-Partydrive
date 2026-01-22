@@ -16,7 +16,7 @@ public class WorldToTrackTesting : MonoBehaviour
         {
             yield return new WaitForSeconds(0.1f);
 
-            TrackGenerator.track.WorldspaceToTrackCoordinate(transform.position);
+            SR.track.WorldspaceToTrackCoordinate(transform.position);
         }
     }
 }

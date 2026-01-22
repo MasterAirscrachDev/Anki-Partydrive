@@ -70,7 +70,6 @@ public class AIController : MonoBehaviour
             carController.Iaccel = 0;
             carController.Isteer = 0;
             carController.Iboost = false;
-            carController.Idrift = 0;
             carController.IitemA = false;
             carController.IitemB = false;
         }
@@ -94,7 +93,6 @@ public class AIController : MonoBehaviour
             carController.Iaccel = 0; //if the inputs are locked, set the acceleration to 0
             carController.Isteer = 0; //if the inputs are locked, set the steering to 0
             carController.Iboost = false; //if the inputs are locked, set the boost to false
-            carController.Idrift = 0; //if the inputs are locked, set the drift to 0
             carController.IitemA = false; //if the inputs are locked, set the item A to false
             carController.IitemB = false; //if the inputs are locked, set the item B to false
         }

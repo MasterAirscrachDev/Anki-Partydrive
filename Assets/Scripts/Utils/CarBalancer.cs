@@ -97,14 +97,14 @@ public class CarBalancer : MonoBehaviour
             step = 1;
             messageText.gameObject.SetActive(true);
             messageText.text = $"Please Build this track\n(Straights can be substituted)\n\nThen scan with car: {carData.name}";
-            UIManager.active.SwitchToTrackCamera(true);
+            SR.ui.SwitchToTrackCamera(true);
             if(trackGenerator.hasTrack){ //if we already have a track, check if it matches
                 bool matches = CheckTrack(trackGenerator.GetTrackPieces());
                 if(matches){
                     Debug.Log("Track matches, balancing car");
                     SubTrack(false);
                     messageText.text = $"Track ok, press the button to start balancing";
-                    UIManager.active.SetUILayer(4); //disable Scanning UI
+                    SR.ui.SetUILayer(4); //disable Scanning UI
                     recalibrateButton.interactable = true;
                     step = -1;
                     return;
@@ -116,7 +116,7 @@ public class CarBalancer : MonoBehaviour
             if(waitingForTrack){ timeout = 1.5f; return; }
             else{
                 Debug.Log($"CarBalancer step 1, track scanned");
-                UIManager.active.SetUILayer(4); //disable Scanning UI
+                SR.ui.SetUILayer(4); //disable Scanning UI
                 //car should now be lining up at this point
                 timeout = 2.1f;
                 step = 2;
@@ -263,7 +263,7 @@ public class CarBalancer : MonoBehaviour
         backButton.Select();
     }
     public void BackToMenu(){
-        UIManager.active.SetUILayer(0); //go back to main menu
+        SR.ui.SetUILayer(0); //go back to main menu
         carInterface.ControlCar(carData, 0, 0);
     }
 }

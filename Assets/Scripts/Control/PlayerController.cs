@@ -116,18 +116,12 @@ public class PlayerController : MonoBehaviour
             carController.IitemA = iinput.currentActionMap.actions[2].ReadValue<bool>();
             carController.IitemB = iinput.currentActionMap.actions[3].ReadValue<bool>();
             carController.Iboost = iinput.currentActionMap.actions[4].ReadValue<float>() > 0.5f;
-            bool leftDrift = iinput.currentActionMap.actions[5].ReadValue<float>() > 0.5f;
-            bool rightDrift = iinput.currentActionMap.actions[6].ReadValue<float>() > 0.5f;
-            if(leftDrift && rightDrift || (!leftDrift && !rightDrift)){ carController.Idrift = 0; }
-            else if(leftDrift){ carController.Idrift = -1; }
-            else if(rightDrift){ carController.Idrift = 1; }
         }else{
             carController.Iaccel = 0;
             carController.Isteer = 0;
             carController.IitemA = false;
             carController.IitemB = false;
             carController.Iboost = false;
-            carController.Idrift = 0;
             
             Vector2 Move = iinput.currentActionMap.actions[1].ReadValue<Vector2>();
             bool select = iinput.currentActionMap.actions[2].ReadValue<float>() > 0.5f;
@@ -150,31 +144,31 @@ public class PlayerController : MonoBehaviour
         // Handle select input with debouncing
         if(selectInput && !lastSelectInput){
             // Rising edge detected - player pressed select
-            if(CMS.cms != null){
-                CMS.cms.OnSelectCallback(this);
+            if(SR.cms != null){
+                SR.cms.OnSelectCallback(this);
             }
         }
         
         // Handle alt select input with debouncing
         if(altSelectInput && !lastAltSelectInput){
             // Rising edge detected - player pressed alt select
-            if(CMS.cms != null){
-                CMS.cms.OnAltSelectCallback(this);
+            if(SR.cms != null){
+                SR.cms.OnAltSelectCallback(this);
             }
         }
         
         // Handle back button input with debouncing
         if(backSelectInput && !lastBackSelectInput){
             // Rising edge detected - player pressed back
-            if(CMS.cms != null){
-                CMS.cms.OnBackToMenuCallback();
+            if(SR.cms != null){
+                SR.cms.OnBackToMenuCallback();
             }
         }
         // Handle start button input with debouncing
         if(startSelectInput && !lastStartSelectInput){
             // Rising edge detected - player pressed start
-            if(CMS.cms != null){
-                CMS.cms.OnStartSelectCallback(this);
+            if(SR.cms != null){
+                SR.cms.OnStartSelectCallback(this);
             }
         }
         
