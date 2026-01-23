@@ -123,6 +123,21 @@ public class CarEntityTracker : MonoBehaviour
         }
         return null; //car not found
     }
+    public string GetCarAhead(string startingCar, int ahead = 1)
+    {
+        if(ahead > trackers.Count - 1) { return null;  } // No car ahead
+        else
+        {
+            //this is probably bugged
+            TrackCoordinate startingCoord = GetCarTrackCoordinate(startingCar);
+            if (startingCoord == null) { return null; } // Car not found
+            var orderedCars = trackers.Keys
+                .Where(id => id != startingCar)
+                .OrderBy(id => GetCarTrackCoordinate(id).DistanceY(startingCoord))
+                .ToList();
+            return orderedCars[ahead - 1];
+        }
+    }
     public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;
 }

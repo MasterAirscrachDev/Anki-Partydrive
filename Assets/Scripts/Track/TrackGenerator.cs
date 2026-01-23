@@ -433,6 +433,13 @@ public class TrackGenerator : MonoBehaviour
         }
         return null;
     }
+    public Vector3 TrackCoordinateToWorldspace(TrackCoordinate tc)
+    {
+        if (tc == null) { return Vector3.zero; }
+        TrackSpline spline = GetTrackSpline(tc.idx);
+        if (spline == null) { return Vector3.zero; }
+        return spline.GetPoint(tc.progression, tc.offset);
+    }
     public void DrawLineBetweenTrackCoordinates(TrackCoordinate a, TrackCoordinate b, Color color, float duration = 0.1f)
     {
         if (a == null || b == null) { return; }

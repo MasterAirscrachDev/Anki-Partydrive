@@ -424,6 +424,20 @@ public class CarController : MonoBehaviour
             StartCoroutine(DoNewAbilityAnimation());
         }
     }
+    void UseAbility()
+    {
+        if(currentAbility == Ability.None || doingPickupAnim){ return; } //no ability to use
+        else
+        {
+            if(currentAbility == Ability.Missle3){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle2); }
+            else if(currentAbility == Ability.Missle2){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle1); }
+            else if(currentAbility == Ability.Missle1){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.MissleSeeking3){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.MissleSeeking2); }
+            else if(currentAbility == Ability.MissleSeeking2){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.MissleSeeking1); }
+            else if(currentAbility == Ability.MissleSeeking1){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.EMP){ SR.gas.SpawnEMP(this); SetAbilityImmediate(Ability.None); }
+        }
+    }
     IEnumerator DoNewAbilityAnimation()
     {
         Ability[] validAbilities = new Ability[] { Ability.Missle3, Ability.MissleSeeking3, Ability.EMP, Ability.Shield, Ability.TrailDamage, Ability.TrailSlow, Ability.CrasherBoost };
