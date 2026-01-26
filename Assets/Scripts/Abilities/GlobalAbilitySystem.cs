@@ -40,7 +40,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     /// </summary>
     /// <param name="control"></param>
     /// <param name="distanceForward">the distance forward along the track (Segment space)</param>
-    public void SpawnMissile(CarController control, float distanceForward = 1.2f) {
+    public void SpawnMissile(CarController control, float distanceForward = 1.8f) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject missile = Instantiate(missilePrefab);
         missile.transform.position = start;

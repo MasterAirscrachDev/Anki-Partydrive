@@ -81,7 +81,6 @@ public abstract class GameMode : MonoBehaviour
         SR.tem.ClearElements();
         OnLineupStarted();
         carInteraface.OnLineupEvent += OnLineupUpdate;
-        cms.SetPlayersRacingMode(true); // Set players to racing mode when lineup starts
     }
     
     /// <summary>
@@ -90,9 +89,9 @@ public abstract class GameMode : MonoBehaviour
     public void OnLineupUpdate(string id, int remaining)
     {
         OnLineupProgress(id, remaining);
-        
         if(remaining == 0){
             StartCoroutine(CountDown());
+            cms.SetPlayersRacingMode(true); // Set players to racing mode when lineup starts
             carInteraface.OnLineupEvent -= OnLineupUpdate;
         }
     }

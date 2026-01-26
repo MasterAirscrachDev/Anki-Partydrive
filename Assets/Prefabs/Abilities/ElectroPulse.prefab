@@ -31,7 +31,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.005, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3352875513932349053}
   m_Father: {fileID: 0}
@@ -130,7 +130,7 @@ MonoBehaviour:
       outWeight: 0.03472222
     - serializedVersion: 3
       time: 0.6
-      value: 1
+      value: 2
       inSlope: 0.037830222
       outSlope: 0.037830222
       tangentMode: 0

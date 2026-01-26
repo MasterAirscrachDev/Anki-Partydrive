@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3576805191090509986}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3576805191090509987
 MonoBehaviour:
@@ -49,22 +49,21 @@ MonoBehaviour:
   speed: 0
   lane: 0
   carID: 
-  energy: 75
-  maxEnergy: 100
+  desiredCarID: 
   locked: 1
   isAI: 0
   pcs: {fileID: 0}
+  speedModifiers: []
   Iaccel: 0
   Isteer: 0
   Iboost: 0
-  Idrift: 0
   IitemA: 0
   IitemB: 0
   statSpeedMod: 1
   statSteerMod: 1
   statBoostMod: 1
-  statEnergyMod: 1
-  statDamageMod: 1
+  statMaxEnergyMod: 0
+  statEnergyRechargeMod: 0
 --- !u!114 &8626382670086874564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,6 +78,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveInput: {x: 0, y: 0}
   selectInput: 0
+  altSelectInput: 0
+  backSelectInput: 0
+  startSelectInput: 0
+  currentControlScheme: 
 --- !u!114 &3576805191090509982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,11 +122,11 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 0b27c834-6316-414b-bf7f-eb1581f3f209
-    m_ActionName: Racing/Accelerate[/Keyboard/w]
+    m_ActionName: 'Racing/Accelerate[/Keyboard/w]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 72fa2af1-f93d-49cf-af06-70351c892a03
-    m_ActionName: Racing/Steer[/Keyboard/a,/Keyboard/d]
+    m_ActionName: 'Racing/Steer[/Keyboard/a,/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: cf152a41-7477-48a6-9e17-cc33fef97a6c
@@ -135,17 +138,17 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: fd5142fa-ddd2-4e73-b4c0-281850e23de9
-    m_ActionName: Racing/Boost[/Keyboard/shift]
+    m_ActionName: 'Racing/Boost[/Keyboard/shift]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: b9ef3808-d67b-4ab5-b5df-263234c28a7f
-    m_ActionName: Racing/DriftLeft[/Keyboard/q]
+    m_ActionName: 'Racing/DriftLeft[/Keyboard/q]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: fd867876-1c32-4fff-8178-351845c55df2
-    m_ActionName: Racing/DriftRight[/Keyboard/e]
+    m_ActionName: 'Racing/DriftRight[/Keyboard/e]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: MouseAndKeyboard
-  m_DefaultActionMap: 5ab1e670-4a63-4c61-9de1-a108ab658db2
+  m_DefaultActionMap: Menu
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

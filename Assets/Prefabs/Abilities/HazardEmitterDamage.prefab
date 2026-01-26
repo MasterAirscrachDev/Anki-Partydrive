@@ -61,4 +61,4 @@ MonoBehaviour:
   emitterLifetime: 2
   emitDistance: 0.08
   hazardRange: 0.1
-  lifetime: 5
+  lifetime: 12

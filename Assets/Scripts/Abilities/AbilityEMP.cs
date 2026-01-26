@@ -5,7 +5,7 @@ using UnityEngine;
 public class AbilityEMP : MonoBehaviour
 {
     [SerializeField] AnimationCurve sizeOverTime, fadeCurve, intensityCurve;
-    [SerializeField] float activationDelay = 0.5f, maxLifetime = 1.1f;
+    [SerializeField] float activationDelay = 0.5f, maxLifetime = 1.1f, hitRadius = 1.1f;
     float lifetime = 0;
     bool activated = false;
     Material mat1, mat2;
@@ -35,12 +35,12 @@ public class AbilityEMP : MonoBehaviour
         }
     }
     void ActivateEMP(){
-        List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, 0.6f);
+        List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, hitRadius);
         CarController owner = GetComponent<AbilityController>().GetCarController();
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
-            hit.AddSpeedModifier(10, true, 3f, "EMP");
-            hit.UseEnergy(15f); //Drain 15 energy
+            hit.AddSpeedModifier(20, true, 3f, "EMP");
+            hit.UseEnergy(40f); //Drain 15 energy
         }
     }
 }

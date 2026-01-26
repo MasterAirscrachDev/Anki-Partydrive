@@ -23,6 +23,7 @@ public class CarController : MonoBehaviour
     public PlayerCardSystem pcs; //used to update the UI
     CarsManagement carsManagement; //used when in the car selection screen
     CarEntityTracker carTracker; //used to get current position for dynamic width calculation
+    [SerializeField]
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     //INPUT VALUES======
     public float Iaccel, Isteer;
@@ -33,9 +34,9 @@ public class CarController : MonoBehaviour
     const float maxEnergy = 100;
     const int maxTargetSpeed = 750;
     const int minTargetSpeed = 50;
-    const int baseBoostSpeed = 100;
+    const int baseBoostSpeed = 450; //100
     const float baseBoostCost = 0.5f;
-    const float baseEnergyGain = 0.02f;
+    const float baseEnergyGain = 0.04f;
     const float baseSteering = 2f;
     public float statSpeedMod = 0f;
     public float statSteerMod = 0f;
@@ -124,8 +125,11 @@ public class CarController : MonoBehaviour
     public void UseEnergy(float amount, bool isDamage = true){
         energy -= amount;
         if(energy < 0){ 
+            if(energy + amount > 0)
+            {
+                cms.OnCarOutOfEnergyCarCallback(carID, this); //call the event for no energy
+            }
             energy = 0;
-            cms.OnCarOutOfEnergyCarCallback(carID, this); //call the event for no energy
         }
     }
     public void ChargeEnergy(float amount){
@@ -193,7 +197,7 @@ public class CarController : MonoBehaviour
         int speedModifier = 0;
         List<int> speedPercentModifierList = null;
         for(int i = 0; i < speedModifiers.Count; i++){
-            speedModifiers[i].time -= Time.fixedDeltaTime;
+            speedModifiers[i].time -= 0.5f;
             if(speedModifiers[i].isPercentage){
                 if(speedPercentModifierList == null){ speedPercentModifierList = new List<int>(); }
                 speedPercentModifierList.Add(speedModifiers[i].modifier);
@@ -224,13 +228,13 @@ public class CarController : MonoBehaviour
         
         if(Iaccel > 0 && Iboost && energy > 1){
             UseEnergy(baseBoostCost, false);
-            AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");
+            AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), false, 0.1f, "Boost");
         } else if(!Iboost && energy < maxEnergy){
             ChargeEnergy(baseEnergyGain * (statEnergyRechargeMod + 1));
         }
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, Iaccel);
-        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.01f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
+        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.04f : 0.01f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
 
         if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
@@ -429,7 +433,7 @@ public class CarController : MonoBehaviour
         switch(type)
         {
             case TrackCarCollider.EType.EnergyCore:
-                ChargeEnergy(25); // TEMP VALUSE
+                ChargeEnergy(50); // TEMP VALUSE
                 break;
             case TrackCarCollider.EType.ItemBox:
                 OnItembox();
@@ -454,7 +458,7 @@ public class CarController : MonoBehaviour
         if(currentAbility == Ability.None || doingPickupAnim){ return; } //no ability to use
         else
         {
-            Debug.Log($"Car {carID} used ability {currentAbility}");
+            //Debug.Log($"Car {carID} used ability {currentAbility}");
             if(currentAbility == Ability.Missle3){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle2); }
             else if(currentAbility == Ability.Missle2){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle1); }
             else if(currentAbility == Ability.Missle1){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.None); }
@@ -510,6 +514,7 @@ public class CarController : MonoBehaviour
         }
     }
 }
+[System.Serializable]
 class SpeedModifer{
     public int modifier;
     public bool isPercentage;

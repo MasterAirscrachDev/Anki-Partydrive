@@ -212,3 +212,5 @@ MonoBehaviour:
     m_RotationOrder: 4
   normalMaterial: {fileID: 2100000, guid: fe6b56c22baf265408ef70d81ebd3066, type: 2}
   seekingMaterial: {fileID: 2100000, guid: 7cf78c3e97d667746be2765e30c07597, type: 2}
+  damage: 25
+  explosionRadius: 0.4

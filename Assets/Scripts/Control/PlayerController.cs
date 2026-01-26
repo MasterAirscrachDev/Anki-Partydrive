@@ -113,8 +113,8 @@ public class PlayerController : MonoBehaviour
         if(!isMenuInputs){
             carController.Iaccel = iinput.currentActionMap.actions[0].ReadValue<float>();
             carController.Isteer = iinput.currentActionMap.actions[1].ReadValue<float>();
-            carController.IitemA = iinput.currentActionMap.actions[2].ReadValue<bool>();
-            carController.IitemB = iinput.currentActionMap.actions[3].ReadValue<bool>();
+            carController.IitemA = iinput.currentActionMap.actions[2].ReadValue<float>() > 0.5f;
+            carController.IitemB = iinput.currentActionMap.actions[3].ReadValue<float>() > 0.5f;
             carController.Iboost = iinput.currentActionMap.actions[4].ReadValue<float>() > 0.5f;
         }else{
             carController.Iaccel = 0;

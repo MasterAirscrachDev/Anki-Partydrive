@@ -15,9 +15,7 @@ public class PartyMode : GameMode
     
     protected override void OnModeStart()
     { 
-        carLaps.Clear();
-        // Don't spawn elements here - wait until countdown starts
-        
+        carLaps.Clear(); 
         // Subscribe to out of energy event
         cms.onCarNoEnergy += OnCarNoEnergy;
     }
@@ -30,9 +28,17 @@ public class PartyMode : GameMode
         SR.tem.SpawnElements();
         
         foreach(string carID in activeCars){
-            carLaps[carID] = 0; //reset the lap count
-            cms.GetController(carID).SetPosition(0); //reset the position
-            carEntityTracker.ResetLapDelocalizationFlag(carID); //reset delocalization flag so first lap counts
+            try
+            {
+                carLaps[carID] = 0; //reset the lap count
+                cms.GetController(carID).SetPosition(0); //reset the position
+                carEntityTracker.ResetLapDelocalizationFlag(carID); //reset delocalization flag so first lap counts
+            }
+            catch
+            {
+                Debug.LogWarning($"Could not initialize lap count for car {carID}");
+            }
+            
         }
     }
     
@@ -88,7 +94,7 @@ public class PartyMode : GameMode
     void OnCarNoEnergy(string carID, CarController controller)
     {
         // Apply 2 second, 100% speed reduction
-        controller.AddSpeedModifier(-100, true, 2f, "NoEnergy");
+        controller.AddSpeedModifier(-3000, false, 2.5f, "NoEnergy");
         Debug.Log($"Car {carID} ran out of energy - applying 2s speed penalty");
     }
 }

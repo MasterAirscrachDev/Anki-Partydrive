@@ -171,6 +171,8 @@ public class TrackGenerator : MonoBehaviour
             Debug.LogWarning("No segments to generate track from.");
         }
         trackPieces = new List<GameObject>();
+        // Dictionary to map CrissCross 3D positions to their first track piece index
+        Dictionary<Vector3, int> crissCrossPositions = new Dictionary<Vector3, int>();
         Vector3 pos = Vector3.zero;
         Vector3 lastPos = Vector3.zero;
         Vector3 forward = Vector3.forward;
@@ -222,37 +224,47 @@ public class TrackGenerator : MonoBehaviour
                     pos += forward;
                 }
                 if (segments[i].type == SegmentType.CrissCross) {
-                    bool hasCrissCross = false;
-                    int matchingCrissCrossIndex = -1;
+                    // Round position to avoid floating point precision issues
+                    Vector3 roundedPos = new Vector3(
+                        Mathf.Round(pos.x * 10) / 10, 
+                        Mathf.Round(pos.y * 10) / 10, 
+                        Mathf.Round(pos.z * 10) / 10
+                    );
                     
-                    // Look for an existing CrissCross at the same X,Y coordinates
-                    for (int j = 0; j < i; j++)
-                    {
-                        if (segments[j].type == SegmentType.CrissCross && segments[j].X == segments[i].X && segments[j].Y == segments[i].Y)
-                        {
-                            hasCrissCross = true;
-                            matchingCrissCrossIndex = j;
-                            break;
-                        }
-                    }
-                    
-                    if (hasCrissCross && matchingCrissCrossIndex >= 0 && matchingCrissCrossIndex < trackPieces.Count)
+                    // Check if we already have a CrissCross at this 3D position
+                    if (crissCrossPositions.ContainsKey(roundedPos))
                     {
                         // This CrissCross shares the same physical location as a previous one
-                        // Update the name to show it handles multiple segments
-                        if (trackPieces[matchingCrissCrossIndex] != null)
+                        int firstTrackPieceIndex = crissCrossPositions[roundedPos];
+                        
+                        // Update the name of the first track piece to show it handles multiple segments
+                        if (firstTrackPieceIndex >= 0 && firstTrackPieceIndex < trackPieces.Count && trackPieces[firstTrackPieceIndex] != null)
                         {
-                            trackPieces[matchingCrissCrossIndex].name = $"{matchingCrissCrossIndex},{i} (CrissCross)";
+                            // Get current segment indices from the name if it already has multiple
+                            string currentName = trackPieces[firstTrackPieceIndex].name;
+                            if (currentName.Contains("(CrissCross)"))
+                            {
+                                string segmentPart = currentName.Substring(0, currentName.IndexOf(" (CrissCross)"));
+                                trackPieces[firstTrackPieceIndex].name = $"{segmentPart},{i} (CrissCross)";
+                            }
+                            else
+                            {
+                                // First time adding a second segment, shouldn't normally happen
+                                trackPieces[firstTrackPieceIndex].name = $"{firstTrackPieceIndex},{i} (CrissCross)";
+                            }
                         }
                         
                         // Create an invisible reference track piece that splines across the intersection
                         track = Instantiate(trackPrefabs[10], pos, rot, transform); // invisible criss cross (splines across)
-                        track.name = $"{i} (CrissCross Reference)";
+                        track.name = $"{i} (CrissCross Reference -> {firstTrackPieceIndex})";
                     }
                     else
                     {
                         // This is the first CrissCross at this position, create the actual track piece
                         track = Instantiate(useFullTrack ? trackPrefabs[8] : scannningPrefabs[4], pos, rot, transform);
+                        
+                        // Remember this position and its track piece index for future CrissCross segments
+                        crissCrossPositions[roundedPos] = trackPieces.Count; // Will be added at current trackPieces.Count
                     }
                     pos += forward;
                 }

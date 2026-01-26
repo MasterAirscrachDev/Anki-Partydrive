@@ -162,7 +162,7 @@ public class CMS : MonoBehaviour
             }
         }
         if(controllersInRange.Count > 0){
-            Debug.Log($"SphereCheck found {controllersInRange.Count} controllers in range.");
+            //Debug.Log($"SphereCheck found {controllersInRange.Count} controllers in range.");
         }
         return controllersInRange;
     }
@@ -183,7 +183,7 @@ public class CMS : MonoBehaviour
             }
         }
         if(controllersInRange.Count > 0){
-            Debug.Log($"CubeCheck found {controllersInRange.Count} controllers in range.");
+            //Debug.Log($"CubeCheck found {controllersInRange.Count} controllers in range.");
         }
         return controllersInRange;
     }
