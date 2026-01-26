@@ -4,11 +4,14 @@ using UnityEngine;
 public class GlobalAbilitySystem : MonoBehaviour
 {
     [SerializeField] List<AbilityTexturePair> abilityTextures;
-    [SerializeField] GameObject missilePrefab, seekingMissilePrefab;
+    [SerializeField] GameObject missilePrefab;
+    [SerializeField] GameObject MissileParticlePrefab, SeekingMissileParticlePrefab;
     [SerializeField] GameObject empPrefab;
+    [SerializeField] GameObject damageTrailPrefab, slowTrailPrefab;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
     }
     public Sprite GetAbilityTexture(Ability ability)
     {
@@ -39,7 +42,8 @@ public class GlobalAbilitySystem : MonoBehaviour
     /// <param name="distanceForward">the distance forward along the track (Segment space)</param>
     public void SpawnMissile(CarController control, float distanceForward = 1.2f) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
-        GameObject missile = Instantiate(missilePrefab, start, Quaternion.identity);
+        GameObject missile = Instantiate(missilePrefab);
+        missile.transform.position = start;
         missile.GetComponent<AbilityController>().Setup(control);
         TrackCoordinate tc = SR.cet.GetCarTrackCoordinate(control.GetID());
 
@@ -54,7 +58,8 @@ public class GlobalAbilitySystem : MonoBehaviour
     /// <param name="targetID"></param>
     public void SpawnSeekingMissile(CarController control, string targetID) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
-        GameObject missile = Instantiate(seekingMissilePrefab, start, Quaternion.identity);
+        GameObject missile = Instantiate(missilePrefab);
+        missile.transform.position = start;
         missile.GetComponent<AbilityController>().Setup(control);
         missile.GetComponent<AbilityMissile>().Setup(SR.cet.GetCarVisualTransform(targetID));
     }
@@ -64,10 +69,15 @@ public class GlobalAbilitySystem : MonoBehaviour
     /// <param name="control"></param>
     public void SpawnSeekingMissile(CarController control) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
-        GameObject missile = Instantiate(seekingMissilePrefab, start, Quaternion.identity);
+        GameObject missile = Instantiate(missilePrefab);
+        missile.transform.position = start;
         missile.GetComponent<AbilityController>().Setup(control);
         string targetID = SR.cet.GetCarAhead(control.GetID());
         missile.GetComponent<AbilityMissile>().Setup(SR.cet.GetCarVisualTransform(targetID));
+    }
+    public void SpawnMissileParticle(Vector3 position, bool seeking) {
+        GameObject particle = Instantiate(seeking ? SeekingMissileParticlePrefab : MissileParticlePrefab);
+        particle.transform.position = position;
     }
     public void SpawnEMP(CarController control) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
@@ -75,6 +85,21 @@ public class GlobalAbilitySystem : MonoBehaviour
         emp.GetComponent<AbilityController>().Setup(control);
         //emp.GetComponent<AbilityEMP>().Setup();
     }
+    public void SpawnDamageTrail(CarController control) {
+        Transform model = SR.cet.GetCarVisualTransform(control.GetID());
+        GameObject trail = Instantiate(damageTrailPrefab, model.position, model.rotation);
+        trail.transform.parent = model;
+        trail.GetComponent<AbilityController>().Setup(control);
+        //trail.GetComponent<AbilityDamageTrail>().Setup();
+    }
+    public void SpawnSlowTrail(CarController control) {
+        Transform model = SR.cet.GetCarVisualTransform(control.GetID());
+        GameObject trail = Instantiate(slowTrailPrefab, model.position, model.rotation);
+        trail.transform.parent = model;
+        trail.GetComponent<AbilityController>().Setup(control);
+        //trail.GetComponent<AbilitySlowTrail>().Setup();
+    }
+    [System.Serializable]
     class AbilityTexturePair
     {
         public Ability ability;

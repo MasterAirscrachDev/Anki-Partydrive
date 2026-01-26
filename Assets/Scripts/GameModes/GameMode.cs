@@ -64,6 +64,7 @@ public abstract class GameMode : MonoBehaviour
         replayButton.SetActive(false);
         gameActive = false;
         gameEnding = false;
+        SR.tem.ClearElements();
         
         OnModeStart();
     }
@@ -77,7 +78,7 @@ public abstract class GameMode : MonoBehaviour
         startButton.SetActive(false);
         FindFirstObjectByType<CarInteraface>().ApiCallV2(SV_LINEUP, 0);
         SR.pa.PlayLine(LineupStarting);
-        
+        SR.tem.ClearElements();
         OnLineupStarted();
         carInteraface.OnLineupEvent += OnLineupUpdate;
         cms.SetPlayersRacingMode(true); // Set players to racing mode when lineup starts
@@ -103,6 +104,14 @@ public abstract class GameMode : MonoBehaviour
     {
         uiManager.SwitchToTrackCamera(true);
         string[] activeCars = carEntityTracker.GetActiveCars();
+        
+        // Reset all cars before countdown
+        foreach(string carID in activeCars){
+            CarController controller = cms.GetController(carID);
+            if(controller != null){
+                controller.ResetCar();
+            }
+        }
         
         OnCountdownStarted(activeCars);
         

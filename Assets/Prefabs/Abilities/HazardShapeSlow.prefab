@@ -102,9 +102,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886d1517edd1a0a4fb7ee1f454771f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityHazardZone
-  tickRate: 0.1
   energyChange: 0
-  speedModifier: -10
+  speedModifier: -200
   speedIsMultiplier: 0
-  speedModifierDuration: 0.1
+  speedModifierDuration: 0.2
   modifierTag: HazardZone

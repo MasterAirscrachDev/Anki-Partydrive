@@ -27,6 +27,7 @@ public class CarController : MonoBehaviour
     //INPUT VALUES======
     public float Iaccel, Isteer;
     public bool Iboost, IitemA, IitemB;
+    bool itemALastFrame = false, itemBLastFrame = false;
     //===================
     //BASE MODIFIERS======
     const float maxEnergy = 100;
@@ -151,6 +152,19 @@ public class CarController : MonoBehaviour
         for(int i = 0; i < 3; i++)
         { SR.io.ControlCar(carData, 0, Mathf.RoundToInt(lane)); }
     }
+    public void ResetCar() //should be called before a race starts
+    {
+        //energy reset to 75%
+        energy = maxEnergy + statMaxEnergyMod * 0.75f;
+        //clear speed modifiers
+        speedModifiers.Clear();
+        //reset ability
+        currentAbility = Ability.None;
+        if(pcs != null){ 
+            pcs.ClearAttachment();
+            pcs.SetPosition(0);
+        }
+    }
 #endregion
 #region CONTROL TICKER
     async Task ControlTicker(){
@@ -160,13 +174,14 @@ public class CarController : MonoBehaviour
             
             // Check for car connection if we have a desired car but no current car
             CheckForCarConnection();
+            int desiredSpeed = GetSpeedAfterModifiers(speed);
             
-            if(!locked && (speed != oldSpeed || lane != oldLane)){
+            if(!locked && (desiredSpeed != oldSpeed || lane != oldLane)){
                 oldLane = lane;
-                oldSpeed = speed;
+                oldSpeed = desiredSpeed;
                 UCarData carData = SR.io.GetCarFromID(carID);
                 if(carData != null){
-                    SR.io.ControlCar(carData, speed, Mathf.RoundToInt(lane));
+                    SR.io.ControlCar(carData, desiredSpeed, Mathf.RoundToInt(lane));
                 }
             }
         }
@@ -174,20 +189,7 @@ public class CarController : MonoBehaviour
     public void DoControlImmediate(){
         SR.io.ControlCar(SR.io.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
     }
-    void FixedUpdate(){
-        // Don't process any input or movement if the car is locked (game ended)
-        if(locked){ return; }
-        
-        if(Iaccel > 0 && Iboost && energy > 1){
-            UseEnergy(baseBoostCost, false);
-            AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");
-        } else if(!Iboost && energy < maxEnergy){
-            ChargeEnergy(baseEnergyGain * statEnergyRechargeMod);
-        }
-
-        int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, Iaccel);
-        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.01f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
-
+    int GetSpeedAfterModifiers(int baseSpeed){
         int speedModifier = 0;
         List<int> speedPercentModifierList = null;
         for(int i = 0; i < speedModifiers.Count; i++){
@@ -203,7 +205,7 @@ public class CarController : MonoBehaviour
                 i--;
             }
         }
-        speed += speedModifier;
+        baseSpeed += speedModifier;
 
         if(speedPercentModifierList != null){
             float percent = 1f;
@@ -211,8 +213,24 @@ public class CarController : MonoBehaviour
                 percent += speedPercentModifierList[i] / 100f;
             }
             percent /= speedPercentModifierList.Count;
-            speed = Mathf.RoundToInt(speed * percent);
+            baseSpeed = Mathf.RoundToInt(speed * percent);
         }
+        if(baseSpeed < 0){ baseSpeed = 0; }
+        return baseSpeed;
+    }
+    void FixedUpdate(){
+        // Don't process any input or movement if the car is locked (game ended)
+        if(locked){ return; }
+        
+        if(Iaccel > 0 && Iboost && energy > 1){
+            UseEnergy(baseBoostCost, false);
+            AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed * statBoostMod), false, 0.1f, "Boost");
+        } else if(!Iboost && energy < maxEnergy){
+            ChargeEnergy(baseEnergyGain * (statEnergyRechargeMod + 1));
+        }
+
+        int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, Iaccel);
+        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.05f : 0.01f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
 
         if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
@@ -223,6 +241,12 @@ public class CarController : MonoBehaviour
         float trackHalfWidth = GetTrackHalfWidth();
         lane = Mathf.Clamp(lane, -trackHalfWidth, trackHalfWidth); //clamp lane to track bounds
         pcs.SetEnergy((int)energy, (int)maxEnergy);
+
+        //use ability inputs
+        if(IitemA && !itemALastFrame){ UseAbility(); }
+
+        itemALastFrame = IitemA;
+        itemBLastFrame = IitemB;
     }
     float GetTrackHalfWidth() {
         // Get dynamic track width from the car's actual current position
@@ -357,6 +381,7 @@ public class CarController : MonoBehaviour
     public string GetDesiredCarID(){ return desiredCarID; }
     public string GetPlayerName(){ return playerName; }
     public bool IsCarConnected(){ return !string.IsNullOrEmpty(carID) && carID == desiredCarID; }
+    public Ability GetCurrentAbility(){ return currentAbility; }
     public void SetLocked(bool state){ 
         locked = state; 
         //if we also have a AIController, set the inputs locked to the same value
@@ -429,6 +454,7 @@ public class CarController : MonoBehaviour
         if(currentAbility == Ability.None || doingPickupAnim){ return; } //no ability to use
         else
         {
+            Debug.Log($"Car {carID} used ability {currentAbility}");
             if(currentAbility == Ability.Missle3){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle2); }
             else if(currentAbility == Ability.Missle2){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle1); }
             else if(currentAbility == Ability.Missle1){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.None); }
@@ -436,11 +462,14 @@ public class CarController : MonoBehaviour
             else if(currentAbility == Ability.MissleSeeking2){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.MissleSeeking1); }
             else if(currentAbility == Ability.MissleSeeking1){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.EMP){ SR.gas.SpawnEMP(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.TrailDamage){ SR.gas.SpawnDamageTrail(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.TrailSlow){ SR.gas.SpawnSlowTrail(this); SetAbilityImmediate(Ability.None); }
+            //else if(currentAbility == Ability.CrasherBoost){ SR.gas.SpawnCrasherBoost(this); SetAbilityImmediate(Ability.None); }
         }
     }
     IEnumerator DoNewAbilityAnimation()
     {
-        Ability[] validAbilities = new Ability[] { Ability.Missle3, Ability.MissleSeeking3, Ability.EMP, Ability.Shield, Ability.TrailDamage, Ability.TrailSlow, Ability.CrasherBoost };
+        Ability[] validAbilities = new Ability[] { Ability.Missle3, Ability.MissleSeeking3, Ability.EMP, Ability.TrailDamage, Ability.TrailSlow };
         //over 1 second, cycle through abilities every 0.1 second
         float animationDuration = 1f;
         float cycleInterval = 0.1f;

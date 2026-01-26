@@ -15,14 +15,20 @@ public class PartyMode : GameMode
     
     protected override void OnModeStart()
     { 
-        carLaps.Clear(); 
-        SR.tem.SpawnElements(); //spawn powerups and energy elements
+        carLaps.Clear();
+        // Don't spawn elements here - wait until countdown starts
+        
+        // Subscribe to out of energy event
+        cms.onCarNoEnergy += OnCarNoEnergy;
     }
     
     protected override void OnLineupStarted()
     { carLaps.Clear();  } //clear the lap count
     
     protected override void OnCountdownStarted(string[] activeCars) {
+        // Spawn powerups and energy elements before the countdown
+        SR.tem.SpawnElements();
+        
         foreach(string carID in activeCars){
             carLaps[carID] = 0; //reset the lap count
             cms.GetController(carID).SetPosition(0); //reset the position
@@ -41,8 +47,6 @@ public class PartyMode : GameMode
                 }catch{
                     //Debug.LogWarning($"Could not set lap count for car {carID}");
                 }
-                
-                //cms.TTS($"{cms.CarNameFromId(carID)} has completed {carLaps[carID]} laps");
             }
         }else{ return; } //if not, ignore it
         //sort the cars by lap count and set the position
@@ -70,5 +74,21 @@ public class PartyMode : GameMode
             ModelName winningCarModel = cms.CarModelFromId(carID);
             SR.pa.PlayLine(CarWins, winningCarModel);
         }
+    }
+    
+    protected override void OnModeCleanup()
+    {
+        // Unsubscribe from out of energy event
+        if(cms != null)
+        {
+            cms.onCarNoEnergy -= OnCarNoEnergy;
+        }
+    }
+    
+    void OnCarNoEnergy(string carID, CarController controller)
+    {
+        // Apply 2 second, 100% speed reduction
+        controller.AddSpeedModifier(-100, true, 2f, "NoEnergy");
+        Debug.Log($"Car {carID} ran out of energy - applying 2s speed penalty");
     }
 }

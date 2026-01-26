@@ -11,7 +11,6 @@ public class CarEntityPosition : MonoBehaviour
     SegmentType currentSegmentType = SegmentType.Straight;
     int currentSegmentID;
     bool isSegmentReversed = false;
-    [SerializeField] int shift = 0;
     int despawnTimer = 50;
     [SerializeField] TrackCoordinate trackpos;
     Vector3 lastPosition;
@@ -58,13 +57,12 @@ public class CarEntityPosition : MonoBehaviour
         }else if(!showOnTrack){ //if we are not on the track, hide the car
             transform.position = new Vector3(0, -10, 0); //hide the car
         }
-        if(trackpos.progression >= 1 && shift < 2){
-            trackpos.progression = 0; //reset the progression
-            shift++;
-            trackSpline = SR.track.GetTrackSpline(trackpos.idx + shift);
-            if(trackSpline == null){trackSpline = SR.track.GetTrackSpline(trackpos.idx + ++shift); }
-            UpdateTrackSpline(trackSpline, trackpos.idx + shift); //updates cached values for movement prediction
-            SetMat(false);
+        
+        // Reset progression when reaching the end of a segment
+        if(trackpos.progression >= 1){
+            trackpos.progression = 1;
+            //trackpos.progression = 0; //reset the progression
+            // Note: Track index update will come from server position updates
         }
     }
     /// <summary>
@@ -75,7 +73,6 @@ public class CarEntityPosition : MonoBehaviour
             UpdateTrackSpline(trackSpline, idx);
             trackpos.SetIdx(idx);
         }
-        shift = 0;
     }
     /// <summary>
     /// Update the track spline for the car entity. idx may not be trusted
@@ -109,18 +106,14 @@ public class CarEntityPosition : MonoBehaviour
     }
     void SetMat(bool trusted){
         if(ourMaterial != null){
-            //if trusted and shift == 0 set colour to solid blue
-            Color c = new Color(0, 0.3f, 1, 0.6f); //blue
-            if(!trusted){
-                c = shift == 0 ? new Color(1, 0.5f, 0, 0.4f) : new Color(0.4f, 0.6f, 0, 0.4f); //red or orange
-            }
+            //if trusted set colour to solid blue, otherwise orange
+            Color c = trusted ? new Color(0, 0.3f, 1, 0.6f) : new Color(1, 0.5f, 0, 0.4f);
             ourMaterial.color = c;
         }
     }
     public void Delocalise(){ //start a timer to despawn the car model
         trackSpline = null;
         trackpos.speed = 0;
-        shift = 0;
         showOnTrack = false;
         wasDelocalisedThisLap = true;
 
@@ -138,9 +131,6 @@ public class CarEntityPosition : MonoBehaviour
         }
         if(despawnTimer <= 0 && !despawnCancelled){ FindFirstObjectByType<CarEntityTracker>().RemoveTracker(id); } //destroy the car entity
         despawnTimerRunning = false; //reset the despawn timer running flag
-    }
-    public bool IsDelocalised(){
-        return trackSpline == null;
     }
     public TrackCoordinate GetTrackCoordinate(){
         return trackpos;

@@ -21,7 +21,7 @@ public class OverdriveStatDefaults
             energyRechargeModPoints = energyRecharge;
         }
     }
-    public static StatTable GetDefaultsForCar(ModelName carName)
+    public static StatTable GetDefaultsForCarOverdrive(ModelName carName)
     {
         //every car gets max 8 points to distribute among stats
         switch (carName) {
@@ -56,6 +56,18 @@ public class OverdriveStatDefaults
                 return new StatTable(-3, 2, -1, 4, 4); //6 points
             default:
                 return new StatTable(0, 0, 0, 0, 0); //default no changes
+        }
+    }
+    public static StatTable GetDefaultsForCarBalanced(ModelName carName)
+    {
+        //every car gets max 8 points to distribute among stats
+        switch (carName) {
+            case ModelName.Freewheel:
+            case ModelName.x52:
+            case ModelName.x52Ice:
+                return new StatTable(-3, 2, -1, 4, 4); //6 points
+            default:
+                return new StatTable(2, 2, 2, 1, 1); //default no changes
         }
     }
 }

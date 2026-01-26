@@ -19,8 +19,9 @@ public class TrackPathSolver
         Speed, //Drive as fast as possible
         Target, //Drive to the target
         Persuit, //Stay close behind the target
-        Defence, //Stay as far from other cars as possible
-        Block, //drive in front of the target then slow down
+        Flee, //Stay as far from other cars as possible
+        Defence, //drive in front of the target then slow down
+        Side, //drive to the side of the target
     }
     public class PathingInputs
     {
@@ -114,11 +115,27 @@ public class TrackPathSolver
                 if (blockedAhead)
                 {
                     // Overtaking logic - try to pass blocked cars
-                    targetSpeed = 800;
-                    log += "Slowing down due to obstacle ahead\n";
+                    targetSpeed = 850; // Less aggressive slowdown
+                    log += "Obstacle ahead, preparing to overtake\n";
 
-                    // Try to overtake - left by default, right if left is blocked
-                    if (!blockedLeft)
+                    // Try to overtake - choose the clearer side
+                    if (!blockedLeft && !blockedRight)
+                    {
+                        // Both sides clear, choose based on upcoming turn or current position
+                        if (futureTrack.Take(3).Any(s => s == SegmentType.Turn))
+                        {
+                            // Position for the turn
+                            bool turnReversed = SR.track.GetSegmentReversed(inputs.ourCoord.idx + 1);
+                            targetLane = turnReversed ? CAR_SPACING * 2 : -CAR_SPACING * 2;
+                        }
+                        else
+                        {
+                            // Choose opposite side of where we currently are for variety
+                            targetLane = inputs.currentTargetOffset > 0 ? -CAR_SPACING * 2 : CAR_SPACING * 2;
+                        }
+                        log += $"Both sides clear, overtaking to {targetLane}\n";
+                    }
+                    else if (!blockedLeft)
                     {
                         targetLane = inputs.currentTargetOffset - CAR_SPACING * 2;
                         log += "Overtaking to the left\n";
@@ -131,8 +148,8 @@ public class TrackPathSolver
                     else
                     {
                         targetLane = inputs.currentTargetOffset;
-                        targetSpeed = 600; // Significant speed reduction if both sides blocked
-                        log += "Can't overtake - both sides blocked\n";
+                        targetSpeed = 650; // Moderate speed reduction if both sides blocked
+                        log += "Can't overtake immediately - following\n";
                     }
                 }
                 else
@@ -154,15 +171,15 @@ public class TrackPathSolver
                         bool turnReversed = SR.track.GetSegmentReversed(turnIndex + inputs.ourCoord.idx);
                         // Inside of the turn (negative offset for left turn, positive for right turn)
                         float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
-                        targetLane = turnReversed ? currentTrackHalfWidth : -currentTrackHalfWidth;
+                        targetLane = turnReversed ? currentTrackHalfWidth * 0.6f : -currentTrackHalfWidth * 0.6f; // More aggressive line
                         log += $"Positioning for upcoming turn at {targetLane}\n";
                     }
                     else
                     {
-                        // No turn coming, stay toward center
-                        targetLane = 4f; // Center of track
+                        // No turn coming, stay slightly off-center for better racing position
+                        targetLane = 0f; // Dead center
                         shouldBoost = true;
-                        log += "Boosting!\n";
+                        log += "Full speed ahead with boost!\n";
                     }
                 }
                 break;
@@ -176,23 +193,24 @@ public class TrackPathSolver
 
                     // Take ideal racing line but adjust if blocked
                     float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
-                    float idealOffset = turnReversed ? currentTrackHalfWidth * 0.53f : -currentTrackHalfWidth * 0.53f; // Use ~53% of track width for racing line
+                    float idealOffset = turnReversed ? currentTrackHalfWidth * 0.6f : -currentTrackHalfWidth * 0.6f; // More aggressive (60% instead of 53%)
                     targetLane = idealOffset;
 
                     // If ideal racing line is blocked, adjust
                     if ((idealOffset < 0 && blockedLeft) || (idealOffset > 0 && blockedRight))
                     {
-                        targetLane = -idealOffset * 0.5f; // Use half of the opposite side
+                        targetLane = -idealOffset * 0.4f; // Less conservative adjustment
                         log += $"Adjusting racing line to avoid obstacle: {targetLane}\n";
                     }
 
-                    targetSpeed = 600 + (onTurnNow ? 0 : 150);
-                    log += $"Target racing line: {targetLane}\n";
+                    targetSpeed = 650 + (onTurnNow ? 0 : 200); // Faster approach to turns
+                    log += $"Target racing line: {targetLane}, speed: {targetSpeed}\n";
                 }
                 else
                 {
-                    targetLane = 4f;
-                    targetSpeed = 850;
+                    targetLane = 0f; // Center for straights
+                    targetSpeed = 900; // Higher speed on straights
+                    if (!blockedAhead) { shouldBoost = true; } // Boost if clear ahead
                 }
                 break;
 
@@ -200,6 +218,8 @@ public class TrackPathSolver
                 // Stay close behind target and look for overtaking opportunities
                 if (inputs.currentTarget != null)
                 {
+                    float distanceToTarget = inputs.currentTarget.DistanceY(inputs.ourCoord);
+                    
                     // Calculate optimal overtaking position
                     float overtakingOffset;
 
@@ -212,21 +232,21 @@ public class TrackPathSolver
                         // If car ahead is on right side, prefer overtaking on left if clear
                         if (leftClear)
                         {
-                            overtakingOffset = inputs.currentTarget.offset - CAR_SPACING;
-                            log += "Planning left overtake\n";
+                            overtakingOffset = inputs.currentTarget.offset - CAR_SPACING * 1.5f; // More aggressive spacing
+                            log += "Planning aggressive left overtake\n";
                         }
                         else if (rightClear)
                         {
                             // If left blocked but right clear, try wide right overtake
-                            overtakingOffset = inputs.currentTarget.offset + CAR_SPACING;
+                            overtakingOffset = inputs.currentTarget.offset + CAR_SPACING * 1.5f;
                             log += "Planning wide right overtake (left blocked)\n";
                         }
                         else
                         {
                             // Both sides blocked, maintain distance
                             overtakingOffset = inputs.currentTarget.offset;
-                            targetSpeed = 600; // Slow down
-                            log += "Both sides blocked, maintaining position\n";
+                            targetSpeed = 700; // Higher follow speed
+                            log += "Both sides blocked, maintaining close pursuit\n";
                         }
                     }
                     else
@@ -234,21 +254,21 @@ public class TrackPathSolver
                         // If car ahead is on left side, prefer overtaking on right if clear
                         if (rightClear)
                         {
-                            overtakingOffset = inputs.currentTarget.offset + CAR_SPACING;
-                            log += "Planning right overtake\n";
+                            overtakingOffset = inputs.currentTarget.offset + CAR_SPACING * 1.5f; // More aggressive spacing
+                            log += "Planning aggressive right overtake\n";
                         }
                         else if (leftClear)
                         {
                             // If right blocked but left clear, try wide left overtake
-                            overtakingOffset = inputs.currentTarget.offset - CAR_SPACING;
+                            overtakingOffset = inputs.currentTarget.offset - CAR_SPACING * 1.5f;
                             log += "Planning wide left overtake (right blocked)\n";
                         }
                         else
                         {
                             // Both sides blocked, maintain distance
                             overtakingOffset = inputs.currentTarget.offset;
-                            targetSpeed = 600; // Slow down
-                            log += "Both sides blocked, maintaining position\n";
+                            targetSpeed = 700; // Higher follow speed
+                            log += "Both sides blocked, maintaining close pursuit\n";
                         }
                     }
 
@@ -256,30 +276,38 @@ public class TrackPathSolver
                     float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
                     overtakingOffset = Mathf.Clamp(overtakingOffset, -currentTrackHalfWidth, currentTrackHalfWidth);
 
-                    // If we're close enough and path isn't blocked, attempt overtaking
-                    if (inputs.currentTarget.DistanceY(inputs.ourCoord) < 2.0f && !blockedAhead)
+                    // More aggressive overtaking when close
+                    if (distanceToTarget < 2.5f && !blockedAhead) // Increased from 2.0f
                     {
                         targetLane = overtakingOffset;
                         targetSpeed = 1000; // Maximum speed for overtaking
                         if (!upcomingTurn) { shouldBoost = true; } // Boost if not in a turn
-                        log += $"Overtaking maneuver at offset {targetLane}\n";
+                        log += $"Aggressive overtaking maneuver at offset {targetLane}\n";
+                    }
+                    else if (distanceToTarget < 4.0f) // New: intermediate range positioning
+                    {
+                        targetLane = overtakingOffset;
+                        targetSpeed = 950; // High speed positioning
+                        log += $"Positioning for overtake at distance {distanceToTarget:F2}\n";
                     }
                     else
                     {
-                        // Not close enough to overtake or path blocked, just follow for now
+                        // Far from target, close the gap quickly
                         targetLane = inputs.currentTarget.offset;
-                        targetSpeed = blockedAhead ? 700 : 900; // Slow down if blocked
-                        log += $"Following at distance {inputs.currentTarget.DistanceY(inputs.ourCoord)}\n";
+                        targetSpeed = 1000;
+                        shouldBoost = !upcomingTurn; // Boost to catch up if not in turn
+                        log += $"Closing gap at distance {distanceToTarget:F2}\n";
                     }
                 }
                 else
                 {
-                    // No car ahead, revert to speed mode
-                    //state = AIState.Speed;
+                    // No target, maintain high speed
+                    targetSpeed = 1000;
+                    shouldBoost = !upcomingTurn;
                 }
                 break;
 
-            case AIState.Defence:
+            case AIState.Flee:
                 // Find safest path away from other cars using CAR_SPACING
                 if (carClose || blockedAhead)
                 {
@@ -357,42 +385,45 @@ public class TrackPathSolver
                 }
                 break;
 
-            case AIState.Block:
+            case AIState.Defence:
                 // Block overtaking attempts by staying in the same lane but offsetting slightly
                 // Note: This is the only mode where we intentionally don't avoid other cars
                 if (inputs.currentTarget != null && !inputs.currentTarget.IsAhead(inputs.ourCoord))
                 {
                     // Check if car behind is attempting to overtake
                     float behindOffset = inputs.currentTarget.offset;
-                    bool possibleOvertakeAttempt = Mathf.Abs(behindOffset - inputs.ourCoord.offset) > (CAR_SPACING * 0.5f);
+                    float offsetDifference = Mathf.Abs(behindOffset - inputs.ourCoord.offset);
+                    bool possibleOvertakeAttempt = offsetDifference > (CAR_SPACING * 0.4f); // More responsive
 
                     if (possibleOvertakeAttempt)
                     {
-                        // Move in the direction they're trying to overtake
-                        targetLane = behindOffset;
+                        // Move in the direction they're trying to overtake to block
+                        float currentTrackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
+                        targetLane = Mathf.Clamp(behindOffset, -currentTrackHalfWidth * 0.7f, currentTrackHalfWidth * 0.7f);
                         log += $"Blocking overtake attempt at {targetLane}\n";
                     }
                     else
                     {
-                        // Just stay in their path
-                        targetLane = behindOffset;
-                        log += $"Blocking path at {targetLane}\n";
+                        // Stay in center-ish position to be ready to block either side
+                        targetLane = behindOffset * 0.5f; // Position halfway between center and their position
+                        log += $"Defensive positioning at {targetLane}\n";
                     }
 
-                    // Moderate speed for blocking
-                    targetSpeed = upcomingTurn ? 450 : 550;
+                    // Maintain moderate speed for blocking - not too fast, not too slow
+                    targetSpeed = upcomingTurn ? 500 : 650; // Increased from 450:550
                 }
                 else
                 {
-                    // If no suitable car to block, revert to speed mode
-                    //state = AIState.Speed;
+                    // No suitable car to block, maintain racing position
+                    targetLane = 0f; // Center
+                    targetSpeed = 800; // Decent speed
                 }
                 break;
         }
 
         // Apply common avoidance logic for all states except Block
         // This provides a final safety check against collisions
-        if (inputs.state != AIState.Block)
+        if (inputs.state != AIState.Defence)
         {
             // Emergency avoidance if we're about to hit something head-on
             if (blockedAhead && targetSpeed > 600)
@@ -412,7 +443,7 @@ public class TrackPathSolver
             }
         }
         // Apply turn-specific logic regardless of state
-        if (upcomingTurn && inputs.state != AIState.Block)
+        if (upcomingTurn && inputs.state != AIState.Defence)
         {
             bool onTurnNow = futureTrack[0] == SegmentType.Turn;
 

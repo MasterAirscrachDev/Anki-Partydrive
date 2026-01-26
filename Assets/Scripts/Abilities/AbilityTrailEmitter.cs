@@ -19,7 +19,9 @@ public class AbilityTrailEmitter : MonoBehaviour
     void Update()
     {
         if(Vector3.Distance(transform.position, lastEmitPosition) >= emitDistance){
-            GameObject trail = Instantiate(trailPrefab, transform.position, transform.rotation);
+            GameObject trail = Instantiate(trailPrefab);
+            trail.transform.position = transform.position;
+            trail.transform.Rotate(Vector3.up, transform.eulerAngles.y);
             AbilityHazardZone hazard = trail.GetComponent<AbilityHazardZone>();
             hazard.Setup(hazardRange, lifetime, GetComponent<AbilityController>().GetCarController());
             lastEmitPosition = transform.position;

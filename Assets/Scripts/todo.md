@@ -11,6 +11,15 @@
 
 - 2 boost starts
 
+- [x] implment ResetCar() (call before starting gamemode countdown)
+- [x] AI for powerups
+    - [x] table of Ability to AIAbilityUsageMode
+    - [x] Ensure that AIController can access ability information
+- [x] generate powerups before countdown not on gamemode load for partymode
+- [x] make AI switch AIState based on position
+    - [x] drive defensive when in lead
+    - [x] drive fast when behind
+- [x] remove predictive movement from CarEntityPosition (shift) as its not really helping
 
 ## UI Stuff too
 - Settings Menu

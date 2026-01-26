@@ -28,7 +28,7 @@ public class TrackCarCollider : MonoBehaviour
     }
     void OnCollect(string collectingCarID)
     {
-        Debug.Log($"4.Car {collectingCarID} collected {elementType}({elementSlotIndex}) element.");
+        //Debug.Log($"4.Car {collectingCarID} collected {elementType}({elementSlotIndex}) element.");
         SR.cms.CarCollectedElement(collectingCarID, elementType);
         if(elementSlotIndex >= 0){
             SR.tem.ElementCollected(elementSlotIndex); //reset this slot to allow respawn

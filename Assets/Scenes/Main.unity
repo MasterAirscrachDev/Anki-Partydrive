@@ -877,7 +877,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PARTYDRIVE DEMO 3.3.0
+  m_text: PARTYDRIVE DEMO 3.8.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
   m_sharedMaterial: {fileID: -1470650276818706409, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
@@ -13860,8 +13860,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9705ce6deae4dcc4a947eafbe82838cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalAbilitySystem
-  missilePrefab: {fileID: 0}
-  seekingMissilePrefab: {fileID: 0}
+  abilityTextures:
+  - ability: 0
+    texture: {fileID: 0}
+  - ability: 1
+    texture: {fileID: 21300000, guid: 5ddce6eb7c1072d4faba16ed10361d4f, type: 3}
+  - ability: 2
+    texture: {fileID: 21300000, guid: 561707b56a3ff8645bab78a047d5b2f3, type: 3}
+  - ability: 3
+    texture: {fileID: 21300000, guid: 20e2c901a7aaa274ea2a8d856214bf41, type: 3}
+  - ability: 4
+    texture: {fileID: 21300000, guid: 444839142b323a8458431033ffb3751e, type: 3}
+  - ability: 5
+    texture: {fileID: 21300000, guid: 691c87e05a835ea4d80517328e8ee341, type: 3}
+  - ability: 6
+    texture: {fileID: 21300000, guid: 76e063f023dcbcd49bff3fb4d1e6a1ef, type: 3}
+  - ability: 7
+    texture: {fileID: 21300000, guid: 877ceadf8af2ef24887b31066ae48308, type: 3}
+  - ability: 8
+    texture: {fileID: 21300000, guid: 50b3e24fabe05254a9eb92833e1aca97, type: 3}
+  - ability: 9
+    texture: {fileID: 21300000, guid: 62062218c681995428a89d02987a51f1, type: 3}
+  - ability: 10
+    texture: {fileID: 21300000, guid: fe4863f0701da554ba99e774eec054dc, type: 3}
+  - ability: 12
+    texture: {fileID: 21300000, guid: e1553311ff7d3b846907541c24647584, type: 3}
+  missilePrefab: {fileID: 4543867816583399193, guid: f7da4b511f556cf478a5dcc0a8755923, type: 3}
+  MissileParticlePrefab: {fileID: 7737473309601183846, guid: f9f4da7d3e94a3b4c84b7efb6cbbbd05, type: 3}
+  SeekingMissileParticlePrefab: {fileID: 7944397146355720411, guid: 25804fc72ca3ca24a989b03479556db2, type: 3}
+  empPrefab: {fileID: 2479423033687496171, guid: efe0dd55fa7238b4fa9af2490434a7aa, type: 3}
+  damageTrailPrefab: {fileID: 2795815301393551774, guid: 0fb118f2bc84cd142b4cb4fc78fee7f1, type: 3}
+  slowTrailPrefab: {fileID: 518656599363017281, guid: d6822950ff8034a4bbec6d111839f88f, type: 3}
 --- !u!1 &1016471929
 GameObject:
   m_ObjectHideFlags: 0

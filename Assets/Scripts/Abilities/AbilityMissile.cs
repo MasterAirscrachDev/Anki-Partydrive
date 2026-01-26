@@ -9,7 +9,8 @@ public class AbilityMissile : MonoBehaviour
     [SerializeField] AnimationCurve speedCurve;
 
     [SerializeField] Material normalMaterial, seekingMaterial;
-    float explosionRadius = 0.25f;
+    [SerializeField] int damage = 25;
+    [SerializeField] float explosionRadius = 0.25f;
     float lifetime = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Setup(Transform targetTransform, float explosionRadius = 0.25f)
@@ -39,11 +40,14 @@ public class AbilityMissile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        bool isSeeking = target != null;
+        Debug.DrawRay(transform.position, transform.forward * 0.1f, isSeeking ? Color.bisque : Color.red, 5f);
+        
         lifetime += Time.deltaTime;
         transform.Translate(Vector3.forward * speedCurve.Evaluate(lifetime) * Time.deltaTime);
 
         Vector3 targetPosition = target != null ? target.position : fixedTargetPosition;
-
+        //Debug.DrawRay(targetPosition, Vector3.up * 2f, Color.green, 5f);
         float flatDist = GetFlatDistanceToTarget(targetPosition);
         if(flatDist > 1f){ //we are not close enough to dive
             targetPosition.y += 0.5f; //aim slightly above the target to create a diving arc
@@ -54,11 +58,13 @@ public class AbilityMissile : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(directionToTarget, Vector3.forward);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, handlingCurve.Evaluate(lifetime) * Time.deltaTime);
 
-        if(transform.position.y < 0f){
+        if(transform.position.y < 0f && lifetime > 0.2f){ //dont instantly explode on spawn
             List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, explosionRadius);
             foreach(CarController hit in hits){
-                hit.UseEnergy(20f); //Deal 20 energy damage
+                hit.UseEnergy(damage);
             }
+            SR.gas.SpawnMissileParticle(transform.position, target != null);
+
             Destroy(gameObject);
         }
     }

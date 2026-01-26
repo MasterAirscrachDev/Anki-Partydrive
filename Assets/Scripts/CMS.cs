@@ -158,7 +158,11 @@ public class CMS : MonoBehaviour
             if(controller.GetID() == ""){ continue; } //skip uninitialised cars
             if(Vector3.Distance(carEntityTracker.GetCarVisualPosition(controller.GetID()), position) <= range){
                 controllersInRange.Add(controller);
+                Debug.DrawLine(position, carEntityTracker.GetCarVisualPosition(controller.GetID()), Color.yellow, 5f);
             }
+        }
+        if(controllersInRange.Count > 0){
+            Debug.Log($"SphereCheck found {controllersInRange.Count} controllers in range.");
         }
         return controllersInRange;
     }
@@ -175,7 +179,11 @@ public class CMS : MonoBehaviour
             float sideDist = Vector3.Distance(carPos, projectedPoint);
             if(Mathf.Abs(forwardDist) <= size / 2 && sideDist <= size / 2){
                 controllersInRange.Add(controller);
+                Debug.DrawLine(center, carEntityTracker.GetCarVisualPosition(controller.GetID()), Color.blue, 5f);
             }
+        }
+        if(controllersInRange.Count > 0){
+            Debug.Log($"CubeCheck found {controllersInRange.Count} controllers in range.");
         }
         return controllersInRange;
     }

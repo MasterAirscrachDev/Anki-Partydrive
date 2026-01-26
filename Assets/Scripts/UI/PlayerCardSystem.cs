@@ -51,7 +51,7 @@ public class PlayerCardSystem : MonoBehaviour
     void SetAttachment(int index){
         //set the attachment active state using the index
         if(index == -1){ //no attachment
-            if(currentAttachment != null){ Destroy(currentAttachment); }
+            if(currentAttachment != null){ Destroy(currentAttachment); attachmentIndex = -1;}
         }
         else{
             if(index != attachmentIndex && currentAttachment != null){
@@ -67,6 +67,9 @@ public class PlayerCardSystem : MonoBehaviour
         //pastelize the color
         color = Color.Lerp(color, Color.white, 0.5f);
         plateImage.color = color;
+    }
+    public void ClearAttachment(){
+        SetAttachment(-1);
     }
     public void SetTimeTrialTime(float time){
         //set the time trial time using the time value
@@ -84,6 +87,7 @@ public class PlayerCardSystem : MonoBehaviour
         Sprite abilitySprite = SR.gas.GetAbilityTexture(ab);
         Image abilityImage = currentAttachment.transform.GetChild(0).GetChild(1).GetComponent<Image>();
         abilityImage.sprite = abilitySprite;
+        abilityImage.enabled = abilitySprite != null;
     }
     void OnDestroy()
     {

@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class AbilityHazardZone : MonoBehaviour
 {
-    [SerializeField] float tickRate = 0.5f; //time between hazard ticks
     [SerializeField] int energyChange = -5; //can be negative or positive
     [SerializeField] int speedModifier = 0; //can be negative or positive
     [SerializeField] bool speedIsMultiplier = false;
     [SerializeField] float speedModifierDuration = 1f;
     [SerializeField] string modifierTag = "HazardZone";
-    float timeSinceLastTick = 0f;
     float hazardRange;
     CarController owner;
+    List<CarController> affectedControllers = new List<CarController>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Setup(float hazardRange, float lifetime, CarController owner)
     {
@@ -24,17 +23,15 @@ public class AbilityHazardZone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeSinceLastTick += Time.deltaTime;
-        if(timeSinceLastTick >= tickRate){
-            timeSinceLastTick = 0f;
-            ApplyHazardEffect();
-        }
+        ApplyHazardEffect();
     }
     void ApplyHazardEffect()
     {
         List<CarController> hits = SR.cms.CubeCheckControllers(transform.position, transform.forward, hazardRange);
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
+            if(affectedControllers.Contains(hit)) continue; //already affected
+            affectedControllers.Add(hit);
             if(energyChange != 0){
                 if(energyChange < 0) { hit.UseEnergy(-energyChange);  } //negative to use energy
                 else { hit.ChargeEnergy(energyChange); }
