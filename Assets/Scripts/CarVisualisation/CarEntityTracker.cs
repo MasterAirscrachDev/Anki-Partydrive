@@ -123,6 +123,12 @@ public class CarEntityTracker : MonoBehaviour
         }
         return null; //car not found
     }
+    public Transform GetCarRealTransform(string id){
+        if(trackers.ContainsKey(id)){
+            return trackers[id].transform;
+        }
+        return null; //car not found
+    }
     public string GetCarAhead(string startingCar, int ahead = 1)
     {
         if(ahead > trackers.Count - 1) { return null;  } // No car ahead
@@ -137,6 +143,64 @@ public class CarEntityTracker : MonoBehaviour
                 .ToList();
             return orderedCars[ahead - 1];
         }
+    }
+    
+    /// <summary>
+    /// Get the car behind the starting car.
+    /// </summary>
+    public string GetCarBehind(string startingCar, int behind = 1)
+    {
+        if(behind > trackers.Count - 1) { return null;  } // No car behind
+        else
+        {
+            TrackCoordinate startingCoord = GetCarTrackCoordinate(startingCar);
+            if (startingCoord == null) { return null; } // Car not found
+            var orderedCars = trackers.Keys
+                .Where(id => id != startingCar)
+                .OrderByDescending(id => GetCarTrackCoordinate(id).DistanceY(startingCoord))
+                .ToList();
+            return orderedCars[behind - 1];
+        }
+    }
+    
+    /// <summary>
+    /// Get all car IDs sorted from first to last based on their track position.
+    /// Cars further along the track (higher idx, then higher progression) are first.
+    /// </summary>
+    public List<string> GetSortedCarIDs()
+    {
+        if(trackers.Count == 0) { return new List<string>(); }
+        
+        // Sort cars by their track position (idx descending, then progression descending)
+        var sortedCars = trackers.Keys
+            .OrderByDescending(id => {
+                TrackCoordinate coord = GetCarTrackCoordinate(id);
+                if(coord == null) return -1;
+                // Use idx as primary, progression as secondary (combine into single value for sorting)
+                // Multiply idx by 1000 to make it the primary sort factor
+                return (coord.idx * 1000.0) + coord.progression;
+            })
+            .ToList();
+        
+        return sortedCars;
+    }
+    
+    /// <summary>
+    /// Check if a car is either first or last place based on track position.
+    /// Returns 1 if first, -1 if last, 0 if neither or car not found.
+    /// </summary>
+    public int IsFirstOrLast(string carID)
+    {
+        if(trackers.Count <= 1) { return 0; } // Can't be first or last with 1 or 0 cars
+        if(!trackers.ContainsKey(carID)) { return 0; } // Car not found
+        
+        List<string> sortedCars = GetSortedCarIDs();
+        if(sortedCars.Count == 0) { return 0; }
+        
+        if(sortedCars[0] == carID) { return 1; } // First place
+        if(sortedCars[sortedCars.Count - 1] == carID) { return -1; } // Last place
+        
+        return 0; // Neither first nor last
     }
     public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;

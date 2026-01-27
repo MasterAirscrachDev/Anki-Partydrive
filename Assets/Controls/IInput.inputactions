@@ -52,22 +52,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "DriftLeft",
-                    "type": "Button",
-                    "id": "b9ef3808-d67b-4ab5-b5df-263234c28a7f",
-                    "expectedControlType": "Button",
-                    "processors": "",
+                    "name": "SpecialAim",
+                    "type": "Value",
+                    "id": "ff681478-b829-43f4-98ca-cdb716f0ba90",
+                    "expectedControlType": "Analog",
+                    "processors": "AxisDeadzone",
                     "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "DriftRight",
-                    "type": "Button",
-                    "id": "fd867876-1c32-4fff-8178-351845c55df2",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -161,55 +152,22 @@
                 },
                 {
                     "name": "",
-                    "id": "d4675a66-a1f1-45d4-adb6-2db75e3e44fd",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard;MouseAndKeyboard",
-                    "action": "DriftLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a1fe5e44-9e34-4bbf-9e7c-a9c1a8d079f1",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller;Gamepad",
-                    "action": "DriftLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a249c858-c1c1-47d4-a4e3-1651f29cbe36",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard;MouseAndKeyboard",
-                    "action": "DriftRight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a9a72249-de21-47b8-aca1-533b6d13cfef",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller;Gamepad",
-                    "action": "DriftRight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "6a85e1bb-3061-498e-b632-004dd5cffe73",
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Controller;Gamepad",
+                    "action": "ItemA",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c13aa442-f02a-4fd7-9cea-5480644d4d6e",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "MouseAndKeyboard",
                     "action": "ItemA",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -224,6 +182,50 @@
                     "action": "ItemB",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fecc51fa-1394-404d-8521-ec5f89b8231c",
+                    "path": "<Gamepad>/leftStick/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SpecialAim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "6cd87922-02f4-4da6-936f-706b9b7ed46d",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpecialAim",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "18494407-6a32-4eaf-9011-c3e9fd3bef3e",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "MouseAndKeyboard",
+                    "action": "SpecialAim",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "9c900a4f-520f-4a41-b9ba-108506d0e76f",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "MouseAndKeyboard",
+                    "action": "SpecialAim",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },

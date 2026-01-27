@@ -44,6 +44,16 @@ public class TimeTrialMode : GameMode
     }
     
     /// <summary>
+    /// Disable the position update ticker for time trial mode.
+    /// Positions are updated based on best lap times, not track position.
+    /// </summary>
+    protected override IEnumerator PositionUpdateTicker()
+    {
+        // Do nothing - time trial positions are updated on finish line crossings only
+        yield break;
+    }
+    
+    /// <summary>
     /// Handles the 3-minute time trial countdown
     /// </summary>
     IEnumerator TimeTrialTimeLimit()

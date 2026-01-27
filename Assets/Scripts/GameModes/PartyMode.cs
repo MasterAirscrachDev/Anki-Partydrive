@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using static OverdriveServer.NetStructures;
 using static AudioAnnouncerManager.AnnouncerLine;
 using UnityEngine;
@@ -42,6 +43,46 @@ public class PartyMode : GameMode
         }
     }
     
+    /// <summary>
+    /// Override position updates to consider lap count first, then track position for ties
+    /// </summary>
+    protected override void UpdatePositions()
+    {
+        if(carLaps.Count == 0) { return; }
+        
+        // Sort cars by lap count (descending), then by track position for ties
+        List<string> sortedCars = carLaps.Keys
+            .OrderByDescending(carID => {
+                // Get lap count for this car
+                int laps = carLaps.ContainsKey(carID) ? carLaps[carID] : 0;
+                
+                // Get track position for tie breaking
+                TrackCoordinate coord = carEntityTracker.GetCarTrackCoordinate(carID);
+                double trackPosition = 0;
+                if(coord != null)
+                {
+                    trackPosition = (coord.idx * 1000.0) + coord.progression;
+                }
+                
+                // Combine: laps * 1000000 + trackPosition
+                // This ensures laps are primary sort, track position breaks ties
+                return (laps * 1000000.0) + trackPosition;
+            })
+            .ToList();
+        
+        // Update position for each car
+        int position = 1;
+        foreach(string carID in sortedCars)
+        {
+            CarController controller = cms.GetController(carID);
+            if(controller != null)
+            {
+                controller.SetPosition(position);
+            }
+            position++;
+        }
+    }
+    
     protected override void OnCarCrossedFinish(string carID, bool score){
         //is there a lapCount for this carID?
         if(carLaps.ContainsKey(carID)){
@@ -55,18 +96,9 @@ public class PartyMode : GameMode
                 }
             }
         }else{ return; } //if not, ignore it
-        //sort the cars by lap count and set the position
-        List<KeyValuePair<string, int>> sortedCars = new List<KeyValuePair<string, int>>(carLaps);
-        sortedCars.Sort((x, y) => y.Value.CompareTo(x.Value)); //sort by lap count descending
-        int position = 1;
-        foreach(KeyValuePair<string, int> car in sortedCars){
-            try{
-                cms.GetController(car.Key).SetPosition(position);
-            }catch(System.Exception e){
-                //Debug.LogError($"Error setting position for car {car.Key}: {e.Message}\n{e.StackTrace}");
-            }
-            position++;
-        }
+        
+        // Position updates are now handled by the UpdatePositions ticker
+        // No need to manually update positions here
         //if any car has finished the target number of laps, end the game
         if(carLaps[carID] >= targetLaps){
             EndGame("Race Complete!");
@@ -93,8 +125,8 @@ public class PartyMode : GameMode
     
     void OnCarNoEnergy(string carID, CarController controller)
     {
-        // Apply 2 second, 100% speed reduction
-        controller.AddSpeedModifier(-3000, false, 2.5f, "NoEnergy");
-        Debug.Log($"Car {carID} ran out of energy - applying 2s speed penalty");
+        // Disable car for 3.5s with energy recharge and red light flash
+        controller.DisableCar();
+        //Debug.Log($"Car {carID} ran out of energy - disabling for 3.5s with recharge to 50%");
     }
 }

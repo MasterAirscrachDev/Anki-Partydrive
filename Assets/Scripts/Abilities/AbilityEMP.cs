@@ -43,4 +43,9 @@ public class AbilityEMP : MonoBehaviour
             hit.UseEnergy(40f); //Drain 15 energy
         }
     }
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, hitRadius);
+    }
 }

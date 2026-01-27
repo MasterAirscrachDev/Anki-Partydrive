@@ -51,7 +51,7 @@ public class TrackElementManager : MonoBehaviour
         }
         else{ //Any type
             float r = Random.Range(0f, 1f);
-            if(r < 0.1f){//10% chance to spawn energy
+            if(r < 0.3f){//30% chance to spawn energy
                 element = Instantiate(energyElementPrefab, slot.transform.position, slot.transform.rotation, slot.transform);
             }
             else {

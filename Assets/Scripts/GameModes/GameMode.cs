@@ -137,6 +137,9 @@ public abstract class GameMode : MonoBehaviour
         
         OnGameStarted(activeCars);
         
+        // Start position update ticker
+        StartCoroutine(PositionUpdateTicker());
+        
         yield return new WaitForSeconds(1);
         showText.text = "";
         
@@ -258,6 +261,40 @@ public abstract class GameMode : MonoBehaviour
     /// Called when a car crosses the finish line. Must be implemented by derived classes.
     /// </summary>
     protected abstract void OnCarCrossedFinish(string carID, bool score);
+    
+    /// <summary>
+    /// Updates positions for all active cars. Override this in derived classes for mode-specific position logic.
+    /// Default implementation sorts by track position only.
+    /// </summary>
+    protected virtual void UpdatePositions()
+    {
+        // Get cars sorted by track position (first to last)
+        List<string> sortedCars = carEntityTracker.GetSortedCarIDs();
+        
+        // Update position for each car
+        int position = 1;
+        foreach(string carID in sortedCars)
+        {
+            CarController controller = cms.GetController(carID);
+            if(controller != null)
+            {
+                controller.SetPosition(position);
+            }
+            position++;
+        }
+    }
+    
+    /// <summary>
+    /// Coroutine that updates positions every second during active gameplay.
+    /// </summary>
+    protected virtual IEnumerator PositionUpdateTicker()
+    {
+        while(gameActive)
+        {
+            UpdatePositions();
+            yield return new WaitForSeconds(1f);
+        }
+    }
     
     /// <summary>
     /// Called when the game ends. Override for cleanup or final scoring.

@@ -208,6 +208,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   activationDelay: 0.5
   maxLifetime: 1.1
+  hitRadius: 1.1
 --- !u!1 &4901782973181876010
 GameObject:
   m_ObjectHideFlags: 0

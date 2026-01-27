@@ -138,22 +138,13 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""DriftLeft"",
-                    ""type"": ""Button"",
-                    ""id"": ""b9ef3808-d67b-4ab5-b5df-263234c28a7f"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
+                    ""name"": ""SpecialAim"",
+                    ""type"": ""Value"",
+                    ""id"": ""ff681478-b829-43f4-98ca-cdb716f0ba90"",
+                    ""expectedControlType"": ""Analog"",
+                    ""processors"": ""AxisDeadzone"",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""DriftRight"",
-                    ""type"": ""Button"",
-                    ""id"": ""fd867876-1c32-4fff-8178-351845c55df2"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -247,55 +238,22 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""d4675a66-a1f1-45d4-adb6-2db75e3e44fd"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard;MouseAndKeyboard"",
-                    ""action"": ""DriftLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a1fe5e44-9e34-4bbf-9e7c-a9c1a8d079f1"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Controller;Gamepad"",
-                    ""action"": ""DriftLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a249c858-c1c1-47d4-a4e3-1651f29cbe36"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard;MouseAndKeyboard"",
-                    ""action"": ""DriftRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a9a72249-de21-47b8-aca1-533b6d13cfef"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Controller;Gamepad"",
-                    ""action"": ""DriftRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""6a85e1bb-3061-498e-b632-004dd5cffe73"",
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Controller;Gamepad"",
+                    ""action"": ""ItemA"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c13aa442-f02a-4fd7-9cea-5480644d4d6e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""MouseAndKeyboard"",
                     ""action"": ""ItemA"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -310,6 +268,50 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""action"": ""ItemB"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fecc51fa-1394-404d-8521-ec5f89b8231c"",
+                    ""path"": ""<Gamepad>/leftStick/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpecialAim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""6cd87922-02f4-4da6-936f-706b9b7ed46d"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpecialAim"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""18494407-6a32-4eaf-9011-c3e9fd3bef3e"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""MouseAndKeyboard"",
+                    ""action"": ""SpecialAim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""9c900a4f-520f-4a41-b9ba-108506d0e76f"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""MouseAndKeyboard"",
+                    ""action"": ""SpecialAim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -609,8 +611,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         m_Racing_ItemA = m_Racing.FindAction("ItemA", throwIfNotFound: true);
         m_Racing_ItemB = m_Racing.FindAction("ItemB", throwIfNotFound: true);
         m_Racing_Boost = m_Racing.FindAction("Boost", throwIfNotFound: true);
-        m_Racing_DriftLeft = m_Racing.FindAction("DriftLeft", throwIfNotFound: true);
-        m_Racing_DriftRight = m_Racing.FindAction("DriftRight", throwIfNotFound: true);
+        m_Racing_SpecialAim = m_Racing.FindAction("SpecialAim", throwIfNotFound: true);
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_UIPoint = m_Menu.FindAction("UIPoint", throwIfNotFound: true);
@@ -706,8 +707,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Racing_ItemA;
     private readonly InputAction m_Racing_ItemB;
     private readonly InputAction m_Racing_Boost;
-    private readonly InputAction m_Racing_DriftLeft;
-    private readonly InputAction m_Racing_DriftRight;
+    private readonly InputAction m_Racing_SpecialAim;
     /// <summary>
     /// Provides access to input actions defined in input action map "Racing".
     /// </summary>
@@ -740,13 +740,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Boost => m_Wrapper.m_Racing_Boost;
         /// <summary>
-        /// Provides access to the underlying input action "Racing/DriftLeft".
+        /// Provides access to the underlying input action "Racing/SpecialAim".
         /// </summary>
-        public InputAction @DriftLeft => m_Wrapper.m_Racing_DriftLeft;
-        /// <summary>
-        /// Provides access to the underlying input action "Racing/DriftRight".
-        /// </summary>
-        public InputAction @DriftRight => m_Wrapper.m_Racing_DriftRight;
+        public InputAction @SpecialAim => m_Wrapper.m_Racing_SpecialAim;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -788,12 +784,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Boost.started += instance.OnBoost;
             @Boost.performed += instance.OnBoost;
             @Boost.canceled += instance.OnBoost;
-            @DriftLeft.started += instance.OnDriftLeft;
-            @DriftLeft.performed += instance.OnDriftLeft;
-            @DriftLeft.canceled += instance.OnDriftLeft;
-            @DriftRight.started += instance.OnDriftRight;
-            @DriftRight.performed += instance.OnDriftRight;
-            @DriftRight.canceled += instance.OnDriftRight;
+            @SpecialAim.started += instance.OnSpecialAim;
+            @SpecialAim.performed += instance.OnSpecialAim;
+            @SpecialAim.canceled += instance.OnSpecialAim;
         }
 
         /// <summary>
@@ -820,12 +813,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Boost.started -= instance.OnBoost;
             @Boost.performed -= instance.OnBoost;
             @Boost.canceled -= instance.OnBoost;
-            @DriftLeft.started -= instance.OnDriftLeft;
-            @DriftLeft.performed -= instance.OnDriftLeft;
-            @DriftLeft.canceled -= instance.OnDriftLeft;
-            @DriftRight.started -= instance.OnDriftRight;
-            @DriftRight.performed -= instance.OnDriftRight;
-            @DriftRight.canceled -= instance.OnDriftRight;
+            @SpecialAim.started -= instance.OnSpecialAim;
+            @SpecialAim.performed -= instance.OnSpecialAim;
+            @SpecialAim.canceled -= instance.OnSpecialAim;
         }
 
         /// <summary>
@@ -1090,19 +1080,12 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnBoost(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "DriftLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "SpecialAim" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnDriftLeft(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "DriftRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnDriftRight(InputAction.CallbackContext context);
+        void OnSpecialAim(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Menu" which allows adding and removing callbacks.

@@ -76,7 +76,7 @@ public class CarInteraface : MonoBehaviour
         SR.cet.SetOffset(car.id, lane);
     }
     
-    public void SetCarColours(UCarData car, int r, int g, int b){ // 0-255
+    public void SetCarColours(UCarData car, int r, int g, int b){ // 0-14
         ApiCallV2(SV_CAR_S_LIGHTS, $"{car.id}:{r}:{g}:{b}");
     }
     public void SetCarColoursComplex(UCarData car, LightData[] lights){

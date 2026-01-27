@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     PlayerInput iinput;
     CarController carController;
     bool isMenuInputs = true;
+    float lastRumbleTime = 0f;
     public Vector2 moveInput;
     public bool selectInput;
     public bool altSelectInput;
@@ -107,6 +108,15 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    
+    public void SetControllerRumble(float lowFrequency, float highFrequency){
+        if(iinput != null && iinput.currentControlScheme == "Gamepad"){
+            var gamepad = iinput.devices[0] as Gamepad;
+            if(gamepad != null){
+                gamepad.SetMotorSpeeds(lowFrequency, highFrequency);
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update() {
@@ -116,6 +126,7 @@ public class PlayerController : MonoBehaviour
             carController.IitemA = iinput.currentActionMap.actions[2].ReadValue<float>() > 0.5f;
             carController.IitemB = iinput.currentActionMap.actions[3].ReadValue<float>() > 0.5f;
             carController.Iboost = iinput.currentActionMap.actions[4].ReadValue<float>() > 0.5f;
+            carController.IspecialAim = iinput.currentActionMap.actions[5].ReadValue<float>();
         }else{
             carController.Iaccel = 0;
             carController.Isteer = 0;
@@ -137,6 +148,21 @@ public class PlayerController : MonoBehaviour
             
             // Handle input debouncing and callbacks
             HandleMenuInputCallbacks();
+        }
+        
+        // Check for low energy and rumble controller if needed
+        if(!isMenuInputs && carController != null){
+            float energyPercent = carController.GetEnergyPercent();
+            if(energyPercent < 0.1f){
+                // Rumble every 0.5 seconds when energy is low
+                if(Time.time - lastRumbleTime > 0.5f){
+                    SetControllerRumble(0.3f, 0.3f);
+                    lastRumbleTime = Time.time;
+                }
+            } else {
+                // Stop rumble when energy is above 10%
+                SetControllerRumble(0f, 0f);
+            }
         }
     }
     

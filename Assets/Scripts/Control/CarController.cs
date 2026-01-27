@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using static OverdriveServer.NetStructures;
 
 public class CarController : MonoBehaviour
 {
@@ -25,9 +26,14 @@ public class CarController : MonoBehaviour
     CarEntityTracker carTracker; //used to get current position for dynamic width calculation
     [SerializeField]
     List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
+    // Light control
+    float lastEnergyDrainTime = 0f;
+    bool isDrainingEnergy = false;
+    Coroutine taillightFlashCoroutine = null;
     //INPUT VALUES======
     public float Iaccel, Isteer;
     public bool Iboost, IitemA, IitemB;
+    public float IspecialAim; // -1 = backwards, 0 = none, 1 = forwards
     bool itemALastFrame = false, itemBLastFrame = false;
     //===================
     //BASE MODIFIERS======
@@ -124,6 +130,16 @@ public class CarController : MonoBehaviour
     }
     public void UseEnergy(float amount, bool isDamage = true){
         energy -= amount;
+        
+        // Track energy draining for taillight flash
+        if(amount > 0 && isDamage){
+            lastEnergyDrainTime = Time.time;
+            if(!isDrainingEnergy){
+                isDrainingEnergy = true;
+                StartTaillightFlash();
+            }
+        }
+        
         if(energy < 0){ 
             if(energy + amount > 0)
             {
@@ -168,6 +184,13 @@ public class CarController : MonoBehaviour
             pcs.ClearAttachment();
             pcs.SetPosition(0);
         }
+        
+        // Stop any active light effects
+        if(taillightFlashCoroutine != null){
+            StopCoroutine(taillightFlashCoroutine);
+            taillightFlashCoroutine = null;
+        }
+        isDrainingEnergy = false;
     }
 #endregion
 #region CONTROL TICKER
@@ -278,6 +301,15 @@ public class CarController : MonoBehaviour
             }
         }
         wasBoostLastFrame = Iboost;
+        
+        // Check if we should stop taillight flashing (1 second minimum, or when energy stops draining)
+        if(isDrainingEnergy && Time.time - lastEnergyDrainTime > 1f){
+            isDrainingEnergy = false;
+            if(taillightFlashCoroutine != null){
+                StopCoroutine(taillightFlashCoroutine);
+                taillightFlashCoroutine = null;
+            }
+        }
     }
 #endregion
 #region CAR CONNECTION MANAGEMENT
@@ -403,6 +435,7 @@ public class CarController : MonoBehaviour
     /// <returns>The Currently controlling car ID or an empty string</returns>
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
+    public float GetEnergyPercent(){ return energy / (maxEnergy + statMaxEnergyMod); }
 #endregion
 #region UI UPDATE FUNCTIONS
     public void SetPosition(int position){ 
@@ -433,7 +466,7 @@ public class CarController : MonoBehaviour
         switch(type)
         {
             case TrackCarCollider.EType.EnergyCore:
-                ChargeEnergy(50); // TEMP VALUSE
+                ChargeEnergy((maxEnergy + statMaxEnergyMod) * 0.75f);
                 break;
             case TrackCarCollider.EType.ItemBox:
                 OnItembox();
@@ -458,23 +491,75 @@ public class CarController : MonoBehaviour
         if(currentAbility == Ability.None || doingPickupAnim){ return; } //no ability to use
         else
         {
+            // Flash headlights when using ability
+            StartCoroutine(FlashHeadlights(1f));
+            
             //Debug.Log($"Car {carID} used ability {currentAbility}");
-            if(currentAbility == Ability.Missle3){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle2); }
-            else if(currentAbility == Ability.Missle2){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.Missle1); }
-            else if(currentAbility == Ability.Missle1){ SR.gas.SpawnMissile(this); SetAbilityImmediate(Ability.None); }
-            else if(currentAbility == Ability.MissleSeeking3){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.MissleSeeking2); }
-            else if(currentAbility == Ability.MissleSeeking2){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.MissleSeeking1); }
-            else if(currentAbility == Ability.MissleSeeking1){ SR.gas.SpawnSeekingMissile(this); SetAbilityImmediate(Ability.None); }
+            if(currentAbility == Ability.Missle3){ 
+                SR.gas.SpawnMissile(this, IspecialAim > 0.5f ? 3.6f : IspecialAim < -0.5f ? -0.5f : 1.8f);
+                SetAbilityImmediate(Ability.Missle2); 
+            }
+            else if(currentAbility == Ability.Missle2){ 
+                SR.gas.SpawnMissile(this, IspecialAim > 0.5f ? 3.6f : IspecialAim < -0.5f ? -0.5f : 1.8f);
+                SetAbilityImmediate(Ability.Missle1); 
+            }
+            else if(currentAbility == Ability.Missle1){ 
+                SR.gas.SpawnMissile(this, IspecialAim > 0.5f ? 3.6f : IspecialAim < -0.5f ? -0.5f : 1.8f);
+                SetAbilityImmediate(Ability.None); 
+            }
+            else if(currentAbility == Ability.MissleSeeking3){ 
+                SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f);
+                SetAbilityImmediate(Ability.MissleSeeking2); 
+            }
+            else if(currentAbility == Ability.MissleSeeking2){ 
+                SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f);
+                SetAbilityImmediate(Ability.MissleSeeking1); 
+            }
+            else if(currentAbility == Ability.MissleSeeking1){ 
+                SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f);
+                SetAbilityImmediate(Ability.None); 
+            }
             else if(currentAbility == Ability.EMP){ SR.gas.SpawnEMP(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.TrailDamage){ SR.gas.SpawnDamageTrail(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.TrailSlow){ SR.gas.SpawnSlowTrail(this); SetAbilityImmediate(Ability.None); }
-            //else if(currentAbility == Ability.CrasherBoost){ SR.gas.SpawnCrasherBoost(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.OrbitalLazer){ SR.gas.SpawnOrbitalLazer(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.CrasherBoost){ 
+                SR.gas.SpawnCrasherBoost(this, IspecialAim < -0.5f);
+                SetAbilityImmediate(Ability.None); 
+            }
+            else if(currentAbility == Ability.Grappler){ SR.gas.SpawnGrappler(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.LightningPower){ SR.gas.SpawnLightningPower(this); SetAbilityImmediate(Ability.None); }
         }
     }
     IEnumerator DoNewAbilityAnimation()
     {
-        Ability[] validAbilities = new Ability[] { Ability.Missle3, Ability.MissleSeeking3, Ability.EMP, Ability.TrailDamage, Ability.TrailSlow };
-        //over 1 second, cycle through abilities every 0.1 second
+        Ability[] rareAbilities = new Ability[] { 
+            Ability.OrbitalLazer,
+            Ability.LightningPower
+        };  
+        // Default ability list (balanced)
+        Ability[] validAbilities = new Ability[] { 
+            Ability.Missle3, Ability.MissleSeeking3, 
+            Ability.EMP, 
+            Ability.TrailDamage, Ability.TrailSlow, 
+            Ability.CrasherBoost,
+            Ability.Grappler
+        };
+        
+        // First place abilities (worse items)
+        Ability[] firstPlaceAbilities = new Ability[] { 
+            Ability.Missle3, Ability.TrailSlow, 
+            Ability.EMP, Ability.TrailDamage
+        };
+        
+        // Last place abilities (better items)
+        Ability[] lastPlaceAbilities = new Ability[] { 
+            Ability.MissleSeeking3,
+            Ability.CrasherBoost,
+            Ability.Grappler
+        };
+        
+        //over 1 second, cycle through abilities every 0.1 second (always use default list for animation)
         float animationDuration = 1f;
         float cycleInterval = 0.1f;
         float elapsed = 0f;
@@ -487,8 +572,34 @@ public class CarController : MonoBehaviour
             yield return new WaitForSeconds(cycleInterval);
             elapsed += cycleInterval;
         }
+        
+        // Determine final ability based on position
+        Ability[] finalAbilityList = validAbilities;
+        bool isFirst = false;
+        // Check if this car is first or last
+        if(!string.IsNullOrEmpty(carID)) {
+            int positionCheck = SR.cet.IsFirstOrLast(carID);
+            if(positionCheck == 1) {
+                isFirst = true;
+                // First place - use worse items
+                finalAbilityList = firstPlaceAbilities;
+            }
+            else if(positionCheck == -1)
+            {
+                // Last place - use better items
+                finalAbilityList = lastPlaceAbilities;
+            }
+        }
+        //if we are not first roll a 1/3 odds to add the rare abilities to the pool
+        if(!isFirst && Random.Range(0, 3) == 0)
+        {
+            List<Ability> extendedList = new List<Ability>(finalAbilityList);
+            extendedList.AddRange(rareAbilities);
+            finalAbilityList = extendedList.ToArray();
+        }
+        
         //final ability
-        currentAbility = validAbilities[Random.Range(0, validAbilities.Length)];
+        currentAbility = finalAbilityList[Random.Range(0, finalAbilityList.Length)];
         if(pcs != null)
         { pcs.SetAbilityIcon(currentAbility); }
         doingPickupAnim = false;
@@ -499,6 +610,114 @@ public class CarController : MonoBehaviour
         if(pcs != null)
         { pcs.SetAbilityIcon(currentAbility); }
     }
+    
+#region CAR LIGHT CONTROL
+    /// <summary>
+    /// Flash the headlights for the specified duration
+    /// </summary>
+    IEnumerator FlashHeadlights(float duration)
+    {
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData == null) yield break;
+        
+        LightData[] lights = new LightData[2];
+        lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+        lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+        
+        SR.io.SetCarColoursComplex(carData, lights);
+        yield return new WaitForSeconds(duration);
+        
+        // Restore normal lights
+        RestorePlayerColorLights();
+    }
+    
+    /// <summary>
+    /// Start flashing taillights while energy is being drained
+    /// </summary>
+    void StartTaillightFlash()
+    {
+        if(taillightFlashCoroutine != null){
+            StopCoroutine(taillightFlashCoroutine);
+        }
+        taillightFlashCoroutine = StartCoroutine(FlashTaillights());
+    }
+    
+    IEnumerator FlashTaillights()
+    {
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData == null) yield break;
+        
+        LightData[] lights = new LightData[1];
+        lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+        
+        SR.io.SetCarColoursComplex(carData, lights);
+        
+        // Wait until isDrainingEnergy is false (managed by Update)
+        while(isDrainingEnergy)
+        {
+            yield return null;
+        }
+        
+        // Restore normal lights
+        RestorePlayerColorLights();
+        taillightFlashCoroutine = null;
+    }
+    
+    /// <summary>
+    /// Disable the car for 3.5 seconds, recharge to 50% energy, and flash red engine light
+    /// </summary>
+    public void DisableCar()
+    {
+        StartCoroutine(DisableCarCoroutine());
+    }
+    
+    IEnumerator DisableCarCoroutine()
+    {
+        // Apply 3.5s complete stop
+        AddSpeedModifier(-3000, false, 3.5f, "Disabled");
+        
+        // Start flashing red engine light
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData != null){
+            LightData[] lights = new LightData[1];
+            lights[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.FLASH, startStrength = 0, endStrength = 14, cyclesPer10Seconds = 10 };
+            SR.io.SetCarColoursComplex(carData, lights);
+        }
+        
+        // Recharge to 50% energy over the disable duration
+        float startEnergy = energy;
+        float targetEnergy = (maxEnergy + statMaxEnergyMod) * 0.5f;
+        float duration = 3.5f;
+        float elapsed = 0f;
+        
+        while(elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            energy = Mathf.Lerp(startEnergy, targetEnergy, elapsed / duration);
+            yield return null;
+        }
+        
+        energy = targetEnergy;
+        
+        // Restore player color lights
+        RestorePlayerColorLights();
+    }
+    
+    /// <summary>
+    /// Restore the car lights to the player's color
+    /// </summary>
+    void RestorePlayerColorLights()
+    {
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData == null) return;
+        
+        int r = Mathf.RoundToInt(playerColor.r * 14f);
+        int g = Mathf.RoundToInt(playerColor.g * 14f);
+        int b = Mathf.RoundToInt(playerColor.b * 14f);
+        
+        SR.io.SetCarColours(carData, r, g, b);
+    }
+#endregion
     
     void OnDestroy(){
         // Only disconnect car if we're not in car selection mode

@@ -3,7 +3,7 @@ using UnityEngine;
 public class AbilityController : MonoBehaviour
 {
     CarController carController;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Sets up the ability with the given car controller as the owner
     public void Setup(CarController controller){
         carController = controller;
     }
@@ -15,7 +15,8 @@ public class AbilityController : MonoBehaviour
 public enum Ability
 {
     None = 0, Missle1 = 1, Missle2 = 2, Missle3 = 3, MissleSeeking1 = 4, MissleSeeking2 = 5, MissleSeeking3 = 6,
-    EMP = 7, Shield = 8, TrailDamage = 9, TrailSlow = 10, Overdrive = 11, CrasherBoost = 12,
+    EMP = 7, Shield = 8, TrailDamage = 9, TrailSlow = 10, Overdrive = 11, CrasherBoost = 12, OrbitalLazer = 13, 
+    Grappler = 14, LightningPower = 15,
 }
 public enum AIAbilityUsageMode
 {

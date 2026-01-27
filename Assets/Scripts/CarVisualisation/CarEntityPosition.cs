@@ -207,10 +207,19 @@ public class TrackCoordinate
     public static TrackCoordinate operator +(TrackCoordinate a, float b)
     {
         a.progression += b;
-        if (a.progression > 1)
-        {
+        while (a.progression > 1) {
             a.idx++;
             a.progression -= 1;
+            if(a.idx >= SR.track.GetTrackLength()) {
+                a.idx = 0; //loop back to start of track
+            }
+        }
+        while (a.progression < 0) {
+            a.idx--;
+            a.progression += 1;
+            if(a.idx < 0) {
+                a.idx = SR.track.GetTrackLength() - 1; //loop back to end of track
+            }
         }
         return a;
     }
