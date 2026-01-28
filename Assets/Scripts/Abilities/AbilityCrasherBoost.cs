@@ -63,7 +63,7 @@ public class AbilityCrasherBoost : MonoBehaviour
         if(targetCar != null)
         {
             // Apply 80% slow (negative 80% modifier)
-            targetCar.AddSpeedModifier(20, true, 3f, "CrasherSlow");
+            targetCar.AddSpeedModifier(-80, true, 3f, "CrasherSlow");
         }
     }
 }

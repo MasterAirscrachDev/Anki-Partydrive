@@ -240,7 +240,7 @@ public class CarController : MonoBehaviour
                 percent += speedPercentModifierList[i] / 100f;
             }
             percent /= speedPercentModifierList.Count;
-            baseSpeed = Mathf.RoundToInt(speed * percent);
+            baseSpeed = Mathf.RoundToInt(baseSpeed * percent);
         }
         if(baseSpeed < 0){ baseSpeed = 0; }
         return baseSpeed;
@@ -613,22 +613,59 @@ public class CarController : MonoBehaviour
     
 #region CAR LIGHT CONTROL
     /// <summary>
+    /// Control headlights - enable for flashing, disable to restore player color
+    /// </summary>
+    void SetHeadLights(bool enable)
+    {
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData == null) return;
+        
+        if(enable)
+        {
+            LightData[] lights = new LightData[2];
+            lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+            lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+            SR.io.SetCarColoursComplex(carData, lights);
+        }
+        else
+        {
+            LightData[] lights = new LightData[2];
+            lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0 };
+            lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0 };
+            SR.io.SetCarColoursComplex(carData, lights);
+        }
+    }
+    
+    /// <summary>
+    /// Control taillights - enable for flashing, disable to restore player color
+    /// </summary>
+    void SetTailLights(bool enable)
+    {
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData == null) return;
+        
+        if(enable)
+        {
+            LightData[] lights = new LightData[1];
+            lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+            SR.io.SetCarColoursComplex(carData, lights);
+        }
+        else
+        {
+            LightData[] lights = new LightData[1];
+            lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0 };
+            SR.io.SetCarColoursComplex(carData, lights);
+        }
+    }
+    
+    /// <summary>
     /// Flash the headlights for the specified duration
     /// </summary>
     IEnumerator FlashHeadlights(float duration)
     {
-        UCarData carData = SR.io.GetCarFromID(carID);
-        if(carData == null) yield break;
-        
-        LightData[] lights = new LightData[2];
-        lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
-        lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
-        
-        SR.io.SetCarColoursComplex(carData, lights);
+        SetHeadLights(true);
         yield return new WaitForSeconds(duration);
-        
-        // Restore normal lights
-        RestorePlayerColorLights();
+        SetHeadLights(false);
     }
     
     /// <summary>
@@ -644,22 +681,15 @@ public class CarController : MonoBehaviour
     
     IEnumerator FlashTaillights()
     {
-        UCarData carData = SR.io.GetCarFromID(carID);
-        if(carData == null) yield break;
-        
-        LightData[] lights = new LightData[1];
-        lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
-        
-        SR.io.SetCarColoursComplex(carData, lights);
+        SetTailLights(true);
         
         // Wait until isDrainingEnergy is false (managed by Update)
         while(isDrainingEnergy)
         {
-            yield return null;
+            yield return new WaitForEndOfFrame();
         }
         
-        // Restore normal lights
-        RestorePlayerColorLights();
+        SetTailLights(false);
         taillightFlashCoroutine = null;
     }
     

@@ -16673,7 +16673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xzOffset: {x: 0, y: -1.75}
-  zoomOffset: 0
+  zoomOffset: -3
 --- !u!114 &1229594996
 MonoBehaviour:
   m_ObjectHideFlags: 0

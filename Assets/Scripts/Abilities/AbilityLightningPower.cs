@@ -86,7 +86,7 @@ public class AbilityLightningPower : MonoBehaviour
         }
         
         // Apply 80% slow for 4 seconds
-        target.AddSpeedModifier(20, true, 4f, "LightningSlow");
+        target.AddSpeedModifier(-80, true, 4f, "LightningSlow");
         
         // Show lightning for 0.5 seconds
         yield return new WaitForSeconds(0.5f);

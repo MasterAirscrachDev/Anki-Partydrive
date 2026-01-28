@@ -89,11 +89,10 @@ public class PartyMode : GameMode
             // Only count the lap if the car wasn't delocalized
             if(score){
                 carLaps[carID]++;
-                try{
-                    //cms.GetController(carID).SetLapCount(carLaps[carID]);
-                }catch{
-                    //Debug.LogWarning($"Could not set lap count for car {carID}");
-                }
+            }
+            else
+            {
+                Debug.Log($"Lap for car {carID} not counted due to delocalization.");
             }
         }else{ return; } //if not, ignore it
         
@@ -118,9 +117,7 @@ public class PartyMode : GameMode
     {
         // Unsubscribe from out of energy event
         if(cms != null)
-        {
-            cms.onCarNoEnergy -= OnCarNoEnergy;
-        }
+        { cms.onCarNoEnergy -= OnCarNoEnergy; }
     }
     
     void OnCarNoEnergy(string carID, CarController controller)

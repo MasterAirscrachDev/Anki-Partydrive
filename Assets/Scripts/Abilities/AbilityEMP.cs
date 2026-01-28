@@ -39,7 +39,7 @@ public class AbilityEMP : MonoBehaviour
         CarController owner = GetComponent<AbilityController>().GetCarController();
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
-            hit.AddSpeedModifier(20, true, 3f, "EMP");
+            hit.AddSpeedModifier(-20, true, 3f, "EMP");
             hit.UseEnergy(40f); //Drain 15 energy
         }
     }

@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1963050901866527559}
+  - component: {fileID: 8439025708189824876}
   - component: {fileID: 7547320640770741513}
   - component: {fileID: 5587415242697076730}
   m_Layer: 0
@@ -33,6 +34,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8439025708189824876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8499309036080371507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 775a4d0cfa4ad054f976340ecf921d82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityController
 --- !u!114 &7547320640770741513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45,8 +58,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e619500a827e0247bf578f674af8dd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityGrappler
-  travelSpeed: 15
-  rotationSpeed: 5
   grapplerLine: {fileID: 0}
 --- !u!120 &5587415242697076730
 LineRenderer:
