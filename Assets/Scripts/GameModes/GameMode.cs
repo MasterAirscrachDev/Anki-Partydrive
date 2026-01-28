@@ -124,10 +124,28 @@ public abstract class GameMode : MonoBehaviour
         
         showText.text = "2";
         SR.pa.PlayLine(Count2);
+        
+        // Open perfect start timing window for all cars
+        foreach(string carID in activeCars){
+            CarController controller = cms.GetController(carID);
+            if(controller != null){
+                controller.OpenPerfectStartWindow();
+            }
+        }
+        
         yield return new WaitForSeconds(1);
         
         showText.text = "1";
         SR.pa.PlayLine(Count1);
+        
+        // Close perfect start timing window
+        foreach(string carID in activeCars){
+            CarController controller = cms.GetController(carID);
+            if(controller != null){
+                controller.ClosePerfectStartWindow();
+            }
+        }
+        
         yield return new WaitForSeconds(1);
         
         showText.text = "GO!";

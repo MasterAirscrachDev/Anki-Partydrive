@@ -30,6 +30,9 @@ public class CarController : MonoBehaviour
     float lastEnergyDrainTime = 0f;
     bool isDrainingEnergy = false;
     Coroutine taillightFlashCoroutine = null;
+    // Perfect start timing
+    bool perfectStartWindowOpen = false;
+    bool acceleratedDuringPerfectWindow = false;
     //INPUT VALUES======
     public float Iaccel, Isteer;
     public bool Iboost, IitemA, IitemB;
@@ -191,6 +194,10 @@ public class CarController : MonoBehaviour
             taillightFlashCoroutine = null;
         }
         isDrainingEnergy = false;
+        
+        // Reset perfect start tracking
+        perfectStartWindowOpen = false;
+        acceleratedDuringPerfectWindow = false;
     }
 #endregion
 #region CONTROL TICKER
@@ -246,6 +253,11 @@ public class CarController : MonoBehaviour
         return baseSpeed;
     }
     void FixedUpdate(){
+        // Track acceleration input during perfect start window (even when locked)
+        if(locked && perfectStartWindowOpen && Iaccel > 0.5f){
+            acceleratedDuringPerfectWindow = true;
+        }
+        
         // Don't process any input or movement if the car is locked (game ended)
         if(locked){ return; }
         
@@ -420,6 +432,15 @@ public class CarController : MonoBehaviour
     public Ability GetCurrentAbility(){ return currentAbility; }
     public void SetLocked(bool state){ 
         locked = state; 
+        //ResetCar();
+        
+        // Apply perfect start boost when unlocking
+        if(!locked && acceleratedDuringPerfectWindow){
+            ApplyPerfectStartBoost();
+            acceleratedDuringPerfectWindow = false;
+            perfectStartWindowOpen = false;
+        }
+        
         //if we also have a AIController, set the inputs locked to the same value
         AIController ai = GetComponent<AIController>();
         if(ai != null){
@@ -436,6 +457,38 @@ public class CarController : MonoBehaviour
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
     public float GetEnergyPercent(){ return energy / (maxEnergy + statMaxEnergyMod); }
+#endregion
+#region PERFECT START
+    /// <summary>
+    /// Called by GameMode when countdown reaches "2" - opens the perfect start timing window
+    /// </summary>
+    public void OpenPerfectStartWindow(){
+        perfectStartWindowOpen = true;
+        acceleratedDuringPerfectWindow = false;
+        
+        // If this is an AI controller, trigger AI perfect start attempt
+        if(isAI){
+            AIController ai = GetComponent<AIController>();
+            if(ai != null){
+                ai.TryPerfectStart();
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Called by GameMode when countdown moves past "2" - closes the perfect start timing window
+    /// </summary>
+    public void ClosePerfectStartWindow(){
+        perfectStartWindowOpen = false;
+    }
+
+    void ApplyPerfectStartBoost(){
+        // Apply a 3-second speed boost
+        AddSpeedModifier(500, false, 3f, "PerfectStart");
+        
+        
+        Debug.Log($"Perfect Start! Car {carID} ({playerName})");
+    }
 #endregion
 #region UI UPDATE FUNCTIONS
     public void SetPosition(int position){ 
@@ -477,20 +530,16 @@ public class CarController : MonoBehaviour
         }
     }
 
-    void OnItembox()
-    {
+    void OnItembox() {
         if(currentAbility != Ability.None || doingPickupAnim){ return; } //already have an ability
-        else
-        {
+        else {
             doingPickupAnim = true;
             StartCoroutine(DoNewAbilityAnimation());
         }
     }
-    void UseAbility()
-    {
+    void UseAbility() {
         if(currentAbility == Ability.None || doingPickupAnim){ return; } //no ability to use
-        else
-        {
+        else {
             // Flash headlights when using ability
             StartCoroutine(FlashHeadlights(1f));
             

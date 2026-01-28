@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2de92370c4099e4d9209095326431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityCrasherBoost
-  travelSpeed: 0.5
+  travelSpeed: 3
 --- !u!198 &7912262659474351526
 ParticleSystem:
   m_ObjectHideFlags: 0

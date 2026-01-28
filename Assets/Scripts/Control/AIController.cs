@@ -24,6 +24,7 @@ public class AIController : MonoBehaviour
     float currentTargetOffset = 0f;
     bool setup = false; //setup variable to check if the AI is setup
     bool inputsLocked = true;
+    Coroutine perfectStartCoroutine = null;
     
     // Ability usage mapping table
     static readonly Dictionary<Ability, AIAbilityUsageMode> abilityUsageTable = new Dictionary<Ability, AIAbilityUsageMode>
@@ -35,11 +36,11 @@ public class AIController : MonoBehaviour
         { Ability.MissleSeeking2, AIAbilityUsageMode.Ahead },
         { Ability.MissleSeeking3, AIAbilityUsageMode.Ahead },
         { Ability.EMP, AIAbilityUsageMode.Close },
-        { Ability.Shield, AIAbilityUsageMode.Behind },
+        { Ability.Recharger, AIAbilityUsageMode.Any },
         { Ability.TrailDamage, AIAbilityUsageMode.Behind },
         { Ability.TrailSlow, AIAbilityUsageMode.Behind },
         { Ability.Overdrive, AIAbilityUsageMode.Any },
-        { Ability.CrasherBoost, AIAbilityUsageMode.Any }
+        { Ability.CrasherBoost, AIAbilityUsageMode.Ahead }
     };
     // Start is called before the first frame update
     void Start()
@@ -83,6 +84,12 @@ public class AIController : MonoBehaviour
             if(carController.IsCarConnected()){ //only send commands if car is connected
                 carController.DoControlImmediate(); //update the car controller immediately
             }
+            
+            // Stop perfect start attempt when race begins
+            if(perfectStartCoroutine != null){
+                StopCoroutine(perfectStartCoroutine);
+                perfectStartCoroutine = null;
+            }
         }
         else {
             // Immediately clear all inputs when locked
@@ -92,6 +99,34 @@ public class AIController : MonoBehaviour
             carController.IitemA = false;
             carController.IitemB = false;
         }
+    }
+    
+    /// <summary>
+    /// Start AI perfect start attempt with random timing and success rate
+    /// </summary>
+    public void TryPerfectStart(){
+        if(perfectStartCoroutine != null){
+            StopCoroutine(perfectStartCoroutine);
+        }
+        perfectStartCoroutine = StartCoroutine(PerfectStartAttempt());
+    }
+    
+    IEnumerator PerfectStartAttempt(){
+        // AI will press accelerate at a random time during the "2" window
+        // 70% success rate - AI gets it right most of the time
+        float successChance = 0.7f;
+        
+        if(Random.value < successChance){
+            // Successful timing - press sometime during the 1 second window
+            float pressDelay = Random.Range(0.1f, 0.9f);
+            yield return new WaitForSeconds(pressDelay);
+            
+            // Press accelerate (this will be detected by CarController)
+            carController.Iaccel = 1f;
+        }
+        // If failed, AI just won't press during the window
+        
+        perfectStartCoroutine = null;
     }
 
     // Update is called once per frame

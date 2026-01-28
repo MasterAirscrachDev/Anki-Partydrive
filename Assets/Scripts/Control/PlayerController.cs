@@ -164,6 +164,11 @@ public class PlayerController : MonoBehaviour
                 SetControllerRumble(0f, 0f);
             }
         }
+        else
+        {
+            // Stop rumble in menu mode
+            SetControllerRumble(0f, 0f);
+        }
     }
     
     void HandleMenuInputCallbacks(){
