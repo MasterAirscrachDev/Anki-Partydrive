@@ -29,8 +29,8 @@ public class CarEntityTracker : MonoBehaviour
         // Check for finish line crossing BEFORE updating the spline
         // This must happen before SetTrackSpline because finish line has no spline
         if(segmentType == SegmentType.FinishLine && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
-            OnCarCrossedFinishLine?.Invoke(id, !entity.wasDelocalisedThisLap);
-            entity.wasDelocalisedThisLap = false; //reset the delocalised flag for the next lap
+            bool countLap = entity.segmentsSinceDelocalized > 4; //only count lap if more than 4 segments since delocalisation
+            OnCarCrossedFinishLine?.Invoke(id, countLap);
         }
         
         if(trackPiece != null && segmentType != SegmentType.FinishLine){ entity.SetTrackSpline(trackPiece, trackIndex); } //should always be true, but just in case
@@ -86,7 +86,7 @@ public class CarEntityTracker : MonoBehaviour
         UpdateAIOpponentLocations(); //update the AI opponent locations
     }
     public void CarDelocalised(string id){ if(trackers.ContainsKey(id)){ trackers[id].Delocalise(); } }
-    public void ResetLapDelocalizationFlag(string id){ if(trackers.ContainsKey(id)){ trackers[id].wasDelocalisedThisLap = false; } }
+    public void ResetLapDelocalizationFlag(string id){ if(trackers.ContainsKey(id)){ trackers[id].segmentsSinceDelocalized = 0; } }
     public void SetSpeed(string id, int speed){ if(trackers.ContainsKey(id)){ trackers[id].SetSpeed(speed); } }
     public void SetOffset(string id, float horizontalOffset){ if(trackers.ContainsKey(id)){ trackers[id].SetOffset(horizontalOffset); } }
     public string[] GetActiveCars(string exclude = null){

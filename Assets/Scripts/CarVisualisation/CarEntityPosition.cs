@@ -16,7 +16,7 @@ public class CarEntityPosition : MonoBehaviour
     Vector3 lastPosition;
     SmoothedCarModel smoothedModel;
     bool showOnTrack = true, despawnCancelled = false, despawnTimerRunning = false;
-    public bool wasDelocalisedThisLap = true; //true until set to false
+    public int segmentsSinceDelocalized = 0; //increments each segment change, reset to 0 on delocalisation
     readonly bool SHOW_ANYWAY = false; //Debugging to show hitbox in editor
     int carModel = 0; // Store car model for truck length calculations
     public void Setup(string id, int model) {
@@ -72,6 +72,7 @@ public class CarEntityPosition : MonoBehaviour
         if(idx != trackpos.idx){ //only update if the track spline is different
             UpdateTrackSpline(trackSpline, idx);
             trackpos.SetIdx(idx);
+            segmentsSinceDelocalized++; //increment segments since delocalisation
         }
     }
     /// <summary>
@@ -115,7 +116,7 @@ public class CarEntityPosition : MonoBehaviour
         trackSpline = null;
         trackpos.speed = 0;
         showOnTrack = false;
-        wasDelocalisedThisLap = true;
+        segmentsSinceDelocalized = 0; //reset segment counter on delocalisation
 
         despawnCancelled = false; //reset the despawn cancelled flag
         despawnTimer = 50; //reset the despawn timer

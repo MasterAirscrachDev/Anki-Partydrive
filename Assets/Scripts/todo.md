@@ -1,39 +1,49 @@
 # This is the current list of todos for the Partydrive client.
+[X] = Done
+[ ] = Not done
+(Low Prio) = Low Priority, would be nice to have but not required for launch
 
-# For Demo 4.0.0 and beyond
+# Current release ==========================================================
 
-## Just coding
+[X] 2 boost starts
+[ ] Test all abilites
+ - [X] Missiles
+ - [X] Seeking Missiles
+ - [ ] Grappler (test)
+ - [ ] Lightning (test)
+ - [X] Orbital Strike
+ - [ ] Crasher Boost (test)
+ - [X] Damage Trail
+ - [ ] Slowing Trail (test)
+ - [ ] Recharger (needs art and object)
+[X] count lap if car is localized in the last 5 segments (ignore prior delocalization)
+[ ] Test Settings function
+ - Implement Post Toggle 
+[ ] Car Base Stats
+[ ] Announcer
+ - Lines for overtake
+ - Lines for taking the lead
+ - lines for lap completion
+ - lines for ability use
+ - lines for disable
+ - Passive dialogue system
+[ ] Fix Track Zoom on large tracks
+[ ] Manual lineup option for larger tracks
+[ ] Improve Disable VFX
+[ ] SFX for abilites
 
-- Car Management Menu
- - Edit Car Names
+[ ] (Low Prio) Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
+[ ] (Low Prio) Proper Truck Support for CarSelectionV2
+[ ] (Low Prio) Upgrade ability icons
+[ ] (Low Prio) Dynamic cheering crowd
 
-- Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
+# Demo 4.0.0 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- 2 boost starts
+[ ] Phone Controller
+[ ] (Ability) Charger Ring (shoot a ring further down the track, successfully driving through it gives +50% energy +20% boost)
+[ ] Dynamic stadium
+[ ] Car Stat Allocation
 
-[Testing] blueshell (orbital lazer)
- - validate stun
-[Testing] lightning powerup (voxel storm)
- - validate slow
-[Testing] grappler powerup (slow preciding car and boost self)
-[Testing] crasher powerup (overboost preciding car)
- - make projectile faster
+[ ] (Low Prio) Fix drive mats
 
-charger ring (shoot a ring further down the track, successfully driving through it gives a 50% energy boost)
-
-count lap if car is localized in the last 5 segments (ignore prior delocalization)
-
-
-## UI Stuff too
-- Settings Menu
- - Option to disable Post (for performance)
-UI for powerups
-## Audio
-recordings
-
-## Upgrades
-- [x] Overhaul car selection menu (move to 3D ssb style)
- - [x] Show car models
- - [x] Show car colors
- - [x] Show car names
- - [ ] 2.5x length for trucks
+# Demo 5.0.0 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
