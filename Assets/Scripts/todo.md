@@ -7,15 +7,16 @@
 
 [X] 2 boost starts
 [X] count lap if car is localized in the last 5 segments (ignore prior delocalization)
+[X] Fix Zoom Scaling on larger tracks
 [ ] Test all abilites
  - [X] Missiles
  - [X] Seeking Missiles
- - [ ] Grappler (test)
- - [ ] Lightning (test)
+ - [ ] Grappler (connects to the true position not the visual, needs testing)
+ - [X] Lightning (test)
  - [X] Orbital Strike
  - [ ] Crasher Boost (test)
  - [X] Damage Trail
- - [ ] Slowing Trail (test)
+ - [X] Slowing Trail
  - [ ] Recharger (needs art and object)
 [ ] Test Settings function
  - Implement Post Toggle 
@@ -28,10 +29,11 @@
  - lines for big damage (implment)
  - lines for disable (test)
  - Passive dialogue system (test)
-[ ] Fix Track Zoom on large tracks / Manual lineup option for larger tracks
 [ ] Improve Disable VFX
 [ ] SFX for abilites
 
+[ ] (Low Prio) Manual Zoom Ajust for tracks
+[ ] (Low Prio) Manual lineup option for larger tracks
 [ ] (Low Prio) Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
 [ ] (Low Prio) Proper Truck Support for CarSelectionV2
 [ ] (Low Prio) Upgrade ability icons

@@ -19,6 +19,9 @@ public class AudioAnnouncerManager : MonoBehaviour
     private Coroutine liveCommentaryCoroutine;
     private bool liveCommentaryActive = false;
     
+    // Track the last announced leader to prevent duplicate announcements
+    private ModelName lastAnnouncedLeader = ModelName.Unknown;
+    
     /// <summary>
     /// Represents a queued announcer line with importance and optional car model
     /// </summary>
@@ -153,6 +156,7 @@ public class AudioAnnouncerManager : MonoBehaviour
         
         liveCommentaryActive = true;
         lineQueue.Clear();
+        lastAnnouncedLeader = ModelName.Unknown; // Reset leader tracking for new race
         liveCommentaryCoroutine = StartCoroutine(LiveCommentaryLoop());
     }
     
@@ -204,6 +208,9 @@ public class AudioAnnouncerManager : MonoBehaviour
     /// </summary>
     private void RunLine()
     {
+        // Filter out duplicate CarTakesLead announcements for the same car
+        lineQueue.RemoveAll(q => q.line == AnnouncerLine.CarTakesLead && q.carModel == lastAnnouncedLeader);
+        
         QueuedLine selectedLine = null;
         
         if(lineQueue.Count == 0)
@@ -220,6 +227,12 @@ public class AudioAnnouncerManager : MonoBehaviour
         
         if(selectedLine != null)
         {
+            // Track who was announced as leader
+            if(selectedLine.line == AnnouncerLine.CarTakesLead)
+            {
+                lastAnnouncedLeader = selectedLine.carModel;
+            }
+            
             PlayLine(selectedLine.line, selectedLine.carModel);
         }
         

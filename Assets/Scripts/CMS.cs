@@ -62,15 +62,15 @@ public class CMS : MonoBehaviour
             UCarData carData = SR.io.GetCarFromID(controller.GetID());
             if(carData == null) continue;
             
-            // Get the player color and convert to RGB (0-255)
+            // Get the player color and convert to RGB (0-14)
             Color playerColor = controller.GetPlayerColor();
-            int r = Mathf.RoundToInt(playerColor.r * 255);
-            int g = Mathf.RoundToInt(playerColor.g * 255);
-            int b = Mathf.RoundToInt(playerColor.b * 255);
+            int r = Mathf.RoundToInt(playerColor.r * 14);
+            int g = Mathf.RoundToInt(playerColor.g * 14);
+            int b = Mathf.RoundToInt(playerColor.b * 14);
             
             // Set the car's engine light to match the player color
             SR.io.SetCarColours(carData, r, g, b);
-            Debug.Log($"Set engine light for {controller.GetPlayerName()}'s car ({controller.GetID()}) to RGB({r},{g},{b})");
+            //Debug.Log($"Set engine light for {controller.GetPlayerName()}'s car ({controller.GetID()}) to RGB({r},{g},{b})");
         }
     }
     public void AddController(CarController controller, bool isAI = false){

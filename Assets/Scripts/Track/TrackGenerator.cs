@@ -43,7 +43,7 @@ public class TrackGenerator : MonoBehaviour
         return trackPieces[index].GetComponent<TrackSpline>();
     }
     public SegmentType GetSegmentType(int index) { index = LoopIndex(index); return segments[index].type; }
-    public bool GetSegmentReversed(int index) { index = LoopIndex(index); return segments[index].flipped; }
+    public bool GetSegmentReversed(int index) { index = LoopIndex(index); return segments[index].reversed; }
     public int GetSegmentID(int index) { index = LoopIndex(index); return segments[index].internalID; }
     public Segment[] GetTrackPieces()
     {
@@ -90,24 +90,26 @@ public class TrackGenerator : MonoBehaviour
             Debug.LogWarning("No track pieces to position camera around.");
             return;
         }
-        //calculate the center and size of the track
-        Vector3 center = Vector3.zero;
+        
+        // Calculate accurate bounds using min/max detection
+        Vector3 min = Vector3.positiveInfinity;
+        Vector3 max = Vector3.negativeInfinity;
+        
         for (int i = 0; i < trackPieces.Count; i++)
         {
             if (trackPieces[i] == null) { continue; }
-            center += trackPieces[i].transform.position;
+            Vector3 pos = trackPieces[i].transform.position;
+            min = Vector3.Min(min, pos);
+            max = Vector3.Max(max, pos);
         }
-        center /= trackPieces.Count;
-        Vector2 size = new Vector2(0, 0);
-        for (int i = 0; i < trackPieces.Count; i++)
-        {
-            if (trackPieces[i] == null) { continue; }
-            Vector2 pos = new Vector2(trackPieces[i].transform.position.x, trackPieces[i].transform.position.z);
-            if (pos.x > size.x) { size.x = pos.x; }
-            if (pos.y > size.y) { size.y = pos.y; }
-        }
-        size.x -= center.x; size.y -= center.y;
-        size.x *= 2; size.y *= 2;
+        
+        Vector3 center = (min + max) / 2f;
+        // Size is half-extents plus padding for track piece width
+        Vector2 size = new Vector2(
+            (max.x - min.x) / 2f + 0.5f,
+            (max.z - min.z) / 2f + 0.5f
+        );
+        
         if(autoSwitchCamera){
             SR.ui.SwitchToTrackCamera(true);
         }
@@ -214,13 +216,13 @@ public class TrackGenerator : MonoBehaviour
                 }
                 if (segments[i].type == SegmentType.FnFSpecial) {
                     track = Instantiate(useFullTrack ? trackPrefabs[2] : scannningPrefabs[2], pos, rot, transform);
-                    if (segments[i].flipped) { track.transform.localScale = new Vector3(-1, 1, 1); }
+                    if (segments[i].reversed) { track.transform.localScale = new Vector3(-1, 1, 1); }
                     pos += forward;
                 }
-                if (segments[i].type == SegmentType.Turn) {
+                if (segments[i].type == SegmentType.Turn) { 
                     track = Instantiate(useFullTrack ? trackPrefabs[3] : scannningPrefabs[3], pos, rot, transform);
-                    track.transform.localScale = new Vector3(segments[i].flipped ? 1 : -1, 1, 1);
-                    forward = Quaternion.Euler(0, segments[i].flipped ? 90 : -90, 0) * forward;
+                    track.transform.localScale = new Vector3(segments[i].reversed ? 1 : -1, 1, 1);
+                    forward = Quaternion.Euler(0, segments[i].reversed ? 90 : -90, 0) * forward;
                     pos += forward;
                 }
                 if (segments[i].type == SegmentType.CrissCross) {
@@ -278,7 +280,7 @@ public class TrackGenerator : MonoBehaviour
                     track.name = $"{i} ({segments[i].type})";
                     if (segments[i].validated && fullyValidated) {
                         if (i == 1)
-                        { track.GetComponent<TrackSpline>().flipped = segments[i].flipped; }
+                        { track.GetComponent<TrackSpline>().flipped = segments[i].reversed; }
                         else if (i > 1) {
                             if (trackPieces[i] == null) { continue; }
                             try {
@@ -377,11 +379,11 @@ public class TrackGenerator : MonoBehaviour
         if (A == null || B == null) { return (false, null); } //if either piece is null, we can't match them
         else if (A.internalID != 0 && B.internalID != 0)
         { //if both pieces are not fallbacks
-            return ((A.type == B.type) && (A.flipped == B.flipped), null); //match if the type and flipped state are the same
+            return ((A.type == B.type) && (A.reversed == B.reversed), null); //match if the type and flipped state are the same
         }
         else if (A.internalID == 0 && B.internalID == 0)
         { //if both pieces are fallbacks
-            return ((A.type == B.type) && (A.flipped == B.flipped), null); //match if the type and flipped state are the same
+            return ((A.type == B.type) && (A.reversed == B.reversed), null); //match if the type and flipped state are the same
         }
         else
         { //A or B is a fallback, check if we can match them
@@ -495,21 +497,28 @@ public class SegmentLength
 public class Segment{
     public SegmentType type;
     public int internalID;
-    public readonly bool flipped;
+    public readonly bool reversed;
     public int up, down, elevation, X, Y;
+    public bool validated = false;
     public Segment(SegmentType type, int id, bool flipped){
         this.type = type;
-        this.flipped = flipped;
+        this.reversed = flipped;
         internalID = id;
         up = 0; down = 0;
     }
-    public bool validated = false;
+    public Segment(SegmentData data){
+        this.type = data.type;
+        this.reversed = data.reversed;
+        internalID = data.internalID;
+        validated = data.validated;
+        up = 0; down = 0;
+    }
     public void SetUpDown(int up, int down){ this.up = up; this.down = down; }
     public override bool Equals(object? obj) { // Check for null and compare run-time types.
         if (obj == null || !GetType().Equals(obj.GetType())) { return false; }
         else {
             Segment p = (Segment)obj;
-            return (type == p.type) && (flipped == p.flipped);
+            return (type == p.type) && (reversed == p.reversed);
         }
     }
     public static bool operator ==(Segment? a, Segment? b) {
@@ -518,5 +527,5 @@ public class Segment{
         return a.Equals(b);
     }
     public static bool operator !=(Segment? a, Segment? b) { return !(a == b); }
-    public override string ToString() { return $"({type}|id:{internalID}|flipped:{flipped})"; }
+    public override string ToString() { return $"({type}|id:{internalID}|flipped:{reversed})"; }
 }

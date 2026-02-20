@@ -764,8 +764,10 @@ public class CarController : MonoBehaviour
         // Start flashing red engine light
         UCarData carData = SR.io.GetCarFromID(carID);
         if(carData != null){
-            LightData[] lights = new LightData[1];
+            LightData[] lights = new LightData[3];
             lights[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.FLASH, startStrength = 0, endStrength = 14, cyclesPer10Seconds = 10 };
+            lights[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 10 };
+            lights[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 10 };
             SR.io.SetCarColoursComplex(carData, lights);
         }
         

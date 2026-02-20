@@ -40,7 +40,7 @@ public class AbilityLightningPower : MonoBehaviour
         Transform targetTransform = SR.cet.GetCarVisualTransform(target.GetID());
         
         // Move to target over 3 seconds
-        float moveTime = 3f;
+        float moveTime = 2f;
         float elapsed = 0f;
         
         while (elapsed < moveTime && targetTransform != null)
@@ -86,7 +86,7 @@ public class AbilityLightningPower : MonoBehaviour
         }
         
         // Apply 80% slow for 4 seconds
-        target.AddSpeedModifier(-80, true, 4f, "LightningSlow");
+        target.AddSpeedModifier(-60, true, 4f, "LightningSlow");
         
         // Show lightning for 0.5 seconds
         yield return new WaitForSeconds(0.5f);

@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e619500a827e0247bf578f674af8dd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityGrappler
-  grapplerLine: {fileID: 0}
+  grapplerLine: {fileID: 5587415242697076730}
 --- !u!120 &5587415242697076730
 LineRenderer:
   serializedVersion: 2
@@ -85,7 +85,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 823284c31f234ca4fbc1755fb81a9ac0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

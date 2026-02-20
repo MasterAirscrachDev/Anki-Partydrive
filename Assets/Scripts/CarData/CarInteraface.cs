@@ -129,8 +129,13 @@ public class CarInteraface : MonoBehaviour
                     OnAvailableCarData(availableCarData); //update the available car data
                     break;
                 case EVENT_TR_DATA:
-                    Segment[] trackData = JsonConvert.DeserializeObject<Segment[]>(webhookData.Payload.ToString());
-                    SR.track.Generate(trackData, trackValidated); //generate the track
+                    //Debug.Log($"Received track data: {webhookData.Payload.ToString()}");
+                    SegmentData[] trackData = JsonConvert.DeserializeObject<SegmentData[]>(webhookData.Payload.ToString());
+                    //convert to segment array
+                    Segment[] segments = new Segment[trackData.Length];
+                    for (int i = 0; i < trackData.Length; i++)
+                    { segments[i] = new Segment(trackData[i]); }
+                    SR.track.Generate(segments, trackValidated); //generate the track
                     break;
             
             }

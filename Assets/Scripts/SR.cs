@@ -40,6 +40,10 @@ public class SR : MonoBehaviour
     /// Audio Announcer Manager for live commentary
     /// </summary>
     public static AudioAnnouncerManager pa;
+    /// <summary>
+    /// Main Camera Controller for handling camera behavior and transitions
+    /// </summary>
+    public static CameraController cameraController;
     void Awake()
     {
         cms = FindFirstObjectByType<CMS>();
@@ -50,6 +54,6 @@ public class SR : MonoBehaviour
         track = FindFirstObjectByType<TrackGenerator>();
         io = FindFirstObjectByType<CarInteraface>();
         pa = FindFirstObjectByType<AudioAnnouncerManager>();
-
+        cameraController = FindFirstObjectByType<CameraController>();
     }
 }

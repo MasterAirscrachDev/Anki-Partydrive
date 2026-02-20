@@ -79,8 +79,9 @@ namespace OverdriveServer{
             public SegmentType type {get; set;} //Segment Type
             public int internalID {get; set;} //Segment ID (0 = fallback, 10-63 = real piece, excluding drive mats)
             public bool reversed {get; set;} //Is the piece reversed (true = reversed, false = not reversed)
-            public int up {get; set;} //Uphill counter (0-255)
-            public int down {get; set;} //Downhill counter (0-255)
+            public int startY {get; set;} //Start Y position (height) of the piece
+            public int midY {get; set;} //Mid Y position (height) of the piece
+            public int endY {get; set;} //End Y position (height) of the piece
             public bool validated {get; set;} //Is the piece validated (true = validated, false = not validated)
         }
         [System.Serializable]
