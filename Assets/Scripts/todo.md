@@ -6,6 +6,7 @@
 # Current release ==========================================================
 
 [X] 2 boost starts
+[X] count lap if car is localized in the last 5 segments (ignore prior delocalization)
 [ ] Test all abilites
  - [X] Missiles
  - [X] Seeking Missiles
@@ -16,19 +17,18 @@
  - [X] Damage Trail
  - [ ] Slowing Trail (test)
  - [ ] Recharger (needs art and object)
-[X] count lap if car is localized in the last 5 segments (ignore prior delocalization)
 [ ] Test Settings function
  - Implement Post Toggle 
 [ ] Car Base Stats
 [ ] Announcer
- - Lines for overtake
- - Lines for taking the lead
- - lines for lap completion
- - lines for ability use
- - lines for disable
- - Passive dialogue system
-[ ] Fix Track Zoom on large tracks
-[ ] Manual lineup option for larger tracks
+ - Lines for overtake (test)
+ - Lines for taking the lead (test)
+ - lines for lap completion (test)
+ - lines for ability pickup (implment)
+ - lines for big damage (implment)
+ - lines for disable (test)
+ - Passive dialogue system (test)
+[ ] Fix Track Zoom on large tracks / Manual lineup option for larger tracks
 [ ] Improve Disable VFX
 [ ] SFX for abilites
 

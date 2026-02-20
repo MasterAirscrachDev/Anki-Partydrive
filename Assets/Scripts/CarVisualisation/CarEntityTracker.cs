@@ -9,6 +9,17 @@ public class CarEntityTracker : MonoBehaviour
 {
     [SerializeField] GameObject carPrefab;
     [SerializeField] Dictionary<string, CarEntityPosition> trackers = new Dictionary<string, CarEntityPosition>();
+    
+    // Overtake tracking with debouncing
+    [Header("Overtake Tracking")]
+    [SerializeField] float overtakeDebounceTime = 0.5f; // Time in seconds before confirming an overtake
+    
+    // Tracks the last confirmed position for each car (1 = first place, 2 = second, etc.)
+    private Dictionary<string, int> confirmedPositions = new Dictionary<string, int>();
+    // Tracks pending position changes: key is carID, value is (newPosition, timeWhenPositionChanged)
+    private Dictionary<string, (int newPosition, float changeTime)> pendingPositionChanges = new Dictionary<string, (int, float)>();
+    // Tracks the current unconfirmed positions for comparison
+    private Dictionary<string, int> currentPositions = new Dictionary<string, int>();
 
     public void SetPosition(string id, int trackIndex, int speed, float horizontalOffset, CarTrust trust){
         if(!SR.track.hasTrack){ return; } //if no track or we are on the finish line, do nothing
@@ -83,6 +94,7 @@ public class CarEntityTracker : MonoBehaviour
             }
         }
         trackers.Clear();
+        ResetOvertakeTracking(); //reset overtake tracking
         UpdateAIOpponentLocations(); //update the AI opponent locations
     }
     public void CarDelocalised(string id){ if(trackers.ContainsKey(id)){ trackers[id].Delocalise(); } }
@@ -204,4 +216,186 @@ public class CarEntityTracker : MonoBehaviour
     }
     public delegate void CarCrossedFinishLine(string id, bool trusted);
     public event CarCrossedFinishLine? OnCarCrossedFinishLine;
+    
+    // Overtake event: (overtakingCarID, overtakenCarID, newPosition)
+    public delegate void OvertakeOccurred(string overtakingCar, string overtakenCar, int newPosition);
+    public event OvertakeOccurred? OnOvertakeOccurred;
+    
+    void Update()
+    {
+        UpdateOvertakeTracking();
+    }
+    
+    /// <summary>
+    /// Updates position tracking and detects overtakes with debouncing.
+    /// </summary>
+    private void UpdateOvertakeTracking()
+    {
+        if(trackers.Count < 2) return; // Need at least 2 cars for overtakes
+        
+        List<string> sortedCars = GetSortedCarIDs();
+        if(sortedCars.Count < 2) return;
+        
+        // Build current position map (1-indexed: 1 = first place)
+        Dictionary<string, int> newPositions = new Dictionary<string, int>();
+        for(int i = 0; i < sortedCars.Count; i++)
+        {
+            newPositions[sortedCars[i]] = i + 1;
+        }
+        
+        // Initialize confirmed positions if empty
+        if(confirmedPositions.Count == 0)
+        {
+            foreach(var kvp in newPositions)
+            {
+                confirmedPositions[kvp.Key] = kvp.Value;
+            }
+            currentPositions = new Dictionary<string, int>(newPositions);
+            return;
+        }
+        
+        // Check for position changes
+        foreach(var kvp in newPositions)
+        {
+            string carID = kvp.Key;
+            int newPos = kvp.Value;
+            
+            // Get current tracked position (or use new position if car is new)
+            int currentTrackedPos = currentPositions.ContainsKey(carID) ? currentPositions[carID] : newPos;
+            int confirmedPos = confirmedPositions.ContainsKey(carID) ? confirmedPositions[carID] : newPos;
+            
+            if(newPos != currentTrackedPos)
+            {
+                // Position changed from what we were tracking
+                if(newPos != confirmedPos)
+                {
+                    // Position differs from confirmed - start or update pending change
+                    pendingPositionChanges[carID] = (newPos, Time.time);
+                }
+                else
+                {
+                    // Position reverted to confirmed - cancel pending change
+                    pendingPositionChanges.Remove(carID);
+                }
+            }
+        }
+        
+        // Update current positions for next frame comparison
+        currentPositions = new Dictionary<string, int>(newPositions);
+        
+        // Process pending changes that have passed debounce time
+        List<string> confirmedChanges = new List<string>();
+        foreach(var kvp in pendingPositionChanges)
+        {
+            string carID = kvp.Key;
+            int pendingPos = kvp.Value.newPosition;
+            float changeTime = kvp.Value.changeTime;
+            
+            // Check if current position still matches the pending position
+            if(!currentPositions.ContainsKey(carID) || currentPositions[carID] != pendingPos)
+            {
+                // Position changed again, will be handled in next cycle
+                continue;
+            }
+            
+            // Check if debounce time has passed
+            if(Time.time - changeTime >= overtakeDebounceTime)
+            {
+                int oldConfirmedPos = confirmedPositions.ContainsKey(carID) ? confirmedPositions[carID] : pendingPos;
+                
+                // Only fire overtake event if position improved (lower number = better position)
+                if(pendingPos < oldConfirmedPos)
+                {
+                    // Find who got overtaken (the car now in the position behind)
+                    string overtakenCar = FindCarAtPosition(pendingPos + 1, currentPositions);
+                    if(overtakenCar != null)
+                    {
+                        // Queue announcer line for overtake
+                        UCarData carData = SR.io?.GetCarFromID(carID);
+                        if(carData != null)
+                        {
+                            if(pendingPos == 1)
+                            {
+                                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarTakesLead, 9, carData.modelName);
+                            }
+                            else
+                            {
+                                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarOvertakes, 6, carData.modelName);
+                            }
+                        }
+                        OnOvertakeOccurred?.Invoke(carID, overtakenCar, pendingPos);
+                    }
+                }
+                
+                // Update confirmed position
+                confirmedPositions[carID] = pendingPos;
+                confirmedChanges.Add(carID);
+            }
+        }
+        
+        // Remove confirmed changes from pending
+        foreach(string carID in confirmedChanges)
+        {
+            pendingPositionChanges.Remove(carID);
+        }
+        
+        // Clean up positions for cars that no longer exist
+        CleanupRemovedCars(newPositions);
+    }
+    
+    /// <summary>
+    /// Find the car at a specific position.
+    /// </summary>
+    private string FindCarAtPosition(int position, Dictionary<string, int> positions)
+    {
+        foreach(var kvp in positions)
+        {
+            if(kvp.Value == position) return kvp.Key;
+        }
+        return null;
+    }
+    
+    /// <summary>
+    /// Remove tracking data for cars that no longer exist.
+    /// </summary>
+    private void CleanupRemovedCars(Dictionary<string, int> currentCars)
+    {
+        List<string> toRemove = new List<string>();
+        foreach(string carID in confirmedPositions.Keys)
+        {
+            if(!currentCars.ContainsKey(carID))
+            {
+                toRemove.Add(carID);
+            }
+        }
+        foreach(string carID in toRemove)
+        {
+            confirmedPositions.Remove(carID);
+            pendingPositionChanges.Remove(carID);
+            currentPositions.Remove(carID);
+        }
+    }
+    
+    /// <summary>
+    /// Get the current confirmed position of a car (1 = first place).
+    /// Returns -1 if car not found.
+    /// </summary>
+    public int GetCarPosition(string carID)
+    {
+        if(confirmedPositions.ContainsKey(carID))
+        {
+            return confirmedPositions[carID];
+        }
+        return -1;
+    }
+    
+    /// <summary>
+    /// Reset all overtake tracking data. Call this when starting a new race.
+    /// </summary>
+    public void ResetOvertakeTracking()
+    {
+        confirmedPositions.Clear();
+        pendingPositionChanges.Clear();
+        currentPositions.Clear();
+    }
 }

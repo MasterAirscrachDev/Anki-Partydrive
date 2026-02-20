@@ -747,6 +747,12 @@ public class CarController : MonoBehaviour
     /// </summary>
     public void DisableCar()
     {
+        // Queue announcer line for reactor disabled
+        UCarData carData = SR.io?.GetCarFromID(carID);
+        if(carData != null)
+        {
+            SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarReactorDisabled, 7, carData.modelName);
+        }
         StartCoroutine(DisableCarCoroutine());
     }
     

@@ -153,6 +153,9 @@ public abstract class GameMode : MonoBehaviour
         cms.SetGlobalLock(false);
         gameActive = true;
         
+        // Start live commentary
+        SR.pa.StartLiveCommentary();
+        
         OnGameStarted(activeCars);
         
         // Start position update ticker
@@ -184,6 +187,9 @@ public abstract class GameMode : MonoBehaviour
         gameEnding = true;
         gameActive = false;
         
+        // Stop live commentary
+        SR.pa.StopLiveCommentary();
+        
         showText.text = endMessage;
         cms.SetGlobalLock(true);
         cms.StopAllCars();
@@ -205,6 +211,16 @@ public abstract class GameMode : MonoBehaviour
     {
         if(!gameActive) return;
         
+        // Queue announcer line for lap completion
+        if(score)
+        {
+            UCarData carData = SR.io?.GetCarFromID(carID);
+            if(carData != null)
+            {
+                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarLapComplete, 4, carData.modelName);
+            }
+        }
+        
         OnCarCrossedFinish(carID, score);
     }
     
@@ -213,6 +229,12 @@ public abstract class GameMode : MonoBehaviour
     /// </summary>
     protected virtual void CleanupGameMode()
     {
+        // Stop live commentary if still running
+        if(SR.pa != null)
+        {
+            SR.pa.StopLiveCommentary();
+        }
+        
         if(carInteraface != null)
         {
             carInteraface.OnLineupEvent -= OnLineupUpdate;
