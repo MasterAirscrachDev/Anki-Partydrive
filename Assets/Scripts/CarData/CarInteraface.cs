@@ -215,6 +215,29 @@ public class CarInteraface : MonoBehaviour
         for (int i = 0; i < cars.Length; i++)
         { uCars[i] = new UCarData(cars[i]); }
         this.cars = uCars;
+        
+        // Remove car entities for cars that are no longer connected
+        if(currentCars != null && SR.cet != null)
+        {
+            foreach(UCarData oldCar in currentCars)
+            {
+                bool stillExists = false;
+                foreach(UCarData newCar in uCars)
+                {
+                    if(newCar.id == oldCar.id)
+                    {
+                        stillExists = true;
+                        break;
+                    }
+                }
+                if(!stillExists)
+                {
+                    SR.cet.RemoveTracker(oldCar.id);
+                    Debug.Log($"Removed car entity for disconnected car: {oldCar.id}");
+                }
+            }
+        }
+        
         LightData[] colors = new LightData[3];
         //Partylights
         colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 10 };

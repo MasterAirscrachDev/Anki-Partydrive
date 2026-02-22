@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Audio\Editor\AnnouncerLineDataDrawer.cs" />
+    <Compile Include="Assets\Scripts\Audio\Editor\SFXEventDataDrawer.cs" />
     <Compile Include="Assets\Scripts\Track\Editor\TrackSplineEditor.cs" />
   </ItemGroup>
   <ItemGroup>

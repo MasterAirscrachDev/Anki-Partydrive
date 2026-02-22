@@ -6,6 +6,7 @@ using static OverdriveServer.NetStructures;
 //Central Management System
 public class CMS : MonoBehaviour
 {
+    public bool isSupporter = false; //stop showing support popup for supporters
     [SerializeField] GameObject botPrefab;
     [SerializeField] CarEntityTracker carEntityTracker;
     public readonly List<CarController> controllers = new List<CarController>();
@@ -32,11 +33,8 @@ public class CMS : MonoBehaviour
         else if (gameMode == "Laps"){
             ui.SetUILayer(6);
         }
-        else if (gameMode == "Laps2"){
-            ui.SetUILayer(7);
-        }
         else if(gameMode == "Party"){
-            ui.SetUILayer(9);
+            ui.SetUILayer(8);
         }
     }
     
@@ -130,6 +128,34 @@ public class CMS : MonoBehaviour
     public CarController GetController(string carID){
         return controllers.Find(x => x.GetID() == carID);
     }
+    
+    /// <summary>
+    /// Returns the car controller currently in first place according to gamemode positioning.
+    /// Falls back to track progression if no positions have been set.
+    /// </summary>
+    public CarController GetFirstPlaceCar(){
+        CarController firstPlaceCar = null;
+        
+        // Check each controller for position == 1 (gamemode-determined position)
+        foreach(CarController controller in controllers){
+            if(controller == null || string.IsNullOrEmpty(controller.GetID())) continue;
+            if(controller.GetPosition() == 1) {
+                firstPlaceCar = controller;
+                break;
+            }
+        }
+        
+        // Fallback: use track progression if no position 1 found
+        if(firstPlaceCar == null && SR.cet != null){
+            List<string> sortedCars = SR.cet.GetSortedCarIDs();
+            if(sortedCars != null && sortedCars.Count > 0){
+                firstPlaceCar = GetController(sortedCars[0]);
+            }
+        }
+        
+        return firstPlaceCar;
+    }
+    
     public void StopAllCars(){
         foreach(CarController controller in controllers){
             controller.StopCar();
@@ -194,6 +220,7 @@ public class CMS : MonoBehaviour
             controller.OnCollectElement(type);
         }
     }
+
     public void OnCarOutOfEnergyCarCallback(string id, CarController controller){ onCarNoEnergy?.Invoke(id, controller); }
     public void OnBackToMenuCallback(){ onBackToMenu?.Invoke(); }
     public void OnSelectCallback(PlayerController pc){ onSelect?.Invoke(pc); }

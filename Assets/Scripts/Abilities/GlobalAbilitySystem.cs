@@ -10,8 +10,10 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject damageTrailPrefab, slowTrailPrefab;
     [SerializeField] GameObject orbitalLazerPrefab;
     [SerializeField] GameObject crasherBoostPrefab;
+    [SerializeField] GameObject crasherSlowParticlePrefab;
     [SerializeField] GameObject grapplerPrefab;
     [SerializeField] GameObject lightningPowerPrefab;
+    [SerializeField] GameObject rechargerPrefab;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -38,6 +40,7 @@ public class GlobalAbilitySystem : MonoBehaviour
         GameObject missile = Instantiate(missilePrefab, start, Quaternion.identity);
         missile.GetComponent<AbilityController>().Setup(control);
         missile.GetComponent<AbilityMissile>().Setup(target);
+        SR.sfx?.PlaySFX(SFXEvent.MissileLaunch);
     }
     /// <summary>
     /// Spawns a missile from the given car that will target a distance forward on the track;
@@ -54,6 +57,7 @@ public class GlobalAbilitySystem : MonoBehaviour
         Vector3 targetPos = SR.track.TrackCoordinateToWorldspace(tc + distanceForward );
 
         missile.GetComponent<AbilityMissile>().Setup(targetPos);
+        
     }
     /// <summary>
     /// Spawns a seeking missile from the given car towards the target car.
@@ -87,40 +91,39 @@ public class GlobalAbilitySystem : MonoBehaviour
         
         if(targetID == null) return;
         missile.GetComponent<AbilityMissile>().Setup(SR.cet.GetCarRealTransform(targetID));
+        
     }
     public void SpawnMissileParticle(Vector3 position, bool seeking) {
         GameObject particle = Instantiate(seeking ? SeekingMissileParticlePrefab : MissileParticlePrefab);
         particle.transform.position = position;
+        SR.sfx?.PlaySFX(SFXEvent.Explosion);
     }
     public void SpawnEMP(CarController control) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject emp = Instantiate(empPrefab, start, Quaternion.identity);
         emp.GetComponent<AbilityController>().Setup(control);
-        //emp.GetComponent<AbilityEMP>().Setup();
+        SR.sfx?.PlaySFX(SFXEvent.EMPActivate);
     }
     public void SpawnDamageTrail(CarController control) {
         Transform model = SR.cet.GetCarVisualTransform(control.GetID());
         GameObject trail = Instantiate(damageTrailPrefab, model.position, model.rotation);
         trail.transform.parent = model;
         trail.GetComponent<AbilityController>().Setup(control);
-        //trail.GetComponent<AbilityDamageTrail>().Setup();
+        SR.sfx?.PlaySFX(SFXEvent.TrailDrop);
     }
     public void SpawnSlowTrail(CarController control) {
         Transform model = SR.cet.GetCarVisualTransform(control.GetID());
         GameObject trail = Instantiate(slowTrailPrefab, model.position, model.rotation);
         trail.transform.parent = model;
         trail.GetComponent<AbilityController>().Setup(control);
-        //trail.GetComponent<AbilitySlowTrail>().Setup();
+        SR.sfx?.PlaySFX(SFXEvent.TrailDrop);
     }
     public void SpawnOrbitalLazer(CarController control) {
-        // Get the leading car
-        List<string> sortedCars = SR.cet.GetSortedCarIDs();
-        if(sortedCars == null || sortedCars.Count == 0) return;
-        
-        string firstPlaceCarID = sortedCars[0];
-        CarController firstPlaceCar = SR.cms.GetController(firstPlaceCarID);
-        
+        // Get the leading car according to the gamemode's position tracking
+        CarController firstPlaceCar = SR.cms.GetFirstPlaceCar();
         if(firstPlaceCar == null) return;
+        
+        string firstPlaceCarID = firstPlaceCar.GetID();
         
         Transform targetTransform = SR.cet.GetCarVisualTransform(firstPlaceCarID);
         if(targetTransform == null) return;
@@ -128,6 +131,7 @@ public class GlobalAbilitySystem : MonoBehaviour
         GameObject lazer = Instantiate(orbitalLazerPrefab);
         lazer.GetComponent<AbilityController>().Setup(control);
         lazer.GetComponent<AbilityOrbitalLazer>().Setup(targetTransform, firstPlaceCar);
+        SR.sfx?.PlaySFX(SFXEvent.OrbitalLaserCharge);
     }
     
     /// <summary>
@@ -150,6 +154,16 @@ public class GlobalAbilitySystem : MonoBehaviour
         crasher.transform.position = start;
         crasher.GetComponent<AbilityController>().Setup(control);
         crasher.GetComponent<AbilityCrasherBoost>().Setup(SR.cet.GetCarRealTransform(targetID), targetID);
+        SR.sfx?.PlaySFX(SFXEvent.CrasherBoostLaunch);
+    }
+    
+    /// <summary>
+    /// Spawns a particle effect when CrasherBoost slow is applied.
+    /// </summary>
+    public void SpawnCrasherSlowParticle(Vector3 position) {
+        if(crasherSlowParticlePrefab == null) return;
+        GameObject particle = Instantiate(crasherSlowParticlePrefab);
+        particle.transform.position = position;
     }
     
     /// <summary>
@@ -163,7 +177,8 @@ public class GlobalAbilitySystem : MonoBehaviour
         GameObject grappler = Instantiate(grapplerPrefab);
         grappler.transform.position = start;
         grappler.GetComponent<AbilityController>().Setup(control);
-        grappler.GetComponent<AbilityGrappler>().Setup(SR.cet.GetCarRealTransform(targetID), targetID, control.GetID());
+        grappler.GetComponent<AbilityGrappler>().Setup(SR.cet.GetCarVisualTransform(targetID), targetID, control.GetID());
+        SR.sfx?.PlaySFX(SFXEvent.GrapplerAttach);
     }
     /// <summary>
     /// Spawns a lightning power that targets all cars except the user.
@@ -183,6 +198,18 @@ public class GlobalAbilitySystem : MonoBehaviour
         lightningPower.transform.position = start;
         lightningPower.GetComponent<AbilityController>().Setup(control);
         lightningPower.GetComponent<AbilityLightningPower>().Setup(targets.ToArray());
+    }
+    
+    /// <summary>
+    /// Spawns a recharger that follows the user and gives energy over time.
+    /// </summary>
+    public void SpawnRecharger(CarController control) {
+        Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
+        GameObject recharger = Instantiate(rechargerPrefab);
+        recharger.transform.position = start;
+        recharger.GetComponent<AbilityController>().Setup(control);
+        recharger.GetComponent<AbilityRecharger>().Setup(control);
+        SR.sfx?.PlaySFX(SFXEvent.RechargerActivate);
     }
 
     [System.Serializable]

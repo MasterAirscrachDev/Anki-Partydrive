@@ -6,7 +6,12 @@ using UnityEngine;
 
 public class LapsMode : GameMode
 {
-    [SerializeField] int targetLaps = 15;
+    [Header("Lap Settings")]
+    [SerializeField] int lapsSmallTrack = 20;
+    [SerializeField] int lapsMediumTrack = 15;
+    [SerializeField] int lapsLargeTrack = 10;
+    
+    int targetLaps = 15;
     Dictionary<string, int> carLaps = new Dictionary<string, int>();
     
     void Awake() {// Configure laps mode settings
@@ -15,12 +20,27 @@ public class LapsMode : GameMode
     }
     
     protected override void OnModeStart()
-    { carLaps.Clear(); }
+    { 
+        carLaps.Clear();
+        // Set target laps based on track size
+        if(SR.track != null && SR.track.hasTrack)
+        {
+            TrackGenerator.TrackSize trackSize = SR.track.GetTrackSize();
+            targetLaps = trackSize switch
+            {
+                TrackGenerator.TrackSize.Small => lapsSmallTrack,
+                TrackGenerator.TrackSize.Medium => lapsMediumTrack,
+                TrackGenerator.TrackSize.Large => lapsLargeTrack,
+                _ => lapsMediumTrack
+            };
+        }
+    }
     
     protected override void OnLineupStarted()
     { carLaps.Clear();  } //clear the lap count
     
     protected override void OnCountdownStarted(string[] activeCars) {
+        base.OnCountdownStarted(activeCars); // Clear previousPositions for overtake tracking
         foreach(string carID in activeCars){
             carLaps[carID] = 0; //reset the lap count
             cms.GetController(carID).SetPosition(0); //reset the position
@@ -55,17 +75,8 @@ public class LapsMode : GameMode
             })
             .ToList();
         
-        // Update position for each car
-        int position = 1;
-        foreach(string carID in sortedCars)
-        {
-            CarController controller = cms.GetController(carID);
-            if(controller != null)
-            {
-                controller.SetPosition(position);
-            }
-            position++;
-        }
+        // Apply positions with overtake detection
+        ApplyPositionsWithOvertakeDetection(sortedCars);
     }
     
     protected override void OnCarCrossedFinish(string carID, bool score){

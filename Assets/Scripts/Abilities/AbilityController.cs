@@ -1,8 +1,10 @@
 using UnityEngine;
+using static OverdriveServer.NetStructures;
 
 public class AbilityController : MonoBehaviour
 {
     CarController carController;
+    
     // Sets up the ability with the given car controller as the owner
     public void Setup(CarController controller){
         carController = controller;
@@ -10,6 +12,19 @@ public class AbilityController : MonoBehaviour
 
     public CarController GetCarController(){
         return carController;
+    }
+    
+    /// <summary>
+    /// Report damage dealt by this ability back to the owner.
+    /// The CarController/PlayerStats will handle big damage announcements.
+    /// </summary>
+    /// <param name="amount">The amount of damage dealt</param>
+    public void ReportDamage(float amount)
+    {
+        if(carController == null || amount <= 0) return;
+        
+        // Record damage dealt in the car's stats - PlayerStats handles big damage detection
+        carController.RecordDamageDealt(amount);
     }
 }
 public enum Ability

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Rendering.PostProcessing;
 
 public class SettingsManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] Slider sfxVolumeSlider;
     [Header("Graphics Settings")]
     [SerializeField] Toggle postProcessingToggle;
+    [SerializeField] PostProcessVolume postProcessVolume;
     [Header("Gameplay Settings")]
     [SerializeField] Toggle balancedBaseStatsToggle;
     [SerializeField] Toggle uniqueOverdrivePowersToggle;
@@ -32,6 +34,7 @@ public class SettingsManager : MonoBehaviour
     {
         // Initialize settings from currentSettings
         ReadUIToSettings();
+        LoadSettingsAsync();
     }
     public SettingsState Read() { return currentSettings; }
     void ReadUIToSettings()
@@ -40,7 +43,11 @@ public class SettingsManager : MonoBehaviour
         if(currentSettings.musicVolume != musicVolumeSlider.value){ currentSettings.musicVolume = musicVolumeSlider.value; changed = true; }
         if(currentSettings.announcerVolume != announcerVolumeSlider.value){ currentSettings.announcerVolume = announcerVolumeSlider.value; changed = true; }
         if(currentSettings.sfxVolume != sfxVolumeSlider.value){ currentSettings.sfxVolume = sfxVolumeSlider.value; changed = true; }
-        if(currentSettings.postProcessingEnabled != postProcessingToggle.isOn){ currentSettings.postProcessingEnabled = postProcessingToggle.isOn; changed = true; }
+        if(currentSettings.postProcessingEnabled != postProcessingToggle.isOn){ 
+            currentSettings.postProcessingEnabled = postProcessingToggle.isOn; 
+            changed = true;
+            ApplyPostProcessing();
+        }
         if(currentSettings.balancedBaseStats != balancedBaseStatsToggle.isOn){ currentSettings.balancedBaseStats = balancedBaseStatsToggle.isOn; changed = true; }
         if(currentSettings.uniqueOverdrivePowers != uniqueOverdrivePowersToggle.isOn){ currentSettings.uniqueOverdrivePowers = uniqueOverdrivePowersToggle.isOn; changed = true; }
         if(changed)
@@ -48,6 +55,15 @@ public class SettingsManager : MonoBehaviour
             onSettingsChanged?.Invoke(currentSettings);
         }
     }
+    
+    void ApplyPostProcessing()
+    {
+        if(postProcessVolume != null)
+        {
+            postProcessVolume.enabled = currentSettings.postProcessingEnabled;
+        }
+    }
+    
     void ApplySettingsToUI()
     {
         musicVolumeSlider.value = currentSettings.musicVolume;
@@ -56,6 +72,7 @@ public class SettingsManager : MonoBehaviour
         postProcessingToggle.isOn = currentSettings.postProcessingEnabled;
         balancedBaseStatsToggle.isOn = currentSettings.balancedBaseStats;
         uniqueOverdrivePowersToggle.isOn = currentSettings.uniqueOverdrivePowers;
+        ApplyPostProcessing();
     }
     async Task LoadSettingsAsync()
     {

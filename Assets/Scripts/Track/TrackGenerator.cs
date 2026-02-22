@@ -480,6 +480,13 @@ public class TrackGenerator : MonoBehaviour
         }
         return segmentsWithSlots;
     }
+    public TrackSize GetTrackSize()
+    {
+        if (segments.Length <= 12) { return TrackSize.Small; }
+        else if (segments.Length <= 35) { return TrackSize.Medium; }
+        else { return TrackSize.Large; }
+    }
+    public enum TrackSize { Small, Medium, Large }
 }
 public class SegmentLength
 {

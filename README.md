@@ -39,11 +39,11 @@ This is not a remake of the Anki Overdrive app, I am not making a campaign or up
 - [ ] Powerups (Similar to Sonic & Sega All-Stars Racing)
 - [x] AI for cars (Will be improved over time)
 ### Gamemodes:
-- [x] Demo Time Trial (Drive around the track and try to get the best laptime in 3 minutes)
 - [x] Laps Mode (First to complete X laps wins)
-- [ ] Time Trial (Standard race, use drifts and boost to get the best time)
-- [ ] Cell Deduction (Your battery is dying, keep it topped up by driving over the cells on the track)
+- [x] Time Trial (Standard race, drive a good line and use boost to get the best time)
 - [ ] Party Mode (Item boxes, boosters, repair station, its on the track and its there for your advantage)
+- [ ] Cell Deduction (Your battery is dying, keep it topped up by driving over the cells on the track)
+- [ ] Juggernaut (Only the juggernaut can score points, but everyone can attack the juggernaut. first to 5 points wins)
 
 # Credits:
 The server is using 

@@ -19,6 +19,9 @@ public class AbilityOrbitalLazer : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         targetCar.UseEnergy(damage);
+        SR.sfx?.PlaySFX(SFXEvent.OrbitalLaserFire);
+        // Report damage back to the ability owner
+        GetComponent<AbilityController>()?.ReportDamage(damage);
         yield return new WaitForSeconds(1.0f);
         Destroy(this.gameObject);
     }

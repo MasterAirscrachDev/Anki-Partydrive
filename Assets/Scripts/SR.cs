@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// cms(Car Management System), cet(Car Entity Tracker), gas(Global Ability System),
-/// tem(Track Element Manager), ui(UI Manager), track(Track Generator), io(Car Interface), pa(Audio Announcer)
+/// tem(Track Element Manager), ui(UI Manager), track(Track Generator), io(Car Interface), pa(Audio Announcer), sfx(SFX Manager)
 /// </summary>
 public class SR : MonoBehaviour
 {
@@ -44,6 +44,10 @@ public class SR : MonoBehaviour
     /// Main Camera Controller for handling camera behavior and transitions
     /// </summary>
     public static CameraController cameraController;
+    /// <summary>
+    /// SFX Manager for 2D sound effects
+    /// </summary>
+    public static SFXManager sfx;
     void Awake()
     {
         cms = FindFirstObjectByType<CMS>();
@@ -55,5 +59,6 @@ public class SR : MonoBehaviour
         io = FindFirstObjectByType<CarInteraface>();
         pa = FindFirstObjectByType<AudioAnnouncerManager>();
         cameraController = FindFirstObjectByType<CameraController>();
+        sfx = FindFirstObjectByType<SFXManager>();
     }
 }

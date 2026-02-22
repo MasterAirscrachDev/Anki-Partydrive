@@ -60,6 +60,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityCrasherBoost
   travelSpeed: 3
+  boostAmount: 500
+  boostDuration: 2.5
+  slowPercent: 80
+  slowDuration: 3
 --- !u!198 &7912262659474351526
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -950,7 +954,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 30
+      scalar: 45
       minScalar: 0
       maxCurve:
         serializedVersion: 2

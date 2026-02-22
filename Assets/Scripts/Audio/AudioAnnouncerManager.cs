@@ -186,6 +186,29 @@ public class AudioAnnouncerManager : MonoBehaviour
     }
     
     /// <summary>
+    /// Play a line immediately if the announcer is not currently speaking.
+    /// Does not play if already busy. Restarts the commentary countdown timer if played.
+    /// Use for non-critical lines that shouldn't interrupt commentary (like disables).
+    /// </summary>
+    public void PlayLineIfNotBusy(AnnouncerLine line, ModelName carModel = ModelName.Unknown)
+    {
+        if(audioSource == null) return;
+        
+        // Don't play if already speaking
+        if(audioSource.isPlaying) return;
+        
+        // Play the line
+        PlayLine(line, carModel);
+        
+        // Restart the commentary countdown if live commentary is active
+        if(liveCommentaryActive && liveCommentaryCoroutine != null)
+        {
+            StopCoroutine(liveCommentaryCoroutine);
+            liveCommentaryCoroutine = StartCoroutine(LiveCommentaryLoop());
+        }
+    }
+    
+    /// <summary>
     /// Main loop that runs during live commentary.
     /// </summary>
     private IEnumerator LiveCommentaryLoop()

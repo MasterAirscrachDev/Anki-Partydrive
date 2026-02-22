@@ -28,6 +28,9 @@ public abstract class GameMode : MonoBehaviour
     protected bool gameActive = false;
     protected bool gameEnding = false;
     
+    // Overtake tracking
+    protected Dictionary<string, int> previousPositions = new Dictionary<string, int>();
+    
     void OnEnable()
     {
         InitializeReferences();
@@ -290,7 +293,10 @@ public abstract class GameMode : MonoBehaviour
     /// <summary>
     /// Called when countdown starts. Override to initialize game-specific data.
     /// </summary>
-    protected virtual void OnCountdownStarted(string[] activeCars) { }
+    protected virtual void OnCountdownStarted(string[] activeCars)
+    {
+        previousPositions.Clear(); // Reset overtake tracking for new race
+    }
     
     /// <summary>
     /// Called when the game actually starts (after "GO!"). Override for game start logic.
@@ -311,16 +317,51 @@ public abstract class GameMode : MonoBehaviour
         // Get cars sorted by track position (first to last)
         List<string> sortedCars = carEntityTracker.GetSortedCarIDs();
         
-        // Update position for each car
+        // Update position for each car and check for overtakes
+        ApplyPositionsWithOvertakeDetection(sortedCars);
+    }
+    
+    /// <summary>
+    /// Applies positions to cars and detects overtakes. Call this from derived UpdatePositions methods.
+    /// </summary>
+    protected void ApplyPositionsWithOvertakeDetection(List<string> sortedCars)
+    {
         int position = 1;
         foreach(string carID in sortedCars)
         {
             CarController controller = cms.GetController(carID);
             if(controller != null)
             {
+                int previousPosition = previousPositions.ContainsKey(carID) ? previousPositions[carID] : position;
                 controller.SetPosition(position);
+                
+                // Check for overtake (position improved = lower number)
+                if(previousPosition > position && previousPositions.ContainsKey(carID))
+                {
+                    OnOvertakeDetected(carID, position, previousPosition);
+                }
+                
+                previousPositions[carID] = position;
             }
             position++;
+        }
+    }
+    
+    /// <summary>
+    /// Called when an overtake is detected. Override in derived classes to customize announcement behavior.
+    /// </summary>
+    protected virtual void OnOvertakeDetected(string carID, int newPosition, int oldPosition)
+    {
+        UCarData carData = SR.io?.GetCarFromID(carID);
+        if(carData == null) return;
+        
+        if(newPosition == 1)
+        {
+            SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarTakesLead, 10, carData.modelName);
+        }
+        else
+        {
+            SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarOvertakes, 6, carData.modelName);
         }
     }
     
@@ -339,7 +380,11 @@ public abstract class GameMode : MonoBehaviour
     /// <summary>
     /// Called when the game ends. Override for cleanup or final scoring.
     /// </summary>
-    protected virtual void OnGameEnded() { }
+    protected virtual void OnGameEnded()
+    {
+        //do a final position update to ensure correct final standings are shown at end of race
+        UpdatePositions();
+    }
     
     /// <summary>
     /// Called when the mode is being cleaned up. Override for mode-specific cleanup.

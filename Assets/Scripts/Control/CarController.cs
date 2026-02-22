@@ -29,10 +29,13 @@ public class CarController : MonoBehaviour
     // Light control
     float lastEnergyDrainTime = 0f;
     bool isDrainingEnergy = false;
+    bool isDisabled = false;
     Coroutine taillightFlashCoroutine = null;
     // Perfect start timing
     bool perfectStartWindowOpen = false;
     bool acceleratedDuringPerfectWindow = false;
+    // Player stats tracking
+    [SerializeField] PlayerStats playerStats = new PlayerStats();
     //INPUT VALUES======
     public float Iaccel, Isteer;
     public bool Iboost, IitemA, IitemB;
@@ -64,6 +67,7 @@ public class CarController : MonoBehaviour
         cms = FindFirstObjectByType<CMS>();
         cms.AddController(this, isAI);
         carTracker = FindFirstObjectByType<CarEntityTracker>(); // Cache the tracker reference
+        
         ControlTicker(); //start the control ticker
         FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
@@ -132,6 +136,7 @@ public class CarController : MonoBehaviour
         speedModifiers.Add(new SpeedModifer(mod, isPercentage, time, ID));
     }
     public void UseEnergy(float amount, bool isDamage = true){
+        if(isDisabled){ return; } // Don't use energy if car is disabled
         energy -= amount;
         
         // Track energy draining for taillight flash
@@ -141,6 +146,8 @@ public class CarController : MonoBehaviour
                 isDrainingEnergy = true;
                 StartTaillightFlash();
             }
+            // Track damage taken in stats
+            playerStats?.RecordDamageTaken(amount);
         }
         
         if(energy < 0){ 
@@ -192,12 +199,16 @@ public class CarController : MonoBehaviour
         if(taillightFlashCoroutine != null){
             StopCoroutine(taillightFlashCoroutine);
             taillightFlashCoroutine = null;
+            SetTailLights(false); // Ensure taillights are turned off
         }
         isDrainingEnergy = false;
         
         // Reset perfect start tracking
         perfectStartWindowOpen = false;
         acceleratedDuringPerfectWindow = false;
+        
+        // Reset player stats for new race
+        playerStats?.ResetStats();
     }
 #endregion
 #region CONTROL TICKER
@@ -264,8 +275,12 @@ public class CarController : MonoBehaviour
         if(Iaccel > 0 && Iboost && energy > 1){
             UseEnergy(baseBoostCost, false);
             AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), false, 0.1f, "Boost");
+            playerStats?.StartBoost();
         } else if(!Iboost && energy < maxEnergy){
             ChargeEnergy(baseEnergyGain * (statEnergyRechargeMod + 1));
+            playerStats?.EndBoost();
+        } else {
+            playerStats?.EndBoost();
         }
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, Iaccel);
@@ -320,6 +335,7 @@ public class CarController : MonoBehaviour
             if(taillightFlashCoroutine != null){
                 StopCoroutine(taillightFlashCoroutine);
                 taillightFlashCoroutine = null;
+                SetTailLights(false); // Turn off taillights when stopping the coroutine
             }
         }
     }
@@ -457,6 +473,25 @@ public class CarController : MonoBehaviour
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
     public float GetEnergyPercent(){ return energy / (maxEnergy + statMaxEnergyMod); }
+    public PlayerStats GetPlayerStats(){ return playerStats; }
+    
+    /// <summary>
+    /// Record damage dealt to another car (called by abilities when they hit targets)
+    /// </summary>
+    public void RecordDamageDealt(float amount)
+    {
+        bool triggeredBigDamage = playerStats?.RecordDamageDealt(amount) ?? false;
+        
+        // Trigger big damage announcer line if threshold was just crossed
+        if(triggeredBigDamage)
+        {
+            UCarData carData = SR.io?.GetCarFromID(carID);
+            if(carData != null)
+            {
+                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarDealsBigDamage, 4, carData.modelName);
+            }
+        }
+    }
 #endregion
 #region PERFECT START
     /// <summary>
@@ -491,12 +526,17 @@ public class CarController : MonoBehaviour
     }
 #endregion
 #region UI UPDATE FUNCTIONS
+    int currentPosition = 0;
+    
     public void SetPosition(int position){ 
+        currentPosition = position;
         if(pcs == null) {
             Debug.Log($"PCS was null in SetPosition for carID {carID}");
             FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
         }
         pcs.SetPosition(position); }
+    
+    public int GetPosition() { return currentPosition; }
     public void SetTimeTrialTime(float time){ 
         if(pcs == null) {
             Debug.Log($"PCS was null in SetTimeTrialTime for carID {carID}");
@@ -578,6 +618,7 @@ public class CarController : MonoBehaviour
             }
             else if(currentAbility == Ability.Grappler){ SR.gas.SpawnGrappler(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.LightningPower){ SR.gas.SpawnLightningPower(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.Recharger){ SR.gas.SpawnRecharger(this); SetAbilityImmediate(Ability.None); }
         }
     }
     IEnumerator DoNewAbilityAnimation()
@@ -592,13 +633,15 @@ public class CarController : MonoBehaviour
             Ability.EMP, 
             Ability.TrailDamage, Ability.TrailSlow, 
             Ability.CrasherBoost,
-            Ability.Grappler
+            Ability.Grappler,
+            Ability.Recharger
         };
         
         // First place abilities (worse items)
         Ability[] firstPlaceAbilities = new Ability[] { 
             Ability.Missle3, Ability.TrailSlow, 
-            Ability.EMP, Ability.TrailDamage
+            Ability.EMP, Ability.TrailDamage,
+            Ability.Recharger
         };
         
         // Last place abilities (better items)
@@ -652,6 +695,9 @@ public class CarController : MonoBehaviour
         if(pcs != null)
         { pcs.SetAbilityIcon(currentAbility); }
         doingPickupAnim = false;
+        
+        // Track ability pickup in stats
+        playerStats?.RecordAbilityPickup();
     }
     public void SetAbilityImmediate(Ability ability)
     {
@@ -672,8 +718,8 @@ public class CarController : MonoBehaviour
         if(enable)
         {
             LightData[] lights = new LightData[2];
-            lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
-            lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+            lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 45 };
+            lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 45 };
             SR.io.SetCarColoursComplex(carData, lights);
         }
         else
@@ -696,7 +742,7 @@ public class CarController : MonoBehaviour
         if(enable)
         {
             LightData[] lights = new LightData[1];
-            lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 10 };
+            lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.FLASH, startStrength = 0, endStrength = 11, cyclesPer10Seconds = 128 };
             SR.io.SetCarColoursComplex(carData, lights);
         }
         else
@@ -747,11 +793,19 @@ public class CarController : MonoBehaviour
     /// </summary>
     public void DisableCar()
     {
-        // Queue announcer line for reactor disabled
+        if(isDisabled){ return; } //already disabled, don't stack
+        isDisabled = true;
+        // Track disable in stats
+        playerStats?.RecordDisable();
+        
+        // Play disable sound effect
+        SR.sfx?.PlaySFX(SFXEvent.CarDisabled);
+        
+        // Play announcer line if not busy (these lines shouldn't interrupt commentary)
         UCarData carData = SR.io?.GetCarFromID(carID);
         if(carData != null)
         {
-            SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarReactorDisabled, 7, carData.modelName);
+            SR.pa?.PlayLineIfNotBusy(AudioAnnouncerManager.AnnouncerLine.CarReactorDisabled, carData.modelName);
         }
         StartCoroutine(DisableCarCoroutine());
     }
@@ -785,7 +839,7 @@ public class CarController : MonoBehaviour
         }
         
         energy = targetEnergy;
-        
+        isDisabled = false;
         // Restore player color lights
         RestorePlayerColorLights();
     }

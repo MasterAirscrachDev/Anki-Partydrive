@@ -61,10 +61,4 @@ public class WorldEntityManager : MonoBehaviour
         startGateMaterials[3] = lightsGreen;
         startGateRenderer.materials = startGateMaterials;
     }
-
-    public class TrackObject{
-        public GameObject obj;
-        public TrackElementSlot.TrackElementType type;
-        public Vector3 worldPos;
-    }
 }

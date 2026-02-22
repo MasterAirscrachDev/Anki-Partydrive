@@ -7,6 +7,7 @@ public class AbilityLightningPower : MonoBehaviour
     
     public void Setup(CarController[] targets)
     {
+        bool hasSounds = true;
         // Spawn a lightning cloud for each target
         foreach (CarController target in targets)
         {
@@ -23,12 +24,13 @@ public class AbilityLightningPower : MonoBehaviour
                 cloud.transform.position = spawnPos;
                 
                 // Start the lightning sequence
-                StartCoroutine(LightningCloudSequence(cloud, target));
+                StartCoroutine(LightningCloudSequence(cloud, target, hasSounds));
+                hasSounds = false; // Only play sound for the first strike to avoid overwhelming audio
             }
         }
     }
 
-    IEnumerator LightningCloudSequence(GameObject cloud, CarController target)
+    IEnumerator LightningCloudSequence(GameObject cloud, CarController target, bool hasSounds = false)
     {
         LineRenderer lineRenderer = cloud.GetComponent<LineRenderer>();
         if (lineRenderer != null)
@@ -84,6 +86,11 @@ public class AbilityLightningPower : MonoBehaviour
             lineRenderer.SetPosition(0, cloud.transform.position);
             lineRenderer.SetPosition(1, targetTransform.position);
         }
+        if(hasSounds){
+            // Play lightning strike SFX
+            SR.sfx?.PlaySFX(SFXEvent.LightningStrike);
+        }
+        
         
         // Apply 80% slow for 4 seconds
         target.AddSpeedModifier(-60, true, 4f, "LightningSlow");

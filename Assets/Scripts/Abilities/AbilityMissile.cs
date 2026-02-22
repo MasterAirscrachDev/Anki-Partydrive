@@ -15,6 +15,7 @@ public class AbilityMissile : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Setup(Transform targetTransform, float explosionRadius = 0.25f)
     {
+        SR.sfx?.PlaySFX(SFXEvent.SeekingMissileLaunch);
         this.explosionRadius = explosionRadius;
         target = targetTransform;
         if(target == null){
@@ -27,6 +28,7 @@ public class AbilityMissile : MonoBehaviour
     }
     public void Setup(Vector3 targetPosition, float explosionRadius = 0.25f)
     {
+        SR.sfx?.PlaySFX(SFXEvent.MissileLaunch);
         this.explosionRadius = explosionRadius;
         fixedTargetPosition = targetPosition;
         SetHeadMaterial(false);
@@ -60,8 +62,11 @@ public class AbilityMissile : MonoBehaviour
 
         if(transform.position.y < 0f && lifetime > 0.2f){ //dont instantly explode on spawn
             List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, explosionRadius);
+            AbilityController abilityController = GetComponent<AbilityController>();
             foreach(CarController hit in hits){
                 hit.UseEnergy(damage);
+                // Report damage back to the ability owner
+                abilityController?.ReportDamage(damage);
             }
             SR.gas.SpawnMissileParticle(transform.position, target != null);
 

@@ -6,6 +6,10 @@ public class AbilityCrasherBoost : MonoBehaviour
     Transform targetTransform;
     string targetID;
     [SerializeField] float travelSpeed = 15f;
+    [SerializeField] float boostAmount = 500f;
+    [SerializeField] float boostDuration = 2.5f;
+    [SerializeField] float slowPercent = 80f;
+    [SerializeField] float slowDuration = 3f;
     bool hasHit = false;
     
     public void Setup(Transform target, string targetCarID)
@@ -18,6 +22,7 @@ public class AbilityCrasherBoost : MonoBehaviour
     {
         if(targetTransform == null)
         {
+            Destroy(gameObject);
             return;
         }
         if(hasHit)
@@ -45,25 +50,35 @@ public class AbilityCrasherBoost : MonoBehaviour
         CarController targetCar = SR.cms.GetController(targetID);
         if(targetCar != null)
         {
-            // Apply 500 boost for 2.5s
-            targetCar.AddSpeedModifier(500, false, 2.5f, "CrasherBoost");
+            // Apply boost and then slow - both modifiers are applied immediately
+            // The slow modifier includes a delay built into time (negative time means delayed start)
+            targetCar.AddSpeedModifier((int)boostAmount, false, boostDuration, "CrasherBoost");
             
-            // Then apply 80% slow for 3s after the boost ends
-            StartCoroutine(ApplySlowAfterDelay(targetCar, 2.5f));
+            // Start coroutine to apply slow after boost ends, then destroy
+            StartCoroutine(ApplySlowThenDestroy(targetCar));
         }
-        
-        // Destroy the projectile
-        Destroy(gameObject);
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     
-    IEnumerator ApplySlowAfterDelay(CarController targetCar, float delay)
+    IEnumerator ApplySlowThenDestroy(CarController targetCar)
     {
-        yield return new WaitForSeconds(delay);
+        // Wait for boost to finish
+        yield return new WaitForSeconds(boostDuration);
         
         if(targetCar != null)
         {
-            // Apply 80% slow (negative 80% modifier)
-            targetCar.AddSpeedModifier(-80, true, 3f, "CrasherSlow");
+            // Apply slow (negative percentage modifier)
+            targetCar.AddSpeedModifier((int)-slowPercent, true, slowDuration, "CrasherSlow");
+            
+            // Spawn slow particle effect at target car
+            SR.gas?.SpawnCrasherSlowParticle(targetTransform.position);
         }
+        
+        // Wait for slow to finish before destroying
+        yield return new WaitForSeconds(slowDuration);
+        Destroy(gameObject);
     }
 }

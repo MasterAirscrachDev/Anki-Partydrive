@@ -27,6 +27,7 @@ public class TimeTrialMode : GameMode
     
     protected override void OnCountdownStarted(string[] activeCars)
     {
+        base.OnCountdownStarted(activeCars); // Clear previousPositions for overtake tracking
         foreach(string carID in activeCars){
             carTimes.Add(new CarTime(carID));
             carEntityTracker.ResetLapDelocalizationFlag(carID); //reset delocalization flag so first lap counts
@@ -114,10 +115,36 @@ public class TimeTrialMode : GameMode
         //sort the list by lap time (but put cars with no lap time at the end)
         carTimes.Sort((x, y) => x.bestLapTime == 0 ? 1 : y.bestLapTime == 0 ? -1 : x.bestLapTime.CompareTo(y.bestLapTime));
         for(int i = 0; i < carTimes.Count; i++){
-            if(cms.GetController(carTimes[i].id) != null){
-                cms.GetController(carTimes[i].id).SetPosition(i + 1);
+            string icarID = carTimes[i].id;
+            if(cms.GetController(icarID) != null){
+                int previousPosition = previousPositions.ContainsKey(icarID) ? previousPositions[icarID] : (i + 1);
+                cms.GetController(icarID).SetPosition(i + 1);
+                
+                // Check for taking the lead (time trial only announces lead changes)
+                if(previousPosition > 1 && i + 1 == 1 && previousPositions.ContainsKey(icarID))
+                {
+                    OnOvertakeDetected(icarID, 1, previousPosition);
+                }
+                
+                previousPositions[icarID] = i + 1;
             }
         }
+    }
+    
+    /// <summary>
+    /// Time trial only announces taking first place, not general overtakes.
+    /// </summary>
+    protected override void OnOvertakeDetected(string carID, int newPosition, int oldPosition)
+    {
+        if(newPosition == 1)
+        {
+            UCarData carData = SR.io?.GetCarFromID(carID);
+            if(carData != null)
+            {
+                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarTakesLead, 10, carData.modelName);
+            }
+        }
+        // Don't announce general overtakes in time trial mode
     }
     
     class CarTime{

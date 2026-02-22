@@ -10,6 +10,7 @@ public class CarSelector : MonoBehaviour
     //grid is 6x6
     [SerializeField] GameObject ModelCarPrefab, PlayerMarkerPrefab;
     [SerializeField] Transform slectionPlatform;
+    [SerializeField] GameObject[] ShowOnlyIfGamemodeSet; // Array of objects to show only if a gamemode is set in CMS (like the start button)
     List<PlayerController> players = new List<PlayerController>();
     List<GameObject> playerMarkers = new List<GameObject>();
     List<Vector2> markerPositions = new List<Vector2>(); // Grid positions (0-5, 0-5)
@@ -53,6 +54,14 @@ public class CarSelector : MonoBehaviour
         
         // Subscribe to events with delay to avoid accidental selections on page load
         StartCoroutine(SubscribeToEventsDelayed());
+        // Show or hide UI elements based on whether a gamemode is set in CMS
+        bool gamemodeSet = SR.cms != null && !string.IsNullOrEmpty(SR.cms.gameMode);
+        foreach(GameObject obj in ShowOnlyIfGamemodeSet){
+            if(obj != null){
+                obj.SetActive(gamemodeSet);
+            }
+        }
+
     }
     void DespawnDisconnectedAIs(){
         AIController[] ais = FindObjectsOfType<AIController>();

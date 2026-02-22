@@ -36,11 +36,14 @@ public class AbilityEMP : MonoBehaviour
     }
     void ActivateEMP(){
         List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, hitRadius);
-        CarController owner = GetComponent<AbilityController>().GetCarController();
+        AbilityController abilityController = GetComponent<AbilityController>();
+        CarController owner = abilityController.GetCarController();
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
             hit.AddSpeedModifier(-20, true, 3f, "EMP");
-            hit.UseEnergy(40f); //Drain 15 energy
+            hit.UseEnergy(40f); //Drain 40 energy
+            // Report damage back to the ability owner
+            abilityController?.ReportDamage(40f);
         }
     }
     void OnDrawGizmosSelected()

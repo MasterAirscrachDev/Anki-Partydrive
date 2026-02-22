@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityHazardZone
   energyChange: 0
-  speedModifier: -15
+  speedModifier: -25
   speedIsMultiplier: 0
-  speedModifierDuration: 0.5
+  speedModifierDuration: 0.75
   modifierTag: 

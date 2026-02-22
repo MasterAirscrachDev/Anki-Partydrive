@@ -8,29 +8,42 @@
 [X] 2 boost starts
 [X] count lap if car is localized in the last 5 segments (ignore prior delocalization)
 [X] Fix Zoom Scaling on larger tracks
-[ ] Test all abilites
+[X] Test all abilites
  - [X] Missiles
  - [X] Seeking Missiles
- - [ ] Grappler (connects to the true position not the visual, needs testing)
- - [X] Lightning (test)
+ - [X] Grappler
+ - [X] Lightning
  - [X] Orbital Strike
- - [ ] Crasher Boost (test)
+ - [X] Crasher Boost
  - [X] Damage Trail
  - [X] Slowing Trail
- - [ ] Recharger (needs art and object)
-[ ] Test Settings function
- - Implement Post Toggle 
+ - [X] Recharger
+[X] Test Settings function
+ - [X] Implement Post Toggle 
 [ ] Car Base Stats
 [ ] Announcer
- - Lines for overtake (test)
- - Lines for taking the lead (test)
- - lines for lap completion (test)
- - lines for ability pickup (implment)
- - lines for big damage (implment)
- - lines for disable (test)
- - Passive dialogue system (test)
+ - [X] Lines for overtake
+ - [X] Lines for taking the lead
+ - [X] lines for lap completion
+ - [ ] lines for ability pickup (implment)
+ - [ ] lines for big damage (test)
+ - [X] lines for disable
+ - [X] lines for car off track
+ - [X] Passive dialogue system
 [ ] Improve Disable VFX
-[ ] SFX for abilites
+[ ] Improve slow vfx
+[X] SFX manager
+[X] PlayerStats for cars
+Player stats will be tracked per race and can be used for an endscreen (or for annoucer dialogue). Stats to track:
+ - [X] TotalDamageDealt
+ - [X] DamageDealtRecent (track damage dealt in the last 2 seconds)
+ - [X] TotalDamageTaken
+ - [X] LongestBoost
+ - [X] TotalBoostTime
+ - [X] TotalAbilityPickups
+ - [X] TotalDisables
+[X] Support popup (i gotta pay the bills somehow)
+[X] Track Size Detection (Small, Medium, Large) for better game mode scaling
 
 [ ] (Low Prio) Manual Zoom Ajust for tracks
 [ ] (Low Prio) Manual lineup option for larger tracks

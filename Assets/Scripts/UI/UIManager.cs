@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
 
     [ContextMenu("Toggle Track Camera")]
     public void ToggleTrackCamera(){ SwitchToTrackCamera(!TrackCamera.activeSelf); }
+    float lastSupportPanelTime = 0;
 
     // Start is called before the first frame update
     void Start() {
@@ -60,6 +61,14 @@ public class UIManager : MonoBehaviour
 
         if(layer == 0){ //if we are in the main menu, disable the play button
             SwitchToTrackCamera(false);
+            if(!SR.cms.isSupporter){ 
+                //if it has been more than 10 minutes since the last time we showed the support panel, show it again
+                if(Time.realtimeSinceStartup - lastSupportPanelTime > 600f) {
+                    lastSupportPanelTime = Time.realtimeSinceStartup;
+                    SR.ui.SetUILayer(9); //support panel
+                    return;
+                }
+            }
             bool canPlay = SR.track.hasTrack;
             playButton.interactable = canPlay;
             playButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
