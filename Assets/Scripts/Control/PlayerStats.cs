@@ -20,12 +20,12 @@ public class PlayerStats
     [SerializeField] int totalAbilityPickups;
     [SerializeField] int totalDisables;
     
-    // Recent damage tracking (last 2 seconds)
-    [SerializeField] float recentDamageWindow = 2f;
+    // Recent damage tracking (last 5 seconds)
+    [SerializeField] float recentDamageWindow = 5f;
     private List<(float time, float amount)> recentDamageDealt = new List<(float, float)>();
     
     // Threshold for big damage announcement
-    const float BIG_DAMAGE_THRESHOLD = 100f;
+    const float BIG_DAMAGE_THRESHOLD = 60f;
     
     // Boost tracking
     private bool isBoosting = false;
@@ -63,7 +63,10 @@ public class PlayerStats
     /// </summary>
     public bool RecordDamageDealt(float amount)
     {
-        if(amount <= 0) return false;
+        if(amount <= 0)
+        {
+            return false;
+        }
         
         float previousRecentDamage = DamageDealtRecent;
         totalDamageDealt += amount;
@@ -71,7 +74,9 @@ public class PlayerStats
         
         // Check if we just crossed the big damage threshold
         float currentRecentDamage = DamageDealtRecent;
-        return previousRecentDamage < BIG_DAMAGE_THRESHOLD && currentRecentDamage >= BIG_DAMAGE_THRESHOLD;
+        bool triggered = previousRecentDamage < BIG_DAMAGE_THRESHOLD && currentRecentDamage >= BIG_DAMAGE_THRESHOLD;
+        Debug.Log($"[BigDamage] PlayerStats: previous={previousRecentDamage:F1}, current={currentRecentDamage:F1}, threshold={BIG_DAMAGE_THRESHOLD}");
+        return triggered;
     }
     
     /// <summary>

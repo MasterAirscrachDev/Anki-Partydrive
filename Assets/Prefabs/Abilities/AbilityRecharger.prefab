@@ -4862,6 +4862,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f0c64e16947584588dc8cd83ec3f3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityRecharger
-  energyPerTick: 18
+  energyPerTick: 5
   tickInterval: 0.25
-  totalDuration: 3
+  totalDuration: 5

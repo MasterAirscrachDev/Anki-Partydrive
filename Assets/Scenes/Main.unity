@@ -14995,6 +14995,7 @@ MonoBehaviour:
   grapplerPrefab: {fileID: 8499309036080371507, guid: 87dd4736093222c4f842db214c1a66e1, type: 3}
   lightningPowerPrefab: {fileID: 6057216538772743843, guid: 55be6265a07b571488ffb18adcdfb3a5, type: 3}
   rechargerPrefab: {fileID: 3640522664999417100, guid: 150953d4f995b994e9b5167b22d85d25, type: 3}
+  disabledPrefab: {fileID: 5920299987992940019, guid: b3c2f131459c8f045bd161ffb634fd6c, type: 3}
 --- !u!1 &1016471929
 GameObject:
   m_ObjectHideFlags: 0

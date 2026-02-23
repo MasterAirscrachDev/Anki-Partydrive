@@ -91,11 +91,11 @@ public class CarEntityTracker : MonoBehaviour
         { 
             trackers[id].Delocalise();
             
-            // Queue announcer line for off-track event (importance 7)
+            // Play announcer line for off-track event when available
             UCarData carData = SR.io?.GetCarFromID(id);
             if(carData != null)
             {
-                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.VehicleOffTrack, 7, carData.modelName);
+                SR.pa?.PlayLineWhenAvailable(AudioAnnouncerManager.AnnouncerLine.VehicleOffTrack, carData.modelName);
             }
         } 
     }

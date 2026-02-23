@@ -178,10 +178,15 @@ public class AudioAnnouncerManager : MonoBehaviour
     
     /// <summary>
     /// Add a line to the queue with importance (1-10) and optional car model.
+    /// For CarTakesLead, only one can exist in queue at a time (new replaces old).
     /// </summary>
     public void QueueLine(AnnouncerLine line, int importance, ModelName carModel = ModelName.Unknown)
-    {
-        if(!liveCommentaryActive) return;
+    {   
+        // Only allow one CarTakesLead in queue - clear existing if adding new
+        if(line == AnnouncerLine.CarTakesLead) //only 1 CarTakesLead line allowed in queue at once, to prevent spam when multiple overtakes happen in short time
+        { lineQueue.RemoveAll(q => q.line == AnnouncerLine.CarTakesLead); }
+        if(line == AnnouncerLine.CarLapComplete) //max 1 carlapcomplete per car in queue, to prevent spam when multiple laps completed in short time
+        { lineQueue.RemoveAll(q => q.line == AnnouncerLine.CarLapComplete && q.carModel == carModel); }
         lineQueue.Add(new QueuedLine(line, importance, carModel));
     }
     
@@ -205,6 +210,58 @@ public class AudioAnnouncerManager : MonoBehaviour
         {
             StopCoroutine(liveCommentaryCoroutine);
             liveCommentaryCoroutine = StartCoroutine(LiveCommentaryLoop());
+        }
+    }
+    
+    /// <summary>
+    /// Play a line immediately if not busy, otherwise wait for the announcer to finish
+    /// then wait 1 second before playing. Use for important lines that should always play.
+    /// </summary>
+    public void PlayLineWhenAvailable(AnnouncerLine line, ModelName carModel = ModelName.Unknown)
+    {
+        if(audioSource == null) return;
+        
+        // If not busy, play immediately
+        if(!audioSource.isPlaying)
+        {
+            PlayLine(line, carModel);
+            
+            // Restart the commentary countdown if live commentary is active
+            if(liveCommentaryActive && liveCommentaryCoroutine != null)
+            {
+                StopCoroutine(liveCommentaryCoroutine);
+                liveCommentaryCoroutine = StartCoroutine(LiveCommentaryLoop());
+            }
+        }
+        else
+        {
+            // Wait for availability then play
+            StartCoroutine(WaitAndPlayLine(line, carModel));
+        }
+    }
+    
+    private IEnumerator WaitAndPlayLine(AnnouncerLine line, ModelName carModel)
+    {
+        // Wait for current line to finish
+        while(audioSource != null && audioSource.isPlaying)
+        {
+            yield return null;
+        }
+        
+        // Wait 1 second so it's not too snappy
+        yield return new WaitForSeconds(1f);
+        
+        // Play the line
+        if(audioSource != null)
+        {
+            PlayLine(line, carModel);
+            
+            // Restart the commentary countdown if live commentary is active
+            if(liveCommentaryActive && liveCommentaryCoroutine != null)
+            {
+                StopCoroutine(liveCommentaryCoroutine);
+                liveCommentaryCoroutine = StartCoroutine(LiveCommentaryLoop());
+            }
         }
     }
     
@@ -233,28 +290,21 @@ public class AudioAnnouncerManager : MonoBehaviour
     {
         // Filter out duplicate CarTakesLead announcements for the same car
         lineQueue.RemoveAll(q => q.line == AnnouncerLine.CarTakesLead && q.carModel == lastAnnouncedLeader);
+        QueueLine(AnnouncerLine.RaceBanter, 1); // Ensure there's always at least some banter in the queue
         
-        QueuedLine selectedLine = null;
+        // Debug log the current queue for transparency
+        string queueContents = string.Join(", ", lineQueue.ConvertAll(q => $"{q.line}(Car:{q.carModel},Imp:{q.importance})"));
         
-        if(lineQueue.Count == 0)
-        {
-            // Queue is empty, add banter
-            selectedLine = new QueuedLine(AnnouncerLine.RaceBanter, 1);
-        }
-        else
-        {
-            // Select line with weighted randomness based on importance
-            // Higher importance = more likely to be selected, but with some variance
-            selectedLine = SelectLineWithRandomness();
-        }
+
+        // Select line with weighted randomness based on importance
+        // Higher importance = more likely to be selected, but with some variance
+        QueuedLine selectedLine = SelectLineWithRandomness();
+        Debug.Log($"[Announcer] Cycle ({selectedLine.line} || {selectedLine.carModel}). Queue({lineQueue.Count}): {queueContents}");
         
         if(selectedLine != null)
         {
             // Track who was announced as leader
-            if(selectedLine.line == AnnouncerLine.CarTakesLead)
-            {
-                lastAnnouncedLeader = selectedLine.carModel;
-            }
+            if(selectedLine.line == AnnouncerLine.CarTakesLead) { lastAnnouncedLeader = selectedLine.carModel; }
             
             PlayLine(selectedLine.line, selectedLine.carModel);
         }
@@ -264,42 +314,35 @@ public class AudioAnnouncerManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Select a line from queue with weighted randomness.
-    /// Higher importance lines are more likely but not guaranteed.
+    /// Select a line from queue using pie-wheel weighted selection.
+    /// Importance directly represents odds (e.g., IM1 + IM10 = 1/11 vs 10/11 chance).
     /// </summary>
     private QueuedLine SelectLineWithRandomness()
     {
         if(lineQueue.Count == 0) return null;
         if(lineQueue.Count == 1) return lineQueue[0];
         
-        // Sort by importance descending
-        lineQueue.Sort((a, b) => b.importance.CompareTo(a.importance));
-        
-        // Add randomness: weighted selection with importance as weight
-        // Add a small random factor (0-3) to each importance to add variety
-        float totalWeight = 0f;
-        List<float> weights = new List<float>();
-        
+        // Calculate total weight (sum of all importance values)
+        int totalWeight = 0;
         foreach(var line in lineQueue)
         {
-            float weight = line.importance + UnityEngine.Random.Range(0f, 3f);
-            weights.Add(weight);
-            totalWeight += weight;
+            totalWeight += line.importance;
         }
         
+        // Pick random point on the pie wheel
         float randomValue = UnityEngine.Random.Range(0f, totalWeight);
         float cumulative = 0f;
         
         for(int i = 0; i < lineQueue.Count; i++)
         {
-            cumulative += weights[i];
+            cumulative += lineQueue[i].importance;
             if(randomValue <= cumulative)
             {
                 return lineQueue[i];
             }
         }
         
-        // Fallback to highest importance
+        // Fallback to first line
         return lineQueue[0];
     }
     

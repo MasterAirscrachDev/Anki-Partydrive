@@ -24,8 +24,9 @@ public class CarController : MonoBehaviour
     public PlayerCardSystem pcs; //used to update the UI
     CarsManagement carsManagement; //used when in the car selection screen
     CarEntityTracker carTracker; //used to get current position for dynamic width calculation
-    [SerializeField]
-    List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
+    ParticleSystem SlowVFX;
+    bool slowVFXInitialized = false;
+    [SerializeField] List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     // Light control
     float lastEnergyDrainTime = 0f;
     bool isDrainingEnergy = false;
@@ -235,6 +236,7 @@ public class CarController : MonoBehaviour
         SR.io.ControlCar(SR.io.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
     }
     int GetSpeedAfterModifiers(int baseSpeed){
+        int originalSpeed = baseSpeed;
         int speedModifier = 0;
         List<int> speedPercentModifierList = null;
         for(int i = 0; i < speedModifiers.Count; i++){
@@ -261,6 +263,16 @@ public class CarController : MonoBehaviour
             baseSpeed = Mathf.RoundToInt(baseSpeed * percent);
         }
         if(baseSpeed < 0){ baseSpeed = 0; }
+        
+        // Update SlowVFX directly based on effective slow
+        // If output = input, slow = 0; if output = 0, slow = 1
+        float slowPercent = 0f;
+        if(originalSpeed > 0){
+            slowPercent = 1f - (float)baseSpeed / originalSpeed;
+            slowPercent = Mathf.Clamp01(slowPercent);
+        }
+        UpdateSlowVFX(slowPercent);
+        
         return baseSpeed;
     }
     void FixedUpdate(){
@@ -384,6 +396,7 @@ public class CarController : MonoBehaviour
         if(data == null){
             carID = "";
             desiredCarID = "";
+            ResetSlowVFX();
             if(pcs != null) pcs.SetCarName("Sitting Out");
             return;
         }
@@ -397,12 +410,14 @@ public class CarController : MonoBehaviour
         // Try to connect immediately if car is available
         if(SR.io.GetCarFromID(data.id) != null){
             carID = data.id;
+            ResetSlowVFX(); // Reset VFX for new car
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(data.name, (int)data.modelName);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
             // Car not available yet, will be checked in ControlTicker
             carID = "";
+            ResetSlowVFX();
             if(pcs != null) pcs.SetCarName($"Disconnected");
             Debug.Log($"Car {data.id} not available yet, will wait for connection");
         }
@@ -480,14 +495,18 @@ public class CarController : MonoBehaviour
     /// </summary>
     public void RecordDamageDealt(float amount)
     {
+        //Debug.Log($"[BigDamage] RecordDamageDealt called with amount={amount} for car {carID}");
         bool triggeredBigDamage = playerStats?.RecordDamageDealt(amount) ?? false;
+        //Debug.Log($"[BigDamage] PlayerStats.RecordDamageDealt returned triggeredBigDamage={triggeredBigDamage}");
         
         // Trigger big damage announcer line if threshold was just crossed
         if(triggeredBigDamage)
         {
             UCarData carData = SR.io?.GetCarFromID(carID);
+            //Debug.Log($"[BigDamage] Threshold crossed! carData={(carData != null ? carData.modelName.ToString() : "null")}");
             if(carData != null)
             {
+                //Debug.Log($"[BigDamage] Queueing CarDealsBigDamage line for {carData.modelName}");
                 SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarDealsBigDamage, 4, carData.modelName);
             }
         }
@@ -706,6 +725,111 @@ public class CarController : MonoBehaviour
         { pcs.SetAbilityIcon(currentAbility); }
     }
     
+#region SLOW VFX CONTROL
+    void InitSlowVFX()
+    {
+        if(string.IsNullOrEmpty(carID)) return;
+        
+        // Find the smoothed model transform and get the SlowVFX particle system
+        Transform smoothedModel = SR.cet?.GetCarVisualTransform(carID);
+        if(smoothedModel == null)
+        {
+            Debug.LogWarning($"[SlowVFX] Could not find smoothed model for car {carID}");
+            slowVFXInitialized = false;
+            SlowVFX = null;
+            return;
+        }
+        
+        // Look for particle system in children (not just on root)
+        ParticleSystem newVFX = smoothedModel.GetComponentInChildren<ParticleSystem>();
+        Debug.Log($"[SlowVFX] Init for car {carID}: found ParticleSystem={newVFX != null}, on object={(newVFX != null ? newVFX.gameObject.name : "null")}");
+        
+        // Check if it's a different particle system (car changed)
+        if(newVFX != SlowVFX)
+        {
+            SlowVFX = newVFX;
+            if(SlowVFX != null)
+            {
+                slowVFXInitialized = true;
+                
+                // Access emission module fresh and disable initially
+                var emission = SlowVFX.emission;
+                emission.enabled = false;
+                
+                Debug.Log($"[SlowVFX] Initialized for {carID}");
+            }
+            else
+            {
+                slowVFXInitialized = false;
+            }
+        }
+        else if(SlowVFX != null)
+        {
+            slowVFXInitialized = true;
+        }
+    }
+    
+    /// <summary>
+    /// Update SlowVFX emission rate. Called from GetSpeedAfterModifiers.
+    /// </summary>
+    /// <param name="slowPercent">0 = no slow, 1 = fully stopped</param>
+    void UpdateSlowVFX(float slowPercent)
+    {
+        // Check if particle system was destroyed or car changed
+        if(SlowVFX == null || !slowVFXInitialized)
+        {
+            InitSlowVFX();
+            if(!slowVFXInitialized || SlowVFX == null) return;
+        }
+        
+        // Access modules fresh each time (they're structs that reference back to the system)
+        var emission = SlowVFX.emission;
+        var main = SlowVFX.main;
+        
+        // Disabled takes priority - show no slow VFX when disabled
+        if(isDisabled)
+        {
+            emission.enabled = false;
+            return;
+        }
+        
+        float emissionRate = slowPercent * 100f;
+        
+        if(emissionRate > 0)
+        {
+            // Enable emission and set rate
+            emission.enabled = true;
+            emission.rateOverTime = emissionRate;
+            
+            // Ensure system is playing
+            if(!SlowVFX.isPlaying)
+            {
+                SlowVFX.Play();
+            }
+            
+            Debug.Log($"[SlowVFX] Car {carID}: slowPercent={slowPercent:F2}, rate={emissionRate:F1}, playing={SlowVFX.isPlaying}, emissionEnabled={emission.enabled}");
+        }
+        else
+        {
+            // No slow - disable emission
+            emission.enabled = false;
+        }
+    }
+    
+    /// <summary>
+    /// Reset SlowVFX state when car changes or disconnects.
+    /// </summary>
+    void ResetSlowVFX()
+    {
+        if(SlowVFX != null && slowVFXInitialized)
+        {
+            var emission = SlowVFX.emission;
+            emission.enabled = false;
+        }
+        slowVFXInitialized = false;
+        SlowVFX = null;
+    }
+#endregion
 #region CAR LIGHT CONTROL
     /// <summary>
     /// Control headlights - enable for flashing, disable to restore player color
@@ -801,6 +925,9 @@ public class CarController : MonoBehaviour
         // Play disable sound effect
         SR.sfx?.PlaySFX(SFXEvent.CarDisabled);
         
+        // Spawn world disabled visual effect
+        SR.gas?.SpawnDisabled(this);
+        
         // Play announcer line if not busy (these lines shouldn't interrupt commentary)
         UCarData carData = SR.io?.GetCarFromID(carID);
         if(carData != null)
@@ -840,6 +967,11 @@ public class CarController : MonoBehaviour
         
         energy = targetEnergy;
         isDisabled = false;
+        
+        // Clear all speed modifiers after disable wears off
+        speedModifiers.Clear();
+        UpdateSlowVFX(0f); // Reset VFX
+        
         // Restore player color lights
         RestorePlayerColorLights();
     }

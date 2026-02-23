@@ -4,7 +4,6 @@ using static OverdriveServer.NetStructures;
 
 public class CarEntityPosition : MonoBehaviour
 {
-    Material ourMaterial;
     public CarModelManager carModelManager;
     string id = "";
     TrackSpline trackSpline;
@@ -17,7 +16,6 @@ public class CarEntityPosition : MonoBehaviour
     SmoothedCarModel smoothedModel;
     bool showOnTrack = true, despawnCancelled = false, despawnTimerRunning = false;
     public int segmentsSinceDelocalized = 0; //increments each segment change, reset to 0 on delocalisation
-    readonly bool SHOW_ANYWAY = false; //Debugging to show hitbox in editor
     int carModel = 0; // Store car model for truck length calculations
     public void Setup(string id, int model) {
         this.id = id; //set the id of the car entity
@@ -26,15 +24,6 @@ public class CarEntityPosition : MonoBehaviour
         // Check if this is a supertruck (models 15, 16, 17 = Freewheel, x52, x52Ice)
         if(carModel == 15 || carModel == 16 || carModel == 17) { backDistance *= 2.5f; } // 2.5x length for trucks
         trackpos = new TrackCoordinate(0, 0, 0, 22, backDistance);
-        
-        //if not the editor, destroy the mesh renderer
-        if(!Application.isEditor || !SHOW_ANYWAY){
-            GetComponent<MeshRenderer>().enabled = false;
-            if(!Application.isEditor){ Destroy(GetComponent<MeshFilter>()); }
-        }else{
-            ourMaterial = GetComponent<MeshRenderer>().material; //get the material of the car
-            if(ourMaterial == null){ Debug.LogError("No material found on car entity"); }
-        }
         smoothedModel = GetComponentInChildren<SmoothedCarModel>();
     }
 
@@ -96,20 +85,12 @@ public class CarEntityPosition : MonoBehaviour
     }
     public void SetTrust(CarTrust trust){
         bool isTrusted = trust == CarTrust.Trusted;
-        SetMat(isTrusted);
         carModelManager.ShowTrustedModel(isTrusted);
         if(isTrusted){ //certainly on track
             showOnTrack = true;
         }
         else if(trust == CarTrust.Delocalized){ //lost or delocalised
             showOnTrack = false; 
-        }
-    }
-    void SetMat(bool trusted){
-        if(ourMaterial != null){
-            //if trusted set colour to solid blue, otherwise orange
-            Color c = trusted ? new Color(0, 0.3f, 1, 0.6f) : new Color(1, 0.5f, 0, 0.4f);
-            ourMaterial.color = c;
         }
     }
     public void Delocalise(){ //start a timer to despawn the car model

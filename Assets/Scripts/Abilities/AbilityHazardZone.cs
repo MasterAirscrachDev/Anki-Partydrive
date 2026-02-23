@@ -28,7 +28,6 @@ public class AbilityHazardZone : MonoBehaviour
     void ApplyHazardEffect()
     {
         List<CarController> hits = SR.cms.CubeCheckControllers(transform.position, transform.forward, hazardRange);
-        AbilityController abilityController = GetComponentInParent<AbilityController>();
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
             if(affectedControllers.Contains(hit)) continue; //already affected
@@ -36,8 +35,8 @@ public class AbilityHazardZone : MonoBehaviour
             if(energyChange != 0){
                 if(energyChange < 0) { 
                     hit.UseEnergy(-energyChange);  //negative to use energy
-                    // Report damage back to the ability owner
-                    abilityController?.ReportDamage(-energyChange);
+                    // Report damage back to the owner directly
+                    owner?.RecordDamageDealt(-energyChange);
                 }
                 else { hit.ChargeEnergy(energyChange); }
             }

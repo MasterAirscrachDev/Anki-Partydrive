@@ -14,6 +14,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject grapplerPrefab;
     [SerializeField] GameObject lightningPowerPrefab;
     [SerializeField] GameObject rechargerPrefab;
+    [SerializeField] GameObject disabledPrefab;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -210,6 +211,18 @@ public class GlobalAbilitySystem : MonoBehaviour
         recharger.GetComponent<AbilityController>().Setup(control);
         recharger.GetComponent<AbilityRecharger>().Setup(control);
         SR.sfx?.PlaySFX(SFXEvent.RechargerActivate);
+    }
+    
+    /// <summary>
+    /// Spawns a disabled visual effect that follows the car during disable state.
+    /// </summary>
+    public void SpawnDisabled(CarController control, float duration = 3.5f) {
+        if(disabledPrefab == null) return;
+        
+        Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
+        GameObject disabled = Instantiate(disabledPrefab);
+        disabled.transform.position = start;
+        disabled.GetComponent<AbilityDisabled>().Setup(control, duration);
     }
 
     [System.Serializable]

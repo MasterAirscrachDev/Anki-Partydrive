@@ -220,7 +220,7 @@ public abstract class GameMode : MonoBehaviour
             UCarData carData = SR.io?.GetCarFromID(carID);
             if(carData != null)
             {
-                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarLapComplete, 4, carData.modelName);
+                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarLapComplete, 6, carData.modelName);
             }
         }
         
@@ -361,7 +361,7 @@ public abstract class GameMode : MonoBehaviour
         }
         else
         {
-            SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarOvertakes, 6, carData.modelName);
+            SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarOvertakes, 4, carData.modelName);
         }
     }
     
