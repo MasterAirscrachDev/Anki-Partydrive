@@ -21,6 +21,7 @@ public class PlayerCardSystem : MonoBehaviour
     }
     public void SetCarName(string name, int model = -1){
         carName.text = name;
+        carName.transform.GetChild(0).GetComponent<TMP_Text>().text = name; //set the shadow text to the same name
         Sprite sprite = statusCarsArray[0].sprite; //No car
         if(model != -1){
             sprite = statusCarsArray[1].sprite; //Unknown car

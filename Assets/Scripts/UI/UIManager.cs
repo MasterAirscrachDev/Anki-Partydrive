@@ -76,22 +76,29 @@ public class UIManager : MonoBehaviour
         else if(layer == 3){ //if we are entering the track scanning page
             CheckConnectedCarsOnTrackPage();
         }
+        else if(layer == 7) {
+            MainCamera.SetActive(false);//disable the main camera when entering the carselecton
+        }
         if(layer != 0)
         {
             settingsPanel.SetActive(false);
             creditsPanel.SetActive(false);
         }
         //find the first button in the layer and select it
-        Button[] buttons = UILayers[layer].GetComponentsInChildren<Button>();
-        if(buttons.Length > 0){
-            buttons[0].Select();
-        }
+        SelectFirstButtonInCurrentLayer();
     }
     public void ToggleUILayer(int layer, bool active){ //toggles a specific UI layer
         UILayers[layer].SetActive(active);
     }
     public int GetUILayer(){
         return UIlayer;
+    }
+    [ContextMenu("Select First Button")]
+    public void SelectFirstButtonInCurrentLayer(){
+        Button[] buttons = UILayers[UIlayer].GetComponentsInChildren<Button>();
+        if(buttons.Length > 0){
+            buttons[0].Select();
+        }
     }
     public void SetCarsCount(int count){
         menuCarCount.text = count > 0 ? count.ToString() : "";
