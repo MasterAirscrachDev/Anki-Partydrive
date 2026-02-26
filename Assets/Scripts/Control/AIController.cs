@@ -40,7 +40,11 @@ public class AIController : MonoBehaviour
         { Ability.TrailDamage, AIAbilityUsageMode.Behind },
         { Ability.TrailSlow, AIAbilityUsageMode.Behind },
         { Ability.Overdrive, AIAbilityUsageMode.Any },
-        { Ability.CrasherBoost, AIAbilityUsageMode.Ahead }
+        { Ability.CrasherBoost, AIAbilityUsageMode.Ahead },
+        { Ability.OrbitalLazer, AIAbilityUsageMode.Any },
+        { Ability.Grappler, AIAbilityUsageMode.Ahead },
+        { Ability.LightningPower, AIAbilityUsageMode.Any },
+        { Ability.TrafficCone, AIAbilityUsageMode.Any }
     };
     // Start is called before the first frame update
     void Start()

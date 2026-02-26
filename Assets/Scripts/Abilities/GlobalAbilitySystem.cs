@@ -15,6 +15,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject lightningPowerPrefab;
     [SerializeField] GameObject rechargerPrefab;
     [SerializeField] GameObject disabledPrefab;
+    [SerializeField] GameObject trafficConePrefab;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -223,6 +224,21 @@ public class GlobalAbilitySystem : MonoBehaviour
         GameObject disabled = Instantiate(disabledPrefab);
         disabled.transform.position = start;
         disabled.GetComponent<AbilityDisabled>().Setup(control, duration);
+    }
+    
+    /// <summary>
+    /// Spawns a traffic cone at the car's position.
+    /// Lasts 30s or until hit by another car. Deals damage and slow on collision.
+    /// </summary>
+    public void SpawnTrafficCone(CarController control) {
+        if(trafficConePrefab == null) return;
+        
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        
+        GameObject cone = Instantiate(trafficConePrefab, carTransform.position, carTransform.rotation);
+        cone.GetComponent<AbilityController>().Setup(control);
+        cone.GetComponent<AbilityCone>().Setup(control);
     }
 
     [System.Serializable]

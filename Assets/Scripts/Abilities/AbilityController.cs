@@ -31,7 +31,7 @@ public enum Ability
 {
     None = 0, Missle1 = 1, Missle2 = 2, Missle3 = 3, MissleSeeking1 = 4, MissleSeeking2 = 5, MissleSeeking3 = 6,
     EMP = 7, Recharger = 8, TrailDamage = 9, TrailSlow = 10, Overdrive = 11, CrasherBoost = 12, OrbitalLazer = 13, 
-    Grappler = 14, LightningPower = 15,
+    Grappler = 14, LightningPower = 15, TrafficCone = 16
 }
 public enum AIAbilityUsageMode
 {

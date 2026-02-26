@@ -944,7 +944,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PARTYDRIVE DEMO 3.9.5
+  m_text: PARTYDRIVE DEMO 3.9.8
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
   m_sharedMaterial: {fileID: -1470650276818706409, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
@@ -1261,6 +1261,7 @@ MonoBehaviour:
   announcerLines:
   - line: 7
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: cbefbdd324654f945bb77b9250371ce3, type: 3}
     - {fileID: 8300000, guid: 368328913f7c03c4da929c8a9211f9d5, type: 3}
@@ -1310,6 +1311,7 @@ MonoBehaviour:
       clips: []
   - line: 1
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
     carSpecificClips:
@@ -1358,6 +1360,7 @@ MonoBehaviour:
       clips: []
   - line: 2
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 22fbf3928fd41734ba42a3eb5a325cf1, type: 3}
     carSpecificClips:
@@ -1426,6 +1429,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 3
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: c5ba4d4903eee70448f48351d875af5a, type: 3}
     carSpecificClips:
@@ -1494,6 +1498,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 8
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: b44425c7c806fea4aa51dd3ab0cce5cb, type: 3}
     carSpecificClips:
@@ -1562,6 +1567,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 9
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 59fc44d2591d4d246b33ba78575217d7, type: 3}
     carSpecificClips:
@@ -1630,6 +1636,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 10
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: d9588033f2bc97040b656f30f8bcd98e, type: 3}
     carSpecificClips:
@@ -1698,6 +1705,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 11
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 88c1edcfa6b9189439b9ec96d8a9dbaa, type: 3}
     carSpecificClips:
@@ -1766,6 +1774,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 12
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 8743d7d116b149f4280c7c71f9a39268, type: 3}
     carSpecificClips:
@@ -1834,6 +1843,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 13
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: bdb821f184335c442a9d2e8410e19e7e, type: 3}
     carSpecificClips:
@@ -1902,6 +1912,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 14
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 0f60892d65228b8459505cd8893979bf, type: 3}
     carSpecificClips:
@@ -1970,6 +1981,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 4
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 82ee255e2b6311142b7a12173b3a69e2, type: 3}
     carSpecificClips:
@@ -2038,6 +2050,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 40
     lineType: 1
+    folderPath: Assets/Audio/Announcer/CarSelected
     uniqueClips:
     - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
     carSpecificClips:
@@ -2106,6 +2119,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 90b5a13bfbc7e784ab0081422ab130ee, type: 3}
   - line: 37
     lineType: 1
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
     carSpecificClips:
@@ -2174,232 +2188,354 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 96f9bdbe27fd3aa44b8475979cf01d92, type: 3}
   - line: 21
     lineType: 1
+    folderPath: Assets/Audio/Announcer/CarOvertakes
     uniqueClips:
     - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
     carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 2632f6a52fba99e43b5da7526cfc4b9f, type: 3}
     - carModel: 2
       clips:
       - {fileID: 8300000, guid: 7ab5aad3d46a5864d9ce86ed037765cd, type: 3}
     - carModel: 7
       clips:
       - {fileID: 8300000, guid: ca2ee621b4b9a15449ec240e5f22c6de, type: 3}
+      - {fileID: 8300000, guid: 9b8b6327e4fdd62488e2581fa5e7affc, type: 3}
     - carModel: 19
       clips:
       - {fileID: 8300000, guid: 0597ef0302009a642923c153122a1feb, type: 3}
+      - {fileID: 8300000, guid: 1aa52ed842400504a840afde1db0c24f, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: c0f76afd83eba68459ce4e47e8d3fc10, type: 3}
     - carModel: 8
       clips:
       - {fileID: 8300000, guid: fa894c8eea2ec8b4ca20d32c9cd8325b, type: 3}
+      - {fileID: 8300000, guid: f313774cf7973654e873af9c50ca2ffa, type: 3}
     - carModel: 12
       clips:
-      - {fileID: 8300000, guid: dcdbf0f800b2eed4b91a549af062eca7, type: 3}
+      - {fileID: 8300000, guid: ce266bd34d35dfc41a516f6435ae0e20, type: 3}
+      - {fileID: 8300000, guid: 30ea1f95492445745a0859d05430577d, type: 3}
     - carModel: 5
       clips:
       - {fileID: 8300000, guid: 38de8f782ea25a74da1c34766003c741, type: 3}
+      - {fileID: 8300000, guid: 1021c66f22949ec4d9c4ab659166ae24, type: 3}
     - carModel: 13
       clips:
       - {fileID: 8300000, guid: ce97df4ca4c7ca94ea847a7cb696d1ba, type: 3}
+      - {fileID: 8300000, guid: cd9641c0d17028043bca28e9c1ef9418, type: 3}
     - carModel: 4
       clips:
       - {fileID: 8300000, guid: 3f73f4cae1f86de4d835064a35c52a3e, type: 3}
+      - {fileID: 8300000, guid: 081607bab5993814a86c08a3ebb49cfd, type: 3}
     - carModel: 1
       clips:
-      - {fileID: 8300000, guid: 9f872c0122c65324f98cdf7ecbefc233, type: 3}
+      - {fileID: 8300000, guid: a770347f0d129454d897127185ee5587, type: 3}
+      - {fileID: 8300000, guid: 6c563004cfc04a94ab5616e67c86a7cb, type: 3}
     - carModel: 18
       clips:
       - {fileID: 8300000, guid: 2c1b2c7983429c9449ff927982164a4b, type: 3}
+      - {fileID: 8300000, guid: 723ae084078b39047b13ba3a39763da9, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: 32ae535215052aa45bc3cd758938d168, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: fc687e09285fd38439512e28af062d45, type: 3}
     - carModel: 20
       clips:
       - {fileID: 8300000, guid: 80a61dd4d3a40bc418a30307627557eb, type: 3}
+      - {fileID: 8300000, guid: 0c2e89fbe69c3214c94905d91d9483ca, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: f9e6005033aa93345b36418a4fff5629, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: 73c4deb21c685d24680b6bf79aa35142, type: 3}
     - carModel: 6
       clips:
       - {fileID: 8300000, guid: ad569891741dc1e489f361fb26095bb5, type: 3}
+      - {fileID: 8300000, guid: 4cd28ceeba17e524ea868ec11bfe9841, type: 3}
     - carModel: 10
       clips:
       - {fileID: 8300000, guid: 2009071785f5fa540971ad2f2953e7f3, type: 3}
+      - {fileID: 8300000, guid: 23abffa9607cf0b44a0ee0ff5b31eb3d, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: 8233b39bb628bf04b8995b63f36e8fb1, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 1f28dcb57a5aa5342a13b3c4c5c6d80f, type: 3}
   - line: 5
     lineType: 1
+    folderPath: Assets/Audio/Announcer/CarCompletesLap
     uniqueClips:
     - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
     carSpecificClips:
     - carModel: 14
       clips:
-      - {fileID: 8300000, guid: cde16e775e0c3934e8405da86cfbf9f2, type: 3}
+      - {fileID: 8300000, guid: 18fc7871e6455044f9be4fee103c8fb9, type: 3}
+      - {fileID: 8300000, guid: e2892ea5793e0394383738f19a86e272, type: 3}
     - carModel: 2
       clips:
-      - {fileID: 8300000, guid: 938c66b9a1e53e144b56ef745fdcc5d8, type: 3}
+      - {fileID: 8300000, guid: 8e9d39730e0664f41ade3ee44c572290, type: 3}
+      - {fileID: 8300000, guid: 05dfed298aedc3b4a938069f5333c73f, type: 3}
     - carModel: 7
       clips:
-      - {fileID: 8300000, guid: 21d93573f0d6f804ca40a51e13d8cf7a, type: 3}
-    - carModel: 15
-      clips:
-      - {fileID: 8300000, guid: e3e6a6331aab66542840f51c638bcf0c, type: 3}
-    - carModel: 8
-      clips:
-      - {fileID: 8300000, guid: 96885fb1a8d272943a35fb488c91da11, type: 3}
-    - carModel: 12
-      clips:
-      - {fileID: 8300000, guid: 22195330a3534e041919f9290fc263f7, type: 3}
-    - carModel: 5
-      clips:
-      - {fileID: 8300000, guid: 5363b0e3e6a46b942b4d1494bca8f0a5, type: 3}
-    - carModel: 4
-      clips:
-      - {fileID: 8300000, guid: 01d1a1080579f784a997b3314c2ddf40, type: 3}
-    - carModel: 1
-      clips:
-      - {fileID: 8300000, guid: 2222da42b9cea164c9b559c5da6b6d40, type: 3}
-    - carModel: 18
-      clips:
-      - {fileID: 8300000, guid: b5ab0313b58360f4f8de08864e4a76a7, type: 3}
-    - carModel: 3
-      clips:
-      - {fileID: 8300000, guid: 521df61b527822e4f837aa0073139078, type: 3}
-    - carModel: 6
-      clips:
-      - {fileID: 8300000, guid: 804e051bd1c83f045b7a3e2749e74f21, type: 3}
-    - carModel: 10
-      clips:
-      - {fileID: 8300000, guid: 25f32f5d7387a4b4d9ada08733447a24, type: 3}
-    - carModel: 17
-      clips:
-      - {fileID: 8300000, guid: 8d109a6cd7eca254ca80559ee5fb9d91, type: 3}
-  - line: 22
-    lineType: 1
-    uniqueClips:
-    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
-    carSpecificClips:
-    - carModel: 14
-      clips:
-      - {fileID: 8300000, guid: 52a4f53f13fe00e48895462af658aa5d, type: 3}
-    - carModel: 2
-      clips:
-      - {fileID: 8300000, guid: eca7401ab7edfc847a16888236688502, type: 3}
-    - carModel: 7
-      clips:
-      - {fileID: 8300000, guid: 61fdbdc589a1a9e47b50936a0b844615, type: 3}
+      - {fileID: 8300000, guid: 180682e5cdcb9154093a1549b8cb99f9, type: 3}
+      - {fileID: 8300000, guid: 8f21ae8b62dcc884db1fc875393d0bc2, type: 3}
     - carModel: 19
       clips:
-      - {fileID: 8300000, guid: ea6e2d854d08c82499210af63b5aace1, type: 3}
-    - carModel: 8
-      clips:
-      - {fileID: 8300000, guid: efcacd0fd70b5fd4496352562d56d9bb, type: 3}
-    - carModel: 12
-      clips:
-      - {fileID: 8300000, guid: 18adb8299139ee74c98900d9878b085d, type: 3}
-    - carModel: 5
-      clips:
-      - {fileID: 8300000, guid: 0d4d025f1e930ba4fab005550fde7293, type: 3}
-    - carModel: 13
-      clips:
-      - {fileID: 8300000, guid: 8488be8e99a122f419f4834d02444679, type: 3}
-    - carModel: 4
-      clips:
-      - {fileID: 8300000, guid: 7c86ccd25c74a1d49bdf849943d476b7, type: 3}
-    - carModel: 1
-      clips:
-      - {fileID: 8300000, guid: ca403aa5c46df9948942c6de8289a445, type: 3}
-    - carModel: 18
-      clips:
-      - {fileID: 8300000, guid: 06bff54bb91a2a343b9bca87b993e4fa, type: 3}
-    - carModel: 11
-      clips:
-      - {fileID: 8300000, guid: 17b88787af8739e4a824f096391582dc, type: 3}
-    - carModel: 20
-      clips:
-      - {fileID: 8300000, guid: 3a2a3ab1c1129c94cb1beb83a28be0f0, type: 3}
-    - carModel: 3
-      clips:
-      - {fileID: 8300000, guid: 200c48fe8b8e64244ac8f0f678eee4e1, type: 3}
-    - carModel: 9
-      clips:
-      - {fileID: 8300000, guid: bdbab7051567f82448a12cd51443a4de, type: 3}
-    - carModel: 6
-      clips:
-      - {fileID: 8300000, guid: e07b544da0779bf4f96a272985d51d64, type: 3}
-    - carModel: 10
-      clips:
-      - {fileID: 8300000, guid: a7e189a1b6d198d4388304a11c96f3a8, type: 3}
-    - carModel: 16
-      clips:
-      - {fileID: 8300000, guid: f9ec628165b8af44d813fd528394affc, type: 3}
-    - carModel: 17
-      clips:
-      - {fileID: 8300000, guid: 2be0fb9a1a2d64f4da07f6ca5b5939e1, type: 3}
-  - line: 34
-    lineType: 1
-    uniqueClips:
-    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
-    carSpecificClips:
-    - carModel: 14
-      clips:
-      - {fileID: 8300000, guid: 5e063382cf48ed04c922b360a471e47d, type: 3}
-    - carModel: 2
-      clips:
-      - {fileID: 8300000, guid: 3b93b816d6398b846846a99fd005acd1, type: 3}
-    - carModel: 7
-      clips:
-      - {fileID: 8300000, guid: 8f3e4a8dff486bd48a72d3cadd0e3df4, type: 3}
-    - carModel: 19
-      clips:
-      - {fileID: 8300000, guid: 2a3bffcf4707c1840ae4629eea047061, type: 3}
+      - {fileID: 8300000, guid: 3fb273c343f9aa2418d986bd00d63100, type: 3}
     - carModel: 15
       clips:
-      - {fileID: 8300000, guid: cd1c88ebe8ac4dc4f83c4cd0309dfddb, type: 3}
+      - {fileID: 8300000, guid: 7d7314bee0ba93b44baccd2c281b4992, type: 3}
+      - {fileID: 8300000, guid: f8af1e9e3b6cf0e42a13aef0f9b49987, type: 3}
     - carModel: 8
       clips:
-      - {fileID: 8300000, guid: 651cefef2ec1cb6489ddaa83baf27243, type: 3}
+      - {fileID: 8300000, guid: 0fd502362715c76458831c704ab986b8, type: 3}
+      - {fileID: 8300000, guid: 4de244869db2c2e4196ccd6667ceb909, type: 3}
     - carModel: 12
       clips:
-      - {fileID: 8300000, guid: 0d511a5362cc887428c01fe677f63ee8, type: 3}
+      - {fileID: 8300000, guid: 713fcd16ac9315d4c8df25560493cf82, type: 3}
+      - {fileID: 8300000, guid: c76b4f0cd81e4704da1ece4726139187, type: 3}
     - carModel: 5
       clips:
-      - {fileID: 8300000, guid: 005a32ff1170b51478959de023508ea3, type: 3}
+      - {fileID: 8300000, guid: 9be56d6e134400949a52f0ffa387e515, type: 3}
+      - {fileID: 8300000, guid: afe4193349edfb94da99bc5aeb2d258f, type: 3}
     - carModel: 13
       clips:
-      - {fileID: 8300000, guid: d9a0295c1aceffd49b1c58882fe7c0b8, type: 3}
+      - {fileID: 8300000, guid: 15e7239b8e4ea594e9aceb80b901ffa0, type: 3}
     - carModel: 4
       clips:
-      - {fileID: 8300000, guid: e1ce0d3d800381243b6b2d1086f8e90f, type: 3}
+      - {fileID: 8300000, guid: 8161217687c46e944a7d4ff177b3a7a0, type: 3}
+      - {fileID: 8300000, guid: c9b04a6439cd2454490e1af326768fa3, type: 3}
     - carModel: 1
       clips:
-      - {fileID: 8300000, guid: 4fb2630521c967242a080e6fc845d7b3, type: 3}
+      - {fileID: 8300000, guid: 92fe820eacf031e4095d12ce2921f976, type: 3}
+      - {fileID: 8300000, guid: fa4baab6856d74546aaf72b1927323d9, type: 3}
     - carModel: 18
       clips:
-      - {fileID: 8300000, guid: 4598838eb4740f5499d63c2bc3d1f734, type: 3}
+      - {fileID: 8300000, guid: e51f1a6bd61f0ac4fa189a93817564a4, type: 3}
+      - {fileID: 8300000, guid: 5e826052ff6afe844924885f862f561a, type: 3}
     - carModel: 21
       clips:
-      - {fileID: 8300000, guid: 78f9ceaf51d052d41952a78b5fd2977a, type: 3}
+      - {fileID: 8300000, guid: 63a61ca8868847f479a2aa7eb49cbb41, type: 3}
     - carModel: 11
       clips:
-      - {fileID: 8300000, guid: 0e9742d80176ca44b895b11625dbeaed, type: 3}
+      - {fileID: 8300000, guid: 11efd7d5b37ffc2449c089228ef879ee, type: 3}
     - carModel: 20
       clips:
-      - {fileID: 8300000, guid: 87faddd7b99ab7e45b4cb25ba8bc9206, type: 3}
+      - {fileID: 8300000, guid: 065bfc741c388dd4ca784c1270f60daf, type: 3}
     - carModel: 3
       clips:
-      - {fileID: 8300000, guid: c258e3f720bbb8346b6170fab02b1f28, type: 3}
+      - {fileID: 8300000, guid: 319c8b8602ebcc24f8b675c6c0f49490, type: 3}
+      - {fileID: 8300000, guid: 541f383276ba6ec4e83d2334f862ad8d, type: 3}
     - carModel: 9
       clips:
-      - {fileID: 8300000, guid: cf3f796a4f253f0469058971b573ac64, type: 3}
+      - {fileID: 8300000, guid: cc3e259ed9faa8b4d9acb61e2bcb6179, type: 3}
     - carModel: 6
       clips:
-      - {fileID: 8300000, guid: 4c1d8d1a4654517499bc31a321259c22, type: 3}
+      - {fileID: 8300000, guid: 9165733b680c5734198fb7477c5abd8a, type: 3}
+      - {fileID: 8300000, guid: c6b9469776ea445478af7ed60212386b, type: 3}
     - carModel: 10
       clips:
-      - {fileID: 8300000, guid: 0e408b75a7bbbd747bb9200a23d3b7c7, type: 3}
+      - {fileID: 8300000, guid: e275e44e827dee64baf3a583ba179578, type: 3}
+      - {fileID: 8300000, guid: e0d23260390da5149a8e71db3403391c, type: 3}
     - carModel: 16
       clips:
-      - {fileID: 8300000, guid: a1cb7ac90c297ce498d36c99fd7165f8, type: 3}
+      - {fileID: 8300000, guid: 43ecdf91a1afde34e865d77d36cb047e, type: 3}
     - carModel: 17
       clips:
-      - {fileID: 8300000, guid: 13bb54eace2db89438a6695ddc093997, type: 3}
+      - {fileID: 8300000, guid: 1133d83114a30a2438674a323925712c, type: 3}
+      - {fileID: 8300000, guid: 327b610139428874f845078d25f969be, type: 3}
+  - line: 22
+    lineType: 1
+    folderPath: Assets/Audio/Announcer/CarTakesLead
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: eb580c73535586347abe88f220de7626, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 57c1ca708a55fe241a4dc4ef5afac4bd, type: 3}
+      - {fileID: 8300000, guid: 4538a56b15f24234aa5e110cb9721529, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: b21d44514070832408132473e746fca0, type: 3}
+      - {fileID: 8300000, guid: c444ff35efc993640a3fc863f3aba2b5, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 800c860549914f94191558a2e4af8631, type: 3}
+      - {fileID: 8300000, guid: 8f043e429d77c6a47a2ac169a41c0cab, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 7defb6ce0ffa3094499f6de2f99bae8f, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: b84bdc58c06ee07438089bd07c202004, type: 3}
+      - {fileID: 8300000, guid: 6fe7856b3c496f540b04ca7e385cb7e6, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: 85b9b3a78bb9d86458bad11c2126fc81, type: 3}
+      - {fileID: 8300000, guid: 707fde3562d08ab44b51aa36ed153813, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: 8e9aa687623affd488db4abbee076a18, type: 3}
+      - {fileID: 8300000, guid: 2e62e1d5eb086ba429d3dd35d2175733, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: d52183ae03cb65143affbde632555648, type: 3}
+      - {fileID: 8300000, guid: 0e85fc4cb4ab450489a03275b9da600b, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: 8143bf328a4060c439783553ed4f4597, type: 3}
+      - {fileID: 8300000, guid: 8b14b1216be852e4480b1f18ba782abe, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: f16c2f4fd4691a946b633e33f8ae95fa, type: 3}
+      - {fileID: 8300000, guid: 74ceaf01dafd73b4bacaf6b97a85e90b, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 5a3f4f87eba3c8c4185a82b25da193ec, type: 3}
+      - {fileID: 8300000, guid: 321bfd32cfee3e141b10c39f7f0b23e5, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: a22b5d6071dce4044bc18cb04e972a71, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 568b585b025e4d846af612fb75031b8f, type: 3}
+      - {fileID: 8300000, guid: 4c742059b5f97bd4d85b511d9f773218, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: dfa9570be39b06844be328035c1d9e67, type: 3}
+      - {fileID: 8300000, guid: 3bb1ec542706e5844b748ca3372e42a8, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: ca03c36fcf882ef4096923ecb66f7468, type: 3}
+      - {fileID: 8300000, guid: 5e06dc2dd965bed4d96b0ad70b6cc2a5, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: f7e2a9e31cbb5624bb8071d0cb1fca00, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: 99ca9ac00aabae94e8a6c4f6aea7b81a, type: 3}
+      - {fileID: 8300000, guid: 2cfaf872718d2104196ea6c76be41383, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: 7e7b0f0e04de6754c8b48547e04af15c, type: 3}
+      - {fileID: 8300000, guid: 219f354550522e24cbd3db73df128d52, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: 525d2061c84edf24588c4ba04443e84f, type: 3}
+      - {fileID: 8300000, guid: 9fda0388a6a443144829f8e92da4bad0, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: b4c156b0e1d55e145a9f7c6f365bdfc3, type: 3}
+      - {fileID: 8300000, guid: fdcd83d39bc9bb448a9eed927969e00f, type: 3}
+  - line: 34
+    lineType: 1
+    folderPath: Assets/Audio/Announcer/CarReactorDisabled
+    uniqueClips:
+    - {fileID: 8300000, guid: 5e4e22f7035f6844ba962c38ce353239, type: 3}
+    carSpecificClips:
+    - carModel: 14
+      clips:
+      - {fileID: 8300000, guid: 52b0a65fec83dd54586d197e21f0c05a, type: 3}
+      - {fileID: 8300000, guid: bb2b47b5c0ba5264ab701bfd161f45e2, type: 3}
+    - carModel: 2
+      clips:
+      - {fileID: 8300000, guid: 86e86f5924378094dae15a1cd3b8f6bc, type: 3}
+      - {fileID: 8300000, guid: 839eb546a91c31e458ec66421cdb4618, type: 3}
+    - carModel: 7
+      clips:
+      - {fileID: 8300000, guid: 0f81965f8451a1a40b5119ad9982e730, type: 3}
+    - carModel: 19
+      clips:
+      - {fileID: 8300000, guid: 24fe63922db4d224eaab3e9108f7c3ce, type: 3}
+      - {fileID: 8300000, guid: cec40c0caaa27694daae61ec8ed69740, type: 3}
+    - carModel: 15
+      clips:
+      - {fileID: 8300000, guid: 9f554c9fe1caaa14997211ab02b8f827, type: 3}
+      - {fileID: 8300000, guid: 31352d4c7efa10742ab98c316d9ffcaf, type: 3}
+    - carModel: 8
+      clips:
+      - {fileID: 8300000, guid: 41b814f4488ad4e408923b3508653a4a, type: 3}
+      - {fileID: 8300000, guid: b42bea22deb3d5d4b9ac38d9635a1222, type: 3}
+    - carModel: 12
+      clips:
+      - {fileID: 8300000, guid: cca3d10d36516b441a20e9c33ae18805, type: 3}
+    - carModel: 5
+      clips:
+      - {fileID: 8300000, guid: 704f014b069c6944ea00418d67918eab, type: 3}
+      - {fileID: 8300000, guid: 9ff9d52a67742f64f94a9b47cf997704, type: 3}
+    - carModel: 13
+      clips:
+      - {fileID: 8300000, guid: 773aa837ea144bd4bab3b0019d5ca1d5, type: 3}
+      - {fileID: 8300000, guid: e80b925ddba60fc41886b13496f5ec5b, type: 3}
+    - carModel: 4
+      clips:
+      - {fileID: 8300000, guid: 440ee692d424d1b48b09343340aaf5cc, type: 3}
+      - {fileID: 8300000, guid: 8e61f49363cc01f4b8d1165c67b6b53b, type: 3}
+    - carModel: 1
+      clips:
+      - {fileID: 8300000, guid: 7084912c70dddc14fa793a189e0cccb3, type: 3}
+      - {fileID: 8300000, guid: 43f78e0d8b4ad8d49a1f686191b81c1e, type: 3}
+    - carModel: 18
+      clips:
+      - {fileID: 8300000, guid: 7848d8d24e3044c43b28cde2be35f248, type: 3}
+      - {fileID: 8300000, guid: 557b5f05056e18744bd0ef326ef74ffb, type: 3}
+    - carModel: 21
+      clips:
+      - {fileID: 8300000, guid: ee916acffee5cb245ae32397903bac3e, type: 3}
+      - {fileID: 8300000, guid: 39123b69e7b494b46afdb20550fa9f13, type: 3}
+    - carModel: 11
+      clips:
+      - {fileID: 8300000, guid: 1688f56a89e5bc74396db30c42599cff, type: 3}
+    - carModel: 20
+      clips:
+      - {fileID: 8300000, guid: 4555d5051eee69f44a08ceb24861a6e3, type: 3}
+      - {fileID: 8300000, guid: 3ed8ae7a5cb576d40a9ba21f6f49b631, type: 3}
+    - carModel: 3
+      clips:
+      - {fileID: 8300000, guid: b5c61c6a5cab9bb47b3c29a769b080f9, type: 3}
+      - {fileID: 8300000, guid: f1001a684b6ce1244a080309b3c9f8c4, type: 3}
+    - carModel: 9
+      clips:
+      - {fileID: 8300000, guid: 77945fb7495076047b2e42c2ed6b36ec, type: 3}
+      - {fileID: 8300000, guid: c5327050771aaf44fb31a43e1b818c1d, type: 3}
+    - carModel: 6
+      clips:
+      - {fileID: 8300000, guid: d2570bd2d38bb5245908b5cde3593c6c, type: 3}
+      - {fileID: 8300000, guid: 6af71befa41fda940bcd6bc2e2d47204, type: 3}
+    - carModel: 10
+      clips:
+      - {fileID: 8300000, guid: af5927734624905499f5d8fe0707b783, type: 3}
+      - {fileID: 8300000, guid: a39c69c8bede3ca49b56a64c337d21a0, type: 3}
+    - carModel: 16
+      clips:
+      - {fileID: 8300000, guid: 7713680e93125f7498c01be7f84894b5, type: 3}
+      - {fileID: 8300000, guid: 94131956e6b4b0948ab823172616aa7e, type: 3}
+    - carModel: 17
+      clips:
+      - {fileID: 8300000, guid: 832513952c67211499b8fa9953568707, type: 3}
+      - {fileID: 8300000, guid: a2c55aa77c816004bb18db72df3f7900, type: 3}
   - line: 33
     lineType: 0
+    folderPath: Assets/Audio/Announcer/RaceBanter
     uniqueClips:
     - {fileID: 8300000, guid: 30ddd072d29358243b8eb52423125669, type: 3}
     - {fileID: 8300000, guid: bacc0967753ad2f489ae155e9f775361, type: 3}
     - {fileID: 8300000, guid: 66ca5e55dfa878941b85897e75a4cf0d, type: 3}
     - {fileID: 8300000, guid: 7bab4772e4577944a80ca341b8b8b3fc, type: 3}
+    - {fileID: 8300000, guid: b924a08f64790984aacad97a74e25881, type: 3}
+    - {fileID: 8300000, guid: 10e1ea777d4425c4791e3df34c2abc36, type: 3}
+    - {fileID: 8300000, guid: 155b7e46fe400394dbf1b4a78d40937f, type: 3}
+    - {fileID: 8300000, guid: 5426e052fef423b4caf759317e894dc0, type: 3}
+    - {fileID: 8300000, guid: b04e71d8467aaca42bbff3cb9b1ab050, type: 3}
     carSpecificClips:
     - carModel: 14
       clips:
@@ -2466,6 +2602,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 13bb54eace2db89438a6695ddc093997, type: 3}
   - line: 36
     lineType: 0
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 3bdccefef6ee4ba4782fd63ade40cc1b, type: 3}
     - {fileID: 8300000, guid: ddcc4cf132318a44bb1028fd3a4c9f4b, type: 3}
@@ -2537,6 +2674,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 13bb54eace2db89438a6695ddc093997, type: 3}
   - line: 41
     lineType: 1
+    folderPath: 
     uniqueClips:
     - {fileID: 8300000, guid: 3bdccefef6ee4ba4782fd63ade40cc1b, type: 3}
     - {fileID: 8300000, guid: ddcc4cf132318a44bb1028fd3a4c9f4b, type: 3}
@@ -13970,7 +14108,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.1332
       objectReference: {fileID: 0}
     - target: {fileID: 8070439541726153002, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
       propertyPath: m_LocalRotation.w
@@ -14983,6 +15121,8 @@ MonoBehaviour:
     texture: {fileID: 21300000, guid: e1553311ff7d3b846907541c24647584, type: 3}
   - ability: 15
     texture: {fileID: 21300000, guid: 7b431385f9cc04345812d82e083f2ce5, type: 3}
+  - ability: 16
+    texture: {fileID: 21300000, guid: 63d60d59745c6e14eb0972745fd85e50, type: 3}
   missilePrefab: {fileID: 4543867816583399193, guid: f7da4b511f556cf478a5dcc0a8755923, type: 3}
   MissileParticlePrefab: {fileID: 7737473309601183846, guid: f9f4da7d3e94a3b4c84b7efb6cbbbd05, type: 3}
   SeekingMissileParticlePrefab: {fileID: 7944397146355720411, guid: 25804fc72ca3ca24a989b03479556db2, type: 3}
@@ -14996,6 +15136,7 @@ MonoBehaviour:
   lightningPowerPrefab: {fileID: 6057216538772743843, guid: 55be6265a07b571488ffb18adcdfb3a5, type: 3}
   rechargerPrefab: {fileID: 3640522664999417100, guid: 150953d4f995b994e9b5167b22d85d25, type: 3}
   disabledPrefab: {fileID: 5920299987992940019, guid: b3c2f131459c8f045bd161ffb634fd6c, type: 3}
+  trafficConePrefab: {fileID: 259886857333740162, guid: a8f3d1e1f9e70524db82b89f9db602ab, type: 3}
 --- !u!1 &1016471929
 GameObject:
   m_ObjectHideFlags: 0
@@ -27465,6 +27606,11 @@ MonoBehaviour:
     - {fileID: 8300000, guid: adc08495f6b877d4ea5389fc320845ca, type: 3}
     - {fileID: 8300000, guid: 34a0b313c441c55429fa604a6026884b, type: 3}
     volumeMultiplier: 0.507
+  - sfxEvent: 32
+    clips:
+    - {fileID: 8300000, guid: 9a37f823bf40c514d99a3bec1e464e1d, type: 3}
+    - {fileID: 8300000, guid: db4bfc88d4d2c3e4ca67d05a8bd72186, type: 3}
+    volumeMultiplier: 0.542
 --- !u!1 &1874763355
 GameObject:
   m_ObjectHideFlags: 0

@@ -93,6 +93,7 @@ public enum SFXEvent
     GrapplerAttach = 29,
     LightningStrike = 30,
     RechargerActivate = 31,
+    TrafficConeHit = 32,
     
     // Car Sounds
     EnergyPickup = 40,

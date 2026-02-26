@@ -597,7 +597,7 @@ public class CarController : MonoBehaviour
         }
     }
     void UseAbility() {
-        if(currentAbility == Ability.None || doingPickupAnim){ return; } //no ability to use
+        if(currentAbility == Ability.None || doingPickupAnim || isDisabled){ return; } //no ability to use
         else {
             // Flash headlights when using ability
             StartCoroutine(FlashHeadlights(1f));
@@ -615,29 +615,18 @@ public class CarController : MonoBehaviour
                 SR.gas.SpawnMissile(this, IspecialAim > 0.5f ? 3.6f : IspecialAim < -0.5f ? -0.5f : 1.8f);
                 SetAbilityImmediate(Ability.None); 
             }
-            else if(currentAbility == Ability.MissleSeeking3){ 
-                SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f);
-                SetAbilityImmediate(Ability.MissleSeeking2); 
-            }
-            else if(currentAbility == Ability.MissleSeeking2){ 
-                SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f);
-                SetAbilityImmediate(Ability.MissleSeeking1); 
-            }
-            else if(currentAbility == Ability.MissleSeeking1){ 
-                SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f);
-                SetAbilityImmediate(Ability.None); 
-            }
+            else if(currentAbility == Ability.MissleSeeking3){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.MissleSeeking2);  }
+            else if(currentAbility == Ability.MissleSeeking2){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.MissleSeeking1);  }
+            else if(currentAbility == Ability.MissleSeeking1){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.None);  }
             else if(currentAbility == Ability.EMP){ SR.gas.SpawnEMP(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.TrailDamage){ SR.gas.SpawnDamageTrail(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.TrailSlow){ SR.gas.SpawnSlowTrail(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.OrbitalLazer){ SR.gas.SpawnOrbitalLazer(this); SetAbilityImmediate(Ability.None); }
-            else if(currentAbility == Ability.CrasherBoost){ 
-                SR.gas.SpawnCrasherBoost(this, IspecialAim < -0.5f);
-                SetAbilityImmediate(Ability.None); 
-            }
+            else if(currentAbility == Ability.CrasherBoost){ SR.gas.SpawnCrasherBoost(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.None);  }
             else if(currentAbility == Ability.Grappler){ SR.gas.SpawnGrappler(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.LightningPower){ SR.gas.SpawnLightningPower(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.Recharger){ SR.gas.SpawnRecharger(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.TrafficCone){ SR.gas.SpawnTrafficCone(this); SetAbilityImmediate(Ability.None); }
         }
     }
     IEnumerator DoNewAbilityAnimation()
@@ -653,14 +642,15 @@ public class CarController : MonoBehaviour
             Ability.TrailDamage, Ability.TrailSlow, 
             Ability.CrasherBoost,
             Ability.Grappler,
-            Ability.Recharger
+            Ability.Recharger,
+            Ability.TrafficCone
         };
         
         // First place abilities (worse items)
         Ability[] firstPlaceAbilities = new Ability[] { 
             Ability.Missle3, Ability.TrailSlow, 
             Ability.EMP, Ability.TrailDamage,
-            Ability.Recharger
+            Ability.Recharger, Ability.TrafficCone
         };
         
         // Last place abilities (better items)
@@ -784,35 +774,21 @@ public class CarController : MonoBehaviour
         
         // Access modules fresh each time (they're structs that reference back to the system)
         var emission = SlowVFX.emission;
-        var main = SlowVFX.main;
         
         // Disabled takes priority - show no slow VFX when disabled
-        if(isDisabled)
-        {
-            emission.enabled = false;
+        if(isDisabled) {
+            emission.rateOverTime = 0f;
             return;
         }
         
         float emissionRate = slowPercent * 100f;
         
-        if(emissionRate > 0)
-        {
-            // Enable emission and set rate
-            emission.enabled = true;
-            emission.rateOverTime = emissionRate;
-            
-            // Ensure system is playing
-            if(!SlowVFX.isPlaying)
-            {
-                SlowVFX.Play();
-            }
-            
-            Debug.Log($"[SlowVFX] Car {carID}: slowPercent={slowPercent:F2}, rate={emissionRate:F1}, playing={SlowVFX.isPlaying}, emissionEnabled={emission.enabled}");
-        }
-        else
-        {
-            // No slow - disable emission
-            emission.enabled = false;
+        ParticleSystem.MinMaxCurve minMax = emission.rateOverTime;
+        // Enable emission and set rate
+        minMax.constant = emissionRate;
+        emission.rateOverTime = minMax;
+        if(emissionRate > 0) {
+            Debug.Log($"[SlowVFX] Car {carID}: rate={emissionRate:F1}, value = {SlowVFX.emission.rateOverTime.constant:F2}");
         }
     }
     

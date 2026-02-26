@@ -62,8 +62,8 @@ public class UIManager : MonoBehaviour
         if(layer == 0){ //if we are in the main menu, disable the play button
             SwitchToTrackCamera(false);
             if(!SR.cms.isSupporter){ 
-                //if it has been more than 10 minutes since the last time we showed the support panel, show it again
-                if(Time.realtimeSinceStartup - lastSupportPanelTime > 600f) {
+                //if it has been more than 3 minutes since the last time we showed the support panel, show it again
+                if(Time.realtimeSinceStartup - lastSupportPanelTime > 180f){
                     lastSupportPanelTime = Time.realtimeSinceStartup;
                     SR.ui.SetUILayer(9); //support panel
                     return;

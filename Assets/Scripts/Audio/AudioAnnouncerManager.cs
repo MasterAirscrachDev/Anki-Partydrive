@@ -130,6 +130,9 @@ public class AudioAnnouncerManager : MonoBehaviour
         public AnnouncerLine line;
         public LineType lineType = LineType.Unique;
         
+        [Tooltip("Folder path relative to Assets/ to auto-load audio clips from (e.g. Audio/Announcer/CarCompletesLap)")]
+        public string folderPath;
+        
         [Tooltip("Array of audio clips - one will be randomly selected when played")]
         public AudioClip[] uniqueClips;
         

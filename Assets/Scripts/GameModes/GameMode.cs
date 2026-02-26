@@ -68,6 +68,7 @@ public abstract class GameMode : MonoBehaviour
         gameActive = false;
         gameEnding = false;
         SR.tem.ClearElements();
+        uiManager.SwitchToTrackCamera(true);
         
         OnModeStart();
     }
