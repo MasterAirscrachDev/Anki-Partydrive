@@ -186,7 +186,7 @@ public class CarController : MonoBehaviour
     public void ResetCar() //should be called before a race starts
     {
         //energy reset to 75%
-        energy = maxEnergy + statMaxEnergyMod * 0.75f;
+        energy = (maxEnergy + statMaxEnergyMod) * 0.75f;
         //clear speed modifiers
         speedModifiers.Clear();
         //reset ability
@@ -365,6 +365,7 @@ public class CarController : MonoBehaviour
                 Debug.Log($"Car {carID} has disconnected, waiting for reconnection");
                 carID = "";
                 if(pcs != null) pcs.SetCarName("Disconnected");
+                ApplyBaseStats(carData);
             }
             return;
         }
@@ -397,6 +398,7 @@ public class CarController : MonoBehaviour
             carID = "";
             desiredCarID = "";
             ResetSlowVFX();
+            
             if(pcs != null) pcs.SetCarName("Sitting Out");
             return;
         }
@@ -413,6 +415,7 @@ public class CarController : MonoBehaviour
             ResetSlowVFX(); // Reset VFX for new car
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(data.name, (int)data.modelName);
+            ApplyBaseStats(data);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
             // Car not available yet, will be checked in ControlTicker
@@ -446,6 +449,7 @@ public class CarController : MonoBehaviour
             carID = id;
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(carData.name, (int)carData.modelName);
+            ApplyBaseStats(carData);
             Debug.Log($"Immediately connected to car: {carID}");
         } else {
             // Car not available yet, will be checked in ControlTicker
@@ -453,6 +457,11 @@ public class CarController : MonoBehaviour
             if(pcs != null) pcs.SetCarName($"Disconnected");
             Debug.Log($"Car {id} not available yet, will wait for connection");
         }
+    }
+    void ApplyBaseStats(UCarData data)
+    {
+        OverdriveStatDefaults.StatTable statTable = OverdriveStatDefaults.GetDefaultsForCarBalanced(data.modelName);
+        SetStatModifiers(statTable.speedModPoints, statTable.steerModPoints, statTable.boostModPoints, statTable.maxEnergyModPoints, statTable.energyRechargeModPoints);
     }
 #endregion
 #region PUBLIC GETTERS & SETTERS
