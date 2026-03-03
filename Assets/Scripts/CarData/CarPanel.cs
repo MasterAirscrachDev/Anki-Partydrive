@@ -34,8 +34,8 @@ public class CarPanel : MonoBehaviour
         speedBalanceButton.interactable = false;
         //initiate speed balance for this car
         UIManager ui = SR.ui;
-        ui.SetUILayer(3); //go to track scanning UI
-        ui.ToggleUILayer(4, true); //enable balancing UI
+        ui.SetUILayer("TrackScanning"); //go to track scanning UI
+        ui.ToggleUILayer("CarBalance", true); //enable balancing UI
         FindFirstObjectByType<CarBalancer>().Setup(carID);
     }
     public void OnAIToggle(){

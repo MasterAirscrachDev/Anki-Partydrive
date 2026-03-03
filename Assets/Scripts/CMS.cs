@@ -7,11 +7,11 @@ using static OverdriveServer.NetStructures;
 public class CMS : MonoBehaviour
 {
     public bool isSupporter = false; //stop showing support popup for supporters
+    public bool ConnectionSuspended { get; private set; } = false;
     [SerializeField] GameObject botPrefab;
     [SerializeField] CarEntityTracker carEntityTracker;
     public readonly List<CarController> controllers = new List<CarController>();
     public string gameMode = "";
-    public bool isGame = false;
     List<Color> freeColors = new List<Color>();
     List<Color> usedColors = new List<Color>();
     void Start() { 
@@ -28,13 +28,13 @@ public class CMS : MonoBehaviour
         
         UIManager ui = SR.ui;
         if(gameMode == "Time Trial"){
-            ui.SetUILayer(5);
+            ui.SetUILayer("ModeTimeTrial");
         }
         else if (gameMode == "Laps"){
-            ui.SetUILayer(6);
+            ui.SetUILayer("ModeLaps");
         }
         else if(gameMode == "Party"){
-            ui.SetUILayer(8);
+            ui.SetUILayer("ModePartyLaps");
         }
     }
     
@@ -114,10 +114,8 @@ public class CMS : MonoBehaviour
         }
     }
     public void SetGameMode(string mode){ //called from ui
-        gameMode = mode;
-    }
-    public void SetGame(bool isGame){
-        this.isGame = isGame;
+        gameMode = mode; //store gamemode so we can quick return
+        SR.ui.SetUILayer(mode); //go to gamemode screen
     }
     public void SetGlobalLock(bool isLocked){
         foreach(CarController controller in controllers){
@@ -159,6 +157,22 @@ public class CMS : MonoBehaviour
     public void StopAllCars(){
         foreach(CarController controller in controllers){
             controller.StopCar();
+        }
+    }
+    public void SetConnectionSuspended(bool suspended){
+        ConnectionSuspended = suspended;
+        if(suspended){
+            // Disconnect all currently connected cars without clearing desiredCarID
+            CarInteraface io = SR.io;
+            if(io == null) return;
+            foreach(CarController controller in controllers){
+                if(controller == null) continue;
+                string id = controller.GetID();
+                if(!string.IsNullOrEmpty(id)){
+                    io.DisconnectCar(id);
+                    controller.ClearCarID();
+                }
+            }
         }
     }
     public string CarNameFromId(string id){

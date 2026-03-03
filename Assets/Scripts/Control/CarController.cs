@@ -72,8 +72,8 @@ public class CarController : MonoBehaviour
         ControlTicker(); //start the control ticker
         FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
-        int uiLayer = SR.ui.GetUILayer();
-        if(uiLayer == 2){
+        string uiLayer = SR.ui.GetUILayer();
+        if(uiLayer == "CarsManagement"){
             carsManagement = FindFirstObjectByType<CarsManagement>();
         }
     }
@@ -354,6 +354,9 @@ public class CarController : MonoBehaviour
 #endregion
 #region CAR CONNECTION MANAGEMENT
     void CheckForCarConnection(){
+        // Block reconnection while connection is suspended
+        if(SR.cms != null && SR.cms.ConnectionSuspended) return;
+        
         // If we don't have a desired car, nothing to check
         if(string.IsNullOrEmpty(desiredCarID)) return;
         
@@ -392,6 +395,10 @@ public class CarController : MonoBehaviour
             carID = "";
             if(pcs != null) pcs.SetCarName("Disconnected");
         }
+    }
+    public void ClearCarID(){
+        carID = "";
+        //if(pcs != null) pcs.SetCarName("Disconnected");
     }
     public void SetCar(UCarData data){
         if(data == null){

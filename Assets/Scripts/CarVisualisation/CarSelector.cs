@@ -526,7 +526,7 @@ public class CarSelector : MonoBehaviour
     // CMS callback for back button input
     void OnPlayerBackPressed(){
         // Go back to main menu (UI layer 0)
-        SR.ui.SetUILayer(0);
+        SR.ui.SetUILayer("Menu");
         Debug.Log("Back button pressed - returning to main menu");
     }
     

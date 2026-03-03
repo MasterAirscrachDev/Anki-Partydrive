@@ -17,6 +17,16 @@ public class CarInteraface : MonoBehaviour
     public UCarData GetCarFromID(string id){
         for (int i = 0; i < cars.Length; i++)
         { if(cars[i].id == id){return cars[i];} }
+        //if available cars is not null, check there too
+        if(availableCars != null){
+            for (int i = 0; i < availableCars.Length; i++) {  
+                if(availableCars[i].id == id){
+                    ConnectCar(id); //connect to the car if its in the available cars list
+                    return null; //return null for now, the car will be added to the cars list when it connects
+                }
+            }
+        }
+        RefreshAvailableCars(); //refresh the available cars list, in case a new car has become available
         return null;
     }
     
@@ -189,6 +199,7 @@ public class CarInteraface : MonoBehaviour
     
     // Connect to a car by ID
     public void ConnectCar(string carID){
+        if(SR.cms != null && SR.cms.ConnectionSuspended) return;
         ApiCallV2(SV_CONNECT_CAR, carID);
         Debug.Log($"Sending connection request for car: {carID}");
     }

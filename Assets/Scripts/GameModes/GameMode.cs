@@ -263,7 +263,7 @@ public abstract class GameMode : MonoBehaviour
     /// </summary>
     public virtual void BackToMenu()
     {
-        uiManager.SetUILayer(0);
+        uiManager.SetUILayer("Menu");
     }
     
     /// <summary>

@@ -44,7 +44,7 @@ public class SupportPanel : MonoBehaviour
         { return; }
         else
         {
-            SR.ui.SetUILayer(0); //menu
+            SR.ui.SetUILayer("Menu"); //menu
         }
     }
     public void SupporterButtonPressed()

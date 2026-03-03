@@ -158,8 +158,8 @@ public class SettingsManager : MonoBehaviour
         {
             string carIdStr = selectedOption.Substring(separatorIndex + 3);
             UIManager ui = SR.ui;
-            ui.SetUILayer(3); //go to track scanning UI
-            ui.ToggleUILayer(4, true); //enable balancing UI
+            ui.SetUILayer("TrackScanning"); //go to track scanning UI
+            ui.ToggleUILayer("CarBalance", true); //enable balancing UI
             FindFirstObjectByType<CarBalancer>().Setup(carIdStr);
         }
     }

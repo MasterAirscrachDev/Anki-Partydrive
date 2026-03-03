@@ -104,7 +104,7 @@ public class CarBalancer : MonoBehaviour
                     Debug.Log("Track matches, balancing car");
                     SubTrack(false);
                     messageText.text = $"Track ok, press the button to start balancing";
-                    SR.ui.SetUILayer(4); //disable Scanning UI
+                    SR.ui.SetUILayer("CarBalance"); //disable Scanning UI
                     recalibrateButton.interactable = true;
                     step = -1;
                     return;
@@ -116,7 +116,7 @@ public class CarBalancer : MonoBehaviour
             if(waitingForTrack){ timeout = 1.5f; return; }
             else{
                 Debug.Log($"CarBalancer step 1, track scanned");
-                SR.ui.SetUILayer(4); //disable Scanning UI
+                SR.ui.SetUILayer("CarBalance"); //disable Scanning UI
                 //car should now be lining up at this point
                 timeout = 2.1f;
                 step = 2;
@@ -263,7 +263,7 @@ public class CarBalancer : MonoBehaviour
         backButton.Select();
     }
     public void BackToMenu(){
-        SR.ui.SetUILayer(0); //go back to main menu
+        SR.ui.SetUILayer("Menu"); //go back to main menu
         carInterface.ControlCar(carData, 0, 0);
     }
 }

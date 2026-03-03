@@ -21,8 +21,8 @@ public class CarsManagement : MonoBehaviour
             cms = FindFirstObjectByType<CMS>();
             carInterface = SR.io;
         }   
-        backButton.SetActive(!cms.isGame);
-        raceButton.SetActive(cms.isGame);
+        //backButton.SetActive(!cms.isGame);
+        //raceButton.SetActive(cms.isGame);
         foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(this); }
         RenderCarList();
     }
@@ -47,13 +47,13 @@ public class CarsManagement : MonoBehaviour
     public void LoadGamemode(){ //called from UI
         UIManager ui = SR.ui;
         if(cms.gameMode == "Time Trial"){
-            ui.SetUILayer(5);
+            ui.SetUILayer("ModeTimeTrial");
         }
         else if (cms.gameMode == "Laps"){
-            ui.SetUILayer(6);
+            ui.SetUILayer("ModeLaps");
         }
         else if (cms.gameMode == "Laps2"){
-            ui.SetUILayer(7);
+            ui.SetUILayer("CarSelection");
         }
         else if(cms.gameMode == "Party"){
             Debug.Log("Party Mode not done yet");

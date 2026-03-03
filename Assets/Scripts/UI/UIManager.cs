@@ -4,6 +4,12 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+[System.Serializable]
+public struct UILayerEntry {
+    public string name;
+    public GameObject layer;
+}
+
 public class UIManager : MonoBehaviour
 {
     [Header("Menu UI")]
@@ -19,20 +25,26 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text ScanningStatusText;
     
     [Header("Other")]
-    [SerializeField] GameObject[] UILayers;
+    [SerializeField] UILayerEntry[] UILayers;
     [SerializeField] TMP_Text finishCounterText;
     [SerializeField] GameObject MainCamera;
     [SerializeField] GameObject TrackCamera;
     int finishCounter = 1;
-    int UIlayer = 0;
+    string UIlayer = "Menu";
 
     [ContextMenu("Toggle Track Camera")]
     public void ToggleTrackCamera(){ SwitchToTrackCamera(!TrackCamera.activeSelf); }
     float lastSupportPanelTime = 0;
 
+    GameObject GetLayerObject(string name) {
+        for (int i = 0; i < UILayers.Length; i++)
+            if (UILayers[i].name == name) return UILayers[i].layer;
+        return null;
+    }
+
     // Start is called before the first frame update
     void Start() {
-        SetUILayer(0);
+        SetUILayer("Menu");
     }
 
     // Update is called once per frame
@@ -54,18 +66,18 @@ public class UIManager : MonoBehaviour
         MainCamera.SetActive(!track);
         TrackCamera.SetActive(track);
     }
-    public void SetUILayer(int layer){ //sets the active UI layer, disables all others
+    public void SetUILayer(string layer){ //sets the active UI layer, disables all others
         for (int i = 0; i < UILayers.Length; i++)
-        { UILayers[i].SetActive(i == layer); }
+        { UILayers[i].layer.SetActive(UILayers[i].name == layer); }
         UIlayer = layer;
 
-        if(layer == 0){ //if we are in the main menu, disable the play button
+        if(layer == "Menu"){ //if we are in the main menu, disable the play button
             SwitchToTrackCamera(false);
             if(!SR.cms.isSupporter){ 
                 //if it has been more than 3 minutes since the last time we showed the support panel, show it again
                 if(Time.realtimeSinceStartup - lastSupportPanelTime > 180f){
                     lastSupportPanelTime = Time.realtimeSinceStartup;
-                    SR.ui.SetUILayer(9); //support panel
+                    SR.ui.SetUILayer("Support"); //support panel
                     return;
                 }
             }
@@ -73,13 +85,13 @@ public class UIManager : MonoBehaviour
             playButton.interactable = canPlay;
             playButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
         }
-        else if(layer == 3){ //if we are entering the track scanning page
+        else if(layer == "TrackScanning"){ //if we are entering the track scanning page
             CheckConnectedCarsOnTrackPage();
         }
-        else if(layer == 7) {
+        else if(layer == "CarSelection") {
             MainCamera.SetActive(false);//disable the main camera when entering the carselecton
         }
-        if(layer != 0)
+        if(layer != "Menu")
         {
             settingsPanel.SetActive(false);
             creditsPanel.SetActive(false);
@@ -87,15 +99,18 @@ public class UIManager : MonoBehaviour
         //find the first button in the layer and select it
         SelectFirstButtonInCurrentLayer();
     }
-    public void ToggleUILayer(int layer, bool active){ //toggles a specific UI layer
-        UILayers[layer].SetActive(active);
+    public void ToggleUILayer(string layer, bool active){ //toggles a specific UI layer
+        GameObject obj = GetLayerObject(layer);
+        if(obj != null) obj.SetActive(active);
     }
-    public int GetUILayer(){
+    public string GetUILayer(){
         return UIlayer;
     }
     [ContextMenu("Select First Button")]
     public void SelectFirstButtonInCurrentLayer(){
-        Button[] buttons = UILayers[UIlayer].GetComponentsInChildren<Button>();
+        GameObject current = GetLayerObject(UIlayer);
+        if(current == null) return;
+        Button[] buttons = current.GetComponentsInChildren<Button>();
         if(buttons.Length > 0){
             buttons[0].Select();
         }
@@ -114,7 +129,7 @@ public class UIManager : MonoBehaviour
         TrackScan.SetActive(!scan);
         TrackCancelScan.SetActive(scan);
         //select whatever button is active
-        if(UIlayer == 3){ //if we are in the scanning UI
+        if(UIlayer == "TrackScanning"){ //if we are in the scanning UI
             if(scan){ TrackCancelScan.GetComponent<Button>().Select(); }
             else{ TrackScan.GetComponent<Button>().Select(); }
         }
