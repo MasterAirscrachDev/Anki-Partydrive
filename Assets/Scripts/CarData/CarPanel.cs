@@ -21,7 +21,7 @@ public class CarPanel : MonoBehaviour
         nameInput.onEndEdit.AddListener(OnNameChanged);
 
         if(currentController != null){
-            if(currentController.isAI){
+            if(currentController.IsCarAI()){
                 isAI = true;
                 AIButton.GetComponentInChildren<TextMeshProUGUI>().text = "Remove AI";
             }

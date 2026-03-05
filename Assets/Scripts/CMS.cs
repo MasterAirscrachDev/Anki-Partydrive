@@ -24,18 +24,8 @@ public class CMS : MonoBehaviour
         freeColors.Add(new Color(1, 1, 0)); //yellow
     }
     public void LoadGamemode(){ 
-        SetAllCarEnginesLights(); // Set engine lights for all cars when gamemode starts
-        
         UIManager ui = SR.ui;
-        if(gameMode == "Time Trial"){
-            ui.SetUILayer("ModeTimeTrial");
-        }
-        else if (gameMode == "Laps"){
-            ui.SetUILayer("ModeLaps");
-        }
-        else if(gameMode == "Party"){
-            ui.SetUILayer("ModePartyLaps");
-        }
+        ui.SetUILayer(gameMode); //go to gamemode screen
     }
     
     public void SetPlayersRacingMode(bool racingMode){
@@ -47,28 +37,6 @@ public class CMS : MonoBehaviour
                 playerController.SetRacingMode(racingMode);
                 Debug.Log($"Set {controller.GetPlayerName()} racing mode to: {racingMode}");
             }
-        }
-    }
-    
-    public void SetAllCarEnginesLights(){
-        if(SR.io == null) return;
-        
-        foreach(CarController controller in controllers){
-            if(controller == null || string.IsNullOrEmpty(controller.GetID())) continue;
-            
-            // Get the car data for this controller
-            UCarData carData = SR.io.GetCarFromID(controller.GetID());
-            if(carData == null) continue;
-            
-            // Get the player color and convert to RGB (0-14)
-            Color playerColor = controller.GetPlayerColor();
-            int r = Mathf.RoundToInt(playerColor.r * 14);
-            int g = Mathf.RoundToInt(playerColor.g * 14);
-            int b = Mathf.RoundToInt(playerColor.b * 14);
-            
-            // Set the car's engine light to match the player color
-            SR.io.SetCarColours(carData, r, g, b);
-            //Debug.Log($"Set engine light for {controller.GetPlayerName()}'s car ({controller.GetID()}) to RGB({r},{g},{b})");
         }
     }
     public void AddController(CarController controller, bool isAI = false){
@@ -173,6 +141,10 @@ public class CMS : MonoBehaviour
                     controller.ClearCarID();
                 }
             }
+        }
+        else
+        {
+            
         }
     }
     public string CarNameFromId(string id){

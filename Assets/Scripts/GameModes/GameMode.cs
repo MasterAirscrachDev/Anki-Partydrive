@@ -12,7 +12,7 @@ public abstract class GameMode : MonoBehaviour
 {
     [Header("Game Mode UI")]
     [SerializeField] protected TMP_Text showText;
-    [SerializeField] protected GameObject startButton, menuButton, replayButton;
+    [SerializeField] protected GameObject startButton, menuButton, replayButton, chargeSuspendButton;
     
     [Header("Game Mode Settings")]
     [SerializeField] protected string initialText = "Place cars on the track";
@@ -65,6 +65,7 @@ public abstract class GameMode : MonoBehaviour
         startButton.SetActive(true);
         menuButton.SetActive(true);
         replayButton.SetActive(false);
+        chargeSuspendButton.SetActive(false);
         gameActive = false;
         gameEnding = false;
         SR.tem.ClearElements();
@@ -204,7 +205,7 @@ public abstract class GameMode : MonoBehaviour
         
         menuButton.SetActive(true);
         replayButton.SetActive(true);
-        
+        chargeSuspendButton.SetActive(true);
         OnGameEnded();
     }
     

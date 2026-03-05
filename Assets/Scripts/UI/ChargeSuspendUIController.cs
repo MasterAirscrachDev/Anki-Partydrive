@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -30,7 +31,6 @@ public class ChargeSuspendUIController : MonoBehaviour
     void OnEnable()
     {
         CreateStatCards();
-        SR.cms.SetConnectionSuspended(true);
     }
 
     void OnDisable()
@@ -45,16 +45,22 @@ public class ChargeSuspendUIController : MonoBehaviour
         List<CarController> controllers = cms.controllers;
         int count = controllers.Count;
         if(count == 0) return;
+        //check if any players are sitting out/disconnected, and if so we can skip them in the positioning and stats
+        for(int i = 0; i < controllers.Count; i++)
+        {
+            if(!controllers[i].IsCarConnected())
+            { count--; }
+        }
 
         // Position offset: for n players the block starts at index n*(n-1)/2
         int posOffset = count * (count - 1) / 2;
 
-        // First pass: find the best value for each stat across all players
+        // First pass: find the best value for each stat across all connected players
         float bestDmgDealt = 0f, bestDmgTaken = 0f, bestBoost = 0f;
         int bestItems = 0, bestDisables = 0;
         foreach(CarController cc in controllers)
         {
-            if(cc == null) continue;
+            if(cc == null || !cc.IsCarConnected()) continue;
             PlayerStats s = cc.GetPlayerStats();
             if(s.TotalDamageDealt > bestDmgDealt) bestDmgDealt = s.TotalDamageDealt;
             if(s.TotalDamageTaken > bestDmgTaken) bestDmgTaken = s.TotalDamageTaken;
@@ -63,17 +69,38 @@ public class ChargeSuspendUIController : MonoBehaviour
             if(s.TotalDisables > bestDisables) bestDisables = s.TotalDisables;
         }
 
-        for(int i = 0; i < count; i++)
+        // Second pass: count how many players share each best value.
+        // A title is only awarded if exactly one player leads that stat.
+        int dmgDealtLeaders = 0, dmgTakenLeaders = 0, boostLeaders = 0, itemLeaders = 0, disableLeaders = 0;
+        foreach(CarController cc in controllers)
+        {
+            if(cc == null || !cc.IsCarConnected()) continue;
+            PlayerStats s = cc.GetPlayerStats();
+            if(bestDmgDealt > 0 && s.TotalDamageDealt >= bestDmgDealt) dmgDealtLeaders++;
+            if(bestDmgTaken > 0 && s.TotalDamageTaken >= bestDmgTaken) dmgTakenLeaders++;
+            if(bestBoost > 0 && s.TotalBoostTime >= bestBoost) boostLeaders++;
+            if(bestItems > 0 && s.TotalAbilityPickups >= bestItems) itemLeaders++;
+            if(bestDisables > 0 && s.TotalDisables >= bestDisables) disableLeaders++;
+        }
+        bool uniqueDmgDealt   = dmgDealtLeaders  == 1;
+        bool uniqueDmgTaken   = dmgTakenLeaders  == 1;
+        bool uniqueBoost      = boostLeaders     == 1;
+        bool uniqueItems      = itemLeaders      == 1;
+        bool uniqueDisables   = disableLeaders   == 1;
+
+        int cardIndex = 0;
+        for(int i = 0; i < controllers.Count; i++)
         {
             CarController cc = controllers[i];
-            if(cc == null) continue;
+            if(cc == null || !cc.IsCarConnected()) continue;
 
             GameObject card = Instantiate(playerStatsCardPrefab, transform);
             spawnedCards.Add(card);
 
             // Position the card
             RectTransform rt = card.GetComponent<RectTransform>();
-            int posIndex = posOffset + i;
+            int posIndex = posOffset + cardIndex;
+            cardIndex++;
             if(posIndex < playerCardPositions.Length)
                 rt.anchoredPosition = playerCardPositions[posIndex];
 
@@ -94,12 +121,13 @@ public class ChargeSuspendUIController : MonoBehaviour
             if(iconBg != null) iconBg.color = playerColor;
 
             // 1 - carIcon (car sprite)
-            Image carIcon = cardT.GetChild(1).GetComponent<Image>();
+            RawImage carIcon = cardT.GetChild(1).GetComponent<RawImage>();
             if(carIcon != null)
             {
                 string carID = cc.GetDesiredCarID();
                 ModelName model = cms.CarModelFromId(carID);
-                carIcon.sprite = GetCarSprite(model);
+                carIcon.texture = GetCarSprite(model).texture;
+                //Debug.Log($"Set car icon for player {cc.GetPlayerName()} to model {model}");
             }
 
             // 2 - playerName
@@ -114,10 +142,15 @@ public class ChargeSuspendUIController : MonoBehaviour
                 carNameText.text = cms.CarNameFromId(carID);
             }
 
-            // 4 - best stat title
+            // 4 - best stat title (awarded to the sole leader of each stat)
             PlayerStats stats = cc.GetPlayerStats();
             TMP_Text bestStatText = cardT.GetChild(4).GetComponent<TMP_Text>();
-            if(bestStatText != null) bestStatText.text = GetBestStatTitle(stats);
+            if(bestStatText != null) bestStatText.text = GetBestStatTitle(stats,
+                bestDmgDealt, uniqueDmgDealt,
+                bestDmgTaken, uniqueDmgTaken,
+                bestBoost,    uniqueBoost,
+                bestItems,    uniqueItems,
+                bestDisables, uniqueDisables);
 
             // 5 - stats text (gold highlight lines where this player leads)
             TMP_Text statsText = cardT.GetChild(5).GetComponent<TMP_Text>();
@@ -146,28 +179,31 @@ public class ChargeSuspendUIController : MonoBehaviour
                 statsText.text = $"{dmgDealtLine}\n{dmgTakenLine}\n{boostLine}\n{itemsLine}\n{disablesLine}";
             }
         }
+        StartCoroutine(DisconnectDelayed());
+    }
+    IEnumerator DisconnectDelayed()
+    {
+        yield return new WaitForSeconds(1.5f);
+        
+        SR.cms.SetConnectionSuspended(true);
     }
 
-    static string GetBestStatTitle(PlayerStats stats)
+    // Awards a title to a player if they are the sole leader of a stat.
+    // Priority order is used when a player leads multiple stats.
+    // Returns "The Racer" if the player leads nothing outright.
+    static string GetBestStatTitle(PlayerStats stats,
+        float bestDmgDealt,   bool uniqueDmgDealt,
+        float bestDmgTaken,   bool uniqueDmgTaken,
+        float bestBoost,      bool uniqueBoost,
+        int   bestItems,      bool uniqueItems,
+        int   bestDisables,   bool uniqueDisables)
     {
-        // Map each stat to a title; pick the highest relative contribution
-        float dmgDealt = stats.TotalDamageDealt;
-        float dmgTaken = stats.TotalDamageTaken;
-        float boostTime = stats.TotalBoostTime;
-        int items = stats.TotalAbilityPickups;
-        int disables = stats.TotalDisables;
-
-        // Use a simple comparison — the stat with the greatest "weight" wins
-        string title = "The Racer"; // default fallback
-        float best = 0f;
-
-        if(dmgDealt > best){ best = dmgDealt; title = "The Destroyer"; }
-        if(dmgTaken > best){ best = dmgTaken; title = "The Tank"; }
-        if(boostTime * 10f > best){ best = boostTime * 10f; title = "Speed Demon"; }
-        if(items * 20f > best){ best = items * 20f; title = "The Collector"; }
-        if(disables * 30f > best){ best = disables * 30f; title = "The Disabler"; }
-
-        return title;
+        if(uniqueDmgDealt   && stats.TotalDamageDealt    >= bestDmgDealt)   return "The Destroyer";
+        if(uniqueDisables   && stats.TotalDisables       >= bestDisables)   return "The Disabler";
+        if(uniqueDmgTaken   && stats.TotalDamageTaken    >= bestDmgTaken)   return "The Tank";
+        if(uniqueBoost      && stats.TotalBoostTime      >= bestBoost)      return "Speed Demon";
+        if(uniqueItems      && stats.TotalAbilityPickups >= bestItems)      return "The Collector";
+        return "The Racer";
     }
 
     Sprite GetCarSprite(ModelName model)
@@ -179,6 +215,7 @@ public class ChargeSuspendUIController : MonoBehaviour
         {
             if(cs.id == (int)model) return cs.sprite;
         }
+        Debug.LogWarning($"Car sprite for model {model} not found, using fallback.");
         return fallback;
     }
 
@@ -206,6 +243,7 @@ public class ChargeSuspendUIController : MonoBehaviour
 
     public void BackToGamemode()
     {
+        Debug.Log("Resuming game and returning to gamemode UI");
         Resume();
         SR.cms.LoadGamemode();
     }

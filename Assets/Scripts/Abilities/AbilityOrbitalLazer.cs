@@ -9,14 +9,12 @@ public class AbilityOrbitalLazer : MonoBehaviour
     [SerializeField] float damageDelay = 1.0f;
     Transform targetTransform;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void Setup(Transform targetModel, CarController targetCar)
-    {
+    public void Setup(Transform targetModel, CarController targetCar) {
         targetTransform = targetModel;
         orbitalLazerAnim.Play();
         StartCoroutine(DealDamageAfterDelay(targetCar, damageDelay));
     }
-    IEnumerator DealDamageAfterDelay(CarController targetCar, float delay)
-    {
+    IEnumerator DealDamageAfterDelay(CarController targetCar, float delay) {
         yield return new WaitForSeconds(delay);
         targetCar.UseEnergy(damage);
         SR.sfx?.PlaySFX(SFXEvent.OrbitalLaserFire);
@@ -25,9 +23,9 @@ public class AbilityOrbitalLazer : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
         Destroy(this.gameObject);
     }
-    void LateUpdate()
-    {
-        transform.position = targetTransform.position;
+    void LateUpdate() {
+        if(targetTransform != null)
+        { transform.position = targetTransform.position; }
     }
 
 }

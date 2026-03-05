@@ -518,7 +518,7 @@ MonoBehaviour:
   - id: 12
     sprite: {fileID: 21300000, guid: 47b0685b8e9a1374e82c8ff3b098a70f, type: 3}
   - id: 13
-    sprite: {fileID: 21300000, guid: 38a7396ed5494ce4087d48bf9c030c8b, type: 3}
+    sprite: {fileID: 21300000, guid: 59ef3e0d5494e68408a0bbac3703f045, type: 3}
   - id: 14
     sprite: {fileID: 21300000, guid: 8e27d787726c8c64f80fc1a796df2729, type: 3}
   - id: 15

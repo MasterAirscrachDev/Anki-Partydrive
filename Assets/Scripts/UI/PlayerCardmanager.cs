@@ -6,11 +6,9 @@ public class PlayerCardmanager : MonoBehaviour
 {
     [SerializeField] GameObject cardPrefab;
     [SerializeField] Transform cardParent;
-    CMS cms;
     List<GameObject> cards = new List<GameObject>();
-    void Start() { cms = FindFirstObjectByType<CMS>(); }
     public void UpdateCardCount(){
-        int count = cms.controllers.Count;
+        int count = SR.cms.controllers.Count;
         //clear all cards
         foreach(Transform child in cardParent){ Destroy(child.gameObject); }
         cards.Clear();
@@ -21,7 +19,7 @@ public class PlayerCardmanager : MonoBehaviour
             GameObject card = Instantiate(cardPrefab, cardParent);
             card.transform.localPosition = new Vector3(10, offset, 0);
             cards.Add(card);
-            cms.controllers[i].SetCard(card.GetComponent<PlayerCardSystem>());
+            SR.cms.controllers[i].SetCard(card.GetComponent<PlayerCardSystem>());
 
             offset -= spacing;
         }

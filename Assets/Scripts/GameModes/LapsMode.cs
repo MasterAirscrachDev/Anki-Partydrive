@@ -81,6 +81,11 @@ public class LapsMode : GameMode
     
     protected override void OnCarCrossedFinish(string carID, bool score){
         //is there a lapCount for this carID?
+        if(!carLaps.ContainsKey(carID)){
+            // Car joined after the race started — register it now with 0 laps
+            carLaps[carID] = 0;
+            cms.GetController(carID)?.SetPosition(0);
+        }
         if(carLaps.ContainsKey(carID)){
             // Only count the lap if the car wasn't delocalized
             if(score){
@@ -93,7 +98,7 @@ public class LapsMode : GameMode
                 
                 //cms.TTS($"{cms.CarNameFromId(carID)} has completed {carLaps[carID]} laps");
             }
-        }else{ return; } //if not, ignore it
+        }
         
         // Position updates are now handled by the UpdatePositions ticker
         // No need to manually update positions here

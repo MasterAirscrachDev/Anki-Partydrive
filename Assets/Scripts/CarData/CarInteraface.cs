@@ -201,13 +201,13 @@ public class CarInteraface : MonoBehaviour
     public void ConnectCar(string carID){
         if(SR.cms != null && SR.cms.ConnectionSuspended) return;
         ApiCallV2(SV_CONNECT_CAR, carID);
-        Debug.Log($"Sending connection request for car: {carID}");
+        //Debug.Log($"Sending connection request for car: {carID}");
     }
     
     // Disconnect from a car by ID  
     public void DisconnectCar(string carID){
         ApiCallV2(SV_DISCONNECT_CAR, carID);
-        Debug.Log($"Sending disconnection request for car: {carID}");
+        //Debug.Log($"Sending disconnection request for car: {carID}");
     }
     
     public void ApiCallV2(string eventType, object data){
@@ -244,7 +244,7 @@ public class CarInteraface : MonoBehaviour
                 if(!stillExists)
                 {
                     SR.cet.RemoveTracker(oldCar.id);
-                    Debug.Log($"Removed car entity for disconnected car: {oldCar.id}");
+                    //Debug.Log($"Removed car entity for disconnected car: {oldCar.id}");
                 }
             }
         }

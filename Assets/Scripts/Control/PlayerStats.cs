@@ -75,7 +75,7 @@ public class PlayerStats
         // Check if we just crossed the big damage threshold
         float currentRecentDamage = DamageDealtRecent;
         bool triggered = previousRecentDamage < BIG_DAMAGE_THRESHOLD && currentRecentDamage >= BIG_DAMAGE_THRESHOLD;
-        Debug.Log($"[BigDamage] PlayerStats: previous={previousRecentDamage:F1}, current={currentRecentDamage:F1}, threshold={BIG_DAMAGE_THRESHOLD}");
+        //Debug.Log($"[BigDamage] PlayerStats: previous={previousRecentDamage:F1}, current={currentRecentDamage:F1}, threshold={BIG_DAMAGE_THRESHOLD}");
         return triggered;
     }
     

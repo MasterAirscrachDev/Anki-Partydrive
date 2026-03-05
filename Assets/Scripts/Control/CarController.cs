@@ -11,30 +11,22 @@ public class CarController : MonoBehaviour
     [SerializeField] float lane;
     [SerializeField] string carID; // Currently connected car ID
     [SerializeField] string desiredCarID; // Car ID we want to connect to
-    float energy = 75;
-    int oldSpeed; float oldLane;
-    bool wasBoostLastFrame = false;
     bool isSetup = false;
-    [SerializeField] bool locked = true;
-    public bool isAI = false;
+    float energy = 75, lastEnergyDrainTime, lastDamageTime, lastTickTime;
+    int oldSpeed; float oldLane;
+    bool wasBoostLastFrame = false, isDisabled = false, locked = true, isAI = false;
     Color playerColor = Color.white;
     string playerName = "Player";
     Ability currentAbility = Ability.None; bool doingPickupAnim;
-    CMS cms; //interface for gamemodes
     public PlayerCardSystem pcs; //used to update the UI
     CarsManagement carsManagement; //used when in the car selection screen
-    CarEntityTracker carTracker; //used to get current position for dynamic width calculation
     ParticleSystem SlowVFX;
     bool slowVFXInitialized = false;
     [SerializeField] List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     // Light control
-    float lastEnergyDrainTime = 0f;
-    bool isDrainingEnergy = false;
-    bool isDisabled = false;
     Coroutine taillightFlashCoroutine = null;
     // Perfect start timing
-    bool perfectStartWindowOpen = false;
-    bool acceleratedDuringPerfectWindow = false;
+    bool perfectStartWindowOpen = false, acceleratedDuringPerfectWindow = false;
     // Player stats tracking
     [SerializeField] PlayerStats playerStats = new PlayerStats();
     //INPUT VALUES======
@@ -65,11 +57,7 @@ public class CarController : MonoBehaviour
         if(isSetup){ return; }
         this.isAI = isAI;
         isSetup = true;
-        cms = FindFirstObjectByType<CMS>();
-        cms.AddController(this, isAI);
-        carTracker = FindFirstObjectByType<CarEntityTracker>(); // Cache the tracker reference
-        
-        ControlTicker(); //start the control ticker
+        SR.cms.AddController(this, isAI);
         FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
 
         string uiLayer = SR.ui.GetUILayer();
@@ -91,7 +79,6 @@ public class CarController : MonoBehaviour
         //Debug.Log("SetCard");
         this.pcs = pcs;
         UCarData carData = SR.io.GetCarFromID(carID);
-        //Debug.Log($"SetCard: id {carID}, desired {desiredCarID}, cardata {carData != null}, pcs: {pcs != null}");
         string text = "Sitting Out";
         int model = -1;
         if(!string.IsNullOrEmpty(desiredCarID)){
@@ -117,9 +104,7 @@ public class CarController : MonoBehaviour
         this.carsManagement = carsManagement;
         if(carsManagement != null){ 
             AIController ai = GetComponent<AIController>();
-            if(ai != null){
-                ai.EnteredCarManagement();
-            }
+            if(ai != null){ ai.EnteredCarManagement(); }
         }
     }
 #endregion
@@ -127,11 +112,8 @@ public class CarController : MonoBehaviour
     public void AddSpeedModifier(int mod, bool isPercentage, float time, string ID = null){
         if(mod == 0){ return; }
         if(ID != null){
-            for(int i = 0; i < speedModifiers.Count; i++){
-                if(speedModifiers[i].ID == ID){
-                    speedModifiers[i] = new SpeedModifer(mod, isPercentage, time, ID);
-                    return;
-                }
+            for(int i = 0; i < speedModifiers.Count; i++){ 
+                if(speedModifiers[i].ID == ID){ speedModifiers[i] = new SpeedModifer(mod, isPercentage, time, ID); return; }
             }
         }
         speedModifiers.Add(new SpeedModifer(mod, isPercentage, time, ID));
@@ -139,23 +121,19 @@ public class CarController : MonoBehaviour
     public void UseEnergy(float amount, bool isDamage = true){
         if(isDisabled){ return; } // Don't use energy if car is disabled
         energy -= amount;
-        
+        lastEnergyDrainTime = Time.time;
         // Track energy draining for taillight flash
         if(amount > 0 && isDamage){
-            lastEnergyDrainTime = Time.time;
-            if(!isDrainingEnergy){
-                isDrainingEnergy = true;
-                StartTaillightFlash();
-            }
+            lastDamageTime = Time.time;
+            if(taillightFlashCoroutine == null)
+            { taillightFlashCoroutine = StartCoroutine(FlashTaillights()); }
             // Track damage taken in stats
             playerStats?.RecordDamageTaken(amount);
         }
         
         if(energy < 0){ 
             if(energy + amount > 0)
-            {
-                cms.OnCarOutOfEnergyCarCallback(carID, this); //call the event for no energy
-            }
+            { SR.cms.OnCarOutOfEnergyCarCallback(carID, this); } //call the event for no energy
             energy = 0;
         }
     }
@@ -165,20 +143,12 @@ public class CarController : MonoBehaviour
     }
     public void StopCar(){
         // Clear all inputs to stop any ongoing movement
-        Iaccel = 0;
-        Isteer = 0;
-        Iboost = false;
-        IitemA = false;
-        IitemB = false;
-        
+        Iaccel = 0; Isteer = 0; Iboost = false; IitemA = false; IitemB = false;
         // Reset speed
-        speed = 0;
-        oldSpeed = 0;
-        
+        speed = 0; oldSpeed = 0;
         // Send stop command to the physical car
         UCarData carData = SR.io.GetCarFromID(carID);
         if(carData == null){ return; }
-        
         // Send stop command multiple times to ensure it's received
         for(int i = 0; i < 3; i++)
         { SR.io.ControlCar(carData, 0, Mathf.RoundToInt(lane)); }
@@ -202,7 +172,6 @@ public class CarController : MonoBehaviour
             taillightFlashCoroutine = null;
             SetTailLights(false); // Ensure taillights are turned off
         }
-        isDrainingEnergy = false;
         
         // Reset perfect start tracking
         perfectStartWindowOpen = false;
@@ -213,25 +182,6 @@ public class CarController : MonoBehaviour
     }
 #endregion
 #region CONTROL TICKER
-    async Task ControlTicker(){
-        while(true){
-            if(!Application.isPlaying){ return; }
-            await Task.Delay(500); //approx 2 ticks per second
-            
-            // Check for car connection if we have a desired car but no current car
-            CheckForCarConnection();
-            int desiredSpeed = GetSpeedAfterModifiers(speed);
-            
-            if(!locked && (desiredSpeed != oldSpeed || lane != oldLane)){
-                oldLane = lane;
-                oldSpeed = desiredSpeed;
-                UCarData carData = SR.io.GetCarFromID(carID);
-                if(carData != null){
-                    SR.io.ControlCar(carData, desiredSpeed, Mathf.RoundToInt(lane));
-                }
-            }
-        }
-    }
     public void DoControlImmediate(){
         SR.io.ControlCar(SR.io.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
     }
@@ -282,14 +232,22 @@ public class CarController : MonoBehaviour
         }
         
         // Don't process any input or movement if the car is locked (game ended)
-        if(locked){ return; }
+        if(locked){ 
+            if(lastTickTime + 0.5f < Time.time){
+                lastTickTime = Time.time;            
+                CheckForCarConnection(); // Still check for car connection while locked to handle reconnections
+            }
+            return;
+        }
         
         if(Iaccel > 0 && Iboost && energy > 1){
             UseEnergy(baseBoostCost, false);
-            AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), false, 0.1f, "Boost");
+            AddSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), false, 0.2f, "Boost");
             playerStats?.StartBoost();
         } else if(!Iboost && energy < maxEnergy){
-            ChargeEnergy(baseEnergyGain * (statEnergyRechargeMod + 1));
+            if(lastEnergyDrainTime + 0.75f < Time.time){ // Only recharge if not recently drained
+                ChargeEnergy(baseEnergyGain + statEnergyRechargeMod);
+            }
             playerStats?.EndBoost();
         } else {
             playerStats?.EndBoost();
@@ -313,14 +271,31 @@ public class CarController : MonoBehaviour
 
         itemALastFrame = IitemA;
         itemBLastFrame = IitemB;
+        // CONTROL TICKER ==============================================================================================
+        if(lastTickTime + 0.5f < Time.time){
+            lastTickTime = Time.time;
+            // Check for car connection if we have a desired car but no current car
+            CheckForCarConnection();
+            int desiredSpeed = GetSpeedAfterModifiers(speed);
+            
+            if(!locked && (desiredSpeed != oldSpeed || lane != oldLane)){
+                oldLane = lane;
+                oldSpeed = desiredSpeed;
+                UCarData carData = SR.io.GetCarFromID(carID);
+                if(carData != null){
+                    SR.io.ControlCar(carData, desiredSpeed, Mathf.RoundToInt(lane));
+                }
+            }
+        }
+
     }
     float GetTrackHalfWidth() {
         // Get dynamic track width from the car's actual current position
         float trackHalfWidth = 67.5f; // Default for modular tracks
         if (SR.track.hasTrack && !string.IsNullOrEmpty(carID)) {
             // Get the car's current track position from the tracking system
-            if (carTracker != null) {
-                TrackCoordinate currentPos = carTracker.GetCarTrackCoordinate(carID);
+            if (SR.cet != null) {
+                TrackCoordinate currentPos = SR.cet.GetCarTrackCoordinate(carID);
                 if (currentPos != null) {
                     // Get the actual track spline this car is currently on
                     TrackSpline currentSpline = SR.track.GetTrackSpline(currentPos.idx);
@@ -340,16 +315,6 @@ public class CarController : MonoBehaviour
             }
         }
         wasBoostLastFrame = Iboost;
-        
-        // Check if we should stop taillight flashing (1 second minimum, or when energy stops draining)
-        if(isDrainingEnergy && Time.time - lastEnergyDrainTime > 1f){
-            isDrainingEnergy = false;
-            if(taillightFlashCoroutine != null){
-                StopCoroutine(taillightFlashCoroutine);
-                taillightFlashCoroutine = null;
-                SetTailLights(false); // Turn off taillights when stopping the coroutine
-            }
-        }
     }
 #endregion
 #region CAR CONNECTION MANAGEMENT
@@ -368,7 +333,7 @@ public class CarController : MonoBehaviour
                 Debug.Log($"Car {carID} has disconnected, waiting for reconnection");
                 carID = "";
                 if(pcs != null) pcs.SetCarName("Disconnected");
-                ApplyBaseStats(carData);
+                //ApplyBaseStats(carData);
             }
             return;
         }
@@ -391,15 +356,11 @@ public class CarController : MonoBehaviour
     public void CheckCarExists(){
         int idx = SR.io.GetCarIndex(carID);
         if(idx == -1){
-            //Debug.LogError($"Car {carID} has disconnected!");
             carID = "";
-            if(pcs != null) pcs.SetCarName("Disconnected");
+            if(pcs != null && !string.IsNullOrEmpty(desiredCarID)) pcs.SetCarName("Disconnected");
         }
     }
-    public void ClearCarID(){
-        carID = "";
-        //if(pcs != null) pcs.SetCarName("Disconnected");
-    }
+    public void ClearCarID(){ carID = ""; }
     public void SetCar(UCarData data){
         if(data == null){
             carID = "";
@@ -428,7 +389,7 @@ public class CarController : MonoBehaviour
             // Car not available yet, will be checked in ControlTicker
             carID = "";
             ResetSlowVFX();
-            if(pcs != null) pcs.SetCarName($"Disconnected");
+            if(pcs != null && !string.IsNullOrEmpty(desiredCarID)) pcs.SetCarName($"Disconnected");
             Debug.Log($"Car {data.id} not available yet, will wait for connection");
         }
     }
@@ -461,7 +422,7 @@ public class CarController : MonoBehaviour
         } else {
             // Car not available yet, will be checked in ControlTicker
             carID = "";
-            if(pcs != null) pcs.SetCarName($"Disconnected");
+            if(pcs != null && !string.IsNullOrEmpty(desiredCarID)) pcs.SetCarName($"Disconnected");
             Debug.Log($"Car {id} not available yet, will wait for connection");
         }
     }
@@ -476,6 +437,7 @@ public class CarController : MonoBehaviour
     public string GetDesiredCarID(){ return desiredCarID; }
     public string GetPlayerName(){ return playerName; }
     public bool IsCarConnected(){ return !string.IsNullOrEmpty(carID) && carID == desiredCarID; }
+    public bool IsCarAI(){ return isAI; }
     public Ability GetCurrentAbility(){ return currentAbility; }
     public void SetLocked(bool state){ 
         locked = state; 
@@ -509,22 +471,11 @@ public class CarController : MonoBehaviour
     /// <summary>
     /// Record damage dealt to another car (called by abilities when they hit targets)
     /// </summary>
-    public void RecordDamageDealt(float amount)
-    {
-        //Debug.Log($"[BigDamage] RecordDamageDealt called with amount={amount} for car {carID}");
+    public void RecordDamageDealt(float amount) {
         bool triggeredBigDamage = playerStats?.RecordDamageDealt(amount) ?? false;
-        //Debug.Log($"[BigDamage] PlayerStats.RecordDamageDealt returned triggeredBigDamage={triggeredBigDamage}");
-        
-        // Trigger big damage announcer line if threshold was just crossed
-        if(triggeredBigDamage)
-        {
+        if(triggeredBigDamage) {
             UCarData carData = SR.io?.GetCarFromID(carID);
-            //Debug.Log($"[BigDamage] Threshold crossed! carData={(carData != null ? carData.modelName.ToString() : "null")}");
-            if(carData != null)
-            {
-                //Debug.Log($"[BigDamage] Queueing CarDealsBigDamage line for {carData.modelName}");
-                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarDealsBigDamage, 4, carData.modelName);
-            }
+            if(carData != null) { SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarDealsBigDamage, 4, carData.modelName); }
         }
     }
 #endregion
@@ -760,7 +711,6 @@ public class CarController : MonoBehaviour
                 
                 // Access emission module fresh and disable initially
                 var emission = SlowVFX.emission;
-                emission.enabled = false;
                 
                 Debug.Log($"[SlowVFX] Initialized for {carID}");
             }
@@ -804,7 +754,7 @@ public class CarController : MonoBehaviour
         minMax.constant = emissionRate;
         emission.rateOverTime = minMax;
         if(emissionRate > 0) {
-            Debug.Log($"[SlowVFX] Car {carID}: rate={emissionRate:F1}, value = {SlowVFX.emission.rateOverTime.constant:F2}");
+            //Debug.Log($"[SlowVFX] Car {carID}: rate={emissionRate:F1}, value = {SlowVFX.emission.rateOverTime.constant:F2}");
         }
     }
     
@@ -816,7 +766,7 @@ public class CarController : MonoBehaviour
         if(SlowVFX != null && slowVFXInitialized)
         {
             var emission = SlowVFX.emission;
-            emission.enabled = false;
+            emission.rateOverTime = 0f;
         }
         slowVFXInitialized = false;
         SlowVFX = null;
@@ -879,26 +829,13 @@ public class CarController : MonoBehaviour
         SetHeadLights(false);
     }
     
-    /// <summary>
-    /// Start flashing taillights while energy is being drained
-    /// </summary>
-    void StartTaillightFlash()
-    {
-        if(taillightFlashCoroutine != null){
-            StopCoroutine(taillightFlashCoroutine);
-        }
-        taillightFlashCoroutine = StartCoroutine(FlashTaillights());
-    }
-    
     IEnumerator FlashTaillights()
     {
         SetTailLights(true);
         
         // Wait until isDrainingEnergy is false (managed by Update)
-        while(isDrainingEnergy)
-        {
-            yield return new WaitForEndOfFrame();
-        }
+        while(lastDamageTime + 1f > Time.time) // Ensure taillights stay on for at least 1 second after last damage
+        { yield return new WaitForEndOfFrame(); }
         
         SetTailLights(false);
         taillightFlashCoroutine = null;
@@ -933,7 +870,12 @@ public class CarController : MonoBehaviour
     {
         // Apply 3.5s complete stop
         AddSpeedModifier(-3000, false, 3.5f, "Disabled");
-        
+        if(taillightFlashCoroutine != null){
+            StopCoroutine(taillightFlashCoroutine);
+            taillightFlashCoroutine = null;
+        }
+        SetHeadLights(false);
+        SetTailLights(true);
         // Start flashing red engine light
         UCarData carData = SR.io.GetCarFromID(carID);
         if(carData != null){
@@ -966,6 +908,9 @@ public class CarController : MonoBehaviour
         
         // Restore player color lights
         RestorePlayerColorLights();
+        //clear headlight and taillight effects
+        SetTailLights(false);
+        SetHeadLights(false);
     }
     
     /// <summary>
