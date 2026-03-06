@@ -18,10 +18,10 @@ public class CMS : MonoBehaviour
         //color list purple, green, red, blue
         freeColors.Add(new Color(1, 0, 1)); //purple/pink
         freeColors.Add(new Color(0, 1, 0)); //green
-        freeColors.Add(new Color(1, 0, 0)); //red
         freeColors.Add(new Color(0, 0, 1)); //blue
-        freeColors.Add(new Color(0, 1, 1)); //Cyan
         freeColors.Add(new Color(1, 1, 0)); //yellow
+        freeColors.Add(new Color(0, 1, 1)); //Cyan
+        freeColors.Add(new Color(1, 0, 0)); //red
     }
     public void LoadGamemode(){ 
         UIManager ui = SR.ui;
