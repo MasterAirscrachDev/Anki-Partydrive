@@ -6,7 +6,7 @@ public class SupportPanel : MonoBehaviour
     [SerializeField] TMP_Text playtimeText, closeButtonText;
     float playtimeSecondsAtEnterSupport = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void OnEnable()
     {
         Debug.Log($"Entered Support Panel at {Time.realtimeSinceStartup} seconds");
         playtimeSecondsAtEnterSupport = Time.realtimeSinceStartup;

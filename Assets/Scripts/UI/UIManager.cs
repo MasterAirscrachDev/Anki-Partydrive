@@ -75,7 +75,7 @@ public class UIManager : MonoBehaviour
             SwitchToTrackCamera(false);
             if(!SR.cms.isSupporter){ 
                 //if it has been more than 3 minutes since the last time we showed the support panel, show it again
-                if(Time.realtimeSinceStartup - lastSupportPanelTime > 180f){
+                if(Time.realtimeSinceStartup - lastSupportPanelTime > 240f){
                     lastSupportPanelTime = Time.realtimeSinceStartup;
                     SR.ui.SetUILayer("Support"); //support panel
                     return;

@@ -36,20 +36,19 @@ This is not a remake of the Anki Overdrive app, I am not making a campaign or up
 - [x] Control the cars
 - [ ] Track Effects (3D enhancements of the game world)
 - [x] Modular Game Modes (allowing for easy addition of new game modes)
-- [ ] Powerups (Similar to Sonic & Sega All-Stars Racing)
+- [X] Powerups (Similar to Sonic & Sega All-Stars Racing)
 - [x] AI for cars (Will be improved over time)
 ### Gamemodes:
 - [x] Laps Mode (First to complete X laps wins)
 - [x] Time Trial (Standard race, drive a good line and use boost to get the best time)
-- [ ] Party Mode (Item boxes, boosters, repair station, its on the track and its there for your advantage)
+- [X] Party Mode (Item boxes, boosters, repair station, its on the track and its there for your advantage)
 - [ ] Cell Deduction (Your battery is dying, keep it topped up by driving over the cells on the track)
 - [ ] Juggernaut (Only the juggernaut can score points, but everyone can attack the juggernaut. first to 5 points wins)
 
 # Credits:
 The server is using 
 Windows: UWP Bluetooth / InTheHand.BluetoothLE 
-Linux: InTheHand.BluetoothLE (doesnt really work)
-Mac: InTheHand.BluetoothLE (doesnt really work)
+Linux: BlueZ D-Bus API 
 to connect to the Anki Overdrive cars  
 and Fleck for the Websocket server.  
 
