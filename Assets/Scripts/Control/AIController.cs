@@ -14,7 +14,6 @@ public class AIController : MonoBehaviour
     [SerializeField] string setCarID = ""; //debugging variable to set the car ID
     [SerializeField] AIState state = AIState.Speed; //state of the AI
     TrackCoordinate[] carLocations; //list of other car locations
-    List<TrackCoordinate> obstacles = new List<TrackCoordinate>(); //list of other obsticals
     TrackCoordinate ourCoord, currentTarget; //current target of the car (may be null)
     float timer = 0f; //timer for the AI logic
     float abilityTimer = 0f; //timer for ability usage
@@ -45,6 +44,27 @@ public class AIController : MonoBehaviour
         { Ability.Grappler, AIAbilityUsageMode.Ahead },
         { Ability.LightningPower, AIAbilityUsageMode.Any },
         { Ability.TrafficCone, AIAbilityUsageMode.Any }
+    };
+    
+    // Aim mode table — Narrow abilities need lane alignment, Wide/Any do not
+    static readonly Dictionary<Ability, AIAbilityAimMode> abilityAimTable = new Dictionary<Ability, AIAbilityAimMode>
+    {
+        { Ability.Missle1, AIAbilityAimMode.Narrow },
+        { Ability.Missle2, AIAbilityAimMode.Narrow },
+        { Ability.Missle3, AIAbilityAimMode.Narrow },
+        { Ability.MissleSeeking1, AIAbilityAimMode.Wide },
+        { Ability.MissleSeeking2, AIAbilityAimMode.Wide },
+        { Ability.MissleSeeking3, AIAbilityAimMode.Wide },
+        { Ability.EMP, AIAbilityAimMode.Wide },
+        { Ability.Recharger, AIAbilityAimMode.Any },
+        { Ability.TrailDamage, AIAbilityAimMode.Narrow },
+        { Ability.TrailSlow, AIAbilityAimMode.Narrow },
+        { Ability.Overdrive, AIAbilityAimMode.Any },
+        { Ability.CrasherBoost, AIAbilityAimMode.Wide },
+        { Ability.OrbitalLazer, AIAbilityAimMode.Any },
+        { Ability.Grappler, AIAbilityAimMode.Wide },
+        { Ability.LightningPower, AIAbilityAimMode.Any },
+        { Ability.TrafficCone, AIAbilityAimMode.Narrow }
     };
     // Start is called before the first frame update
     void Start()
@@ -196,6 +216,7 @@ public class AIController : MonoBehaviour
             currentTargetOffset = currentTargetOffset,
             ourCoord = ourCoord,
             carLocations = carLocations.ToArray(),
+            hazardLocations = SR.gas != null ? SR.gas.GetHazardTrackCoordinates().ToArray() : new TrackCoordinate[0],
             currentTarget = currentTarget,
             state = state,
             depth = depth
@@ -273,13 +294,17 @@ public class AIController : MonoBehaviour
         Ability currentAbility = GetCurrentAbility();
         if (currentAbility == Ability.None) { return; }
         
-        // Check if we should use this ability based on its usage mode
+        // Check if we should use this ability based on its usage mode and aim mode
         if (!abilityUsageTable.TryGetValue(currentAbility, out AIAbilityUsageMode usageMode))
         {
             usageMode = AIAbilityUsageMode.Any; // Default to any if not in table
         }
+        if (!abilityAimTable.TryGetValue(currentAbility, out AIAbilityAimMode aimMode))
+        {
+            aimMode = AIAbilityAimMode.Any; // Default to any if not in table
+        }
         
-        bool shouldUse = ShouldUseAbility(usageMode);
+        bool shouldUse = ShouldUseAbility(usageMode, aimMode);
         if (shouldUse)
         {
             carController.IitemA = true; // Trigger ability
@@ -288,12 +313,17 @@ public class AIController : MonoBehaviour
     }
     
     /// <summary>
-    /// Determine if ability should be used based on the usage mode
+    /// Determine if ability should be used based on the usage mode and aim mode.
+    /// Narrow aim abilities (regular missiles, trails) require lane alignment.
+    /// Wide/Any aim abilities (seeking missiles, EMP, grappler etc.) only need distance.
     /// </summary>
-    bool ShouldUseAbility(AIAbilityUsageMode mode)
+    bool ShouldUseAbility(AIAbilityUsageMode mode, AIAbilityAimMode aimMode)
     {
         if (carLocations == null || carLocations.Length == 0) { return false; }
         if (ourCoord == null) { return false; }
+        
+        const float NARROW_HIT_WIDTH = 85f; // lane-width check for straight-firing abilities
+        bool needsLaneCheck = aimMode == AIAbilityAimMode.Narrow;
         
         switch (mode)
         {
@@ -309,18 +339,20 @@ public class AIController : MonoBehaviour
                 return false;
                 
             case AIAbilityUsageMode.Ahead:
-                // Use when there's a car ahead of us
+                // Use when there's a car ahead of us; narrow aim also requires lane alignment
                 foreach (var carLoc in carLocations)
                 {
-                    if (carLoc.IsAhead(ourCoord) && ourCoord.DistanceY(carLoc) < 3f) { return true; }
+                    if (!carLoc.IsAhead(ourCoord) || ourCoord.DistanceY(carLoc) >= 3f) continue;
+                    if (!needsLaneCheck || ourCoord.DistanceX(carLoc) < NARROW_HIT_WIDTH) { return true; }
                 }
                 return false;
                 
             case AIAbilityUsageMode.Behind:
-                // Use when there's a car behind us
+                // Use when there's a car behind us; narrow aim also requires lane alignment
                 foreach (var carLoc in carLocations)
                 {
-                    if (ourCoord.IsAhead(carLoc) && ourCoord.DistanceY(carLoc) < 2f) { return true; }
+                    if (!ourCoord.IsAhead(carLoc) || ourCoord.DistanceY(carLoc) >= 2f) continue;
+                    if (!needsLaneCheck || ourCoord.DistanceX(carLoc) < NARROW_HIT_WIDTH) { return true; }
                 }
                 return false;
                 

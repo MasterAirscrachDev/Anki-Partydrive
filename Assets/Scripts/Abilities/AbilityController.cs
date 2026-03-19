@@ -37,3 +37,7 @@ public enum AIAbilityUsageMode
 {
     Any = 0, Close = 1, Ahead = 2, Behind = 3,
 }
+public enum AIAbilityAimMode
+{
+    Any = 0, Narrow = 1, Wide = 2,
+}

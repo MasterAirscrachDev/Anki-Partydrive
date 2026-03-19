@@ -254,7 +254,7 @@ public class CarController : MonoBehaviour
         }
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, Iaccel);
-        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.04f : 0.01f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
+        speed = (int)Mathf.Lerp(speed, targetSpeed, (Iaccel == 0) ? 0.021f : 0.019f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
 
         if(Iaccel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(Iaccel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating

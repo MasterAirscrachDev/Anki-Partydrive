@@ -26,6 +26,12 @@ public class AbilityCone : MonoBehaviour
     public void Setup(CarController ownerController)
     {
         owner = ownerController;
+        SR.gas?.RegisterHazard(transform);
+    }
+    
+    void OnDestroy()
+    {
+        SR.gas?.UnregisterHazard(transform);
     }
 
     void Update()

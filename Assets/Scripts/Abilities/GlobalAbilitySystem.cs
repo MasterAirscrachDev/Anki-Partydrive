@@ -16,6 +16,43 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject rechargerPrefab;
     [SerializeField] GameObject disabledPrefab;
     [SerializeField] GameObject trafficConePrefab;
+    
+    // --- Hazard position tracking for AI avoidance ---
+    readonly List<Transform> activeHazards = new List<Transform>();
+    
+    /// <summary>
+    /// Register a hazard transform so AI can see it. Auto-cleaned when destroyed.
+    /// </summary>
+    public void RegisterHazard(Transform hazard)
+    {
+        if (hazard != null && !activeHazards.Contains(hazard))
+            activeHazards.Add(hazard);
+    }
+    
+    /// <summary>
+    /// Unregister a hazard (call from OnDestroy of the hazard).
+    /// </summary>
+    public void UnregisterHazard(Transform hazard)
+    {
+        activeHazards.Remove(hazard);
+    }
+    
+    /// <summary>
+    /// Get all active hazard world positions, converting to TrackCoordinates.
+    /// Null entries are skipped (destroyed objects).
+    /// </summary>
+    public List<TrackCoordinate> GetHazardTrackCoordinates()
+    {
+        List<TrackCoordinate> result = new List<TrackCoordinate>();
+        for (int i = activeHazards.Count - 1; i >= 0; i--)
+        {
+            if (activeHazards[i] == null) { activeHazards.RemoveAt(i); continue; }
+            TrackCoordinate tc = SR.track.WorldspaceToTrackCoordinate(activeHazards[i].position);
+            if (tc != null) result.Add(tc);
+        }
+        return result;
+    }
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

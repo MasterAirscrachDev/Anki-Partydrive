@@ -3,13 +3,14 @@ using System.Linq;
 using static OverdriveServer.NetStructures;
 using static AudioAnnouncerManager.AnnouncerLine;
 using UnityEngine;
+using System.Net.Http.Headers;
 
-public class LapsMode : GameMode
+public class HyperMode : GameMode
 {
     [Header("Lap Settings")]
-    [SerializeField] int lapsSmallTrack = 30;
-    [SerializeField] int lapsMediumTrack = 15;
-    [SerializeField] int lapsLargeTrack = 8;
+    [SerializeField] int lapsSmallTrack = 25;
+    [SerializeField] int lapsMediumTrack = 20;
+    [SerializeField] int lapsLargeTrack = 15;
     
     int targetLaps = 15;
     Dictionary<string, int> carLaps = new Dictionary<string, int>();
@@ -43,7 +44,10 @@ public class LapsMode : GameMode
         base.OnCountdownStarted(activeCars); // Clear previousPositions for overtake tracking
         foreach(string carID in activeCars){
             carLaps[carID] = 0; //reset the lap count
-            cms.GetController(carID).SetPosition(0); //reset the position
+            CarController controller = cms.GetController(carID);
+            controller.SetPosition(0); //reset the position
+            controller.AddSpeedModifier(200, true, 9999, "HyperModeBoost"); //apply perminent double speed boost for hyper mode
+            //cms.GetController(carID).SetPosition(0); //reset the position
             carEntityTracker.ResetLapDelocalizationFlag(carID); //reset delocalization flag so first lap counts
         }
     }
@@ -81,22 +85,23 @@ public class LapsMode : GameMode
     
     protected override void OnCarCrossedFinish(string carID, bool score){
         //is there a lapCount for this carID?
+        CarController controller = cms.GetController(carID);
         if(!carLaps.ContainsKey(carID)){
             // Car joined after the race started — register it now with 0 laps
             carLaps[carID] = 0;
-            cms.GetController(carID)?.SetPosition(0);
+            controller?.SetPosition(0);
+            controller?.AddSpeedModifier(200, true, 9999, "HyperModeBoost"); //apply perminent double speed boost for hyper mode
         }
         if(carLaps.ContainsKey(carID)){
             // Only count the lap if the car wasn't delocalized
             if(score){
                 carLaps[carID]++;
                 try{
-                    cms.GetController(carID).SetLapCount(carLaps[carID]);
+                    controller.SetLapCount(carLaps[carID]);
+                    controller.AddSpeedModifier(200, true, 9999, "HyperModeBoost"); //apply perminent double speed boost for hyper mode
                 }catch{
                     //Debug.LogWarning($"Could not set lap count for car {carID}");
                 }
-                
-                //cms.TTS($"{cms.CarNameFromId(carID)} has completed {carLaps[carID]} laps");
             }
         }
         

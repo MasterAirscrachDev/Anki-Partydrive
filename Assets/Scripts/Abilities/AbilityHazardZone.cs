@@ -17,7 +17,13 @@ public class AbilityHazardZone : MonoBehaviour
     {
         this.hazardRange = hazardRange;
         this.owner = owner;
+        SR.gas?.RegisterHazard(transform);
         Destroy(gameObject, lifetime);
+    }
+    
+    void OnDestroy()
+    {
+        SR.gas?.UnregisterHazard(transform);
     }
 
     // Update is called once per frame
