@@ -16,7 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text menuCarCount;
     [SerializeField] GameObject NoServerWarningText;
     [SerializeField] GameObject CarsLoadingIcon, settingsPanel, creditsPanel;
-    [SerializeField] Button playButton;
+    [SerializeField] Button playMenuButton;
     [SerializeField] Button carsMenuButton;
     [SerializeField] Button trackMenuButton;
     [Header("Scanning UI")]
@@ -53,14 +53,13 @@ public class UIManager : MonoBehaviour
         
     }
     public void NoServerWarning(){
-        playButton.interactable = false;
+        playMenuButton.interactable = false;
         carsMenuButton.interactable = false;
         trackMenuButton.interactable = false;
         NoServerWarningText.SetActive(true);
     }
     public void ServerConnected(){
         carsMenuButton.interactable = true;
-        trackMenuButton.interactable = true;
     }   
     public void SwitchToTrackCamera(bool track){
         MainCamera.SetActive(!track);
@@ -82,8 +81,12 @@ public class UIManager : MonoBehaviour
                 }
             }
             bool canPlay = SR.track.hasTrack;
-            playButton.interactable = canPlay;
-            playButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
+            bool canScan = SR.io.cars != null && SR.io.cars.Length > 0;
+            Debug.Log($"car count {SR.io.cars.Length}");
+            playMenuButton.interactable = canPlay;
+            playMenuButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
+            trackMenuButton.interactable = canScan;
+            trackMenuButton.GetComponentInChildren<TMP_Text>().text = canScan ? "TRACK" : "Connect Cars To Scan Track";
         }
         else if(layer == "TrackScanning"){ //if we are entering the track scanning page
             CheckConnectedCarsOnTrackPage();

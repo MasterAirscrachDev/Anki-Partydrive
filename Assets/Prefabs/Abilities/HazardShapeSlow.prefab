@@ -89,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &8419689368877838378
 MonoBehaviour:
@@ -105,5 +106,5 @@ MonoBehaviour:
   energyChange: 0
   speedModifier: -25
   speedIsMultiplier: 0
-  speedModifierDuration: 0.75
+  speedModifierDuration: 3
   modifierTag: 

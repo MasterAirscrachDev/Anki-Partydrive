@@ -77,6 +77,10 @@ public class CarBalancer : MonoBehaviour
     }
     // Start is called before the first frame update
     public void Setup(string id) {
+        //disable buttons until we are ready
+        recalibrateButton.gameObject.SetActive(false);
+        saveButton.gameObject.SetActive(false);
+        backButton.gameObject.SetActive(false);
         step = 0; timeout = 1;
         carID = id;
         waitingForTrack = true;
@@ -105,6 +109,9 @@ public class CarBalancer : MonoBehaviour
                     SubTrack(false);
                     messageText.text = $"Track ok, press the button to start balancing";
                     SR.ui.SetUILayer("CarBalance"); //disable Scanning UI
+                    recalibrateButton.gameObject.SetActive(true);
+                    saveButton.gameObject.SetActive(true);
+                    backButton.gameObject.SetActive(true);
                     recalibrateButton.interactable = true;
                     step = -1;
                     return;
@@ -117,6 +124,10 @@ public class CarBalancer : MonoBehaviour
             else{
                 Debug.Log($"CarBalancer step 1, track scanned");
                 SR.ui.SetUILayer("CarBalance"); //disable Scanning UI
+                //enable buttons
+                recalibrateButton.gameObject.SetActive(true);
+                saveButton.gameObject.SetActive(true);
+                backButton.gameObject.SetActive(true);
                 //car should now be lining up at this point
                 timeout = 2.1f;
                 step = 2;

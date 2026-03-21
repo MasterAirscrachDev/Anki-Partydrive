@@ -34,8 +34,8 @@ public class CMS : MonoBehaviour
             
             PlayerController playerController = controller.GetComponent<PlayerController>();
             if(playerController != null){
-                playerController.SetRacingMode(racingMode);
-                Debug.Log($"Set {controller.GetPlayerName()} racing mode to: {racingMode}");
+                playerController.SetInputMode(racingMode ? PlayerController.PlayerInputMode.Racing : PlayerController.PlayerInputMode.Menu);
+                Debug.Log($"Set {controller.GetPlayerName()} input mode to: {(racingMode ? "Racing" : "Menu")}");
             }
         }
     }

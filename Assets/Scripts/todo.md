@@ -5,9 +5,12 @@
 
 # Current release ==========================================================
 
+[X] AI V3 (new pathfinding, better at avoiding obstacles, better at overtaking, better at defending)
 [ ] Improve slow vfx (why broken)
+[X] Improve Car Shading (more vibrant)
+[X] Manual camera override in track options
+[X] Lock track in menu until cars are connected
 
-[ ] (Low Prio) Manual Zoom Ajust for tracks
 [ ] (Low Prio) Manual lineup option for larger tracks
 [ ] (Low Prio) Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
 [ ] (Low Prio) Proper Truck Support for CarSelectionV2

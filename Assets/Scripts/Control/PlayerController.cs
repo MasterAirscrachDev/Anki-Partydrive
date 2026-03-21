@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     PlayerInput iinput;
     CarController carController;
-    bool isMenuInputs = true;
+    PlayerInputMode currentInputMode = PlayerInputMode.Menu;
     float lastRumbleTime = 0f;
     public Vector2 moveInput;
     public bool selectInput;
@@ -18,6 +18,11 @@ public class PlayerController : MonoBehaviour
     
     // Control scheme detection
     public string currentControlScheme;
+    
+    // Cached action references
+    InputAction racingAccelerate, racingSteer, racingItemA, racingItemB, racingBoost, racingSpecialAim;
+    InputAction menuNav, menuSelect, menuBack, menuAltSelect, menuStart;
+    [HideInInspector] public InputAction cameraMove, cameraShift, cameraExit;
     
     // Input debouncing
     bool lastSelectInput = false;
@@ -33,69 +38,75 @@ public class PlayerController : MonoBehaviour
         int playerCount = FindObjectsOfType<PlayerController>().Length;
         carController.SetPlayerName($"Player {playerCount}");
         
+        // Cache racing actions
+        var racingMap = iinput.actions.FindActionMap("Racing");
+        racingAccelerate = racingMap.FindAction("Accelerate");
+        racingSteer = racingMap.FindAction("Steer");
+        racingItemA = racingMap.FindAction("ItemA");
+        racingItemB = racingMap.FindAction("ItemB");
+        racingBoost = racingMap.FindAction("Boost");
+        racingSpecialAim = racingMap.FindAction("SpecialAim");
+        // Cache menu actions
+        var menuMap = iinput.actions.FindActionMap("Menu");
+        menuNav = menuMap.FindAction("UINav");
+        menuSelect = menuMap.FindAction("UISelect");
+        menuBack = menuMap.FindAction("UIBack");
+        menuAltSelect = menuMap.FindAction("AltSelect");
+        menuStart = menuMap.FindAction("UIStart");
+        // Cache camera actions
+        var cameraMap = iinput.actions.FindActionMap("Camera");
+        cameraMove = cameraMap.FindAction("Move");
+        cameraShift = cameraMap.FindAction("Shift");
+        cameraExit = cameraMap.FindAction("Exit");
+        
         DetectAndSetControlScheme();
     }
     
     void DetectAndSetControlScheme()
     {
-        if(iinput != null)
-        {
+        if(iinput != null) {
             // Try to detect active devices and set appropriate control scheme
             var devices = iinput.devices;
-            bool hasGamepad = false;
-            bool hasMouseKeyboard = false;
-            
+            bool hasGamepad = false, hasMouseKeyboard = false;
             // Check what devices are connected to this player
-            foreach(var device in devices)
-            {
+            foreach(var device in devices) {
                 if(device is UnityEngine.InputSystem.Gamepad)
-                {
-                    hasGamepad = true;
-                }
+                { hasGamepad = true; }
                 else if(device is UnityEngine.InputSystem.Mouse || device is UnityEngine.InputSystem.Keyboard)
-                {
-                    hasMouseKeyboard = true;
-                }
+                { hasMouseKeyboard = true; }
             }
             
             // Set control scheme based on detected devices
             string targetScheme = null;
-            if(hasGamepad)
-            {
-                targetScheme = "Gamepad";
-            }
-            else if(hasMouseKeyboard)
-            {
-                targetScheme = "MouseAndKeyboard";
-            }
-            else
-            {
-                // Fallback to current scheme if no devices detected
-                targetScheme = iinput.currentControlScheme;
-            }
+            if(hasGamepad) { targetScheme = "Gamepad"; }
+            else if(hasMouseKeyboard) { targetScheme = "MouseAndKeyboard"; }
+            // Fallback to current scheme if no devices detected
+            else { targetScheme = iinput.currentControlScheme; }
             
             // Switch to the detected scheme if different
             if(targetScheme != null && targetScheme != iinput.currentControlScheme)
-            {
-                iinput.SwitchCurrentControlScheme(targetScheme, iinput.devices.ToArray());
-            }
+            { iinput.SwitchCurrentControlScheme(targetScheme, iinput.devices.ToArray()); }
             
             // Update our cached values
             currentControlScheme = iinput.currentControlScheme;
-            
-            //Debug.Log($"Player {carController?.GetPlayerName()} detected and set to control scheme: {currentControlScheme}");
         }
     }
-    public void SetRacingMode(bool racing){
-        isMenuInputs = !racing;
+    public void SetInputMode(PlayerInputMode mode){
+        currentInputMode = mode;
         
-        if(racing){
-            iinput.currentActionMap = iinput.actions.FindActionMap("Racing");
-        }else{
-            iinput.currentActionMap = iinput.actions.FindActionMap("Menu");
+        switch(mode){
+            case PlayerInputMode.Racing:
+                iinput.currentActionMap = iinput.actions.FindActionMap("Racing");
+                break;
+            case PlayerInputMode.CameraControl:
+                iinput.currentActionMap = iinput.actions.FindActionMap("Camera");
+                break;
+            default:
+                iinput.currentActionMap = iinput.actions.FindActionMap("Menu");
+                break;
         }
         
-        Debug.Log($"Player {carController?.GetPlayerName()} set to {(racing ? "Racing" : "Menu")} mode using {currentControlScheme}");
+        Debug.Log($"Player {carController?.GetPlayerName()} set to {mode} mode using {currentControlScheme}");
     }
     public void TrySetGamepadColor(Color color){
         if(iinput.currentControlScheme == "Gamepad"){
@@ -104,7 +115,13 @@ public class PlayerController : MonoBehaviour
                 var dsGamepad = gamepad as DualShockGamepad;
                 if(dsGamepad != null){
                     dsGamepad.SetLightBarColor(color);
+                }else{
+                    DualSenseGamepadHID ds5Gamepad = gamepad as DualSenseGamepadHID;
+                    if(ds5Gamepad != null){
+                        ds5Gamepad.SetLightBarColor(color);
+                    }
                 }
+
             }
         }
     }
@@ -113,32 +130,38 @@ public class PlayerController : MonoBehaviour
         if(iinput != null && iinput.currentControlScheme == "Gamepad"){
             var gamepad = iinput.devices[0] as Gamepad;
             if(gamepad != null){
-                gamepad.SetMotorSpeeds(lowFrequency, highFrequency);
+                //if dualsense or dualshock, set lightbar to red when rumbling
+                var dsGamepad = gamepad as DualShockGamepad;
+                if(dsGamepad != null){
+                    dsGamepad.SetMotorSpeeds(lowFrequency, highFrequency);
+                }else{ //treat as generic gamepad if not dualshock, since rumble is supported on most controllers
+                    gamepad.SetMotorSpeeds(lowFrequency, highFrequency);
+                }
             }
         }
     }
 
     // Update is called once per frame
     void Update() {
-        if(!isMenuInputs){
-            carController.Iaccel = iinput.currentActionMap.actions[0].ReadValue<float>();
-            carController.Isteer = iinput.currentActionMap.actions[1].ReadValue<float>();
-            carController.IitemA = iinput.currentActionMap.actions[2].ReadValue<float>() > 0.5f;
-            carController.IitemB = iinput.currentActionMap.actions[3].ReadValue<float>() > 0.5f;
-            carController.Iboost = iinput.currentActionMap.actions[4].ReadValue<float>() > 0.5f;
-            carController.IspecialAim = iinput.currentActionMap.actions[5].ReadValue<float>();
-        }else{
+        if(currentInputMode == PlayerInputMode.Racing){
+            carController.Iaccel = racingAccelerate.ReadValue<float>();
+            carController.Isteer = racingSteer.ReadValue<float>();
+            carController.IitemA = racingItemA.ReadValue<float>() > 0.5f;
+            carController.IitemB = racingItemB.ReadValue<float>() > 0.5f;
+            carController.Iboost = racingBoost.ReadValue<float>() > 0.5f;
+            carController.IspecialAim = racingSpecialAim.ReadValue<float>();
+        }else if(currentInputMode == PlayerInputMode.Menu){
             carController.Iaccel = 0;
             carController.Isteer = 0;
             carController.IitemA = false;
             carController.IitemB = false;
             carController.Iboost = false;
             
-            Vector2 Move = iinput.currentActionMap.actions[1].ReadValue<Vector2>();
-            bool select = iinput.currentActionMap.actions[2].ReadValue<float>() > 0.5f;
-            bool backSelect = iinput.currentActionMap.actions[4].ReadValue<float>() > 0.5f;
-            bool altSelect = iinput.currentActionMap.actions[5].ReadValue<float>() > 0.5f;
-            bool startSelect = iinput.currentActionMap.actions[6].ReadValue<float>() > 0.5f;
+            Vector2 Move = menuNav.ReadValue<Vector2>();
+            bool select = menuSelect.ReadValue<float>() > 0.5f;
+            bool backSelect = menuBack.ReadValue<float>() > 0.5f;
+            bool altSelect = menuAltSelect.ReadValue<float>() > 0.5f;
+            bool startSelect = menuStart.ReadValue<float>() > 0.5f;
             
             moveInput = Move;
             selectInput = select;
@@ -150,8 +173,10 @@ public class PlayerController : MonoBehaviour
             HandleMenuInputCallbacks();
         }
         
+        // Camera control mode - inputs are read by TrackCamera directly
+        
         // Check for low energy and rumble controller if needed
-        if(!isMenuInputs && carController != null){
+        if(currentInputMode == PlayerInputMode.Racing && carController != null){
             float energyPercent = carController.GetEnergyPercent();
             if(energyPercent < 0.1f){
                 // Rumble every 0.5 seconds when energy is low
@@ -208,5 +233,8 @@ public class PlayerController : MonoBehaviour
         lastAltSelectInput = altSelectInput;
         lastBackSelectInput = backSelectInput;
         lastStartSelectInput = startSelectInput;
+    }
+    public enum PlayerInputMode{
+        Menu, Racing, CameraControl
     }
 }
