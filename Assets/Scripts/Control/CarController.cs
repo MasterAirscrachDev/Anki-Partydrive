@@ -24,8 +24,7 @@ public class CarController : MonoBehaviour
     bool slowVFXInitialized = false;
     [SerializeField] List<SpeedModifer> speedModifiers = new List<SpeedModifer>();
     // Light control
-    float frontLightEndTime, tailLightEndTime;
-    bool frontLightsOn = false, tailLightsOn = false;
+    LightStructure lights = new LightStructure();
     // Perfect start timing
     bool perfectStartWindowOpen = false, acceleratedDuringPerfectWindow = false;
     // Player stats tracking
@@ -165,8 +164,7 @@ public class CarController : MonoBehaviour
             pcs.ClearAttachment();
             pcs.SetPosition(0);
         }
-        
-        tailLightEndTime = 0; frontLightEndTime = 0; // Reset light timers
+        lights.Reset(); // Reset light timers
         
         // Reset perfect start tracking
         perfectStartWindowOpen = false;
@@ -225,7 +223,7 @@ public class CarController : MonoBehaviour
         if(locked && perfectStartWindowOpen && Iaccel > 0.5f){
             acceleratedDuringPerfectWindow = true;
         }
-        
+        CheckAndClearLights();
         // Don't process any input or movement if the car is locked (game ended)
         if(locked){ 
             if(lastTickTime + 0.5f < Time.time){
@@ -771,69 +769,21 @@ public class CarController : MonoBehaviour
     }
 #endregion
 #region CAR LIGHT CONTROL
-    /// <summary>
-    /// Control headlights - enable for flashing, disable to restore player color
-    /// </summary>
-    // void SetHeadLights(bool enable)
-    // {
-    //     UCarData carData = SR.io.GetCarFromID(carID);
-    //     if(carData == null) return;
-        
-    //     if(enable)
-    //     {
-    //         LightData[] lights = new LightData[2];
-    //         lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.FLASH, startStrength = 8, endStrength = 11, cyclesPer10Seconds = 128 };
-    //         lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.FLASH, startStrength = 4, endStrength = 11, cyclesPer10Seconds = 64 };
-    //         SR.io.SetCarColoursComplex(carData, lights);
-    //     }
-    //     else
-    //     {
-    //         LightData[] lights = new LightData[2];
-    //         lights[0] = new LightData{ channel = LightChannel.FRONTL, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0 };
-    //         lights[1] = new LightData{ channel = LightChannel.FRONTR, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0 };
-    //         SR.io.SetCarColoursComplex(carData, lights);
-    //     }
-    // }
-    void SetHeadLights(LightData[] lightData, float duration)
-    {
+    void SetHeadLights(LightData[] lightData, float duration, int priority = 1){
+        bool valid = lights.SetHeadTime(duration, priority);
+        if(!valid){ return; }
         UCarData carData = SR.io.GetCarFromID(carID);
         if(carData == null) return;
-        
         SR.io.SetCarColoursComplex(carData, lightData);
-        frontLightEndTime = Time.time + duration;
     }
-    
-    /// <summary>
-    /// Control taillights - enable for flashing, disable to restore player color
-    /// </summary>
-    // void SetTailLights(bool enable)
-    // {
-    //     UCarData carData = SR.io.GetCarFromID(carID);
-    //     if(carData == null) return;
-        
-    //     if(enable)
-    //     {
-    //         LightData[] lights = new LightData[1];
-    //         lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.FLASH, startStrength = 4, endStrength = 11, cyclesPer10Seconds = 64 };
-    //         SR.io.SetCarColoursComplex(carData, lights);
-    //     }
-    //     else
-    //     {
-    //         LightData[] lights = new LightData[1];
-    //         lights[0] = new LightData{ channel = LightChannel.TAIL, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0 };
-    //         SR.io.SetCarColoursComplex(carData, lights);
-    //     }
-    // }
-    
-    void SetTailEffect(LightEffect effect, int startStrength, int endStrength, int cyclesPer10Seconds, float duration)
-    {
+    void SetTailEffect(LightEffect effect, int startStrength, int endStrength, int cyclesPer10Seconds, float duration, int priority = 1) {
+        bool valid = lights.SetTailTime(duration, priority);
+        if(!valid){ return; }
         UCarData carData = SR.io.GetCarFromID(carID);
         if(carData == null) return;
-        
-        LightData[] lights = new LightData[1];
-        lights[0] = new LightData{ channel = LightChannel.TAIL, effect = effect, startStrength = startStrength, endStrength = endStrength, cyclesPer10Seconds = cyclesPer10Seconds };
-        SR.io.SetCarColoursComplex(carData, lights);
-        tailLightEndTime = Time.time + duration;
+        LightData[] lightarr = new LightData[1];
+        lightarr[0] = new LightData{ channel = LightChannel.TAIL, effect = effect, startStrength = startStrength, endStrength = endStrength, cyclesPer10Seconds = cyclesPer10Seconds };
+        SR.io.SetCarColoursComplex(carData, lightarr);
     }
     /// <summary>
     /// Check if the lights should be cleared based on the end time, and clear them if needed.
@@ -842,24 +792,41 @@ public class CarController : MonoBehaviour
     {
         UCarData carData = SR.io.GetCarFromID(carID);
         if(carData == null) return;
-        LightData[] lights;
+        LightData[] lightArr;
+        (bool head,bool engine,bool tail) = lights.CheckExpired();
         int channels = 0;
-        if(Time.time > tailLightEndTime  && tailLightsOn){ channels++; }
-        if(Time.time > frontLightEndTime && frontLightsOn){ channels += 2; }
+        if(tail){ channels++; }
+        if(head){ channels += 2; }
         if(channels == 0){ return; }
-        lights = new LightData[channels];
+        lightArr = new LightData[channels];
         if(channels == 1)
-        { lights[0] = LightData.ClearFor(LightChannel.TAIL); }
+        { lightArr[0] = LightData.ClearFor(LightChannel.TAIL); }
         else if(channels == 2){ 
-            lights[0] = LightData.ClearFor(LightChannel.FRONT_GREEN);
-            lights[1] = LightData.ClearFor(LightChannel.FRONT_RED);
+            lightArr[0] = LightData.ClearFor(LightChannel.FRONT_GREEN);
+            lightArr[1] = LightData.ClearFor(LightChannel.FRONT_RED);
         }
         else{
-            lights[0] = LightData.ClearFor(LightChannel.TAIL);
-            lights[1] = LightData.ClearFor(LightChannel.FRONT_GREEN);
-            lights[2] = LightData.ClearFor(LightChannel.FRONT_RED);
+            lightArr[0] = LightData.ClearFor(LightChannel.TAIL);
+            lightArr[1] = LightData.ClearFor(LightChannel.FRONT_GREEN);
+            lightArr[2] = LightData.ClearFor(LightChannel.FRONT_RED);
         }
-        SR.io.SetCarColoursComplex(carData, lights);
+        SR.io.SetCarColoursComplex(carData, lightArr);
+        if (engine)
+        {
+            int r = Mathf.RoundToInt(playerColor.r * 14f);
+            int g = Mathf.RoundToInt(playerColor.g * 14f);
+            int b = Mathf.RoundToInt(playerColor.b * 14f);
+            int endR = Mathf.RoundToInt(r * 0.8f);
+            int endG = Mathf.RoundToInt(g * 0.8f);
+            int endB = Mathf.RoundToInt(b * 0.8f);
+            lightArr = new LightData[3]{
+                new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = r, endStrength = endR, cyclesPer10Seconds = 4 },
+                new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = g, endStrength = endG, cyclesPer10Seconds = 4 },
+                new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = b, endStrength = endB, cyclesPer10Seconds = 4 }
+            };
+            SR.io.SetCarColoursComplex(carData, lightArr);
+        }
+
     }
     
     /// <summary>
@@ -891,13 +858,14 @@ public class CarController : MonoBehaviour
     {
         // Apply 3.5s complete stop
         AddSpeedModifier(-3000, false, 3.5f, "Disabled");
-        SetTailEffect(LightEffect.THROB, 14, 1, 16, 3.5f);
+        SetTailEffect(LightEffect.THROB, 14, 1, 16, 3.5f, 99);
         SetHeadLights(new LightData[] {
             new LightData{ channel = LightChannel.FRONT_RED, effect = LightEffect.THROB, startStrength = 14, endStrength = 1, cyclesPer10Seconds = 16 },
             LightData.ClearFor(LightChannel.FRONT_GREEN)
-        }, 3.5f);
+        }, 3.5f, 99);
         
         // Start flashing red engine light
+        lights.SetEngineTime(3.5f, 99); //override engine for duration of disable with highest priority to ensure it shows even if other effects are trying to change the engine color
         UCarData carData = SR.io.GetCarFromID(carID);
         if(carData != null){
             LightData[] disabledEngine = new LightData[3]{
@@ -927,24 +895,6 @@ public class CarController : MonoBehaviour
         // Clear all speed modifiers after disable wears off
         speedModifiers.Clear();
         UpdateSlowVFX(0f); // Reset VFX
-        
-        // Restore player color lights
-        RestorePlayerColorEngineLight();
-    }
-    
-    /// <summary>
-    /// Restore the car lights to the player's color
-    /// </summary>
-    void RestorePlayerColorEngineLight()
-    {
-        UCarData carData = SR.io.GetCarFromID(carID);
-        if(carData == null) return;
-        
-        int r = Mathf.RoundToInt(playerColor.r * 14f);
-        int g = Mathf.RoundToInt(playerColor.g * 14f);
-        int b = Mathf.RoundToInt(playerColor.b * 14f);
-        
-        SR.io.SetCarEngineLight(carData, r, g, b);
     }
 #endregion
     
@@ -973,5 +923,45 @@ class SpeedModifer{
         this.isPercentage = isPercentage;
         this.time = time;
         this.ID = ID;
+    }
+}
+class LightStructure
+{
+    float headEndTime, engineEndTime, tailEndTime;
+    bool headOn, engineCustom, tailOn;
+    int headPriority, enginePriority, tailPriority;
+    public void Reset()
+    {
+        headEndTime = 0; engineEndTime = 0; tailEndTime = 0;
+        headOn = false; engineCustom = false; tailOn = false;
+        headPriority = 0; enginePriority = 0; tailPriority = 0;
+    }
+    public bool SetHeadTime(float duration, int priority){
+        if(priority < headPriority){ return false; } // Don't override if lower priority than current effect
+        headEndTime = Time.time + duration;
+        headOn = true;
+        headPriority = priority;
+        return true;
+    }
+    public bool SetEngineTime(float duration, int priority) {
+        if(priority < enginePriority){ return false; } // Don't override if lower priority than current effect
+        engineEndTime = Time.time + duration;
+        engineCustom = true;
+        enginePriority = priority;
+        return true;
+    }
+    public bool SetTailTime(float duration, int priority){
+        if(priority < tailPriority){ return false; } // Don't override if lower priority than current effect
+        tailEndTime = Time.time + duration;
+        tailOn = true;
+        tailPriority = priority;
+        return true;
+    }
+    public (bool head, bool engineCustom, bool tail) CheckExpired(){
+        bool h = false, e = false, t = false;
+        if(Time.time > headEndTime && headOn){ h = true; headOn = false; headPriority = 0; }
+        if(Time.time > engineEndTime && engineCustom){ e = true; engineCustom = false; enginePriority = 0; }
+        if(Time.time > tailEndTime && tailOn){ t = true; tailOn = false; tailPriority = 0; }
+        return (h,e,t); //true if effect expired and light should be cleared, false if effect still active
     }
 }
