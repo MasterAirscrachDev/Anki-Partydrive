@@ -90,7 +90,7 @@ public class CarsManagement : MonoBehaviour
                 int R = (int)(color.r * 200);
                 int G = (int)(color.g * 200);
                 int B = (int)(color.b * 200);
-                carInterface.SetCarColours(carInterface.cars[i], R, G, B);
+                carInterface.SetCarEngineLight(carInterface.cars[i], R, G, B);
             }else{
                 LightData[] colors = new LightData[3];
                 colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 20, endStrength = 0, cyclesPer10Seconds = 6 };

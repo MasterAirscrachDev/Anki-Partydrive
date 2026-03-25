@@ -86,7 +86,7 @@ public class CarInteraface : MonoBehaviour
         SR.cet.SetOffset(car.id, lane);
     }
     
-    public void SetCarColours(UCarData car, int r, int g, int b){ // 0-14
+    public void SetCarEngineLight(UCarData car, int r, int g, int b){ // 0-14
         ApiCallV2(SV_CAR_S_LIGHTS, $"{car.id}:{r}:{g}:{b}");
     }
     public void SetCarColoursComplex(UCarData car, LightData[] lights){
@@ -251,8 +251,8 @@ public class CarInteraface : MonoBehaviour
         
         LightData[] colors = new LightData[3];
         //Partylights
-        colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 10 };
-        colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 8 };
+        colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 8 };
+        colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 7 };
         colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 6 };
         for(int i = 0; i < cars.Length; i++){ 
             //if the car was not in the previous list, send the lights

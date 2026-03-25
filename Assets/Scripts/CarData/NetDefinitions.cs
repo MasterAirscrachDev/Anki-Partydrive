@@ -22,6 +22,7 @@ namespace OverdriveServer{
             public bool charging {get; set;} //Is On Charger (should take priority over onTrack)
             public bool onTrack {get; set;} //Is the car on the track (doesnt seem very useful) (Addendum: goated)
             public int batteryStatus {get; set;} //0 = normal, 1 = charged, -1 = low battery
+            public bool hasPFeatures {get; set;} //Does the car have Partydrive features (newer firmware)
         }
         [System.Serializable]
         public class AvailableCarData{
@@ -85,7 +86,11 @@ namespace OverdriveServer{
             public bool validated {get; set;} //Is the piece validated (true = validated, false = not validated)
         }
         [System.Serializable]
-        public enum LightChannel{ RED = 0, TAIL, BLUE, GREEN, FRONTL, FRONTR, LIGHT_COUNT }
+        //Notes: Tail light is red only
+        // FRONT lights have different behavior between Drive and Overdrive
+        // In Drive they act as left and right lights with a yellow color
+        // In overdrive they act as red and green, shared across both lights, so you can have both red and green on at the same time but you cant have different colors on each light
+        public enum LightChannel{ RED = 0, TAIL = 1, BLUE = 2, GREEN = 3, FRONT_RED = 4, FRONT_L = 4, FRONT_GREEN = 5, FRONT_R = 5, LIGHT_COUNT }
         // STEADY = Simply set the light intensity to 'start' value
         // FADE = Fade intensity from 'start' to 'end'
         // THROB = Fade intensity from 'start' to 'end' and back to 'start'
@@ -98,9 +103,17 @@ namespace OverdriveServer{
         public class LightData{
             public LightChannel channel {get; set;} //Light channel (see LightChannel)
             public LightEffect effect {get; set;} //Light effect (see LightEffect)
-            public int startStrength {get; set;} //Start strength (0-255)
-            public int endStrength {get; set;} //End strength (0-255)
-            public int cyclesPer10Seconds {get; set;} //Cycles per 10 seconds (0-255)
+            public int startStrength {get; set;} //The starting intensity (0-14) or starting time (0-11) for this effect
+            public int endStrength {get; set;} //The ending intensity (0-14) or ending time (0-11) for this effect
+            public int cyclesPer10Seconds {get; set;} //Cycles per 10 seconds (0-255) (10 = 1 cycle per second, 100 = 10 cycles per second)
+            /// <summary>
+            /// Utility function to create a LightData that clears the specified channel (sets it to 0 intensity with a steady effect)
+            /// </summary>
+            /// <param name="channel">The channel to clear</param>
+            /// <returns></returns>
+            public static LightData ClearFor(LightChannel channel){
+                return new LightData{channel = channel, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0};
+            }
         }
         
         // Event types for webhooks
@@ -108,7 +121,7 @@ namespace OverdriveServer{
         EVENT_UTILITY_LOG = "utility_log", //Utility log string
         EVENT_CAR_LOCATION = "car_location", //Car location data (see LocationData)
         EVENT_CAR_TRANSITION = "car_transition", //Car transition data (see TransitionData)
-        EVENT_CAR_SEGMENT = "car_segment", //Car segment data (see NetSegment)
+        EVENT_CAR_SEGMENT = "car_segment", //Car segment data, most accurate, extrapolated from both Location and Transition (see SegmentData)
         EVENT_CAR_DELOCALIZED = "car_delocalized", //Car delocalized (currently not used, see MSG_CAR_DELOCALIZED for the time being)
         EVENT_CAR_TRACKING_UPDATE = "car_tracking_update", //Car tracking update (see CarLocationData)
         EVENT_TR_DATA = "track_data", //Track data (an array of SegmentData)
@@ -119,7 +132,7 @@ namespace OverdriveServer{
         SV_REFRESH_CONFIGS = "refresh_configs", //Refresh configs (used to reload the car configs, name, speedbalance ect)
         SV_LINEUP = "lineup", // Request lineup (used to lineup the cars on the track)
         SV_LINEUP_CANCEL = "lineup_cancel", // Cancel lineup (used to cancel the lineup)
-        SV_CAR_S_LIGHTS = "car_s_lights", //Simple lights [id:Red:Green:Blue] (colours are 0-255)
+        SV_CAR_S_LIGHTS = "car_s_lights", //Simple lights [id:Red:Green:Blue] (colours are 0-14)
         SV_CAR_C_LIGHTS = "car_c_lights", //Complex lights, a string id and array of LightData (see LightData) Min 1, Max 3
         SV_GET_TRACK = "get_track", //Get track (should return EVENT_TRACK_DATA with the track data)
         SV_TR_START_SCAN = "start_track_scan", //Start track scan (used to start a track scan)
@@ -132,6 +145,7 @@ namespace OverdriveServer{
         SV_CAR_UPDATE_MODEL = "car_update_model", //Doesnt work on most cars || Update car model [id:newModel] (experimental feature to change car model type)
         SV_CAR_DIRECT_DRIVE = "car_direct_drive", //Direct drive car [id:left:right] direct drive the wheel motors
         SV_ENABLE_DIRECT = "enable_direct", //Enable direct mode [id] (used to enable direct drive for a car)
+        SV_UPDATE_CAR_CONFIG = "update_car_config", //Update car config [id:newName:speedBalanceChange] (used to update a cars config)
         SV_CLIENT_CLOSED = "client_closed"; //Client closed (used to indicate a client has closed the connection intentionally)
         public static class UtilityMessages { //these are ids for the utility messages (parse them as strings)
             public const string MSG_CAR_CONNECTED = "cc", //:carID:name (used to indicate a car has connected)
@@ -139,7 +153,7 @@ namespace OverdriveServer{
             MSG_CAR_DELOCALIZED = "deloc", //:carID (used to indicate a car is not on the track)
             MSG_CAR_SPEED_UPDATE = "sud", //:carID:speed:trueSpeed (Something internal has changed the speed)
             MSG_CAR_POWERUP = "pup", //:carID (a car has driven on a FnF powerup)
-            MSG_TR_SCAN_UPDATE = "skup", //:carID:trackValidated (true/false/in-progress)
+            MSG_TR_SCAN_UPDATE = "skup", //:trackValidated (true/false/in-progress)
             MSG_CAR_STATUS_UPDATE = "csu", //:carID (a cars status has changed, call /cars)
             MSG_LINEUP = "lu", //:carID:remainingCars (if 0 then lineup is complete)
             MSG_CAR_FLASH_PROGRESS = "cfp", //:carID:currBytes:totalBytes (both ints, used to indicate the progress of a car flash)
@@ -162,4 +176,5 @@ namespace OverdriveServer{
             Unknown = 0
         }
     }
+    
 }

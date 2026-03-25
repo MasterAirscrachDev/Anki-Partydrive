@@ -11,6 +11,10 @@
 [X] Manual camera override in track options
 [X] Lock track in menu until cars are connected
 
+[ ] Improve light patterns
+  - low HP: Tail, Throb, 14, 3, 50
+  - Disabled: Red, Throb, 14, 1, 8 / FrontL, Throb, 14, 1, 16 / Tail, Throb, 14, 1, 16
+
 [ ] (Low Prio) Manual lineup option for larger tracks
 [ ] (Low Prio) Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
 [ ] (Low Prio) Proper Truck Support for CarSelectionV2
