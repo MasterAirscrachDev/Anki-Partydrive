@@ -114,6 +114,9 @@ namespace OverdriveServer{
             public static LightData ClearFor(LightChannel channel){
                 return new LightData{channel = channel, effect = LightEffect.STEADY, startStrength = 0, endStrength = 0, cyclesPer10Seconds = 0};
             }
+            public static LightData L(LightChannel channel, LightEffect effect, int startStrength, int endStrength, int cyclesPer10Seconds){
+                return new LightData{channel = channel, effect = effect, startStrength = startStrength, endStrength = endStrength, cyclesPer10Seconds = cyclesPer10Seconds};
+            }
         }
         
         // Event types for webhooks

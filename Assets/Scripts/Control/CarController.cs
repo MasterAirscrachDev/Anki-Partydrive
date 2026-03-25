@@ -125,7 +125,7 @@ public class CarController : MonoBehaviour
         // Track energy draining for taillight flash
         if(amount > 0 && isDamage){
             lastDamageTime = Time.time;
-            SetTailEffect(LightEffect.FLASH, 14, 0, 20, 0.5f);
+            SetTailEffect(LightEffect.FLASH, 1, 7, 100, 0.8f, 2);
             // Track damage taken in stats
             playerStats?.RecordDamageTaken(amount);
         }
@@ -278,6 +278,13 @@ public class CarController : MonoBehaviour
                 if(carData != null){
                     SR.io.ControlCar(carData, desiredSpeed, Mathf.RoundToInt(lane));
                 }
+            }
+            //if we have less than 25% energy, start flashing the taillights
+            if(GetEnergyPercent() < 0.25f){
+                float percentageOfQuarter = 1 - GetEnergyPercent() / 0.25f;
+                int flashRate = Mathf.FloorToInt(Mathf.Lerp(2, 50, percentageOfQuarter)); // Flash faster as energy gets lower
+                int maxFlashIntensity = Mathf.FloorToInt(Mathf.Lerp(7, 12, percentageOfQuarter)); // Flash more intensely as energy gets lower
+                SetTailEffect(LightEffect.THROB, 3, maxFlashIntensity, flashRate, 3f);
             }
         }
 
@@ -548,7 +555,7 @@ public class CarController : MonoBehaviour
                 break;
         }
     }
-
+#region ABILITIES
     void OnItembox() {
         if(currentAbility != Ability.None || doingPickupAnim){ return; } //already have an ability
         else {
@@ -559,37 +566,78 @@ public class CarController : MonoBehaviour
     void UseAbility() {
         if(currentAbility == Ability.None || doingPickupAnim || isDisabled){ return; } //no ability to use
         else {
-            // Flash headlights when using ability
-            LightData[] lights = new LightData[2];
-            lights[0] = new LightData{channel = LightChannel.FRONT_RED, effect= LightEffect.FLASH, startStrength= 8, endStrength = 11, cyclesPer10Seconds = 128};
-            lights[1] = new LightData{channel = LightChannel.FRONT_GREEN, effect= LightEffect.FLASH, startStrength= 4, endStrength = 11, cyclesPer10Seconds = 64};
-            SetHeadLights(lights, 2);
-            
-            //Debug.Log($"Car {carID} used ability {currentAbility}");
+            int customLights = 0;
             if(currentAbility == Ability.Missle3){ 
                 SR.gas.SpawnMissile(this, IspecialAim > 0.5f ? 3.6f : IspecialAim < -0.5f ? -0.5f : 1.8f);
-                SetAbilityImmediate(Ability.Missle2); 
+                SetAbilityImmediate(Ability.Missle2);   customLights = 1;
             }
             else if(currentAbility == Ability.Missle2){ 
                 SR.gas.SpawnMissile(this, IspecialAim > 0.5f ? 3.6f : IspecialAim < -0.5f ? -0.5f : 1.8f);
-                SetAbilityImmediate(Ability.Missle1); 
+                SetAbilityImmediate(Ability.Missle1); customLights = 1;
             }
             else if(currentAbility == Ability.Missle1){ 
                 SR.gas.SpawnMissile(this, IspecialAim > 0.5f ? 3.6f : IspecialAim < -0.5f ? -0.5f : 1.8f);
-                SetAbilityImmediate(Ability.None); 
+                SetAbilityImmediate(Ability.None); customLights = 1;
             }
-            else if(currentAbility == Ability.MissleSeeking3){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.MissleSeeking2);  }
-            else if(currentAbility == Ability.MissleSeeking2){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.MissleSeeking1);  }
-            else if(currentAbility == Ability.MissleSeeking1){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.None);  }
-            else if(currentAbility == Ability.EMP){ SR.gas.SpawnEMP(this); SetAbilityImmediate(Ability.None); }
-            else if(currentAbility == Ability.TrailDamage){ SR.gas.SpawnDamageTrail(this); SetAbilityImmediate(Ability.None); }
-            else if(currentAbility == Ability.TrailSlow){ SR.gas.SpawnSlowTrail(this); SetAbilityImmediate(Ability.None); }
-            else if(currentAbility == Ability.OrbitalLazer){ SR.gas.SpawnOrbitalLazer(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.MissleSeeking3){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.MissleSeeking2); customLights = 2; }
+            else if(currentAbility == Ability.MissleSeeking2){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.MissleSeeking1); customLights = 2; }
+            else if(currentAbility == Ability.MissleSeeking1){ SR.gas.SpawnSeekingMissile(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.None); customLights = 2; }
+            else if(currentAbility == Ability.EMP){ 
+                SR.gas.SpawnEMP(this); SetAbilityImmediate(Ability.None); 
+                customLights = 3;
+                // Flash blue engine light when using EMP
+                LightData[] empLights = new LightData[3];
+                empLights[0] = LightData.ClearFor(LightChannel.RED);
+                empLights[1] = LightData.ClearFor(LightChannel.GREEN);
+                empLights[2] = LightData.L(LightChannel.BLUE, LightEffect.THROB, 0, 14, 10);
+                SetEngineLight(empLights, 0.6f, 2); //chargeup effect
+                empLights = new LightData[1];
+                empLights[0] = LightData.L(LightChannel.BLUE, LightEffect.FLASH, 4, 9, 128);
+                StartCoroutine(SetEngineLightDelayed(empLights, 0.25f, 0.5f, 3)); // Flash blue after a short delay to sync with EMP explosion
+            }
+            else if(currentAbility == Ability.TrailDamage){ SR.gas.SpawnDamageTrail(this); SetAbilityImmediate(Ability.None); 
+                LightData[] lightarr = new LightData[1];
+                lightarr[0] = LightData.L(LightChannel.FRONT_RED, LightEffect.THROB, 4, 9, 15);
+                SetHeadLights(lightarr, 2f, 2); customLights = 3;
+            }
+            else if(currentAbility == Ability.TrailSlow){ SR.gas.SpawnSlowTrail(this); SetAbilityImmediate(Ability.None); 
+                LightData[] lightarr = new LightData[2];
+                lightarr[0] = LightData.L(LightChannel.FRONT_GREEN, LightEffect.THROB, 2, 8, 15 );
+                lightarr[1] = LightData.L(LightChannel.FRONT_RED, LightEffect.STEADY, 1, 3, 10 );
+                SetHeadLights(lightarr, 2f, 2); customLights = 3;
+            }
+            else if(currentAbility == Ability.OrbitalLazer){ SR.gas.SpawnOrbitalLazer(this); SetAbilityImmediate(Ability.None); 
+                LightData[] lightarr = new LightData[3];
+                lightarr[0] = LightData.L(LightChannel.RED, LightEffect.FADE, 0, 14, 10 );
+                lightarr[1] = LightData.L(LightChannel.BLUE, LightEffect.FADE, 0, 14, 10 );
+                lightarr[2] = LightData.L(LightChannel.GREEN, LightEffect.FADE, 0, 14, 10 );
+                SetHeadLights(lightarr, 1.1f, 2); customLights = 3;
+            }
             else if(currentAbility == Ability.CrasherBoost){ SR.gas.SpawnCrasherBoost(this, IspecialAim < -0.5f); SetAbilityImmediate(Ability.None);  }
             else if(currentAbility == Ability.Grappler){ SR.gas.SpawnGrappler(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.LightningPower){ SR.gas.SpawnLightningPower(this); SetAbilityImmediate(Ability.None); }
             else if(currentAbility == Ability.Recharger){ SR.gas.SpawnRecharger(this); SetAbilityImmediate(Ability.None); }
-            else if(currentAbility == Ability.TrafficCone){ SR.gas.SpawnTrafficCone(this); SetAbilityImmediate(Ability.None); }
+            else if(currentAbility == Ability.TrafficCone){ SR.gas.SpawnTrafficCone(this); SetAbilityImmediate(Ability.None);
+                LightData[] lightarr = new LightData[2];
+                lightarr[0] = LightData.L(LightChannel.FRONT_RED, LightEffect.FADE, 1, 14, 10 );
+                lightarr[1] = LightData.L(LightChannel.FRONT_GREEN, LightEffect.FADE, 2, 14, 10 );
+                SetHeadLights(lightarr, 0.5f, 2); customLights = 3;
+            }
+            if(customLights < 3){ //batched effects or abilites without defined lights
+                if(customLights == 1) { //regular missiles
+                    LightData[] lightarr = new LightData[2];
+                    lightarr[0] = LightData.L(LightChannel.FRONT_RED, LightEffect.FADE, 5, 14, 60 );
+                    lightarr[1] = LightData.L(LightChannel.FRONT_GREEN, LightEffect.FADE, 5, 14, 60 );
+                    SetHeadLights(lightarr, 0.5f, 2);
+                } else if(customLights == 2){ //seeking missiles
+
+                } else { // Fallback effect if no custom effect defined for this ability
+                    LightData[] lights = new LightData[2];
+                    lights[0] = new LightData{channel = LightChannel.FRONT_RED, effect= LightEffect.FLASH, startStrength= 8, endStrength = 11, cyclesPer10Seconds = 128};
+                    lights[1] = new LightData{channel = LightChannel.FRONT_GREEN, effect= LightEffect.FLASH, startStrength= 4, endStrength = 11, cyclesPer10Seconds = 64};
+                    SetHeadLights(lights, 1.5f);
+                }
+            }
         }
     }
     IEnumerator DoNewAbilityAnimation()
@@ -677,7 +725,7 @@ public class CarController : MonoBehaviour
         if(pcs != null)
         { pcs.SetAbilityIcon(currentAbility); }
     }
-    
+#endregion
 #region SLOW VFX CONTROL
     void InitSlowVFX()
     {
@@ -776,6 +824,21 @@ public class CarController : MonoBehaviour
         if(carData == null) return;
         SR.io.SetCarColoursComplex(carData, lightData);
     }
+    IEnumerator SetHeadLightsDelayed(LightData[] lightData, float duration, float delay, int priority = 1){
+        yield return new WaitForSeconds(delay);
+        SetHeadLights(lightData, duration, priority);
+    }
+    void SetEngineLight(LightData[] lightData, float duration, int priority = 1){
+        bool valid = lights.SetEngineTime(duration, priority);
+        if(!valid){ return; }
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData == null) return;
+        SR.io.SetCarColoursComplex(carData, lightData);
+    }
+    IEnumerator SetEngineLightDelayed(LightData[] lightData, float duration, float delay, int priority = 1){
+        yield return new WaitForSeconds(delay);
+        SetEngineLight(lightData, duration, priority);
+    }
     void SetTailEffect(LightEffect effect, int startStrength, int endStrength, int cyclesPer10Seconds, float duration, int priority = 1) {
         bool valid = lights.SetTailTime(duration, priority);
         if(!valid){ return; }
@@ -784,6 +847,10 @@ public class CarController : MonoBehaviour
         LightData[] lightarr = new LightData[1];
         lightarr[0] = new LightData{ channel = LightChannel.TAIL, effect = effect, startStrength = startStrength, endStrength = endStrength, cyclesPer10Seconds = cyclesPer10Seconds };
         SR.io.SetCarColoursComplex(carData, lightarr);
+    }
+    IEnumerator SetTailEffectDelayed(LightEffect effect, int startStrength, int endStrength, int cyclesPer10Seconds, float duration, float delay, int priority = 1) {
+        yield return new WaitForSeconds(delay);
+        SetTailEffect(effect, startStrength, endStrength, cyclesPer10Seconds, duration, priority);
     }
     /// <summary>
     /// Check if the lights should be cleared based on the end time, and clear them if needed.
@@ -797,7 +864,7 @@ public class CarController : MonoBehaviour
         int channels = 0;
         if(tail){ channels++; }
         if(head){ channels += 2; }
-        if(channels == 0){ return; }
+        if(channels == 0 && !engine){ return; }
         lightArr = new LightData[channels];
         if(channels == 1)
         { lightArr[0] = LightData.ClearFor(LightChannel.TAIL); }
@@ -805,7 +872,7 @@ public class CarController : MonoBehaviour
             lightArr[0] = LightData.ClearFor(LightChannel.FRONT_GREEN);
             lightArr[1] = LightData.ClearFor(LightChannel.FRONT_RED);
         }
-        else{
+        else if(channels == 3){
             lightArr[0] = LightData.ClearFor(LightChannel.TAIL);
             lightArr[1] = LightData.ClearFor(LightChannel.FRONT_GREEN);
             lightArr[2] = LightData.ClearFor(LightChannel.FRONT_RED);
@@ -865,16 +932,12 @@ public class CarController : MonoBehaviour
         }, 3.5f, 99);
         
         // Start flashing red engine light
-        lights.SetEngineTime(3.5f, 99); //override engine for duration of disable with highest priority to ensure it shows even if other effects are trying to change the engine color
-        UCarData carData = SR.io.GetCarFromID(carID);
-        if(carData != null){
-            LightData[] disabledEngine = new LightData[3]{
+        LightData[] disabledEngine = new LightData[3]{
                 new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 14, endStrength = 1, cyclesPer10Seconds = 8 },
                 LightData.ClearFor(LightChannel.GREEN),
                 LightData.ClearFor(LightChannel.BLUE)
             };
-            SR.io.SetCarColoursComplex(carData, disabledEngine);
-        }
+        SetEngineLight(disabledEngine, 3.5f, 99);
         
         // Recharge to 50% energy over the disable duration
         float startEnergy = energy;
@@ -928,7 +991,7 @@ class SpeedModifer{
 class LightStructure
 {
     float headEndTime, engineEndTime, tailEndTime;
-    bool headOn, engineCustom, tailOn;
+    public bool headOn, engineCustom, tailOn;
     int headPriority, enginePriority, tailPriority;
     public void Reset()
     {
