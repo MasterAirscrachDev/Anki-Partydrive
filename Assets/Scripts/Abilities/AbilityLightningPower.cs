@@ -93,13 +93,13 @@ public class AbilityLightningPower : MonoBehaviour
         
         
         // Apply 80% slow for 4 seconds
-        target.AddSpeedModifier(-60, true, 4f, "LightningSlow");
+        target.AddSpeedModifier(-50, true, 5f, "LightningSlow");
         
         // Show lightning for 0.5 seconds
         yield return new WaitForSeconds(0.5f);
         
         // Disperse effect - scale up and fade
-        float disperseTime = 0.5f;
+        float disperseTime = 0.7f;
         elapsed = 0f;
         Vector3 originalScale = cloud.transform.localScale;
         

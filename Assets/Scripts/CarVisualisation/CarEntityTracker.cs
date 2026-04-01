@@ -130,12 +130,22 @@ public class CarEntityTracker : MonoBehaviour
         }
         return Vector3.zero; //car not found
     }
+    /// <summary>
+    /// Get the transform where the car appears to be
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public Transform GetCarVisualTransform(string id){
         if(trackers.ContainsKey(id)){
             return trackers[id].GetVisualTransform();
         }
         return null; //car not found
     }
+    /// <summary>
+    /// Get the transform where the car actually is (will be less smooth and will be slightly ahead of the visual transform)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public Transform GetCarRealTransform(string id){
         if(trackers.ContainsKey(id)){
             return trackers[id].transform;

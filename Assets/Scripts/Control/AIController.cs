@@ -43,7 +43,8 @@ public class AIController : MonoBehaviour
         { Ability.OrbitalLazer, AIAbilityUsageMode.Any },
         { Ability.Grappler, AIAbilityUsageMode.Ahead },
         { Ability.LightningPower, AIAbilityUsageMode.Any },
-        { Ability.TrafficCone, AIAbilityUsageMode.Any }
+        { Ability.TrafficCone, AIAbilityUsageMode.Any },
+        { Ability.IceBlast, AIAbilityUsageMode.Ahead },
     };
     
     // Aim mode table — Narrow abilities need lane alignment, Wide/Any do not
@@ -64,7 +65,8 @@ public class AIController : MonoBehaviour
         { Ability.OrbitalLazer, AIAbilityAimMode.Any },
         { Ability.Grappler, AIAbilityAimMode.Wide },
         { Ability.LightningPower, AIAbilityAimMode.Any },
-        { Ability.TrafficCone, AIAbilityAimMode.Narrow }
+        { Ability.TrafficCone, AIAbilityAimMode.Narrow },
+        { Ability.IceBlast, AIAbilityAimMode.Narrow },
     };
     // Start is called before the first frame update
     void Start()

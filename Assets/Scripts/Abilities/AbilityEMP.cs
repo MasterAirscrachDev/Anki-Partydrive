@@ -9,9 +9,11 @@ public class AbilityEMP : MonoBehaviour
     float lifetime = 0;
     bool activated = false;
     Material mat1, mat2;
+    AbilityController abilityController;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void Setup(AbilityController ab)
     {
+        abilityController = ab;
         mat1 = GetComponent<Renderer>().materials[0];
         mat2 = transform.GetChild(0).GetComponent<Renderer>().materials[0];
     }
@@ -36,7 +38,6 @@ public class AbilityEMP : MonoBehaviour
     }
     void ActivateEMP(){
         List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, hitRadius);
-        AbilityController abilityController = GetComponent<AbilityController>();
         CarController owner = abilityController.GetCarController();
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
@@ -45,6 +46,11 @@ public class AbilityEMP : MonoBehaviour
             // Report damage back to the ability owner
             abilityController?.ReportDamage(40f);
         }
+    }
+    void OnDestroy(){
+        // Clean up materials to prevent memory leaks
+        if(mat1 != null) Destroy(mat1);
+        if(mat2 != null) Destroy(mat2);
     }
     void OnDrawGizmosSelected()
     {

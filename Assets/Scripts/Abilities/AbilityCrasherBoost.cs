@@ -37,9 +37,7 @@ public class AbilityCrasherBoost : MonoBehaviour
         
         // Check if close enough to hit
         if(Vector3.Distance(transform.position, targetTransform.position) < 1f)
-        {
-            OnHitTarget();
-        }
+        { OnHitTarget(); }
     }
     
     void OnHitTarget()
@@ -57,10 +55,7 @@ public class AbilityCrasherBoost : MonoBehaviour
             // Start coroutine to apply slow after boost ends, then destroy
             StartCoroutine(ApplySlowThenDestroy(targetCar));
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        else { Destroy(gameObject); }
     }
     
     IEnumerator ApplySlowThenDestroy(CarController targetCar)

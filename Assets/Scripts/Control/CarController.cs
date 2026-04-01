@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Threading.Tasks;
 using static OverdriveServer.NetStructures;
 
 public class CarController : MonoBehaviour
@@ -12,7 +11,7 @@ public class CarController : MonoBehaviour
     [SerializeField] string carID; // Currently connected car ID
     [SerializeField] string desiredCarID; // Car ID we want to connect to
     bool isSetup = false;
-    float energy = 75, lastEnergyDrainTime, lastDamageTime, lastTickTime;
+    float energy = 75, lastEnergyDrainTime, lastTickTime;
     int oldSpeed; float oldLane;
     bool wasBoostLastFrame = false, isDisabled = false, locked = true, isAI = false;
     Color playerColor = Color.white;
@@ -124,7 +123,6 @@ public class CarController : MonoBehaviour
         lastEnergyDrainTime = Time.time;
         // Track energy draining for taillight flash
         if(amount > 0 && isDamage){
-            lastDamageTime = Time.time;
             SetTailEffect(LightEffect.FLASH, 1, 7, 100, 0.8f, 2);
             // Track damage taken in stats
             playerStats?.RecordDamageTaken(amount);
@@ -436,6 +434,13 @@ public class CarController : MonoBehaviour
     public (int, float) GetMetrics(){ return (speed, lane); }
     public string GetDesiredCarID(){ return desiredCarID; }
     public string GetPlayerName(){ return playerName; }
+    public ModelName GetCarModel(){ 
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData != null){
+            return carData.modelName;
+        }
+        return ModelName.Unknown;
+    }
     public bool IsCarConnected(){ return !string.IsNullOrEmpty(carID) && carID == desiredCarID; }
     public bool IsCarAI(){ return isAI; }
     public Ability GetCurrentAbility(){ return currentAbility; }
@@ -623,6 +628,10 @@ public class CarController : MonoBehaviour
                 lightarr[1] = LightData.L(LightChannel.FRONT_GREEN, LightEffect.FADE, 2, 14, 10 );
                 SetHeadLights(lightarr, 0.5f, 2); customLights = 3;
             }
+            else if(currentAbility == Ability.IceBlast){ SR.gas.SpawnIceberg(this); SetAbilityImmediate(Ability.None); 
+            }
+            else if(currentAbility == Ability.Overdrive){ SR.gas.SpawnOverdrive(this); SetAbilityImmediate(Ability.None); 
+            }
             if(customLights < 3){ //batched effects or abilites without defined lights
                 if(customLights == 1) { //regular missiles
                     LightData[] lightarr = new LightData[2];
@@ -654,7 +663,8 @@ public class CarController : MonoBehaviour
             Ability.CrasherBoost,
             Ability.Grappler,
             Ability.Recharger,
-            Ability.TrafficCone
+            Ability.TrafficCone,
+            Ability.IceBlast
         };
         
         // First place abilities (worse items)
@@ -667,8 +677,12 @@ public class CarController : MonoBehaviour
         // Last place abilities (better items)
         Ability[] lastPlaceAbilities = new Ability[] { 
             Ability.MissleSeeking3,
+            Ability.MissleSeeking3,
             Ability.CrasherBoost,
-            Ability.Grappler
+            Ability.Grappler,
+            Ability.Grappler,
+            Ability.IceBlast,
+            Ability.Overdrive
         };
         
         //over 1 second, cycle through abilities every 0.1 second (always use default list for animation)
@@ -995,7 +1009,7 @@ class LightStructure
     int headPriority, enginePriority, tailPriority;
     public void Reset()
     {
-        headEndTime = 0; engineEndTime = 0; tailEndTime = 0;
+        headEndTime = Time.time + 0.25f; engineEndTime = Time.time + 0.25f; tailEndTime = Time.time + 0.25f;
         headOn = false; engineCustom = false; tailOn = false;
         headPriority = 0; enginePriority = 0; tailPriority = 0;
     }
@@ -1027,4 +1041,8 @@ class LightStructure
         if(Time.time > tailEndTime && tailOn){ t = true; tailOn = false; tailPriority = 0; }
         return (h,e,t); //true if effect expired and light should be cleared, false if effect still active
     }
+}
+enum CarStatus
+{
+    Ghost = 0, Frozen = 1, Scrambled, Locked, 
 }

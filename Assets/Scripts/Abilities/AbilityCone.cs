@@ -14,7 +14,7 @@ public class AbilityCone : MonoBehaviour
     [SerializeField] float knockUpForce = 4f;
     [SerializeField] float knockUpTorque = 10f;
     
-    CarController owner;
+    AbilityController ab;
     bool isHit = false;
     float spawnTime;
 
@@ -23,9 +23,9 @@ public class AbilityCone : MonoBehaviour
         spawnTime = Time.time;
     }
 
-    public void Setup(CarController ownerController)
+    public void Setup(AbilityController ability)
     {
-        owner = ownerController;
+        ab = ability;
         SR.gas?.RegisterHazard(transform);
     }
     
@@ -58,7 +58,7 @@ public class AbilityCone : MonoBehaviour
         
         foreach (CarController hit in hits)
         {
-            if (hit == owner) continue; // Don't hit the owner
+            if (hit == ab.GetCarController()) continue; // Don't hit the owner
             
             // Apply damage and slow
             ApplyEffect(hit);

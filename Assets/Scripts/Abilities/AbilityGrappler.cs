@@ -97,15 +97,13 @@ public class AbilityGrappler : MonoBehaviour
             userCar.AddSpeedModifier(20, true, 8f, "GrapplerBoost");
             
             // Apply 20% reduction to target for 8s
-            targetCar.AddSpeedModifier(-20, true, 8f, "GrapplerSlow");
+            targetCar.AddSpeedModifier(-30, true, 8f, "GrapplerSlow");
             
             // Destroy the grappler after the effect duration
             StartCoroutine(DestroyAfterDuration(8f));
         }
         else
-        {
-            Destroy(gameObject);
-        }
+        { Destroy(gameObject); }
     }
     
     IEnumerator DestroyAfterDuration(float duration)

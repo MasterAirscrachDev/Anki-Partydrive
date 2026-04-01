@@ -16,6 +16,8 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject rechargerPrefab;
     [SerializeField] GameObject disabledPrefab;
     [SerializeField] GameObject trafficConePrefab;
+    [SerializeField] GameObject icebergPrefab;
+    [SerializeField] GameObject overdrivePrefab;
     
     // --- Hazard position tracking for AI avoidance ---
     readonly List<Transform> activeHazards = new List<Transform>();
@@ -77,8 +79,9 @@ public class GlobalAbilitySystem : MonoBehaviour
     public void SpawnMissile(CarController control, Vector3 target) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject missile = Instantiate(missilePrefab, start, Quaternion.identity);
-        missile.GetComponent<AbilityController>().Setup(control);
-        missile.GetComponent<AbilityMissile>().Setup(target);
+        AbilityController ab = missile.GetComponent<AbilityController>();
+        ab.Setup(control);
+        missile.GetComponent<AbilityMissile>().Setup(ab, target);
         SR.sfx?.PlaySFX(SFXEvent.MissileLaunch);
     }
     /// <summary>
@@ -90,12 +93,13 @@ public class GlobalAbilitySystem : MonoBehaviour
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject missile = Instantiate(missilePrefab);
         missile.transform.position = start;
-        missile.GetComponent<AbilityController>().Setup(control);
+        AbilityController ab = missile.GetComponent<AbilityController>();
+        ab.Setup(control);
         TrackCoordinate tc = SR.cet.GetCarTrackCoordinate(control.GetID());
 
         Vector3 targetPos = SR.track.TrackCoordinateToWorldspace(tc + distanceForward );
 
-        missile.GetComponent<AbilityMissile>().Setup(targetPos);
+        missile.GetComponent<AbilityMissile>().Setup(ab, targetPos);
         
     }
     /// <summary>
@@ -107,8 +111,9 @@ public class GlobalAbilitySystem : MonoBehaviour
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject missile = Instantiate(missilePrefab);
         missile.transform.position = start;
-        missile.GetComponent<AbilityController>().Setup(control);
-        missile.GetComponent<AbilityMissile>().Setup(SR.cet.GetCarRealTransform(targetID));
+        AbilityController ab = missile.GetComponent<AbilityController>();
+        ab.Setup(control);
+        missile.GetComponent<AbilityMissile>().Setup(ab, SR.cet.GetCarRealTransform(targetID));
     }
     /// <summary>
     /// Spawns a seeking missile from the given car towards the next car ahead or behind.
@@ -119,7 +124,8 @@ public class GlobalAbilitySystem : MonoBehaviour
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject missile = Instantiate(missilePrefab);
         missile.transform.position = start;
-        missile.GetComponent<AbilityController>().Setup(control);
+        AbilityController ab = missile.GetComponent<AbilityController>();
+        ab.Setup(control);
         
         string targetID;
         if(targetBehind) {
@@ -129,7 +135,7 @@ public class GlobalAbilitySystem : MonoBehaviour
         }
         
         if(targetID == null) return;
-        missile.GetComponent<AbilityMissile>().Setup(SR.cet.GetCarRealTransform(targetID));
+        missile.GetComponent<AbilityMissile>().Setup(ab, SR.cet.GetCarRealTransform(targetID));
         
     }
     public void SpawnMissileParticle(Vector3 position, bool seeking) {
@@ -140,21 +146,27 @@ public class GlobalAbilitySystem : MonoBehaviour
     public void SpawnEMP(CarController control) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject emp = Instantiate(empPrefab, start, Quaternion.identity);
-        emp.GetComponent<AbilityController>().Setup(control);
+        AbilityController ab = emp.GetComponent<AbilityController>();
+        ab.Setup(control);
+        ab.GetComponent<AbilityEMP>().Setup(ab);
         SR.sfx?.PlaySFX(SFXEvent.EMPActivate);
     }
     public void SpawnDamageTrail(CarController control) {
         Transform model = SR.cet.GetCarVisualTransform(control.GetID());
         GameObject trail = Instantiate(damageTrailPrefab, model.position, model.rotation);
         trail.transform.parent = model;
-        trail.GetComponent<AbilityController>().Setup(control);
+        AbilityController ab = trail.GetComponent<AbilityController>();
+        ab.Setup(control);
+        trail.GetComponent<AbilityTrailEmitter>().Setup(ab);
         SR.sfx?.PlaySFX(SFXEvent.TrailDrop);
     }
     public void SpawnSlowTrail(CarController control) {
         Transform model = SR.cet.GetCarVisualTransform(control.GetID());
         GameObject trail = Instantiate(slowTrailPrefab, model.position, model.rotation);
         trail.transform.parent = model;
-        trail.GetComponent<AbilityController>().Setup(control);
+        AbilityController ab = trail.GetComponent<AbilityController>();
+        ab.Setup(control);
+        trail.GetComponent<AbilityTrailEmitter>().Setup(ab);
         SR.sfx?.PlaySFX(SFXEvent.TrailDrop);
     }
     public void SpawnOrbitalLazer(CarController control) {
@@ -168,8 +180,9 @@ public class GlobalAbilitySystem : MonoBehaviour
         if(targetTransform == null) return;
         
         GameObject lazer = Instantiate(orbitalLazerPrefab);
-        lazer.GetComponent<AbilityController>().Setup(control);
-        lazer.GetComponent<AbilityOrbitalLazer>().Setup(targetTransform, firstPlaceCar);
+        AbilityController ab = lazer.GetComponent<AbilityController>();
+        ab.Setup(control);
+        lazer.GetComponent<AbilityOrbitalLazer>().Setup(ab, targetTransform, firstPlaceCar);
         SR.sfx?.PlaySFX(SFXEvent.OrbitalLaserCharge);
     }
     
@@ -260,7 +273,9 @@ public class GlobalAbilitySystem : MonoBehaviour
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject disabled = Instantiate(disabledPrefab);
         disabled.transform.position = start;
-        disabled.GetComponent<AbilityDisabled>().Setup(control, duration);
+        AbilityController ab = disabled.GetComponent<AbilityController>();
+        ab.Setup(control);
+        disabled.GetComponent<AbilityDisabled>().Setup(ab, duration);
     }
     
     /// <summary>
@@ -274,8 +289,32 @@ public class GlobalAbilitySystem : MonoBehaviour
         if(carTransform == null) return;
         
         GameObject cone = Instantiate(trafficConePrefab, carTransform.position, carTransform.rotation);
-        cone.GetComponent<AbilityController>().Setup(control);
-        cone.GetComponent<AbilityCone>().Setup(control);
+        AbilityController ab = cone.GetComponent<AbilityController>();
+        ab.Setup(control);
+        cone.GetComponent<AbilityCone>().Setup(ab);
+    }
+
+    public void SpawnIceberg(CarController control, float size = 0.35f, float duration = 4f, float speed = 2.5f) {
+        if(icebergPrefab == null) return;
+        
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        
+        GameObject iceberg = Instantiate(icebergPrefab, carTransform.position, carTransform.rotation);
+        AbilityController ab = iceberg.GetComponent<AbilityController>();
+        ab.Setup(control);
+        iceberg.GetComponent<AbilityFreeze>().Setup(ab, size, duration, speed);
+    }
+    public void SpawnOverdrive(CarController control) {
+        if(overdrivePrefab == null) return;
+        
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        
+        GameObject overdrive = Instantiate(overdrivePrefab, carTransform.position, carTransform.rotation);
+        AbilityController ab = overdrive.GetComponent<AbilityController>();
+        ab.Setup(control);
+        overdrive.GetComponent<AbilityOverdrive>().Setup(ab);
     }
 
     [System.Serializable]

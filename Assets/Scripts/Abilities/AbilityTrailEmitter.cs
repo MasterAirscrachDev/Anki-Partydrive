@@ -8,9 +8,11 @@ public class AbilityTrailEmitter : MonoBehaviour
     [SerializeField] float hazardRange = 0.1f;
     [SerializeField] float lifetime = 3f;
     Vector3 lastEmitPosition;
+    AbilityController abilityController;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void Setup(AbilityController ab)
     {
+        abilityController = ab;
         lastEmitPosition = transform.position;
         Destroy(gameObject, emitterLifetime);
     }
@@ -23,7 +25,7 @@ public class AbilityTrailEmitter : MonoBehaviour
             trail.transform.position = transform.position;
             trail.transform.Rotate(Vector3.up, transform.eulerAngles.y);
             AbilityHazardZone hazard = trail.GetComponent<AbilityHazardZone>();
-            hazard.Setup(hazardRange, lifetime, GetComponent<AbilityController>().GetCarController());
+            hazard.Setup(hazardRange, lifetime, abilityController.GetCarController());
             lastEmitPosition = transform.position;
         }
     }

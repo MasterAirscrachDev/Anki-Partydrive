@@ -10,14 +10,12 @@ public class AbilityDisabled : MonoBehaviour
     float duration = 3.5f;
     
     string userID;
-    CarController userCar;
     float elapsed = 0f;
     
-    public void Setup(CarController user, float duration = 3.5f)
+    public void Setup(AbilityController ab, float duration = 3.5f)
     {
         this.duration = duration;
-        userCar = user;
-        userID = user.GetID();
+        userID = ab.GetCarController().GetID();
         StartCoroutine(DisableTimer());
     }
 
