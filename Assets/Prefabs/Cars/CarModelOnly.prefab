@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7101938030601757835}
   - component: {fileID: 6229289622239444773}
   - component: {fileID: 8276563306577990541}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheels 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1372474858744158291
 GameObject:
@@ -101,7 +102,7 @@ GameObject:
   - component: {fileID: 1620993045995595149}
   - component: {fileID: 7646350647421645086}
   - component: {fileID: 7951933673756513256}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CarModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,6 +182,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1766816751501928147
 GameObject:
@@ -193,7 +195,7 @@ GameObject:
   - component: {fileID: 661456394143213695}
   - component: {fileID: 9006990665256882399}
   - component: {fileID: 2589764650339981775}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SupercarShock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -273,6 +275,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4365739505304124361
 GameObject:
@@ -285,7 +288,7 @@ GameObject:
   - component: {fileID: 8070439541726153002}
   - component: {fileID: 8715273845628833512}
   - component: {fileID: 1134784743605078066}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CarModelOnly
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -386,7 +389,7 @@ GameObject:
   - component: {fileID: 2798901911134396531}
   - component: {fileID: 4796157915250981431}
   - component: {fileID: 4246252150892639467}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SupercarShock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -466,6 +469,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &6195796302660708833
 GameObject:
@@ -478,7 +482,7 @@ GameObject:
   - component: {fileID: 8768167009778327510}
   - component: {fileID: 6901798984220578250}
   - component: {fileID: 788335455993738340}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheels 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -556,6 +560,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &6542393416149980308
 GameObject:
@@ -568,7 +573,7 @@ GameObject:
   - component: {fileID: 109469200255361435}
   - component: {fileID: 7025722450910069309}
   - component: {fileID: 4434928241550194753}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheels 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -646,6 +651,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7342377960515681285
 GameObject:
@@ -658,7 +664,7 @@ GameObject:
   - component: {fileID: 2926752901663174218}
   - component: {fileID: 9203714595359051687}
   - component: {fileID: 2447980593215190786}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheels 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -736,6 +742,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7804479182169437795
 GameObject:
@@ -748,7 +755,7 @@ GameObject:
   - component: {fileID: 566778310939876981}
   - component: {fileID: 1933559824843906563}
   - component: {fileID: 1893614062370808150}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Holo2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -828,4 +835,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

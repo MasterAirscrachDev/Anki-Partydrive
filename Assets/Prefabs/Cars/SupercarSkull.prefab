@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7490618291107859915}
   - component: {fileID: 7313823332636593030}
   - component: {fileID: 8669050293258319063}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SupercarSkull
   m_TagString: Untagged
   m_Icon: {fileID: 0}

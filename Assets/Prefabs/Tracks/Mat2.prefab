@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 264650282832276368}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mat2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 264650283470238895}
   - component: {fileID: 264650283470238889}
   - component: {fileID: 264650283470238888}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DriveMatAlpha
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,6 +136,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &264650283485904352
 GameObject:
@@ -148,7 +149,7 @@ GameObject:
   - component: {fileID: 264650283485904353}
   - component: {fileID: 264650283485904355}
   - component: {fileID: 264650283485904354}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DriveMat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,6 +226,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &610925908472641054
 GameObject:
@@ -236,7 +238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1527356950395369977}
   - component: {fileID: 154431189454903493}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +298,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6314243709178750139}
   - component: {fileID: 428225438340802329}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -356,7 +358,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1344216796043844975}
   - component: {fileID: 1758305391223712647}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -416,7 +418,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3328718459726178083}
   - component: {fileID: 8869651751069860913}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -476,7 +478,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5127593697766820608}
   - component: {fileID: 4098581163240649495}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -530,7 +532,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3413113447332731882}
   - component: {fileID: 4752396478722262010}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -584,7 +586,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7657583016718239596}
   - component: {fileID: 7997664222676363514}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -638,7 +640,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6470960376174133342}
   - component: {fileID: 5853488136456035233}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -692,7 +694,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6445725876513327183}
   - component: {fileID: 6785376856600243615}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -752,7 +754,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1648853202262570688}
   - component: {fileID: 921374237876173552}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -806,7 +808,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6608211470046059187}
   - component: {fileID: 4096696193052507230}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -860,7 +862,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4948570766784700419}
   - component: {fileID: 495250351324011099}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -920,7 +922,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1877952311335949934}
   - component: {fileID: 2694578636465160360}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -974,7 +976,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5377023632742638157}
   - component: {fileID: 7600317590252676140}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1030,7 +1032,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3354206922630946988}
   - component: {fileID: 7926082951426970476}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

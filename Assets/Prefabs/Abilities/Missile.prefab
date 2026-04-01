@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8586858445351312908}
   - component: {fileID: 6056661436097231489}
   - component: {fileID: 2186532429997340112}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Missile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,6 +91,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &6056661436097231489
 MonoBehaviour:

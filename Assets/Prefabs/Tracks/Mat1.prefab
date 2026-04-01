@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1667951429882058341}
   - component: {fileID: 2582047295669922789}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -66,7 +66,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7454508302542549950}
   - component: {fileID: 6109190021250291853}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,7 +120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1631218375703297402}
   - component: {fileID: 3296824594564914692}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,7 +176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6723993518769187958}
   - component: {fileID: 1298822764248494672}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -230,7 +230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3508463083327424697}
   - component: {fileID: 6713677732023551907}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -290,7 +290,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6154176320672850814}
   - component: {fileID: 5559004250971698242}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +345,7 @@ GameObject:
   - component: {fileID: 7930937303074521709}
   - component: {fileID: 7930937303074521699}
   - component: {fileID: 7930937303074521708}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DriveMatAlpha
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -422,6 +422,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7930937303872701882
 GameObject:
@@ -434,7 +435,7 @@ GameObject:
   - component: {fileID: 7930937303872701881}
   - component: {fileID: 7930937303872701887}
   - component: {fileID: 7930937303872701880}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DriveMat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -511,6 +512,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7930937304942955742
 GameObject:
@@ -521,7 +523,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7930937304942955741}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mat1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -563,7 +565,7 @@ GameObject:
   m_Component:
   - component: {fileID: 635049277337173195}
   - component: {fileID: 4233410416981443188}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -631,7 +633,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4006616788336406376}
   - component: {fileID: 6268405401398752133}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment7
   m_TagString: Untagged
   m_Icon: {fileID: 0}

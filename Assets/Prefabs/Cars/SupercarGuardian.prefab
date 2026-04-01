@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5536014935789446487}
   - component: {fileID: 8808779758717014798}
   - component: {fileID: 6158851098633134996}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SupercarGuardian
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,4 +91,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

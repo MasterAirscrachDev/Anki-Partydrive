@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1936079140244588907}
   - component: {fileID: 6267179594743580781}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackSlot (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,6 +133,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4556589103512767978
 GameObject:
@@ -146,7 +147,7 @@ GameObject:
   - component: {fileID: 277053411142408437}
   - component: {fileID: 2611170610266827839}
   - component: {fileID: 3497201729220901314}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackTurn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,6 +228,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &3497201729220901314
 MonoBehaviour:
@@ -267,7 +269,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8583248082988099237}
   - component: {fileID: 9134459424657914765}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackSlot (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -312,7 +314,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3164489948248328207}
   - component: {fileID: 5905317879717049735}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

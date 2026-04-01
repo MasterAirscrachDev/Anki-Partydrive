@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4829922877376831120}
   - component: {fileID: 8439927549703958704}
   - component: {fileID: 6784748121857621551}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ElectroPulse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,6 +91,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &8439927549703958704
 MonoBehaviour:
@@ -220,7 +221,7 @@ GameObject:
   - component: {fileID: 3352875513932349053}
   - component: {fileID: 8174161250375783514}
   - component: {fileID: 5839551461908067415}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FlatHex (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,4 +298,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

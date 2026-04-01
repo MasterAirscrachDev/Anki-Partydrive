@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5226314856095737557}
   - component: {fileID: 6264374596006445620}
   - component: {fileID: 3624414187486314834}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SupercarNukePhantom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,4 +92,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

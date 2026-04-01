@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8925881168653554734}
   - component: {fileID: 5682148376190293249}
   - component: {fileID: 4680241452654207513}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AbilityOverdrive
   m_TagString: Untagged
   m_Icon: {fileID: 0}

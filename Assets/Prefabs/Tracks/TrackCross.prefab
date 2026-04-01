@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2162063349420524236}
   - component: {fileID: 4171958748367746566}
   - component: {fileID: 645091757373128622}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackCrossShell1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2514479809911150547}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3452982128455003608}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2162063349420524236
 MeshFilter:
@@ -59,6 +59,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -80,9 +85,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &645091757373128622
 MonoBehaviour:
@@ -102,7 +109,9 @@ MonoBehaviour:
   rightPoints:
   - {x: 0.2, y: 0, z: -0.5}
   - {x: 0.2, y: 0, z: 0.5}
+  trackWidths: []
   flipped: 0
+  DEBUG_RenderSmoothCurve: 0
 --- !u!1 &2639290113408202594
 GameObject:
   m_ObjectHideFlags: 0
@@ -115,7 +124,7 @@ GameObject:
   - component: {fileID: 1748715408893551229}
   - component: {fileID: 4584761383077992119}
   - component: {fileID: 1060120276861312799}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackCross
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,6 +138,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2639290113408202594}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -140,7 +150,6 @@ Transform:
   - {fileID: 1456260666546292812}
   - {fileID: 3003596094712384873}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1748715408893551229
 MeshFilter:
@@ -167,6 +176,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -188,9 +202,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &1060120276861312799
 MonoBehaviour:
@@ -210,7 +226,9 @@ MonoBehaviour:
   rightPoints:
   - {x: 0.2, y: 0, z: -0.5}
   - {x: 0.2, y: 0, z: 0.5}
+  trackWidths: []
   flipped: 0
+  DEBUG_RenderSmoothCurve: 0
 --- !u!1 &3331216088293894204
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,7 +239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1456260666546292812}
   - component: {fileID: 3009724814404107977}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackSlot (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,13 +253,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3331216088293894204}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.049999803, y: 0, z: 0.05000004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3452982128455003608}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3009724814404107977
 MonoBehaviour:
@@ -266,7 +284,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6888333446892636456}
   - component: {fileID: 2871313894750889047}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,13 +298,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3577635988073650603}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.15000018, y: 0, z: 0.15000004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3452982128455003608}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2871313894750889047
 MonoBehaviour:
@@ -311,7 +329,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1773209554014944455}
   - component: {fileID: 3820145559894492962}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackSlot (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,13 +343,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6743121570962873905}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.0500001, y: 0, z: -0.049999982}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3452982128455003608}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3820145559894492962
 MonoBehaviour:
@@ -356,7 +374,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4973332771799030062}
   - component: {fileID: 227624176498785153}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackSlot (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -370,13 +388,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8364697579391062071}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.15, y: 0, z: -0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3452982128455003608}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &227624176498785153
 MonoBehaviour:

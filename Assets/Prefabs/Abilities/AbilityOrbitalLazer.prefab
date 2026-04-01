@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1605131442293974855}
   - component: {fileID: 160580858938477742}
   - component: {fileID: 2067516434507879408}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,6 +88,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4607924212613365831
 GameObject:
@@ -100,7 +101,7 @@ GameObject:
   - component: {fileID: 1336660456826420007}
   - component: {fileID: 2935834735265152139}
   - component: {fileID: 7381341873737985722}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Laazer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,6 +178,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5499442481899600785
 GameObject:
@@ -190,7 +192,7 @@ GameObject:
   - component: {fileID: 412991751216775962}
   - component: {fileID: 670310879216884613}
   - component: {fileID: 2901520572106517015}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AbilityOrbitalLazer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270,7 +272,7 @@ GameObject:
   - component: {fileID: 5035365410475207990}
   - component: {fileID: 1541116405933068736}
   - component: {fileID: 8157963077333314431}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -347,4 +349,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

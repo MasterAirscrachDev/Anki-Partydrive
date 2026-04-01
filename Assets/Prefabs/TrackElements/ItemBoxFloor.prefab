@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1408364831446026452}
   - component: {fileID: 8984572781659734369}
   - component: {fileID: 4796210051586915187}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ItemBoxFloor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 4266480497728516236}
   - component: {fileID: 4266480497728516234}
   - component: {fileID: 4266480497728516235}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ItemBoxText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,6 +203,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4266480497861858170
 GameObject:
@@ -215,7 +216,7 @@ GameObject:
   - component: {fileID: 4266480497861858167}
   - component: {fileID: 4266480497861858168}
   - component: {fileID: 4266480497861858169}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ItemBoxBackward Bright
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -293,4 +294,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

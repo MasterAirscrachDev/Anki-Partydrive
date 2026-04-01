@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7388251216581339955}
   - component: {fileID: 5847797412418200726}
   - component: {fileID: 8557819552114823260}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackJumpShell1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &9211132806049291155
 GameObject:
@@ -102,7 +103,7 @@ GameObject:
   - component: {fileID: 4841527129684086412}
   - component: {fileID: 7265564092682500678}
   - component: {fileID: 8652843096061166051}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackJump
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,6 +182,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &8652843096061166051
 MonoBehaviour:

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3227986602900273599}
   - component: {fileID: 1876512418982317153}
   - component: {fileID: 1903126787290815369}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 7085200998520459591}
   - component: {fileID: 4002102094150387053}
   - component: {fileID: 8323797445554713266}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 2478469217393153468}
   - component: {fileID: 1840315464661972414}
   - component: {fileID: 4849612235442756547}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: DisabledEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}

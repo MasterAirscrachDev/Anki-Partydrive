@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 33754960}
   - component: {fileID: 33754961}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   m_Component:
   - component: {fileID: 46961567}
   - component: {fileID: 46961568}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 249987437}
   - component: {fileID: 249987438}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +193,7 @@ GameObject:
   m_Component:
   - component: {fileID: 427775867}
   - component: {fileID: 427775868}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -247,7 +247,7 @@ GameObject:
   m_Component:
   - component: {fileID: 447047905}
   - component: {fileID: 447047906}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,7 +308,7 @@ GameObject:
   m_Component:
   - component: {fileID: 470492484}
   - component: {fileID: 470492485}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -370,7 +370,7 @@ GameObject:
   m_Component:
   - component: {fileID: 598231257}
   - component: {fileID: 598231258}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 706578155}
   - component: {fileID: 706578156}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -484,7 +484,7 @@ GameObject:
   m_Component:
   - component: {fileID: 969808162}
   - component: {fileID: 969808163}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -538,7 +538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 986279831}
   - component: {fileID: 986279832}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -596,7 +596,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1208640594}
   - component: {fileID: 1208640595}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -654,7 +654,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1258462415}
   - component: {fileID: 1258462416}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -712,7 +712,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2030184522}
   - component: {fileID: 2030184523}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -766,7 +766,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2090030224}
   - component: {fileID: 2090030225}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Segment4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -819,7 +819,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2245612171523552983}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mat3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -868,7 +868,7 @@ GameObject:
   - component: {fileID: 2245612172349773799}
   - component: {fileID: 2245612172349773793}
   - component: {fileID: 2245612172349773792}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DriveMatAlpha
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -945,6 +945,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5996187652348882881
 GameObject:
@@ -957,7 +958,7 @@ GameObject:
   - component: {fileID: 6376371712684389755}
   - component: {fileID: 8057704853006842590}
   - component: {fileID: 5203417435255410196}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DriveMat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1034,4 +1035,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

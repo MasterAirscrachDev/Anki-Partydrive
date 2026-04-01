@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2570411144694311117}
   - component: {fileID: 2241344826165229021}
   - component: {fileID: 8831931863846743907}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AbilityCone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 5262646614566379907}
   - component: {fileID: 6290886072579160282}
   - component: {fileID: 7126112022000538822}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,4 +155,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

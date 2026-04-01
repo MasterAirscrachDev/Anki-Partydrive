@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3674305387286443225}
   - component: {fileID: -7064209989827912271}
   - component: {fileID: 7338059747828738769}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AbilityLightningPower
   m_TagString: Untagged
   m_Icon: {fileID: 0}

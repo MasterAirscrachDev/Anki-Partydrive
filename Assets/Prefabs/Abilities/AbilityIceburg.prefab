@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2070081706307341514}
   - component: {fileID: 6786944311969932035}
   - component: {fileID: 3128784283213870718}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AbilityIceburg
   m_TagString: Untagged
   m_Icon: {fileID: 0}

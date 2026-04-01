@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7927831422045220552}
   - component: {fileID: 1054714410586821513}
   - component: {fileID: 5964984469564918907}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SupercarNuke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,4 +92,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

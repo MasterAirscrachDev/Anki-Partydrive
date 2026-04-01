@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2076702387722929410}
   - component: {fileID: 7013634217652016958}
   - component: {fileID: 3170686419000138920}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FinishArrows
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &3170686419000138920
 MeshCollider:
@@ -123,7 +124,7 @@ GameObject:
   - component: {fileID: 2305437367736963113}
   - component: {fileID: 8932782730374651915}
   - component: {fileID: 5824331283501523610}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackFlatShell1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,6 +201,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &8254316182376960447
 GameObject:
@@ -213,7 +215,7 @@ GameObject:
   - component: {fileID: 5650104298213278880}
   - component: {fileID: 7605951561280909418}
   - component: {fileID: 7747010427504793864}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrackFinish
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -292,6 +294,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &7747010427504793864
 MonoBehaviour:

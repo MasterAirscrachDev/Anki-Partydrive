@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 579217740795056981}
   - component: {fileID: 6513541018049874306}
   - component: {fileID: 8419689368877838378}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HazardShapeSlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

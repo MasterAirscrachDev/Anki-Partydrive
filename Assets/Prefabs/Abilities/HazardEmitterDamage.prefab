@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2886613312510270975}
   - component: {fileID: 5458506587668729045}
   - component: {fileID: 6935242444992380639}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HazardEmitterDamage
   m_TagString: Untagged
   m_Icon: {fileID: 0}

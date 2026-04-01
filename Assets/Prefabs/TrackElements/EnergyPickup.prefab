@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6849636811457154465}
   - component: {fileID: 6849636811457154467}
   - component: {fileID: 6849636811457154464}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: InnerCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &6849636811472125830
 GameObject:
@@ -101,7 +102,7 @@ GameObject:
   - component: {fileID: 6849636811472125825}
   - component: {fileID: 6849636811472125827}
   - component: {fileID: 6849636811472125824}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EffectCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,6 +179,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &6849636811601165952
 GameObject:
@@ -192,7 +194,7 @@ GameObject:
   - component: {fileID: 7409530965403292174}
   - component: {fileID: 1322715279225635658}
   - component: {fileID: 3735716433914489523}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EnergyPickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +308,7 @@ GameObject:
   - component: {fileID: 6849636812439277143}
   - component: {fileID: 6849636812439277137}
   - component: {fileID: 6849636812439277142}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5053,7 +5055,7 @@ ParticleSystem:
     vectorLabel1_3: W
 --- !u!199 &6849636812439277142
 ParticleSystemRenderer:
-  serializedVersion: 6
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5099,6 +5101,7 @@ ParticleSystemRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -5130,4 +5133,3 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
-  m_MaskInteraction: 0
