@@ -23,13 +23,13 @@ public class CarsManagement : MonoBehaviour
         }   
         //backButton.SetActive(!cms.isGame);
         //raceButton.SetActive(cms.isGame);
-        foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(this); }
+        //foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(this); }
         RenderCarList();
     }
     void OnDisable() {
         backButton.SetActive(false);
         raceButton.SetActive(false);
-        foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(null); }
+        //foreach(CarController controller in cms.controllers){ controller.AssignCarsManager(null); }
     }
     public void NextCar(CarController change) {
         FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(change.GetID(), Color.clear); //reset the colour of the old car

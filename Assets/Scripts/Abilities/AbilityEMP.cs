@@ -41,7 +41,7 @@ public class AbilityEMP : MonoBehaviour
         CarController owner = abilityController.GetCarController();
         foreach(CarController hit in hits){
             if(hit == owner) continue; //don't hit self
-            hit.AddSpeedModifier(-20, true, 3f, "EMP");
+            hit.AddSpeedModifier(new PercentSpeedModifier(0.8f, 3f, "EMP"));
             hit.UseEnergy(40f); //Drain 40 energy
             // Report damage back to the ability owner
             abilityController?.ReportDamage(40f);

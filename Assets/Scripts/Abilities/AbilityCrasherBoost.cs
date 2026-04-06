@@ -8,7 +8,7 @@ public class AbilityCrasherBoost : MonoBehaviour
     [SerializeField] float travelSpeed = 15f;
     [SerializeField] float boostAmount = 500f;
     [SerializeField] float boostDuration = 2.5f;
-    [SerializeField] float slowPercent = 80f;
+    [SerializeField] float slowPercent = 0.2f;
     [SerializeField] float slowDuration = 3f;
     bool hasHit = false;
     
@@ -50,7 +50,8 @@ public class AbilityCrasherBoost : MonoBehaviour
         {
             // Apply boost and then slow - both modifiers are applied immediately
             // The slow modifier includes a delay built into time (negative time means delayed start)
-            targetCar.AddSpeedModifier((int)boostAmount, false, boostDuration, "CrasherBoost");
+            
+            targetCar.AddSpeedModifier(new FlatSpeedModifier((int)boostAmount, boostDuration, "CrasherBoost"));
             
             // Start coroutine to apply slow after boost ends, then destroy
             StartCoroutine(ApplySlowThenDestroy(targetCar));
@@ -66,7 +67,7 @@ public class AbilityCrasherBoost : MonoBehaviour
         if(targetCar != null)
         {
             // Apply slow (negative percentage modifier)
-            targetCar.AddSpeedModifier((int)-slowPercent, true, slowDuration, "CrasherSlow");
+            targetCar.AddSpeedModifier(new PercentSpeedModifier(-slowPercent, slowDuration, "CrasherSlow"));
             
             // Spawn slow particle effect at target car
             SR.gas?.SpawnCrasherSlowParticle(targetTransform.position);

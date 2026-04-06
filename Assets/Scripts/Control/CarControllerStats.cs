@@ -1,12 +1,43 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static OverdriveServer.NetStructures;
+
+// Partial CarController — base stat fields and modifiers configuration
+public partial class CarController : MonoBehaviour
+{
+#region BASE STATS & MODIFIERS
+    //BASE MODIFIERS======
+    public const float maxEnergy = 100;
+    public const int maxTargetSpeed = 750;
+    public const int minTargetSpeed = 50;
+    public const int baseBoostSpeed = 450; //100
+    public const float baseBoostCost = 0.5f;
+    public const float baseEnergyGain = 0.04f;
+    public const float baseSteering = 2f;
+    public float statSpeedMod = 0f;
+    public float statSteerMod = 0f;
+    public float statBoostMod = 0f;
+    public float statMaxEnergyMod = 0f;
+    public float statEnergyRechargeMod = 0f;
+    //===================
+    [SerializeField] CarControllerAnalytics playerAnalytics = new CarControllerAnalytics();
+
+    public void SetStatModifiers(int speedModPoints, int steerModPoints, int boostModPoints, int maxEnergyModPoints, int energyRechargeModPoints){
+        statSpeedMod = speedModPoints * 25f; // speed per point
+        statSteerMod = steerModPoints * 0.4f; // steering per point 
+        statBoostMod = boostModPoints * 5f; // speed per point
+        statMaxEnergyMod = maxEnergyModPoints * 9f; // energy per point
+        statEnergyRechargeMod = energyRechargeModPoints * 0.005f; // energycharge per point
+    }
+#endregion
+}
 
 /// <summary>
-/// Tracks per-race statistics for a car. Stored as a variable in CarController.
+/// Tracks per-race analytics for a car. Stored as a variable in CarController.
 /// Stats are reset at the start of each race and can be used for end screens or announcer dialogue.
 /// </summary>
 [System.Serializable]
-public class PlayerStats
+public class CarControllerAnalytics
 {
     [Header("Damage Stats")]
     [SerializeField] float totalDamageDealt;
@@ -28,8 +59,9 @@ public class PlayerStats
     const float BIG_DAMAGE_THRESHOLD = 60f;
     
     // Boost tracking
-    private bool isBoosting = false;
-    private float currentBoostStartTime;
+    bool isBoosting = false;
+    float currentBoostDuration = 0f;
+
     
     #region Public Accessors
     public float TotalDamageDealt => totalDamageDealt;
@@ -87,34 +119,19 @@ public class PlayerStats
         if(amount <= 0) return;
         totalDamageTaken += amount;
     }
-    
+
     /// <summary>
-    /// Call when the player starts boosting.
-    /// </summary>
-    public void StartBoost()
+    public void AddBoostTime(float duration)
     {
-        if(!isBoosting)
-        {
-            isBoosting = true;
-            currentBoostStartTime = Time.time;
-        }
+        totalBoostTime += duration;
+        currentBoostDuration += duration;
+        if(currentBoostDuration > longestBoost)
+        { longestBoost = currentBoostDuration; }
     }
-    
-    /// <summary>
-    /// Call when the player stops boosting.
-    /// </summary>
-    public void EndBoost()
+
+    public void ResetBoost()
     {
-        if(isBoosting)
-        {
-            isBoosting = false;
-            float boostDuration = Time.time - currentBoostStartTime;
-            totalBoostTime += boostDuration;
-            if(boostDuration > longestBoost)
-            {
-                longestBoost = boostDuration;
-            }
-        }
+        currentBoostDuration = 0f;
     }
     
     /// <summary>
@@ -160,3 +177,4 @@ public class PlayerStats
     }
     #endregion
 }
+

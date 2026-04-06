@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public bool altSelectInput;
     public bool backSelectInput;
     public bool startSelectInput;
+    InputFrame inputs;
     
     // Control scheme detection
     public string currentControlScheme;
@@ -32,11 +33,11 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        inputs = InputFrame.Empty();
         iinput = GetComponent<PlayerInput>();
         carController = GetComponent<CarController>();
-        carController.Setup(false);
         int playerCount = FindObjectsOfType<PlayerController>().Length;
-        carController.SetPlayerName($"Player {playerCount}");
+        carController.Setup(false, $"Player {playerCount}");
         
         // Cache racing actions
         var racingMap = iinput.actions.FindActionMap("Racing");
@@ -144,18 +145,15 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update() {
         if(currentInputMode == PlayerInputMode.Racing){
-            carController.Iaccel = racingAccelerate.ReadValue<float>();
-            carController.Isteer = racingSteer.ReadValue<float>();
-            carController.IitemA = racingItemA.ReadValue<float>() > 0.5f;
-            carController.IitemB = racingItemB.ReadValue<float>() > 0.5f;
-            carController.Iboost = racingBoost.ReadValue<float>() > 0.5f;
-            carController.IspecialAim = racingSpecialAim.ReadValue<float>();
+            inputs.accel = racingAccelerate.ReadValue<float>();
+            inputs.steer = racingSteer.ReadValue<float>();
+            inputs.itemA = racingItemA.ReadValue<float>() > 0.5f;
+            inputs.itemB = racingItemB.ReadValue<float>() > 0.5f;
+            inputs.boost = racingBoost.ReadValue<float>() > 0.5f;
+            inputs.specialAim = racingSpecialAim.ReadValue<float>();
+            carController.UpdateInputs(inputs, 0);
         }else if(currentInputMode == PlayerInputMode.Menu){
-            carController.Iaccel = 0;
-            carController.Isteer = 0;
-            carController.IitemA = false;
-            carController.IitemB = false;
-            carController.Iboost = false;
+            carController.UpdateInputs(InputFrame.Empty(), 0); // Send empty inputs to disable car control in menu
             
             Vector2 Move = menuNav.ReadValue<Vector2>();
             bool select = menuSelect.ReadValue<float>() > 0.5f;

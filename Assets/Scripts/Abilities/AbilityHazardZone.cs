@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class AbilityHazardZone : MonoBehaviour
 {
-    [SerializeField] int energyChange = -5; //can be negative or positive
+    [SerializeField] int energyDrain = 4; //can be negative or positive
     [SerializeField] int speedModifier = 0; //can be negative or positive
-    [SerializeField] bool speedIsMultiplier = false;
     [SerializeField] float speedModifierDuration = 1f;
     [SerializeField] string modifierTag = "HazardZone";
     float hazardRange;
@@ -38,18 +37,16 @@ public class AbilityHazardZone : MonoBehaviour
             if(hit == owner) continue; //don't hit self
             if(affectedControllers.Contains(hit)) continue; //already affected
             affectedControllers.Add(hit);
-            if(energyChange != 0){
-                if(energyChange < 0) { 
-                    hit.UseEnergy(-energyChange);  //negative to use energy
+            if(energyDrain != 0){
+                if(energyDrain < 0) { 
+                    hit.UseEnergy(energyDrain); 
                     // Report damage back to the owner directly
-                    owner?.RecordDamageDealt(-energyChange);
+                    owner?.RecordDamageDealt(-energyDrain);
                 }
-                else { hit.ChargeEnergy(energyChange); }
+                else { hit.ChargeEnergy(energyDrain); }
             }
             if(speedModifier != 0)
-            {
-                hit.AddSpeedModifier(speedModifier, speedIsMultiplier, speedModifierDuration, modifierTag);
-            }
+            { hit.AddSpeedModifier(new FlatSpeedModifier(speedModifier, speedModifierDuration, modifierTag)); }
         }
     }
 }

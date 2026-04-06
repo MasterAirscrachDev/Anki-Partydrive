@@ -46,7 +46,7 @@ public class HyperMode : GameMode
             carLaps[carID] = 0; //reset the lap count
             CarController controller = cms.GetController(carID);
             controller.SetPosition(0); //reset the position
-            controller.AddSpeedModifier(200, true, 9999, "HyperModeBoost"); //apply perminent double speed boost for hyper mode
+            controller.AddSpeedModifier(new PercentSpeedModifier(2f, 9999f, "HyperModeBoost")); //apply perminent double speed boost for hyper mode
             //cms.GetController(carID).SetPosition(0); //reset the position
             carEntityTracker.ResetLapDelocalizationFlag(carID); //reset delocalization flag so first lap counts
         }
@@ -90,7 +90,7 @@ public class HyperMode : GameMode
             // Car joined after the race started — register it now with 0 laps
             carLaps[carID] = 0;
             controller?.SetPosition(0);
-            controller?.AddSpeedModifier(200, true, 9999, "HyperModeBoost"); //apply perminent double speed boost for hyper mode
+            controller?.AddSpeedModifier(new PercentSpeedModifier(2f, 9999f, "HyperModeBoost")); //apply perminent double speed boost for hyper mode
         }
         if(carLaps.ContainsKey(carID)){
             // Only count the lap if the car wasn't delocalized
@@ -98,7 +98,7 @@ public class HyperMode : GameMode
                 carLaps[carID]++;
                 try{
                     controller.SetLapCount(carLaps[carID]);
-                    controller.AddSpeedModifier(200, true, 9999, "HyperModeBoost"); //apply perminent double speed boost for hyper mode
+                    controller.AddSpeedModifier(new PercentSpeedModifier(2f, 9999f, "HyperModeBoost")); //apply perminent double speed boost for hyper mode
                 }catch{
                     //Debug.LogWarning($"Could not set lap count for car {carID}");
                 }

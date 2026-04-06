@@ -17,8 +17,8 @@ public class AIController : MonoBehaviour
     TrackCoordinate ourCoord, currentTarget; //current target of the car (may be null)
     float timer = 0f; //timer for the AI logic
     float abilityTimer = 0f; //timer for ability usage
-    const float ABILITY_CHECK_INTERVAL = 1.5f; //how often to check if we should use an ability
-
+    const float ABILITY_CHECK_INTERVAL = 0.5f; //how often to check if we should use an ability
+    InputFrame currentInputs; //current inputs to be sent to the car controller
     int currentTargetSpeed = 0;
     float currentTargetOffset = 0f;
     bool setup = false; //setup variable to check if the AI is setup
@@ -73,14 +73,13 @@ public class AIController : MonoBehaviour
     {
         if(setup){ return; } //if the AI is already setup, return
         carController = GetComponent<CarController>();
-        carController.Setup(true); //setup the car controller
         string[] names = { "Jimmy [Bot]", "Bob [Bot]", "Doug [Bot]", "Gary [Bot]", "Jess [Bot]", "Sam [Bot]", "Kate [Bot]", "Dave [Bot]" };
-
-        carController.SetPlayerName(names[Random.Range(0, names.Length)]); //set the player name to AI
+        carController.Setup(true, names[Random.Range(0, names.Length)]); //setup the car controller
         carController.SetColour(new Color(1, 0, 0)); //set the color to red
 
         setup = true; //set the setup variable to true
         FindFirstObjectByType<CarEntityTracker>().UpdateAIOpponentLocations(); //update the AI opponent locations
+        currentInputs = InputFrame.Empty(); //initialize the current inputs
     }
     public void SetOpponentLocations(TrackCoordinate[] coords){
         carLocations = coords; //set the car locations to the given coordinates
@@ -119,11 +118,7 @@ public class AIController : MonoBehaviour
         }
         else {
             // Immediately clear all inputs when locked
-            carController.Iaccel = 0;
-            carController.Isteer = 0;
-            carController.Iboost = false;
-            carController.IitemA = false;
-            carController.IitemB = false;
+            carController.UpdateInputs(InputFrame.Empty(), 1);
         }
     }
     
@@ -148,7 +143,8 @@ public class AIController : MonoBehaviour
             yield return new WaitForSeconds(pressDelay);
             
             // Press accelerate (this will be detected by CarController)
-            carController.Iaccel = 1f;
+            currentInputs.accel = 1f;
+            carController.UpdateInputs(currentInputs, 1);
         }
         // If failed, AI just won't press during the window
         
@@ -176,11 +172,8 @@ public class AIController : MonoBehaviour
         }
         else
         {
-            carController.Iaccel = 0; //if the inputs are locked, set the acceleration to 0
-            carController.Isteer = 0; //if the inputs are locked, set the steering to 0
-            carController.Iboost = false; //if the inputs are locked, set the boost to false
-            carController.IitemA = false; //if the inputs are locked, set the item A to false
-            carController.IitemB = false; //if the inputs are locked, set the item B to false
+            currentInputs = InputFrame.Empty(); //if the inputs are locked, set the current inputs to empty
+            carController.UpdateInputs(currentInputs, 1); //send the empty inputs to the car controller to immediately stop the car
         }
         if (setCarID != "")
         { //if we have a car ID set, set the car ID to the one we have set
@@ -190,13 +183,13 @@ public class AIController : MonoBehaviour
     void UpdateInputs(){
         if (!carController.IsCarConnected()) { return; } //don't update inputs if car is not connected
         (int controllerSpeed, float controllerOffset) = carController.GetMetrics(); //get the current speed and offset of the car
-        carController.Iaccel = currentTargetSpeed > controllerSpeed ? 1 : 0; //set the acceleration to 1 if we want to go faster, -1 if we want to go slower
-        
+        currentInputs.accel = currentTargetSpeed > controllerSpeed ? 1f : 0f; //set the acceleration to 1 if we want to go faster, 0 if we want to go slower
         if(Mathf.Abs(currentTargetOffset - controllerOffset) < 2f){ //if we are close to the target offset, set the steering to 0
-            carController.Isteer = 0;
+            currentInputs.steer = 0;
         }else{
-            carController.Isteer = Mathf.Clamp(currentTargetOffset - controllerOffset, -1f, 1f); //set the steering to the difference between the target offset and the current offset
+            currentInputs.steer = Mathf.Clamp(currentTargetOffset - controllerOffset, -1f, 1f); //set the steering to the difference between the target offset and the current offset
         }
+        carController.UpdateInputs(currentInputs, 1); //send the inputs to the car controller
     }
     public void SetAIState(AIState newState){
         state = newState; //set the AI state to the given state
@@ -226,7 +219,7 @@ public class AIController : MonoBehaviour
         (int tSpd, float tOff, bool boost, string log) = GetBestPath(inputs);
         currentTargetSpeed = tSpd; //set the target speed to the given speed
         currentTargetOffset = tOff;
-        carController.Iboost = boost;
+        currentInputs.boost = boost; //set the boost input to the given boost value
         Debug = log; //set the debug string to the given log
     }
     
@@ -309,7 +302,7 @@ public class AIController : MonoBehaviour
         bool shouldUse = ShouldUseAbility(usageMode, aimMode);
         if (shouldUse)
         {
-            carController.IitemA = true; // Trigger ability
+            currentInputs.itemA = true; // Trigger ability input
             StartCoroutine(ResetAbilityInput());
         }
     }
@@ -324,7 +317,7 @@ public class AIController : MonoBehaviour
         if (carLocations == null || carLocations.Length == 0) { return false; }
         if (ourCoord == null) { return false; }
         
-        const float NARROW_HIT_WIDTH = 85f; // lane-width check for straight-firing abilities
+        const float NARROW_HIT_WIDTH = 85f; // lane-width check for straight-firing abilities (in ANKI MM)
         bool needsLaneCheck = aimMode == AIAbilityAimMode.Narrow;
         
         switch (mode)
@@ -377,6 +370,6 @@ public class AIController : MonoBehaviour
     IEnumerator ResetAbilityInput()
     {
         yield return new WaitForSeconds(0.1f);
-        carController.IitemA = false;
+        currentInputs.itemA = false;
     }
 }

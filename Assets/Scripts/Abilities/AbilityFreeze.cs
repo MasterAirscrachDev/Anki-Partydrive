@@ -55,8 +55,9 @@ public class AbilityFreeze : MonoBehaviour
         foreach (CarController car in cars)
         {
             if(car == abilityController.GetCarController()) continue; // Skip the car that spawned the freeze effect
-            // Apply freeze effect to the hit car
-            car.AddSpeedModifier(-100, true, 3f, "Freeze");
+            // Apply freeze effect to the hit car TODO: CHANGE THIS TO USE CAR STATUS
+            
+            //car.AddSpeedModifier(-100, true, 3f, "Freeze");
             car.UseEnergy(5f);
             abilityController?.ReportDamage(5f); // Report damage back to the ability owner
             Debug.Log($"Car {car.GetID()} hit by Ice Blast, frozen for 3 seconds and took 5 damage!");

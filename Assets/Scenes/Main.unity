@@ -22680,8 +22680,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: LapsMode, Assembly-CSharp
+      - m_Target: {fileID: 1433429606}
+        m_TargetAssemblyTypeName: HyperMode, Assembly-CSharp
         m_MethodName: Replay
         m_Mode: 1
         m_Arguments:
@@ -25323,8 +25323,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: LapsMode, Assembly-CSharp
+      - m_Target: {fileID: 1433429606}
+        m_TargetAssemblyTypeName: HyperMode, Assembly-CSharp
         m_MethodName: BackToMenu
         m_Mode: 1
         m_Arguments:
@@ -39387,9 +39387,9 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 21300000, guid: e985cd96ae6e2434b8ff1a55d37339d7, type: 3}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: ec44100ca3fd8b74d865aac56d076845, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: ec44100ca3fd8b74d865aac56d076845, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: ec44100ca3fd8b74d865aac56d076845, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -39402,8 +39402,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: LapsMode, Assembly-CSharp
+      - m_Target: {fileID: 1433429606}
+        m_TargetAssemblyTypeName: HyperMode, Assembly-CSharp
         m_MethodName: LineupAndStart
         m_Mode: 1
         m_Arguments:

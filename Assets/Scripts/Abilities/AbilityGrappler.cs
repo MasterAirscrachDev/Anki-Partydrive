@@ -70,15 +70,12 @@ public class AbilityGrappler : MonoBehaviour
         // Remove the speed modifiers early
         CarController userCar = SR.cms.GetController(userID);
         CarController targetCar = SR.cms.GetController(targetID);
-        
-        if(userCar != null)
-        {
-            userCar.AddSpeedModifier(0, true, 0f, "GrapplerBoost"); // Override with 0 duration
-        }
-        if(targetCar != null)
-        {
-            targetCar.AddSpeedModifier(0, true, 0f, "GrapplerSlow"); // Override with 0 duration
-        }
+        if(userCar != null) {
+            userCar.AddSpeedModifier(new PercentSpeedModifier(1, 0, "GrapplerBoost")); 
+        } // Override with 0 duration
+        if(targetCar != null) {
+            targetCar.AddSpeedModifier(new PercentSpeedModifier(1, 0, "GrapplerSlow")); 
+        } // Override with 0 duration
         
         Destroy(gameObject);
     }
@@ -94,20 +91,16 @@ public class AbilityGrappler : MonoBehaviour
             abilityActive = true;
             
             // Apply 20% boost to user for 8s
-            userCar.AddSpeedModifier(20, true, 8f, "GrapplerBoost");
+            userCar.AddSpeedModifier(new PercentSpeedModifier(1.2f, 8f, "GrapplerBoost"));
             
-            // Apply 20% reduction to target for 8s
-            targetCar.AddSpeedModifier(-30, true, 8f, "GrapplerSlow");
+            // Apply 30% reduction to target for 8s
+            targetCar.AddSpeedModifier(new PercentSpeedModifier(0.7f, 8f, "GrapplerSlow"));
             
             // Destroy the grappler after the effect duration
             StartCoroutine(DestroyAfterDuration(8f));
-        }
-        else
-        { Destroy(gameObject); }
+        } else { Destroy(gameObject); }
     }
-    
-    IEnumerator DestroyAfterDuration(float duration)
-    {
+    IEnumerator DestroyAfterDuration(float duration) {
         yield return new WaitForSeconds(duration);
         abilityActive = false;
         Destroy(gameObject);

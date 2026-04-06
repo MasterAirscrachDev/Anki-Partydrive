@@ -61,7 +61,7 @@ public class ChargeSuspendUIController : MonoBehaviour
         foreach(CarController cc in controllers)
         {
             if(cc == null || !cc.IsCarConnected()) continue;
-            PlayerStats s = cc.GetPlayerStats();
+            CarControllerAnalytics s = cc.GetPlayerAnalytics();
             if(s.TotalDamageDealt > bestDmgDealt) bestDmgDealt = s.TotalDamageDealt;
             if(s.TotalDamageTaken > bestDmgTaken) bestDmgTaken = s.TotalDamageTaken;
             if(s.TotalBoostTime > bestBoost) bestBoost = s.TotalBoostTime;
@@ -75,7 +75,7 @@ public class ChargeSuspendUIController : MonoBehaviour
         foreach(CarController cc in controllers)
         {
             if(cc == null || !cc.IsCarConnected()) continue;
-            PlayerStats s = cc.GetPlayerStats();
+            CarControllerAnalytics s = cc.GetPlayerAnalytics();
             if(bestDmgDealt > 0 && s.TotalDamageDealt >= bestDmgDealt) dmgDealtLeaders++;
             if(bestDmgTaken > 0 && s.TotalDamageTaken >= bestDmgTaken) dmgTakenLeaders++;
             if(bestBoost > 0 && s.TotalBoostTime >= bestBoost) boostLeaders++;
@@ -143,7 +143,7 @@ public class ChargeSuspendUIController : MonoBehaviour
             }
 
             // 4 - best stat title (awarded to the sole leader of each stat)
-            PlayerStats stats = cc.GetPlayerStats();
+            CarControllerAnalytics stats = cc.GetPlayerAnalytics();
             TMP_Text bestStatText = cardT.GetChild(4).GetComponent<TMP_Text>();
             if(bestStatText != null) bestStatText.text = GetBestStatTitle(stats,
                 bestDmgDealt, uniqueDmgDealt,
@@ -191,7 +191,7 @@ public class ChargeSuspendUIController : MonoBehaviour
     // Awards a title to a player if they are the sole leader of a stat.
     // Priority order is used when a player leads multiple stats.
     // Returns "The Racer" if the player leads nothing outright.
-    static string GetBestStatTitle(PlayerStats stats,
+    static string GetBestStatTitle(CarControllerAnalytics stats,
         float bestDmgDealt,   bool uniqueDmgDealt,
         float bestDmgTaken,   bool uniqueDmgTaken,
         float bestBoost,      bool uniqueBoost,

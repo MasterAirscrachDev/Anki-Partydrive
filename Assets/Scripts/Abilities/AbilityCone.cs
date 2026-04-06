@@ -8,7 +8,7 @@ public class AbilityCone : MonoBehaviour
     [SerializeField] float hitCheckDistance = 0.15f; // Distance behind the cone to check for hits
     [SerializeField] float hitCheckWidth = 0.08f; // Width of hitcheck area
     [SerializeField] float damage = 15f;
-    [SerializeField] int slowPercent = -30; // Negative for slowdown
+    [SerializeField] float slowPercent = 0.7f; // Negative for slowdown
     [SerializeField] float slowDuration = 2f;
     [SerializeField] float horizontalKnockback = 0.5f;
     [SerializeField] float knockUpForce = 4f;
@@ -75,7 +75,8 @@ public class AbilityCone : MonoBehaviour
         target.UseEnergy(damage);
         
         // Apply slow
-        target.AddSpeedModifier(slowPercent, true, slowDuration, "TrafficCone");
+        
+        target.AddSpeedModifier(new PercentSpeedModifier(slowPercent, slowDuration, "TrafficCone"));
         
         // Report damage to owner for stats
         AbilityController abilityController = GetComponent<AbilityController>();
