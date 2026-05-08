@@ -4,7 +4,15 @@
   "description": "Partydrive Mobile Remote — hosts a mobile controller webpage for Partydrive",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "prebuild": "node scripts/copy-assets.js",
+    "build": "npm run prebuild && pkg index.js --targets node18-win-x64 --output ../BUILDS/PartydriveMobileRemote.exe --public",
+    "build:linux": "npm run prebuild && pkg index.js --targets node18-linux-x64 --output ../BUILDS/Server/PartydriveMobileRemote --public"
+  },
+  "pkg": {
+    "assets": [
+      "public/**/*"
+    ]
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +20,8 @@
     "express": "^4.19.2",
     "qrcode": "^1.5.3",
     "ws": "^8.17.1"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
   }
 }

@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 const express   = require('express');
 const http      = require('http');
@@ -6,18 +6,37 @@ const WebSocket = require('ws');
 const QRCode    = require('qrcode');
 const os        = require('os');
 const path      = require('path');
+const fs        = require('fs');
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const PORT = parseInt(process.env.PORT || '3000', 10);
+
+// ── Asset path resolution ─────────────────────────────────────────────────────
+// After `npm run prebuild`, assets are copied into public/cars and public/abilityicons.
+// In production (pkg), they are bundled with the public/ snapshot.
+// In dev, falls back to the Unity Assets folder if the public copy doesn't exist yet.
+function resolveAssetDir(publicSubDir, unityRelPath) {
+    const publicPath = path.join(__dirname, 'public', publicSubDir);
+    if (fs.existsSync(publicPath)) return publicPath;
+    const devPath = path.join(__dirname, unityRelPath);
+    if (fs.existsSync(devPath)) return devPath;
+    return publicPath;
+}
+
+const carsDir         = resolveAssetDir('cars',         '../Assets/Textures/Cars');
+const abilityIconsDir = resolveAssetDir('abilityicons', '../Assets/Textures/AbilityIcons');
 
 // ── App Setup ─────────────────────────────────────────────────────────────────
 const app    = express();
 const server = http.createServer(app);
 const wss    = new WebSocket.Server({ server });
 
-// Map of connected controllers: id -> { ws, name, state }
+// Map of connected controllers: id -> { ws, playerNumber, state }
 const controllers = new Map();
 let nextId = 1;
+
+// Single Unity game connection (null when not connected)
+let gameWs = null;
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function getLocalIP() {
@@ -40,16 +59,67 @@ function safeSend(ws, data) {
     }
 }
 
+// ── WebSocket routing ─────────────────────────────────────────────────────────
+wss.on('connection', (ws, req) => {
+    if (req.url === '/game') {
+        handleGameConnection(ws);
+    } else {
+        handleControllerConnection(ws);
+    }
+});
 
+// ── Unity Game Connection ─────────────────────────────────────────────────────
+function handleGameConnection(ws) {
+    if (gameWs && gameWs.readyState === WebSocket.OPEN) {
+        log('Game', 'Replacing existing game connection');
+        gameWs.close();
+    }
+    gameWs = ws;
+    log('Game', 'Unity connected');
 
-// ── Controller WebSocket Server ───────────────────────────────────────────────
-wss.on('connection', (ws) => {
+    // Send the current state of all connected controllers immediately
+    for (const [id, ctrl] of controllers) {
+        safeSend(ws, {
+            type:         'controller_connected',
+            controllerId: id,
+            playerNumber: ctrl.playerNumber,
+        });
+    }
+
+    ws.on('message', (raw) => {
+        let msg;
+        try { msg = JSON.parse(raw.toString()); } catch { return; }
+        handleGameMessage(msg);
+    });
+
+    ws.on('close', () => {
+        if (gameWs === ws) gameWs = null;
+        log('Game', 'Unity disconnected');
+    });
+
+    ws.on('error', (err) => log('Game', `Error: ${err.message}`));
+}
+
+function handleGameMessage(msg) {
+    switch (msg.type) {
+        case 'player_state': {
+            // Forward to the matching controller browser
+            const ctrl = controllers.get(msg.controllerId);
+            if (ctrl) safeSend(ctrl.ws, msg);
+            break;
+        }
+        // Future: handle qr_request, broadcast, etc.
+    }
+}
+
+// ── Controller WebSocket (mobile browsers) ────────────────────────────────────
+function handleControllerConnection(ws) {
     const id           = `ctrl_${nextId++}`;
     const playerNumber = nextId - 1;
 
     controllers.set(id, {
         ws,
-        name:  `Player ${playerNumber}`,
+        playerNumber,
         state: { throttle: 0, steering: 0, boost: false, ability: false },
     });
 
@@ -57,6 +127,9 @@ wss.on('connection', (ws) => {
 
     // Tell the browser its assigned ID
     safeSend(ws, { type: 'assigned', id, playerNumber });
+
+    // Notify Unity
+    safeSend(gameWs, { type: 'controller_connected', controllerId: id, playerNumber });
 
     ws.on('message', (raw) => {
         let msg;
@@ -67,10 +140,11 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         controllers.delete(id);
         log('Controller', `${id} disconnected (${controllers.size} remaining)`);
+        safeSend(gameWs, { type: 'controller_disconnected', controllerId: id });
     });
 
     ws.on('error', (err) => log('Controller', `${id} error: ${err.message}`));
-});
+}
 
 function handleControllerMessage(id, msg) {
     const ctrl = controllers.get(id);
@@ -83,6 +157,9 @@ function handleControllerMessage(id, msg) {
             if (typeof msg.steering === 'number') s.steering = Math.max(-1, Math.min(1, msg.steering));
             if (typeof msg.boost    === 'boolean') s.boost    = msg.boost;
             if (typeof msg.ability  === 'boolean') s.ability  = msg.ability;
+
+            // Forward input to Unity with the controller ID attached
+            safeSend(gameWs, { type: 'input', controllerId: id, ...s });
             break;
         }
 
@@ -100,6 +177,8 @@ function handleControllerMessage(id, msg) {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/cars',         express.static(carsDir));
+app.use('/abilityicons', express.static(abilityIconsDir));
 
 // /qr — debug page showing the controller QR code
 app.get('/qr', async (req, res) => {
@@ -146,4 +225,6 @@ server.listen(PORT, () => {
     log('Server', 'Partydrive Mobile Remote ready');
     log('Server', `Controller URL : http://${ip}:${PORT}`);
     log('Server', `QR debug page  : http://${ip}:${PORT}/qr`);
+    log('Server', `Car icons      : ${carsDir}`);
+    log('Server', `Ability icons  : ${abilityIconsDir}`);
 });

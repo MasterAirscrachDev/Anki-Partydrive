@@ -1,4 +1,4 @@
-/* Partydrive Mobile Remote — Neon Dark Theme */
+﻿/* Partydrive Mobile Remote — Neon Dark Theme */
 
 :root {
     --neon-orange: #ff6b00;
@@ -11,12 +11,13 @@
     --success:     #00ff88;
     --error:       #ff3366;
     --warn:        #ffaa00;
+    --bg-tint:     #1a0a1a;
 
     --hud-h:   90px;
     --steer-h: 155px;
 }
 
-/* ── Reset ────────────────────────────────────────────────────────────────── */
+/* == Reset == */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -28,7 +29,7 @@ html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 100%);
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--bg-tint) 100%);
     font-family: 'Roboto', sans-serif;
     color: var(--text);
     user-select: none;
@@ -36,7 +37,7 @@ html, body {
     touch-action: none;
 }
 
-/* ── HUD Header ───────────────────────────────────────────────────────────── */
+/* == HUD Header == */
 #hud {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -97,103 +98,48 @@ html, body {
     text-shadow: 0 0 12px rgba(176,38,255,.9);
 }
 
-#energy-block {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-}
-
-#energy-bar {
-    flex: 1;
-    height: 10px;
-    background: var(--border);
-    overflow: hidden;
-    clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
-}
-
-#energy-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--neon-purple), var(--neon-orange));
-    box-shadow: 0 0 10px rgba(255,107,0,.6);
-    transition: width .3s ease;
-}
-
-#energy-val {
-    font-size: 13px;
-    font-weight: 700;
-    font-family: 'Syne Mono', monospace;
-    color: var(--warn);
-    white-space: nowrap;
+.hud-btn {
+    margin-left: auto;
     flex-shrink: 0;
-}
-
-#left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 44%;
-    flex-shrink: 0;
-}
-
-.action-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    background: var(--card-bg);
-    border: 2px solid var(--border);
-    border-right: 4px solid var(--neon-purple);
-    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
     font-family: 'Roboto', sans-serif;
-    cursor: pointer;
-    clip-path: polygon(0 0, 100% 0, 100% 90%, 94% 100%, 0 100%);
-    transition: background .1s, box-shadow .1s, transform .1s;
-    -webkit-touch-callout: none;
-}
-.action-btn:active,
-.action-btn.pressed {
-    background: rgba(176,38,255,.25);
-    border-right-color: var(--neon-orange);
-    box-shadow: 0 0 22px rgba(176,38,255,.5), inset 0 0 20px rgba(176,38,255,.1);
-    transform: scale(.97);
-    clip-path: none;
-}
-
-.boost-btn {
-    border-right-color: var(--neon-orange);
-}
-.boost-btn:active,
-.boost-btn.pressed {
-    background: rgba(255,107,0,.25);
-    border-right-color: var(--neon-orange);
-    box-shadow: 0 0 22px rgba(255,107,0,.5), inset 0 0 20px rgba(255,107,0,.1);
-}
-
-#ability-icon {
-    font-size: 36px;
-    line-height: 1;
-}
-
-.action-label {
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color .15s, border-color .15s, box-shadow .15s;
+}
+.hud-btn.active {
+    color: var(--success);
+    border-color: var(--success);
+    box-shadow: 0 0 10px rgba(0,255,136,.4);
 }
 
-/* ── Throttle Slider ──────────────────────────────────────────────────────── */
+/* == Main Controller Area == */
+#controller {
+    position: fixed;
+    top: var(--hud-h);
+    bottom: var(--steer-h);
+    left: 0; right: 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px;
+    background: var(--dark-bg);
+}
+
+/* == Throttle Slider == */
 #throttle-section {
-    flex-shrink: 0;
-    width: clamp(100px, 18vw, 150px);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    min-width: 0;
 }
 
 .axis-label {
@@ -238,65 +184,139 @@ html, body {
 
 #throttle-pct {
     font-size: 15px;
-
-    /* ── Energy Ring ──────────────────────────────────────────────────────────── */
-    #energy-ring {
-        flex-shrink: 0;
-        width: clamp(90px, 22vw, 180px);
-        aspect-ratio: 1 / 1;
-        align-self: center;
-        position: relative;
-    }
-
-    #energy-svg {
-        width: 100%;
-        height: 100%;
-        transform: rotate(-90deg);
-        display: block;
-    }
-
-    .ring-bg {
-        fill: none;
-        stroke: var(--border);
-        stroke-width: 8;
-    }
-
-    .ring-fill {
-        fill: none;
-        stroke: url(#energyGrad);
-        stroke-width: 8;
-        stroke-linecap: round;
-        stroke-dasharray: 238.76;
-        stroke-dashoffset: 238.76;
-        transition: stroke-dashoffset .3s ease;
-        filter: drop-shadow(0 0 5px rgba(255,107,0,.8));
-    }
-
-    #energy-ring-label {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2px;
-        pointer-events: none;
-    }
-
-    #energy-ring-val {
-        font-size: clamp(13px, 3.5vw, 20px);
-        font-weight: 700;
-        font-family: 'Syne Mono', monospace;
-        color: var(--warn);
-        line-height: 1;
-    }
-
     font-weight: 700;
     font-family: 'Syne Mono', monospace;
     color: var(--neon-orange);
 }
 
-/* ── Steering Row ─────────────────────────────────────────────────────────── */
+/* == Energy Ring == */
+#energy-ring {
+    width: clamp(90px, 22vw, 180px);
+    aspect-ratio: 1 / 1;
+    align-self: center;
+    justify-self: center;
+    position: relative;
+}
+
+#energy-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    display: block;
+}
+
+.ring-bg {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 8;
+}
+
+.ring-fill {
+    fill: none;
+    stroke: url(#energyGrad);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 238.76;
+    stroke-dashoffset: 238.76;
+    transition: stroke-dashoffset .3s ease;
+    filter: drop-shadow(0 0 5px rgba(255,107,0,.8));
+}
+
+#energy-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    pointer-events: none;
+}
+
+#car-icon {
+    width: 52%;
+    height: auto;
+    max-height: 38%;
+    object-fit: contain;
+    opacity: 0.92;
+    filter: drop-shadow(0 0 4px var(--neon-orange));
+    display: block;
+}
+#car-icon[src=""] { display: none; }
+
+#energy-ring-val {
+    font-size: clamp(13px, 3.5vw, 20px);
+    font-weight: 700;
+    font-family: 'Syne Mono', monospace;
+    color: var(--warn);
+    line-height: 1;
+}
+
+/* == Right Panel (Ability + Boost) == */
+#right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-right: 4px solid var(--neon-purple);
+    color: var(--text);
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 94% 100%, 0 100%);
+    transition: background .1s, box-shadow .1s, transform .1s;
+    -webkit-touch-callout: none;
+}
+.action-btn:active,
+.action-btn.pressed {
+    background: rgba(176,38,255,.25);
+    border-right-color: var(--neon-orange);
+    box-shadow: 0 0 22px rgba(176,38,255,.5), inset 0 0 20px rgba(176,38,255,.1);
+    transform: scale(.97);
+    clip-path: none;
+}
+
+.boost-btn {
+    border-right-color: var(--neon-orange);
+}
+.boost-btn:active,
+.boost-btn.pressed {
+    background: rgba(255,107,0,.25);
+    border-right-color: var(--neon-orange);
+    box-shadow: 0 0 22px rgba(255,107,0,.5), inset 0 0 20px rgba(255,107,0,.1);
+}
+
+#ability-icon {
+    width: clamp(28px, 6vw, 48px);
+    height: clamp(28px, 6vw, 48px);
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px var(--neon-purple));
+    pointer-events: none;
+}
+#ability-icon[src=""] {
+    background: var(--border);
+    border-radius: 4px;
+    opacity: 0.4;
+}
+
+.action-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* == Steering Row == */
 #steer-row {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -371,7 +391,7 @@ html, body {
     transition: left .04s, width .04s;
 }
 
-/* ── iOS Gyro Permission Overlay ──────────────────────────────────────────── */
+/* == iOS Gyro Permission Overlay == */
 #gyro-overlay {
     position: fixed;
     inset: 0;
@@ -405,20 +425,23 @@ html, body {
     margin: 8px 0;
     border: none;
     color: #fff;
-    #right-panel {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+#gyro-permit-btn {
+    background: linear-gradient(135deg, var(--neon-orange), #e05500);
     box-shadow: 0 0 20px rgba(255,107,0,.4);
 }
 #gyro-cancel-btn {
-    background: linear-gradient(135deg, #2a2a2a, #3a3a3a) !important;
-    box-shadow: none !important;
+    background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+    box-shadow: none;
 }
 
-/* ── Landscape adjustments ────────────────────────────────────────────────── */
+/* == Landscape adjustments == */
 @media (orientation: landscape) {
     :root {
         --hud-h:   70px;
@@ -426,10 +449,10 @@ html, body {
     }
     #player-badge     { font-size: 18px; }
     #player-pos       { font-size: 20px; }
-    #ability-icon     { font-size: 28px; }
+    #ability-icon     { width: clamp(24px, 5vh, 40px); height: clamp(24px, 5vh, 40px); }
     .action-label     { font-size: 12px; }
     .steer-btn        { font-size: 24px; }
-    #energy-ring-val  { font-size: 15px; }
+    #energy-ring-val  { font-size: clamp(12px, 2.5vh, 18px); }
     #energy-ring      { width: clamp(80px, calc(100vh - var(--hud-h) - var(--steer-h) - 36px), 160px); }
-    #throttle-section { width: clamp(90px, 15vw, 130px); }
+    #throttle-section { min-width: clamp(80px, 15vw, 130px); }
 }

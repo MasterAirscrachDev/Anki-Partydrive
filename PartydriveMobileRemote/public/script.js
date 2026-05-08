@@ -1,4 +1,103 @@
-'use strict';
+﻿'use strict';
+
+// ── Car Model Info (matches remote.md color pairs and C# ModelName enum) ──────
+function getCarModelInfo(model) {
+    const colorPairs = [
+        { name: 'Unknown',     slug: 'null',        primary: '#777777', secondary: '#818181' },
+        { name: 'Kourai',      slug: 'kourai',      primary: '#FFD700', secondary: '#B8860B' },
+        { name: 'Boson',       slug: 'boson',       primary: '#C0C0C0', secondary: '#8B0000' },
+        { name: 'Rho',         slug: 'rho',         primary: '#FF0000', secondary: '#250000' },
+        { name: 'Katal',       slug: 'katal',       primary: '#0000FF', secondary: '#FFD700' },
+        { name: 'Hadion',      slug: 'hadion',      primary: '#FFA500', secondary: '#000000' },
+        { name: 'Spektrix',    slug: 'spektrix',    primary: '#800080', secondary: '#00FFFF' },
+        { name: 'Corax',       slug: 'corax',       primary: '#000000', secondary: '#FFA500' },
+        { name: 'Groundshock', slug: 'groundshock', primary: '#0000FF', secondary: '#00FFFF' },
+        { name: 'Skull',       slug: 'skull',       primary: '#000000', secondary: '#FF0000' },
+        { name: 'Thermo',      slug: 'thermo',      primary: '#FF0000', secondary: '#FFA500' },
+        { name: 'Nuke',        slug: 'nuke',        primary: '#08ac08', secondary: '#000000' },
+        { name: 'Guardian',    slug: 'guardian',    primary: '#FFFFFF', secondary: '#0000FF' },
+        { name: 'IceWave',     slug: 'null',        primary: '#FFFFFF', secondary: '#DDDDDD' },
+        { name: 'Bigbang',     slug: 'bigbang',     primary: '#4B5320', secondary: '#CD7F32' },
+        { name: 'Freewheel',   slug: 'freewheel',   primary: '#008000', secondary: '#D3D3D3' },
+        { name: 'x52',         slug: 'x52',         primary: '#000000', secondary: '#a10808' },
+        { name: 'x52Ice',      slug: 'x52ice',      primary: '#FFFFFF', secondary: '#7ac7e0' },
+        { name: 'Mammoth',     slug: 'mammoth',     primary: '#516e6e', secondary: '#797979' },
+        { name: 'Dynamo',      slug: 'dynamo',      primary: '#2f2f2f', secondary: '#b0b0b0' },
+        { name: 'NukePhantom', slug: 'nuke',        primary: '#FFFFFF', secondary: '#000000' },
+        { name: 'NeonPrime',   slug: 'null',        primary: '#800080', secondary: '#FFA500' },
+    ];
+    return colorPairs[model] || colorPairs[0];
+}
+
+// Ability name (from Unity Ability enum .ToString()) → icon filename base
+const ABILITY_ICONS = {
+    Missle1:        'Missile',
+    Missle2:        'Missile2',
+    Missle3:        'Missile3',
+    MissleSeeking1: 'MissileS',
+    MissleSeeking2: 'MissileS2',
+    MissleSeeking3: 'MissileS3',
+    EMP:            'EMP',
+    Recharger:      'Recharger',
+    TrailDamage:    'TrailDamage',
+    TrailSlow:      'TrailSlow',
+    Overdrive:      'Overdrive',
+    CrasherBoost:   'CrasherBoost',
+    OrbitalLazer:   'OrbitalLazer',
+    Grappler:       'Grappler',
+    LightningPower: 'Lightning',
+    TrafficCone:    'TrafficCone',
+    BurstShield:    'Shield',
+    IceBlast:       'Freeze',
+};
+
+let currentCarModel = -1;
+
+function applyCarTheme(model) {
+    if (model === currentCarModel) return;
+    currentCarModel = model;
+
+    const info = getCarModelInfo(model);
+    const root = document.documentElement;
+
+    root.style.setProperty('--neon-orange', info.primary);
+    root.style.setProperty('--neon-purple', info.secondary);
+
+    // Soften very dark primaries so UI elements stay visible
+    const bgTint = info.secondary === '#000000'
+        ? '#1a1a1a'
+        : info.secondary + '22'; // 13% opacity tint
+    root.style.setProperty('--bg-tint', bgTint);
+
+    // Update SVG energy gradient stops
+    const gradStops = document.querySelectorAll('#energyGrad stop');
+    if (gradStops.length >= 2) {
+        gradStops[0].setAttribute('stop-color', info.secondary);
+        gradStops[1].setAttribute('stop-color', info.primary);
+    }
+
+    // Update car icon — always show null-left as fallback
+    const carIconEl = document.getElementById('car-icon');
+    if (carIconEl) {
+        carIconEl.src = info.slug !== 'null'
+            ? `/cars/${info.slug}-left.png`
+            : '/cars/null-left.png';
+    }
+}
+
+function setAbilityIcon(abilityName) {
+    const iconEl  = document.getElementById('ability-icon');
+    const btnEl   = document.getElementById('btn-ability');
+    if (!iconEl || !btnEl) return;
+    if (!abilityName || abilityName === 'None' || abilityName === '') {
+        iconEl.src = '';
+        btnEl.style.display = 'none';
+        return;
+    }
+    const base = ABILITY_ICONS[abilityName];
+    iconEl.src = base ? `/abilityicons/${base}.png` : '';
+    btnEl.style.display = '';
+}
 
 // ── State ──────────────────────────────────────────────────────────────────────
 const input = {
@@ -36,7 +135,6 @@ const btnBoost       = document.getElementById('btn-boost');
 const btnSteerLeft   = document.getElementById('btn-steer-left');
 const btnSteerRight  = document.getElementById('btn-steer-right');
 const steerFill      = document.getElementById('steer-fill');
-const abilityIcon    = document.getElementById('ability-icon');
 
 // ── WebSocket ──────────────────────────────────────────────────────────────────
 function connect() {
@@ -76,11 +174,17 @@ function handleServerMsg(msg) {
             break;
 
         case 'player_state':
-            if (msg.controllerId === playerId) updateHUD(msg);
+            if (msg.controllerId === playerId) {
+                updateHUD(msg);
+                if (msg.carModel != null) applyCarTheme(msg.carModel);
+                if (msg.abilityIcon != null) setAbilityIcon(msg.abilityIcon);
+            }
             break;
 
         case 'ability_update':
-            if (msg.icon) abilityIcon.textContent = msg.icon;
+            if (msg.controllerId === playerId || !msg.controllerId) {
+                setAbilityIcon(msg.icon || '');
+            }
             break;
     }
 }
@@ -141,8 +245,6 @@ function setThrottle(value) {
     markDirty();
 }
 
-// Touch – events stay bound to the source element, so touchmove works even
-// when the finger drifts outside the track bounds.
 throttleTrack.addEventListener('touchstart', (e) => {
     e.preventDefault();
     throttleDragging = true;
@@ -157,7 +259,6 @@ throttleTrack.addEventListener('touchmove', (e) => {
 throttleTrack.addEventListener('touchend',   () => { throttleDragging = false; });
 throttleTrack.addEventListener('touchcancel', () => { throttleDragging = false; });
 
-// Mouse fallback (useful for desktop testing)
 throttleTrack.addEventListener('mousedown', (e) => {
     throttleDragging = true;
     setThrottle(throttleFromY(e.clientY));
@@ -185,7 +286,6 @@ function updateSteerVisual() {
     steerFill.style.width = `${halfW}%`;
 }
 
-// Bind a button so it behaves as a held control on both touch and mouse
 function bindHold(el, onDown, onUp) {
     el.addEventListener('touchstart',  (e) => { e.preventDefault(); onDown(); }, { passive: false });
     el.addEventListener('touchend',    (e) => { e.preventDefault(); onUp();   }, { passive: false });
@@ -204,7 +304,6 @@ bindHold(btnSteerRight,
     () => { steerRightHeld = false; btnSteerRight.classList.remove('pressed'); applySteering(); }
 );
 
-// Global mouseup safety net (finger/cursor releases outside element)
 document.addEventListener('mouseup', () => {
     if (steerLeftHeld)  { steerLeftHeld  = false; btnSteerLeft.classList.remove('pressed');  applySteering(); }
     if (steerRightHeld) { steerRightHeld = false; btnSteerRight.classList.remove('pressed'); applySteering(); }
@@ -225,11 +324,11 @@ bindHold(btnAbility,
 
 // ── Gyroscope ──────────────────────────────────────────────────────────────────
 const GYRO_DEAD_ZONE = 5;   // degrees
-const GYRO_MAX_TILT  = 30;  // degrees → full deflection
+const GYRO_MAX_TILT  = 30;  // degrees -> full deflection
 
 function onDeviceOrientation(e) {
     if (!gyroEnabled) return;
-    const gamma = e.gamma ?? 0; // left/right tilt: -90 to +90
+    const gamma = e.gamma ?? 0;
     let steering = 0;
     if (Math.abs(gamma) > GYRO_DEAD_ZONE) {
         steering = (gamma - Math.sign(gamma) * GYRO_DEAD_ZONE) / (GYRO_MAX_TILT - GYRO_DEAD_ZONE);
@@ -264,7 +363,6 @@ function disableGyro() {
 gyroBtn.addEventListener('click', () => {
     if (gyroEnabled) { disableGyro(); return; }
 
-    // iOS 13+ requires an explicit permission request
     if (typeof DeviceOrientationEvent !== 'undefined' &&
         typeof DeviceOrientationEvent.requestPermission === 'function') {
         gyroOverlay.classList.remove('hidden');
@@ -293,3 +391,14 @@ if (screen.orientation && typeof screen.orientation.lock === 'function') {
 
 // ── Kick off ──────────────────────────────────────────────────────────────────
 connect();
+
+// ── Initial UI state ───────────────────────────────────────────────────────────
+// Energy ring starts at 75% (matching CarController's reset energy)
+updateHUD({ energy: 75 });
+
+// Default car icon (null / unknown)
+const _initCarIcon = document.getElementById('car-icon');
+if (_initCarIcon) _initCarIcon.src = '/cars/null-left.png';
+
+// Hide ability button until an ability is assigned
+setAbilityIcon('');
