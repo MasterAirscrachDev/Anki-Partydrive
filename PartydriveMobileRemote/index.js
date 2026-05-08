@@ -26,6 +26,16 @@ function resolveAssetDir(publicSubDir, unityRelPath) {
 const carsDir         = resolveAssetDir('cars',         '../Assets/Textures/Cars');
 const abilityIconsDir = resolveAssetDir('abilityicons', '../Assets/Textures/AbilityIcons');
 
+// When running as a pkg executable, express.static cannot read from the virtual
+// snapshot filesystem. Prefer a real public/ folder next to the exe if present.
+const publicDir = (() => {
+    if (process.pkg) {
+        const adj = path.join(path.dirname(process.execPath), 'public');
+        if (fs.existsSync(adj)) return adj;
+    }
+    return path.join(__dirname, 'public');
+})();
+
 // ── App Setup ─────────────────────────────────────────────────────────────────
 const app    = express();
 const server = http.createServer(app);
@@ -172,13 +182,32 @@ function handleControllerMessage(id, msg) {
         case 'ping':
             safeSend(ctrl.ws, { type: 'pong', timestamp: msg.timestamp });
             break;
+
+        case 'ui_input':
+            // Forward D-pad / confirm / cancel actions to Unity
+            if (typeof msg.action === 'string') {
+                safeSend(gameWs, { type: 'ui_input', controllerId: id, action: msg.action });
+            }
+            break;
     }
 }
 
 // ── Routes ────────────────────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(publicDir));
 app.use('/cars',         express.static(carsDir));
 app.use('/abilityicons', express.static(abilityIconsDir));
+
+// Explicit fallback for root — ensures index.html is served even if static
+// middleware fails (e.g. edge cases with some pkg/send version combinations).
+app.get('/', (req, res) => res.send(fs.readFileSync(path.join(publicDir, 'index.html'))));
+
+// /qr.png — raw PNG for Unity texture fetch
+app.get('/qr.png', async (req, res) => {
+    const ip  = getLocalIP();
+    const url = `http://${ip}:${PORT}`;
+    const buf = await QRCode.toBuffer(url, { type: 'png', margin: 2, width: 300 });
+    res.contentType('image/png').send(buf);
+});
 
 // /qr — debug page showing the controller QR code
 app.get('/qr', async (req, res) => {

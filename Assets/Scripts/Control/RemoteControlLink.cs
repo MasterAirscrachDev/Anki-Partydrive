@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 using NativeWebSocket;
 using Newtonsoft.Json;
-using static OverdriveServer.NetStructures;
+using UnityEngine.UI;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Manages the Partydrive Mobile Remote integration.
@@ -21,16 +21,17 @@ public class RemoteControlLink : MonoBehaviour
 
     [Header("Timing")]
     [Tooltip("How often (seconds) player state is pushed to the remote server.")]
-    [SerializeField] float stateSendInterval = 0.25f; // double the tick rate to the cars
+    [SerializeField] float stateSendInterval = 0.2f; // double the tick rate to the cars
+
+    [SerializeField] RawImage QRdisplay;
 
     // ── Runtime ──────────────────────────────────────────────────────────────
-    WebSocket  ws;
-    Process    serverProcess;
-    bool       serverRunning;
-    float      nextStateSend;
+    WebSocket ws;
+    System.Diagnostics.Process    serverProcess;
+    float nextStateSend;
 
-    // controllerId -> CarController (assigned when Unity gets controller_connected)
-    readonly Dictionary<string, CarController> controllerMap = new Dictionary<string, CarController>();
+    // controllerId -> MobileController (one spawned GameObject per connection)
+    readonly Dictionary<string, MobileController> controllerMap = new Dictionary<string, MobileController>();
 
     // ── Unity Lifecycle ───────────────────────────────────────────────────────
     void Awake()
@@ -69,8 +70,9 @@ public class RemoteControlLink : MonoBehaviour
         StopAllCoroutines();
         CloseWebSocket();
         StopServerProcess();
+        foreach (var mc in controllerMap.Values)
+            if (mc != null) Destroy(mc.gameObject);
         controllerMap.Clear();
-        serverRunning = false;
     }
 
     // ── Server Process ────────────────────────────────────────────────────────
@@ -83,19 +85,20 @@ public class RemoteControlLink : MonoBehaviour
 
     void LaunchServerProcess()
     {
+        //Debug.Log("[RemoteControlLink] Attempting to launch mobile remote server...");
         string exePath = FindExecutable();
         if (exePath == null)
         {
-            UnityEngine.Debug.LogWarning("[RemoteControlLink] Executable not found. Attempting to connect to a running server.");
+            Debug.LogWarning("[RemoteControlLink] Executable not found. Attempting to connect to a running server.");
             ConnectWebSocket();
             return;
         }
 
         try
         {
-            serverProcess = new Process
+            serverProcess = new System.Diagnostics.Process
             {
-                StartInfo = new ProcessStartInfo
+                StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
                     FileName         = exePath,
                     UseShellExecute  = false,
@@ -104,12 +107,12 @@ public class RemoteControlLink : MonoBehaviour
                 }
             };
             serverProcess.Start();
-            serverRunning = true;
-            UnityEngine.Debug.Log($"[RemoteControlLink] Launched {exePath}");
+            //serverRunning = true;
+            //Debug.Log($"[RemoteControlLink] Launched {exePath}");
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.LogWarning($"[RemoteControlLink] Failed to launch server: {e.Message}");
+            Debug.LogWarning($"[RemoteControlLink] Failed to launch server: {e.Message}");
         }
     }
 
@@ -119,17 +122,11 @@ public class RemoteControlLink : MonoBehaviour
         string appDir = Path.GetDirectoryName(Application.dataPath);
         string path1  = Path.Combine(appDir, executableName);
         if (File.Exists(path1)) return path1;
-
         // 2. BUILDS folder sibling (common dev layout)
-        string path2 = Path.Combine(appDir, "..", "BUILDS", executableName);
+        string path2 = Path.Combine(appDir, "BUILDS", executableName);
+        //Debug.Log($"[RemoteControlLink] Looking for server executable at: {path2}");
         path2 = Path.GetFullPath(path2);
         if (File.Exists(path2)) return path2;
-
-        // 3. Same directory as Application.dataPath parent
-        string path3 = Path.Combine(Application.dataPath, "..", executableName);
-        path3 = Path.GetFullPath(path3);
-        if (File.Exists(path3)) return path3;
-
         return null;
     }
 
@@ -142,7 +139,6 @@ public class RemoteControlLink : MonoBehaviour
             serverProcess.Dispose();
             serverProcess = null;
         }
-        serverRunning = false;
     }
 
     // ── WebSocket ─────────────────────────────────────────────────────────────
@@ -152,36 +148,27 @@ public class RemoteControlLink : MonoBehaviour
 
         ws.OnOpen += () =>
         {
-            UnityEngine.Debug.Log("[RemoteControlLink] Connected to mobile remote server.");
+            Debug.Log("[RemoteControlLink] Connected to mobile remote server.");
+            StartCoroutine(FetchAndDisplayQR());
         };
-
         ws.OnMessage += (bytes) =>
         {
             string json = System.Text.Encoding.UTF8.GetString(bytes);
             HandleMessage(json);
         };
-
         ws.OnError += (e) =>
-        {
-            UnityEngine.Debug.LogWarning($"[RemoteControlLink] WebSocket error: {e}");
-        };
-
+        { Debug.LogWarning($"[RemoteControlLink] WebSocket error: {e}"); };
         ws.OnClose += (e) =>
         {
-            UnityEngine.Debug.Log("[RemoteControlLink] Disconnected. Reconnecting...");
-            if (enabled) StartCoroutine(ReconnectAfterDelay());
+            Debug.Log("[RemoteControlLink] Disconnected. Reconnecting...");
+            if (this && enabled) StartCoroutine(ReconnectAfterDelay());
         };
-
         await ws.Connect();
     }
 
     async void CloseWebSocket()
     {
-        if (ws != null)
-        {
-            await ws.Close();
-            ws = null;
-        }
+        if (ws != null) { await ws.Close(); ws = null; }
     }
 
     IEnumerator ReconnectAfterDelay()
@@ -189,12 +176,24 @@ public class RemoteControlLink : MonoBehaviour
         yield return new WaitForSeconds(3f);
         if (enabled) ConnectWebSocket();
     }
+    IEnumerator FetchAndDisplayQR()
+    {
+        string url = $"http://localhost:{serverPort}/qr.png";
+        using var req = UnityWebRequestTexture.GetTexture(url);
+        yield return req.SendWebRequest();
+        if (req.result == UnityWebRequest.Result.Success)
+        {
+            if (QRdisplay != null)
+                QRdisplay.texture = DownloadHandlerTexture.GetContent(req);
+                QRdisplay.gameObject.SetActive(true);
+        }
+        else
+        { Debug.LogWarning($"[RemoteControlLink] Failed to fetch QR code: {req.error}"); }
+    }
 
     // ── Incoming messages from the Node server ────────────────────────────────
-    void HandleMessage(string json)
-    {
-        try
-        {
+    void HandleMessage(string json) {
+        try {
             var msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             if (msg == null) return;
 
@@ -206,21 +205,30 @@ public class RemoteControlLink : MonoBehaviour
                 {
                     string ctrlId  = msg["controllerId"]?.ToString();
                     int playerNum  = Convert.ToInt32(msg["playerNumber"]);
-                    AssignControllerToPlayer(ctrlId, playerNum);
+                    SpawnMobileController(ctrlId, playerNum);
                     break;
                 }
 
                 case "controller_disconnected":
                 {
                     string ctrlId = msg["controllerId"]?.ToString();
-                    if (ctrlId != null) controllerMap.Remove(ctrlId);
+                    if (ctrlId != null && controllerMap.TryGetValue(ctrlId, out var disconnected))
+                    {
+                        if (disconnected != null)
+                        {
+                            var car = disconnected.GetComponent<CarController>();
+                            if (car != null) SR.cms?.controllers.Remove(car);
+                            Destroy(disconnected.gameObject);
+                        }
+                        controllerMap.Remove(ctrlId);
+                    }
                     break;
                 }
 
                 case "input":
                 {
                     string ctrlId = msg.TryGetValue("controllerId", out var c) ? c?.ToString() : null;
-                    if (ctrlId != null && controllerMap.TryGetValue(ctrlId, out var car) && car != null)
+                    if (ctrlId != null && controllerMap.TryGetValue(ctrlId, out var mc) && mc != null)
                     {
                         float throttle = msg.TryGetValue("throttle", out var th) ? Convert.ToSingle(th) : 0f;
                         float steering = msg.TryGetValue("steering", out var st) ? Convert.ToSingle(st) : 0f;
@@ -230,41 +238,36 @@ public class RemoteControlLink : MonoBehaviour
                         throttle = Mathf.Clamp01(throttle);
                         steering = Mathf.Clamp(steering, -1f, 1f);
 
-                        var frame = new InputFrame(throttle, steering, boost, ability, false, 0f);
-                        car.UpdateInputs(frame, 0);
+                        mc.ReceiveRacingInput(new InputFrame(throttle, steering, boost, ability, false, 0f));
                     }
+                    break;
+                }
+
+                case "ui_input":
+                {
+                    string ctrlId = msg.TryGetValue("controllerId", out var c2) ? c2?.ToString() : null;
+                    string action = msg.TryGetValue("action",       out var ac) ? ac?.ToString() : null;
+                    if (ctrlId != null && action != null && controllerMap.TryGetValue(ctrlId, out var uiMc) && uiMc != null)
+                        uiMc.ApplyUiAction(action);
                     break;
                 }
             }
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.LogWarning($"[RemoteControlLink] Message parse error: {e.Message}");
+            Debug.LogWarning($"[RemoteControlLink] Message parse error: {e.Message}");
         }
     }
 
-    // ── Player assignment ─────────────────────────────────────────────────────
-    void AssignControllerToPlayer(string controllerId, int playerNumber)
+    // ── Player spawning ───────────────────────────────────────────────────────
+    void SpawnMobileController(string controllerId, int playerNumber)
     {
-        var allControllers = FindObjectsOfType<CarController>();
-
-        // Collect non-AI controllers in a stable order
-        var playerControllers = new List<CarController>();
-        foreach (var cc in allControllers)
-        {
-            if (!cc.IsCarAI()) playerControllers.Add(cc);
-        }
-
-        int index = playerNumber - 1; // playerNumber is 1-based
-        if (index >= 0 && index < playerControllers.Count)
-        {
-            controllerMap[controllerId] = playerControllers[index];
-            UnityEngine.Debug.Log($"[RemoteControlLink] Controller {controllerId} -> Player {playerNumber} ({playerControllers[index].GetPlayerName()})");
-        }
-        else
-        {
-            UnityEngine.Debug.LogWarning($"[RemoteControlLink] No player slot {playerNumber} for controller {controllerId} (have {playerControllers.Count} players)");
-        }
+        var go = new GameObject($"MobilePlayer_{playerNumber}");
+        go.AddComponent<CarController>();
+        var mc = go.AddComponent<MobileController>();
+        mc.Setup(playerNumber == 1, $"Mobile P{playerNumber}");
+        controllerMap[controllerId] = mc;
+        Debug.Log($"[RemoteControlLink] Spawned MobileController for {controllerId} as Player {playerNumber}");
     }
 
     // ── Outgoing: push player state to each controller ────────────────────────
@@ -274,14 +277,17 @@ public class RemoteControlLink : MonoBehaviour
 
         foreach (var kv in controllerMap)
         {
-            string       controllerId = kv.Key;
-            CarController car         = kv.Value;
+            string           controllerId = kv.Key;
+            MobileController mc           = kv.Value;
+            if (mc == null) continue;
+            CarController    car          = mc.GetComponent<CarController>();
             if (car == null) continue;
 
             int    model    = (int)car.GetCarModel();
             int    energy   = Mathf.RoundToInt(car.GetEnergyPercent() * 100f);
             int    position = car.GetPosition();
             string ability  = AbilityToIconName(car.GetCurrentAbility());
+            string uiMode   = mc.CurrentMode == MobileController.MobileInputMode.Menu ? "menu" : "race";
 
             var payload = new
             {
@@ -291,6 +297,7 @@ public class RemoteControlLink : MonoBehaviour
                 energy,
                 carModel     = model,
                 abilityIcon  = ability,
+                uiMode,
             };
 
             ws.SendText(JsonConvert.SerializeObject(payload));

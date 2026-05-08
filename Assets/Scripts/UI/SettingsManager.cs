@@ -23,17 +23,17 @@ public class SettingsManager : MonoBehaviour
 
     [Header("Other Settings")]
     [SerializeField] TMP_Dropdown carBalanceDropdown;
+    [SerializeField] Toggle phoneControllerSupportToggle;
 
 
     SettingsState currentSettings = new SettingsState();
+    bool isApplyingSettings = false;
     const float settingsSaveDelay = 10f;
     float settingsSaveTimer = 0f;
     bool isSaveTimerRunning = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // Initialize settings from currentSettings
-        ReadUIToSettings();
         LoadSettingsAsync();
     }
     public SettingsState Read() { return currentSettings; }
@@ -50,6 +50,7 @@ public class SettingsManager : MonoBehaviour
         }
         if(currentSettings.balancedBaseStats != balancedBaseStatsToggle.isOn){ currentSettings.balancedBaseStats = balancedBaseStatsToggle.isOn; changed = true; }
         if(currentSettings.uniqueOverdrivePowers != uniqueOverdrivePowersToggle.isOn){ currentSettings.uniqueOverdrivePowers = uniqueOverdrivePowersToggle.isOn; changed = true; }
+        if(currentSettings.phoneControllerSupport != phoneControllerSupportToggle.isOn){ currentSettings.phoneControllerSupport = phoneControllerSupportToggle.isOn; changed = true; }
         if(changed)
         {
             onSettingsChanged?.Invoke(currentSettings);
@@ -66,13 +67,18 @@ public class SettingsManager : MonoBehaviour
     
     void ApplySettingsToUI()
     {
+        isApplyingSettings = true;
         musicVolumeSlider.value = currentSettings.musicVolume;
         announcerVolumeSlider.value = currentSettings.announcerVolume;
         sfxVolumeSlider.value = currentSettings.sfxVolume;
         postProcessingToggle.isOn = currentSettings.postProcessingEnabled;
         balancedBaseStatsToggle.isOn = currentSettings.balancedBaseStats;
         uniqueOverdrivePowersToggle.isOn = currentSettings.uniqueOverdrivePowers;
+        phoneControllerSupportToggle.isOn = currentSettings.phoneControllerSupport;
+        //Debug.Log($"Settings loaded.\n{currentSettings.Log()}");
+        isApplyingSettings = false;
         ApplyPostProcessing();
+        onSettingsChanged?.Invoke(currentSettings);
     }
     async Task LoadSettingsAsync()
     {
@@ -86,7 +92,9 @@ public class SettingsManager : MonoBehaviour
             currentSettings.postProcessingEnabled = save.GetVar("postProcessingEnabled", currentSettings.postProcessingEnabled);
             currentSettings.balancedBaseStats = save.GetVar("balancedBaseStats", currentSettings.balancedBaseStats);
             currentSettings.uniqueOverdrivePowers = save.GetVar("uniqueOverdrivePowers", currentSettings.uniqueOverdrivePowers);
-
+            currentSettings.phoneControllerSupport = save.GetVar("phoneControllerSupport", currentSettings.phoneControllerSupport);
+            if (currentSettings.phoneControllerSupport)
+            { FindFirstObjectByType<RemoteControlLink>().Activate(); }
             // Apply loaded settings to UI
             ApplySettingsToUI();
         }
@@ -101,11 +109,14 @@ public class SettingsManager : MonoBehaviour
         save.SetVar("postProcessingEnabled", currentSettings.postProcessingEnabled);
         save.SetVar("balancedBaseStats", currentSettings.balancedBaseStats);
         save.SetVar("uniqueOverdrivePowers", currentSettings.uniqueOverdrivePowers);
+        save.SetVar("phoneControllerSupport", currentSettings.phoneControllerSupport);
         await fs.SaveFile("settings", save);
+        Debug.Log($"Settings saved.\n{currentSettings.Log()}");
     }
 
     public void OnSettingsUpdated()
     {
+        if (isApplyingSettings) return;
         settingsSaveTimer = settingsSaveDelay;
         if(!isSaveTimerRunning)
         {
@@ -122,14 +133,6 @@ public class SettingsManager : MonoBehaviour
             settingsSaveTimer -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        // Update currentSettings with UI values
-        currentSettings.musicVolume = musicVolumeSlider.value;
-        currentSettings.announcerVolume = announcerVolumeSlider.value;
-        currentSettings.sfxVolume = sfxVolumeSlider.value;
-        currentSettings.postProcessingEnabled = postProcessingToggle.isOn;
-        currentSettings.balancedBaseStats = balancedBaseStatsToggle.isOn;
-        currentSettings.uniqueOverdrivePowers = uniqueOverdrivePowersToggle.isOn;
-
         SaveSettingsAsync();
         isSaveTimerRunning = false;
     }
@@ -166,12 +169,24 @@ public class SettingsManager : MonoBehaviour
 }
 public class SettingsState
 {
-    public float musicVolume;
-    public float announcerVolume;
-    public float sfxVolume;
+    public float musicVolume = 0.15f;
+    public float announcerVolume = 1f;
+    public float sfxVolume = 0.757f;
     
-    public bool postProcessingEnabled;
+    public bool postProcessingEnabled = true;
 
-    public bool balancedBaseStats;
-    public bool uniqueOverdrivePowers;
+    public bool balancedBaseStats = true;
+    public bool uniqueOverdrivePowers = true;
+
+    public bool phoneControllerSupport = false;
+    public string Log() {
+        return @$"SettingsState:
+MusicVolume: {musicVolume}
+AnnouncerVolume: {announcerVolume}
+SFXVolume: {sfxVolume}
+PostProcessingEnabled: {postProcessingEnabled}
+BalancedBaseStats: {balancedBaseStats}
+UniqueOverdrivePowers: {uniqueOverdrivePowers}
+PhoneControllerSupport: {phoneControllerSupport}";
+    }
 }

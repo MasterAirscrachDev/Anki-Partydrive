@@ -26,6 +26,7 @@
         </div>
 
         <button id="gyro-btn" class="hud-btn">GYRO: OFF</button>
+        <button id="mode-btn" class="hud-btn">UI MODE</button>
     </header>
 
     <!-- ── iOS gyro permission overlay ───────────────────────────────────── -->
@@ -35,6 +36,27 @@
             <button id="gyro-permit-btn">ALLOW MOTION</button>
             <button id="gyro-cancel-btn">CANCEL</button>
         </div>
+    </div>
+
+    <!-- ── UI mode panel ─────────────────────────────────────────────────── -->
+    <div id="ui-mode" class="hidden">
+
+        <!-- D-pad -->
+        <div id="dpad">
+            <button id="btn-up"    class="dpad-btn dpad-up"   >▲</button>
+            <button id="btn-left"  class="dpad-btn dpad-left" >◄</button>
+            <button id="btn-confirm" class="dpad-btn dpad-center">✔</button>
+            <button id="btn-right" class="dpad-btn dpad-right">►</button>
+            <button id="btn-down"  class="dpad-btn dpad-down" >▼</button>
+        </div>
+
+        <!-- Action buttons row -->
+        <div id="ui-actions">
+            <button id="btn-alt-select" class="ui-action-btn alt-btn"  >⚙ ALT</button>
+            <button id="btn-cancel"     class="ui-action-btn cancel-btn" >✕ CANCEL</button>
+            <button id="btn-start"      class="ui-action-btn start-btn">▶ START</button>
+        </div>
+
     </div>
 
     <!-- ── Main control area ─────────────────────────────────────────────── -->

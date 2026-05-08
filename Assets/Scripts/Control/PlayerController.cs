@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
         inputs = InputFrame.Empty();
         iinput = GetComponent<PlayerInput>();
         carController = GetComponent<CarController>();
-        int playerCount = FindObjectsOfType<PlayerController>().Length;
+        int playerCount = FindObjectsByType<PlayerController>(FindObjectsSortMode.None).Length;
         carController.Setup(false, $"Player {playerCount}");
         
         // Cache racing actions
@@ -197,33 +197,22 @@ public class PlayerController : MonoBehaviour
     void HandleMenuInputCallbacks(){
         // Handle select input with debouncing
         if(selectInput && !lastSelectInput){
-            // Rising edge detected - player pressed select
-            if(SR.cms != null){
-                SR.cms.OnSelectCallback(this);
-            }
+            if(SR.cms != null){ SR.cms.OnSelectCallback(carController); }
         }
         
         // Handle alt select input with debouncing
         if(altSelectInput && !lastAltSelectInput){
-            // Rising edge detected - player pressed alt select
-            if(SR.cms != null){
-                SR.cms.OnAltSelectCallback(this);
-            }
+            if(SR.cms != null){ SR.cms.OnAltSelectCallback(carController); }
         }
         
         // Handle back button input with debouncing
         if(backSelectInput && !lastBackSelectInput){
-            // Rising edge detected - player pressed back
-            if(SR.cms != null){
-                SR.cms.OnBackToMenuCallback();
-            }
+            if(SR.cms != null){ SR.cms.OnBackToMenuCallback(); }
         }
+
         // Handle start button input with debouncing
         if(startSelectInput && !lastStartSelectInput){
-            // Rising edge detected - player pressed start
-            if(SR.cms != null){
-                SR.cms.OnStartSelectCallback(this);
-            }
+            if(SR.cms != null){ SR.cms.OnStartSelectCallback(carController); }
         }
         
         // Update last input states

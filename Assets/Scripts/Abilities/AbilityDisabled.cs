@@ -10,7 +10,6 @@ public class AbilityDisabled : MonoBehaviour
     float duration = 3.5f;
     
     string userID;
-    float elapsed = 0f;
     
     public void Setup(AbilityController ab, float duration = 3.5f)
     {

@@ -176,8 +176,9 @@ function handleServerMsg(msg) {
         case 'player_state':
             if (msg.controllerId === playerId) {
                 updateHUD(msg);
-                if (msg.carModel != null) applyCarTheme(msg.carModel);
+                if (msg.carModel  != null) applyCarTheme(msg.carModel);
                 if (msg.abilityIcon != null) setAbilityIcon(msg.abilityIcon);
+                if (msg.uiMode    != null) setUiMode(msg.uiMode === 'menu');
             }
             break;
 
@@ -383,6 +384,72 @@ document.getElementById('gyro-permit-btn').addEventListener('click', () => {
 document.getElementById('gyro-cancel-btn').addEventListener('click', () => {
     gyroOverlay.classList.add('hidden');
 });
+
+// ── Mode Toggle (Race / UI) ────────────────────────────────────────────────────
+let uiMode = false;
+
+const modeBtn      = document.getElementById('mode-btn');
+const uiModePanel  = document.getElementById('ui-mode');
+const racePanel    = document.getElementById('controller');
+const steerRow     = document.getElementById('steer-row');
+
+function setUiMode(enabled) {
+    uiMode = enabled;
+    modeBtn.textContent = enabled ? 'RACE MODE' : 'UI MODE';
+    modeBtn.classList.toggle('active', enabled);
+    uiModePanel.classList.toggle('hidden', !enabled);
+    racePanel.style.display  = enabled ? 'none' : '';
+    steerRow.style.display   = enabled ? 'none' : '';
+    // Disable gyro in UI mode
+    if (enabled && gyroEnabled) disableGyro();
+    gyroBtn.style.display = enabled ? 'none' : '';
+}
+
+modeBtn.addEventListener('click', () => setUiMode(!uiMode));
+
+// ── D-pad & UI action buttons ─────────────────────────────────────────────────
+function sendUiInput(action) {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    ws.send(JSON.stringify({ type: 'ui_input', action }));
+}
+
+function bindUiHold(el, action) {
+    function down() {
+        el.classList.add('pressed');
+        sendUiInput(action + '_down');
+    }
+    function up() {
+        el.classList.remove('pressed');
+        sendUiInput(action + '_up');
+    }
+    el.addEventListener('touchstart',  (e) => { e.preventDefault(); down(); }, { passive: false });
+    el.addEventListener('touchend',    (e) => { e.preventDefault(); up();   }, { passive: false });
+    el.addEventListener('touchcancel', (e) => { e.preventDefault(); up();   }, { passive: false });
+    el.addEventListener('mousedown', down);
+    el.addEventListener('mouseup',   up);
+}
+
+function bindUiTap(el, action) {
+    function press() {
+        el.classList.add('pressed');
+        sendUiInput(action);
+    }
+    function release() { el.classList.remove('pressed'); }
+    el.addEventListener('touchstart',  (e) => { e.preventDefault(); press();   }, { passive: false });
+    el.addEventListener('touchend',    (e) => { e.preventDefault(); release(); }, { passive: false });
+    el.addEventListener('touchcancel', (e) => { e.preventDefault(); release(); }, { passive: false });
+    el.addEventListener('mousedown', press);
+    el.addEventListener('mouseup',   release);
+}
+
+bindUiHold(document.getElementById('btn-up'),    'nav_up');
+bindUiHold(document.getElementById('btn-down'),  'nav_down');
+bindUiHold(document.getElementById('btn-left'),  'nav_left');
+bindUiHold(document.getElementById('btn-right'), 'nav_right');
+bindUiTap(document.getElementById('btn-confirm'),    'confirm');
+bindUiTap(document.getElementById('btn-cancel'),     'cancel');
+bindUiTap(document.getElementById('btn-alt-select'), 'alt_select');
+bindUiTap(document.getElementById('btn-start'),      'start');
 
 // ── Orientation lock (best-effort) ────────────────────────────────────────────
 if (screen.orientation && typeof screen.orientation.lock === 'function') {

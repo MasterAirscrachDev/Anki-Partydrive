@@ -33,13 +33,10 @@ public partial class CarController : MonoBehaviour
         this.playerName = playerName;
         this.isAI = isAI;
         isSetup = true;
-        SR.cms.AddController(this, isAI);
-        FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //this calls SetCard()
+        SR.cms.AddController(this, isAI); // CMS.AddController handles card count + colour
     }
     public void SetColour(Color c){
         playerColor = c;
-        if (!isAI)
-        { GetComponent<PlayerController>().TrySetGamepadColor(c); }
         if(pcs == null){ return; }
         pcs.SetColor(c);
     }
@@ -201,8 +198,6 @@ public partial class CarController : MonoBehaviour
     public void ForceNextTick(){
         canTickAt = 0;
     }
-
-
     float GetTrackHalfWidth() {
         // Get dynamic track width from the car's actual current position
         float trackHalfWidth = 67.5f; // Default for modular tracks

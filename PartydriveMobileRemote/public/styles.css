@@ -441,6 +441,154 @@ html, body {
     box-shadow: none;
 }
 
+/* == UI Mode Panel == */
+#ui-mode {
+    position: fixed;
+    top: var(--hud-h);
+    bottom: 0; left: 0; right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    background: var(--dark-bg);
+    z-index: 50;
+}
+#ui-mode.hidden { display: none; }
+
+/* D-pad */
+#dpad {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows:    1fr 1fr 1fr;
+    gap: 6px;
+    width:  clamp(260px, 58vmin, 420px);
+    height: clamp(260px, 58vmin, 420px);
+}
+
+.dpad-btn {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-size: clamp(20px, 5vmin, 36px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .08s, box-shadow .08s, transform .08s;
+    -webkit-touch-callout: none;
+}
+.dpad-btn:active,
+.dpad-btn.pressed {
+    background: rgba(176,38,255,.25);
+    box-shadow: 0 0 18px rgba(176,38,255,.5);
+    transform: scale(.93);
+}
+
+.dpad-up    { grid-column: 2; grid-row: 1; clip-path: polygon(10% 100%, 50% 0, 90% 100%); padding-top: 8px; border-top: 4px solid var(--neon-purple); }
+.dpad-left  { grid-column: 1; grid-row: 2; clip-path: polygon(100% 10%, 0 50%, 100% 90%); border-left: 4px solid var(--neon-orange); }
+.dpad-right { grid-column: 3; grid-row: 2; clip-path: polygon(0 10%, 100% 50%, 0 90%);   border-right: 4px solid var(--neon-purple); }
+.dpad-down  { grid-column: 2; grid-row: 3; clip-path: polygon(10% 0, 90% 0, 50% 100%);   padding-bottom: 8px; border-bottom: 4px solid var(--neon-orange); }
+
+.dpad-up:active, .dpad-up.pressed,
+.dpad-down:active, .dpad-down.pressed {
+    clip-path: none;
+}
+.dpad-left:active, .dpad-left.pressed,
+.dpad-right:active, .dpad-right.pressed {
+    clip-path: none;
+}
+
+#dpad-center,
+.dpad-center {
+    grid-column: 2; grid-row: 2;
+    background: linear-gradient(135deg, #005500, #008800);
+    box-shadow: 0 0 14px rgba(0,136,0,.4);
+    font-size: clamp(18px, 4.5vmin, 32px);
+    color: #fff;
+    border: 2px solid rgba(0,255,0,.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    transition: box-shadow .1s, transform .1s;
+}
+#dpad-center:active,
+.dpad-center:active,
+#dpad-center.pressed,
+.dpad-center.pressed {
+    background: rgba(0,255,0,.25);
+    box-shadow: 0 0 28px rgba(0,255,0,.6);
+    transform: scale(.9);
+}
+
+/* Action buttons row */
+#ui-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    width: clamp(260px, 58vmin, 420px);
+}
+
+.ui-action-btn {
+    flex: 1;
+    padding: 24px 0;
+    border: none;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(12px, 3vmin, 17px);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+    transition: box-shadow .1s, transform .1s;
+    -webkit-touch-callout: none;
+}
+.ui-action-btn:active,
+.ui-action-btn.pressed {
+    clip-path: none;
+    transform: scale(.95);
+}
+
+.confirm-btn {
+    background: linear-gradient(135deg, #005500, #008800);
+    box-shadow: 0 0 14px rgba(0,136,0,.4);
+}
+.confirm-btn:active,
+.confirm-btn.pressed {
+    box-shadow: 0 0 28px rgba(0,255,0,.6);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #550000, #880000);
+    box-shadow: 0 0 14px rgba(136,0,0,.4);
+}
+.cancel-btn:active,
+.cancel-btn.pressed {
+    box-shadow: 0 0 28px rgba(255,0,0,.6);
+}
+
+.alt-btn {
+    background: linear-gradient(135deg, #1a1055, #2a20aa);
+    box-shadow: 0 0 14px rgba(42,32,170,.4);
+}
+.alt-btn:active,
+.alt-btn.pressed {
+    box-shadow: 0 0 28px rgba(100,80,255,.6);
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #3a4800, #8aaa00);
+    box-shadow: 0 0 14px rgba(138,170,0,.4);
+}
+.start-btn:active,
+.start-btn.pressed {
+    box-shadow: 0 0 28px rgba(200,255,0,.6);
+}
+
 /* == Landscape adjustments == */
 @media (orientation: landscape) {
     :root {

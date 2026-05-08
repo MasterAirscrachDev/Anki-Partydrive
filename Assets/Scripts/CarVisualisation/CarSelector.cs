@@ -11,7 +11,7 @@ public class CarSelector : MonoBehaviour
     [SerializeField] GameObject ModelCarPrefab, PlayerMarkerPrefab;
     [SerializeField] Transform slectionPlatform;
     [SerializeField] GameObject[] ShowOnlyIfGamemodeSet; // Array of objects to show only if a gamemode is set in CMS (like the start button)
-    List<PlayerController> players = new List<PlayerController>();
+    List<CarController> players = new List<CarController>();
     List<GameObject> playerMarkers = new List<GameObject>();
     List<Vector2> markerPositions = new List<Vector2>(); // Grid positions (0-5, 0-5)
     List<uint> allModels = new List<uint>();
@@ -64,7 +64,7 @@ public class CarSelector : MonoBehaviour
 
     }
     void DespawnDisconnectedAIs(){
-        AIController[] ais = FindObjectsOfType<AIController>();
+        AIController[] ais = FindObjectsByType<AIController>(FindObjectsSortMode.None);
         foreach(AIController ai in ais){
             if(!ai.GetComponent<CarController>().IsCarConnected()){
                 string desiredID = ai.GetID();
@@ -87,10 +87,9 @@ public class CarSelector : MonoBehaviour
     }
     void RefreshPlayers(){
         players.Clear();
-        PlayerController[] pcs = FindObjectsOfType<PlayerController>();
-        foreach(PlayerController pc in pcs){
-            if(pc.enabled){
-                players.Add(pc);
+        foreach(CarController cc in FindObjectsByType<CarController>(FindObjectsSortMode.None)){
+            if(!cc.IsCarAI()){
+                players.Add(cc);
             }
         }
     }
@@ -252,7 +251,7 @@ public class CarSelector : MonoBehaviour
         // Find which player index this controller corresponds to
         int playerIndex = -1;
         for(int i = 0; i < players.Count; i++){
-            if(players[i] != null && players[i].GetComponent<CarController>() == controller){
+            if(players[i] == controller){
                 playerIndex = i;
                 break;
             }
@@ -453,8 +452,10 @@ public class CarSelector : MonoBehaviour
     void UpdateMarkerPosition(int playerIndex){
         if(playerIndex >= players.Count || playerIndex >= markerPositions.Count) return;
         
-        PlayerController player = players[playerIndex];
-        Vector2 input = player.moveInput;
+        CarController car = players[playerIndex];
+        Vector2 input = car.GetComponent<PlayerController>()?.moveInput
+                     ?? car.GetComponent<MobileController>()?.moveInput
+                     ?? Vector2.zero;
         
         // Apply movement with some smoothness
         Vector2 currentPos = markerPositions[playerIndex];
@@ -508,16 +509,16 @@ public class CarSelector : MonoBehaviour
     }
     
     // CMS callback for player select input
-    void OnPlayerSelectPressed(PlayerController player){
-        int playerIndex = players.IndexOf(player);
+    void OnPlayerSelectPressed(CarController car){
+        int playerIndex = players.IndexOf(car);
         if(playerIndex != -1){
             HandlePlayerSelection(playerIndex);
         }
     }
     
     // CMS callback for player alt select input (AI selection)
-    void OnPlayerAltSelectPressed(PlayerController player){
-        int playerIndex = players.IndexOf(player);
+    void OnPlayerAltSelectPressed(CarController car){
+        int playerIndex = players.IndexOf(car);
         if(playerIndex != -1){
             HandlePlayerAISelection(playerIndex);
         }
@@ -531,11 +532,9 @@ public class CarSelector : MonoBehaviour
     }
     
     // CMS callback for start button input
-    void OnPlayerStartPressed(PlayerController player){
-        // Trigger gamemode loading when start is pressed in selection menu
+    void OnPlayerStartPressed(CarController car){
         if(SR.cms != null){
             SR.cms.LoadGamemode();
-            //Debug.Log("Start button pressed - loading gamemode");
         }
     }
     
@@ -625,11 +624,8 @@ public class CarSelector : MonoBehaviour
         
         // Assign car to the player's controller (car is already connected)
         if(playerIndex < players.Count && players[playerIndex] != null){
-            CarController carController = players[playerIndex].GetComponent<CarController>();
-            if(carController != null){
-                carController.SetDesiredCarID(carID);
-                Debug.Log($"Assigned car {carID} to player {playerIndex + 1} controller");
-            }
+            players[playerIndex].SetDesiredCarID(carID);
+            Debug.Log($"Assigned car {carID} to player {playerIndex + 1} controller");
         }
         
         Debug.Log($"Player {playerIndex + 1} selected car: {carID} (already connected)");
@@ -650,11 +646,8 @@ public class CarSelector : MonoBehaviour
         
         // Clear car assignment from the player's controller
         if(playerIndex < players.Count && players[playerIndex] != null){
-            CarController carController = players[playerIndex].GetComponent<CarController>();
-            if(carController != null){
-                carController.SetDesiredCarID("");
-                Debug.Log($"Cleared car assignment from player {playerIndex + 1} controller");
-            }
+            players[playerIndex].SetDesiredCarID("");
+            Debug.Log($"Cleared car assignment from player {playerIndex + 1} controller");
         }
         
         // Cancel connection timer if it's running (cleanup)
@@ -783,8 +776,7 @@ public class CarSelector : MonoBehaviour
     void SetMarkerAppearance(GameObject marker, int playerIndex){
         if(marker == null || playerIndex >= players.Count) return;
         
-        // Get player's car controller
-        CarController carController = players[playerIndex].GetComponent<CarController>();
+        CarController carController = players[playerIndex];
         if(carController == null) return;
         
         Color playerColor = carController.GetPlayerColor();

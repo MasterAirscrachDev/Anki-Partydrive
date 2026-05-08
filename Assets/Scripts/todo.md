@@ -6,6 +6,7 @@
 # Current release ==========================================================
 
 [X] AI V3 (new pathfinding, better at avoiding obstacles, better at overtaking, better at defending)
+[X] Dynamic stadium
 [ ] Improve slow vfx (why broken)
 [X] Improve Car Shading (more vibrant)
 [X] Manual camera override in track options
@@ -21,11 +22,14 @@
 [ ] (Low Prio) Upgrade ability icons
 [ ] (Low Prio) Dynamic cheering crowd
 
-[ ] Phone Controller
+
 [ ] (Ability) Charger Ring (shoot a ring further down the track, successfully driving through it gives +50% energy +20% boost)
-[ ] Dynamic stadium
+
 [ ] Car Stat Allocation
 
 [ ] (Low Prio) Fix drive mats
 
+[ ] Phone Controller
+ - fix player number allocation (ensure player ID order is correct when player are using both controllers and phones)
+ - test functionality
 # Demo 5.0.0 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

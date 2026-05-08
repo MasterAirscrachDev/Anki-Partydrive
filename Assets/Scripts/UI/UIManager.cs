@@ -82,7 +82,7 @@ public class UIManager : MonoBehaviour
             }
             bool canPlay = SR.track.hasTrack;
             bool canScan = SR.io.cars != null && SR.io.cars.Length > 0;
-            Debug.Log($"car count {SR.io.cars.Length}");
+            //Debug.Log($"car count {SR.io.cars.Length}");
             playMenuButton.interactable = canPlay;
             playMenuButton.GetComponentInChildren<TMP_Text>().text = canPlay ? "PLAY" : "Scan a Track To Start";
             trackMenuButton.interactable = canScan;

@@ -37,16 +37,23 @@ public class CMS : MonoBehaviour
                 playerController.SetInputMode(racingMode ? PlayerController.PlayerInputMode.Racing : PlayerController.PlayerInputMode.Menu);
                 Debug.Log($"Set {controller.GetPlayerName()} input mode to: {(racingMode ? "Racing" : "Menu")}");
             }
+
+            MobileController mobileController = controller.GetComponent<MobileController>();
+            if(mobileController != null){
+                mobileController.SetInputMode(racingMode ? MobileController.MobileInputMode.Racing : MobileController.MobileInputMode.Menu);
+                Debug.Log($"Set {controller.GetPlayerName()} mobile input mode to: {(racingMode ? "Racing" : "Menu")}");
+            }
         }
     }
     public void AddController(CarController controller, bool isAI = false){
         controllers.Add(controller);
-        if(isAI){ return; } //if the controller is AI, return (Colour is set in AIController)
-        //Debug.Log($"available colors: {freeColors.Count}");
+        FindFirstObjectByType<PlayerCardmanager>()?.UpdateCardCount();
+        if(isAI){ return; } //if the controller is AI, colour is set in AIController
         Color c = freeColors[0];
         freeColors.RemoveAt(0);
         usedColors.Add(c);
         controller.SetColour(c);
+        controller.GetComponent<PlayerController>()?.TrySetGamepadColor(c);
     }
     public void AddAI(string id){
         GameObject bot = Instantiate(botPrefab, transform.position, Quaternion.identity);
@@ -209,19 +216,19 @@ public class CMS : MonoBehaviour
 
     public void OnCarOutOfEnergyCarCallback(string id, CarController controller){ onCarNoEnergy?.Invoke(id, controller); }
     public void OnBackToMenuCallback(){ onBackToMenu?.Invoke(); }
-    public void OnSelectCallback(PlayerController pc){ onSelect?.Invoke(pc); }
-    public void OnAltSelectCallback(PlayerController pc){ onAltSelect?.Invoke(pc); }
-    public void OnStartSelectCallback(PlayerController pc){ onStartSelect?.Invoke(pc); }
+    public void OnSelectCallback(CarController cc){ onSelect?.Invoke(cc); }
+    public void OnAltSelectCallback(CarController cc){ onAltSelect?.Invoke(cc); }
+    public void OnStartSelectCallback(CarController cc){ onStartSelect?.Invoke(cc); }
     
     //use in gamemode scripts to set the behavior of cars when they run out of energy
     public delegate void OnCarNoEnergy(string id, CarController controller);
     public event OnCarNoEnergy onCarNoEnergy;
     public delegate void OnUIBackToMenu();
     public event OnUIBackToMenu onBackToMenu;
-    public delegate void OnUISelect(PlayerController pc);
+    public delegate void OnUISelect(CarController cc);
     public event OnUISelect onSelect;
-    public delegate void OnUIAltSelect(PlayerController pc);
+    public delegate void OnUIAltSelect(CarController cc);
     public event OnUIAltSelect onAltSelect;
-    public delegate void OnUIStartSelect(PlayerController pc);
+    public delegate void OnUIStartSelect(CarController cc);
     public event OnUIStartSelect onStartSelect;
 }
