@@ -1,0 +1,435 @@
+/* Partydrive Mobile Remote — Neon Dark Theme */
+
+:root {
+    --neon-orange: #ff6b00;
+    --neon-purple: #b026ff;
+    --dark-bg:     #0a0a0a;
+    --card-bg:     #151515;
+    --border:      #2a2a2a;
+    --text:        #ffffff;
+    --text-dim:    #b0b0b0;
+    --success:     #00ff88;
+    --error:       #ff3366;
+    --warn:        #ffaa00;
+
+    --hud-h:   90px;
+    --steer-h: 155px;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 100%);
+    font-family: 'Roboto', sans-serif;
+    color: var(--text);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+/* ── HUD Header ───────────────────────────────────────────────────────────── */
+#hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--hud-h);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    background: var(--card-bg);
+    border-bottom: 2px solid var(--border);
+    border-left: 4px solid var(--neon-orange);
+}
+
+.conn-badge {
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+    flex-shrink: 0;
+}
+.conn-badge.connected    { background: var(--success); color: #000; box-shadow: 0 0 14px rgba(0,255,136,.5); }
+.conn-badge.disconnected { background: var(--error);   color: #fff; box-shadow: 0 0 14px rgba(255,51,102,.5); }
+.conn-badge.connecting   { background: var(--warn);    color: #000; box-shadow: 0 0 14px rgba(255,170,0,.5); }
+
+#player-badge {
+    font-size: 22px;
+    font-weight: 900;
+    font-family: 'Syne Mono', monospace;
+    color: var(--neon-orange);
+    text-shadow: 0 0 12px rgba(255,107,0,.9);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.hud-label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+#position-block {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+#player-pos {
+    font-size: 24px;
+    font-weight: 900;
+    font-family: 'Syne Mono', monospace;
+    color: var(--neon-purple);
+    text-shadow: 0 0 12px rgba(176,38,255,.9);
+}
+
+#energy-block {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+#energy-bar {
+    flex: 1;
+    height: 10px;
+    background: var(--border);
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+}
+
+#energy-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-orange));
+    box-shadow: 0 0 10px rgba(255,107,0,.6);
+    transition: width .3s ease;
+}
+
+#energy-val {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Syne Mono', monospace;
+    color: var(--warn);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+#left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 44%;
+    flex-shrink: 0;
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-right: 4px solid var(--neon-purple);
+    color: var(--text);
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 94% 100%, 0 100%);
+    transition: background .1s, box-shadow .1s, transform .1s;
+    -webkit-touch-callout: none;
+}
+.action-btn:active,
+.action-btn.pressed {
+    background: rgba(176,38,255,.25);
+    border-right-color: var(--neon-orange);
+    box-shadow: 0 0 22px rgba(176,38,255,.5), inset 0 0 20px rgba(176,38,255,.1);
+    transform: scale(.97);
+    clip-path: none;
+}
+
+.boost-btn {
+    border-right-color: var(--neon-orange);
+}
+.boost-btn:active,
+.boost-btn.pressed {
+    background: rgba(255,107,0,.25);
+    border-right-color: var(--neon-orange);
+    box-shadow: 0 0 22px rgba(255,107,0,.5), inset 0 0 20px rgba(255,107,0,.1);
+}
+
+#ability-icon {
+    font-size: 36px;
+    line-height: 1;
+}
+
+.action-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* ── Throttle Slider ──────────────────────────────────────────────────────── */
+#throttle-section {
+    flex-shrink: 0;
+    width: clamp(100px, 18vw, 150px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.axis-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+#throttle-track {
+    flex: 1;
+    width: 100%;
+    background: var(--dark-bg);
+    border: 2px solid var(--border);
+    border-top: 4px solid var(--neon-orange);
+    position: relative;
+    touch-action: none;
+    cursor: pointer;
+    overflow: visible;
+    box-shadow: inset 0 0 18px rgba(176,38,255,.2), 0 0 10px rgba(0,0,0,.5);
+}
+
+#throttle-fill-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 0%;
+    background: linear-gradient(0deg, var(--neon-purple) 0%, var(--neon-orange) 100%);
+    box-shadow: 0 0 14px rgba(255,107,0,.5);
+    transition: height .04s linear;
+}
+
+#throttle-handle {
+    position: absolute;
+    left: -4px; right: -4px;
+    height: 6px;
+    bottom: 0%;
+    background: var(--neon-orange);
+    box-shadow: 0 0 14px rgba(255,107,0,1), 0 0 4px #fff;
+    transition: bottom .04s linear;
+}
+
+#throttle-pct {
+    font-size: 15px;
+
+    /* ── Energy Ring ──────────────────────────────────────────────────────────── */
+    #energy-ring {
+        flex-shrink: 0;
+        width: clamp(90px, 22vw, 180px);
+        aspect-ratio: 1 / 1;
+        align-self: center;
+        position: relative;
+    }
+
+    #energy-svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        display: block;
+    }
+
+    .ring-bg {
+        fill: none;
+        stroke: var(--border);
+        stroke-width: 8;
+    }
+
+    .ring-fill {
+        fill: none;
+        stroke: url(#energyGrad);
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 238.76;
+        stroke-dashoffset: 238.76;
+        transition: stroke-dashoffset .3s ease;
+        filter: drop-shadow(0 0 5px rgba(255,107,0,.8));
+    }
+
+    #energy-ring-label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        pointer-events: none;
+    }
+
+    #energy-ring-val {
+        font-size: clamp(13px, 3.5vw, 20px);
+        font-weight: 700;
+        font-family: 'Syne Mono', monospace;
+        color: var(--warn);
+        line-height: 1;
+    }
+
+    font-weight: 700;
+    font-family: 'Syne Mono', monospace;
+    color: var(--neon-orange);
+}
+
+/* ── Steering Row ─────────────────────────────────────────────────────────── */
+#steer-row {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--steer-h);
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px;
+    background: var(--card-bg);
+    border-top: 2px solid var(--border);
+}
+
+.steer-btn {
+    flex: 1;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Syne Mono', monospace;
+    cursor: pointer;
+    clip-path: polygon(3% 0, 97% 0, 100% 100%, 0 100%);
+    transition: background .08s, box-shadow .08s, transform .08s;
+    -webkit-touch-callout: none;
+}
+#btn-steer-left  { border-left: 4px solid var(--neon-orange); }
+#btn-steer-right { border-right: 4px solid var(--neon-purple); }
+
+.steer-btn:active,
+.steer-btn.pressed {
+    clip-path: none;
+    transform: scaleY(.94);
+}
+#btn-steer-left:active,
+#btn-steer-left.pressed {
+    background: rgba(255,107,0,.2);
+    box-shadow: 0 0 22px rgba(255,107,0,.5);
+    border-color: var(--neon-orange);
+}
+#btn-steer-right:active,
+#btn-steer-right.pressed {
+    background: rgba(176,38,255,.2);
+    box-shadow: 0 0 22px rgba(176,38,255,.5);
+    border-color: var(--neon-purple);
+}
+
+#steer-center {
+    width: 90px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+#steer-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--border);
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+}
+
+#steer-fill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-orange), var(--neon-purple));
+    transition: left .04s, width .04s;
+}
+
+/* ── iOS Gyro Permission Overlay ──────────────────────────────────────────── */
+#gyro-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#gyro-overlay.hidden { display: none; }
+
+#gyro-prompt {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-left: 4px solid var(--neon-purple);
+    padding: 30px 24px;
+    text-align: center;
+    max-width: 300px;
+    clip-path: polygon(0 0, 100% 0, 100% 94%, 96% 100%, 0 100%);
+}
+#gyro-prompt p {
+    margin-bottom: 20px;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.5;
+}
+#gyro-prompt button {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border: none;
+    color: #fff;
+    #right-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    box-shadow: 0 0 20px rgba(255,107,0,.4);
+}
+#gyro-cancel-btn {
+    background: linear-gradient(135deg, #2a2a2a, #3a3a3a) !important;
+    box-shadow: none !important;
+}
+
+/* ── Landscape adjustments ────────────────────────────────────────────────── */
+@media (orientation: landscape) {
+    :root {
+        --hud-h:   70px;
+        --steer-h: 120px;
+    }
+    #player-badge     { font-size: 18px; }
+    #player-pos       { font-size: 20px; }
+    #ability-icon     { font-size: 28px; }
+    .action-label     { font-size: 12px; }
+    .steer-btn        { font-size: 24px; }
+    #energy-ring-val  { font-size: 15px; }
+    #energy-ring      { width: clamp(80px, calc(100vh - var(--hud-h) - var(--steer-h) - 36px), 160px); }
+    #throttle-section { width: clamp(90px, 15vw, 130px); }
+}

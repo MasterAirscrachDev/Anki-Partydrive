@@ -1,0 +1,16 @@
+{
+  "name": "partydrivemobileremote",
+  "version": "1.0.0",
+  "description": "Partydrive Mobile Remote — hosts a mobile controller webpage for Partydrive",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "qrcode": "^1.5.3",
+    "ws": "^8.17.1"
+  }
+}
