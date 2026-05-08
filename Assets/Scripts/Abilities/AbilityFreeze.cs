@@ -39,6 +39,7 @@ public class AbilityFreeze : MonoBehaviour
     void Update()
     {
         currentCoord = currentCoord + (speed * Time.deltaTime); // Move along the track based on speed and time
+        if(currentCoord.idx == 1){ currentCoord.idx = 2; } //index 1 is part of segment 0 on the track so we skip it as we has already traversed it
         Vector3 newPosition = SR.track.TrackCoordinateToWorldspace(currentCoord);
         transform.LookAt(newPosition); // Orient towards the direction of movement
         transform.Rotate(0, 180, 0); // Rotate to lay flat on the track
