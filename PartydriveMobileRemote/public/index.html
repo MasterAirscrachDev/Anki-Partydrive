@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Partydrive Remote</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Syne+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ── HUD Header ─────────────────────────────────────────────────────── -->
+    <header id="hud">
+        <div id="conn-indicator" class="conn-badge disconnected">● OFFLINE</div>
+
+        <div id="player-badge">P<span id="player-num">?</span></div>
+
+        <div id="position-block">
+            <span class="hud-label">POSITION</span>
+            <span id="player-pos">--</span>
+        </div>
+
+        <button id="gyro-btn" class="hud-btn">GYRO: OFF</button>
+    </header>
+
+    <!-- ── iOS gyro permission overlay ───────────────────────────────────── -->
+    <div id="gyro-overlay" class="hidden">
+        <div id="gyro-prompt">
+            <p>Gyro steering requires motion sensor access.</p>
+            <button id="gyro-permit-btn">ALLOW MOTION</button>
+            <button id="gyro-cancel-btn">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- ── Main control area ─────────────────────────────────────────────── -->
+    <div id="controller">
+
+        <!-- Left: Throttle slider -->
+        <div id="throttle-section">
+            <div class="axis-label">THROTTLE</div>
+            <div id="throttle-track">
+                <div id="throttle-fill-bar"></div>
+                <div id="throttle-handle"></div>
+            </div>
+            <div id="throttle-pct">0%</div>
+        </div>
+
+        <!-- Center: Energy ring -->
+        <div id="energy-ring">
+            <svg id="energy-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="energyGrad" x1="1" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#b026ff"/>
+                        <stop offset="100%" stop-color="#ff6b00"/>
+                    </linearGradient>
+                </defs>
+                <circle class="ring-bg" cx="50" cy="50" r="38"/>
+                <circle class="ring-fill" id="energy-arc" cx="50" cy="50" r="38"/>
+            </svg>
+            <div id="energy-ring-label">
+                <div id="energy-ring-val">--</div>
+                <div class="hud-label">ENERGY</div>
+            </div>
+        </div>
+
+        <!-- Right: Ability + Boost -->
+        <div id="right-panel">
+            <button id="btn-ability" class="action-btn">
+                <div id="ability-icon">⚡</div>
+                <div class="action-label">ABILITY</div>
+            </button>
+            <button id="btn-boost" class="action-btn boost-btn">
+                <div class="action-label">🚀 BOOST</div>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ── Steering row ───────────────────────────────────────────────────── -->
+    <div id="steer-row">
+        <button id="btn-steer-left" class="steer-btn">◄ LEFT</button>
+
+        <div id="steer-center">
+            <div class="axis-label">STEER</div>
+            <div id="steer-bar"><div id="steer-fill"></div></div>
+        </div>
+
+        <button id="btn-steer-right" class="steer-btn">RIGHT ►</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
