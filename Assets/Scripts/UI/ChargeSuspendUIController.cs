@@ -48,7 +48,7 @@ public class ChargeSuspendUIController : MonoBehaviour
         //check if any players are sitting out/disconnected, and if so we can skip them in the positioning and stats
         for(int i = 0; i < controllers.Count; i++)
         {
-            if(!controllers[i].IsCarConnected())
+            if(!controllers[i].HasDesiredCar())
             { count--; }
         }
 
@@ -60,7 +60,7 @@ public class ChargeSuspendUIController : MonoBehaviour
         int bestItems = 0, bestDisables = 0;
         foreach(CarController cc in controllers)
         {
-            if(cc == null || !cc.IsCarConnected()) continue;
+            if(cc == null || !cc.HasDesiredCar()) continue;
             CarControllerAnalytics s = cc.GetPlayerAnalytics();
             if(s.TotalDamageDealt > bestDmgDealt) bestDmgDealt = s.TotalDamageDealt;
             if(s.TotalDamageTaken > bestDmgTaken) bestDmgTaken = s.TotalDamageTaken;
@@ -74,7 +74,7 @@ public class ChargeSuspendUIController : MonoBehaviour
         int dmgDealtLeaders = 0, dmgTakenLeaders = 0, boostLeaders = 0, itemLeaders = 0, disableLeaders = 0;
         foreach(CarController cc in controllers)
         {
-            if(cc == null || !cc.IsCarConnected()) continue;
+            if(cc == null || !cc.HasDesiredCar()) continue;
             CarControllerAnalytics s = cc.GetPlayerAnalytics();
             if(bestDmgDealt > 0 && s.TotalDamageDealt >= bestDmgDealt) dmgDealtLeaders++;
             if(bestDmgTaken > 0 && s.TotalDamageTaken >= bestDmgTaken) dmgTakenLeaders++;
@@ -92,7 +92,7 @@ public class ChargeSuspendUIController : MonoBehaviour
         for(int i = 0; i < controllers.Count; i++)
         {
             CarController cc = controllers[i];
-            if(cc == null || !cc.IsCarConnected()) continue;
+            if(cc == null || !cc.HasDesiredCar()) continue;
 
             GameObject card = Instantiate(playerStatsCardPrefab, transform);
             spawnedCards.Add(card);
