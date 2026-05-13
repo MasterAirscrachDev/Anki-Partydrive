@@ -59,15 +59,15 @@ public partial class CarController : MonoBehaviour
         pcs.SetColor(playerColor);
     }
     public void UpdateInputs(InputFrame newInputs, int type){
-        if(GetStatus(CarStatus.Frozen)){ return; } // Don't update inputs if frozen
-        if(GetStatus(CarStatus.Overridden) && type != 2){ return; } // Don't update inputs if overridden by an ability (except for special aim which is used by some abilities)
+        if(GetStatusEffect(CarStatus.Frozen)){ return; } // Don't update inputs if frozen
+        if(GetStatusEffect(CarStatus.Overridden) && type != 2){ return; } // Don't update inputs if overridden by an ability (except for special aim which is used by some abilities)
         inputs = newInputs;
     }
 #endregion
 #region GAMEPLAY HELPERS
     public void UseEnergy(float amount, bool isDamage = true){
-        if(GetStatus(CarStatus.Locked)){ return; } // Don't use energy if car is locked/disabled
-        if(GetStatus(CarStatus.Invulnerable) && isDamage){ return; } // Don't use energy for damage if car is immortal
+        if(GetStatusEffect(CarStatus.Locked)){ return; } // Don't use energy if car is locked/disabled
+        if(GetStatusEffect(CarStatus.Invulnerable) && isDamage){ return; } // Don't use energy for damage if car is immortal
         energy -= amount;
         lastEnergyDrainTime = Time.time; //used for delayed energy recharge
         // Track energy draining for taillight flash
@@ -76,7 +76,7 @@ public partial class CarController : MonoBehaviour
             playerAnalytics?.RecordDamageTaken(amount);
         }
         if(energy < 0){ 
-            if(energy + amount > 0 && !GetStatus(CarStatus.Immortal))
+            if(energy + amount > 0 && !GetStatusEffect(CarStatus.Immortal))
             { SR.cms.OnCarOutOfEnergyCarCallback(carID, this); } //call the event for no energy
             energy = 0;
         }
@@ -148,6 +148,7 @@ public partial class CarController : MonoBehaviour
             }
             playerAnalytics?.ResetBoost();
         }else{ playerAnalytics?.ResetBoost(); }
+        if (GetStatusEffect(CarStatus.Meltdown)) { UseEnergy(0.25f);  } // Meltdown causes constant energy drain
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, inputs.accel);
         speed = (int)Mathf.Lerp(speed, targetSpeed, (inputs.accel == 0) ? 0.021f : 0.019f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
@@ -155,10 +156,8 @@ public partial class CarController : MonoBehaviour
         if(inputs.accel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
         else if(inputs.accel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
 
-        if (GetStatus(CarStatus.Scrambled))
-        { lane -= inputs.steer * (baseSteering + statSteerMod); }
-        else
-        { lane += inputs.steer * (baseSteering + statSteerMod); }
+        if (GetStatusEffect(CarStatus.Scrambled)) { lane -= inputs.steer * (baseSteering + statSteerMod); }
+        else { lane += inputs.steer * (baseSteering + statSteerMod); }
         
         
         // Get dynamic track width from the car's actual current position

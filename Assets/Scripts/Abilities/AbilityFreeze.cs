@@ -19,6 +19,10 @@ public class AbilityFreeze : MonoBehaviour
         this.speed = speed;
         Destroy(gameObject, duration); // Destroy the freeze object after the duration expires
     }
+    public void OverrideOffset()
+    {
+        currentCoord.offset = 0f; // Center the freeze effect on the track
+    }
 
     IEnumerator LerpToScale(float target, float duration)
     {

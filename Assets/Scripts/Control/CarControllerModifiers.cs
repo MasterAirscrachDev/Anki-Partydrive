@@ -68,7 +68,7 @@ public partial class CarController : MonoBehaviour
     /// <summary>
     /// Apply a status to the car for the given duration. If the status is already active, its duration is refreshed.
     /// </summary>
-    public void SetStatus(CarStatus status, float duration){
+    public void SetStatusEffect(CarStatus status, float duration){
         for(int i = 0; i < statusList.Count; i++){
             if(statusList[i].status == status){
                 statusList[i].endTime = Time.time + duration; // Refresh duration
@@ -76,11 +76,15 @@ public partial class CarController : MonoBehaviour
             }
         }
         statusList.Add(new ActiveStatus(status, duration));
+        if(status == CarStatus.Meltdown) {
+            if(duration > 0){ SR.gas?.SpawnMeltdownEffect(this, duration); } // Spawn meltdown visual effect
+            else { SR.gas.ClearEffectForCar(GetID(), "Meltdown"); } // Clear effect if duration is 0 or negative
+        }
     }
     /// <summary>
     /// Returns true if the given status is currently active. Lazily removes expired entries.
     /// </summary>
-    public bool GetStatus(CarStatus status){
+    public bool GetStatusEffect(CarStatus status){
         for(int i = 0; i < statusList.Count; i++){
             if(statusList[i].status == status){
                 if(statusList[i].endTime > Time.time){ return true; }
@@ -151,7 +155,7 @@ public partial class CarController : MonoBehaviour
         var emission = SlowVFX.emission;
         
         // Locked/disabled takes priority - show no slow VFX
-        if(GetStatus(CarStatus.Locked)) {
+        if(GetStatusEffect(CarStatus.Locked)) {
             emission.rateOverTime = 0f;
             return;
         }
@@ -186,8 +190,13 @@ public partial class CarController : MonoBehaviour
     /// Disable the car for 3.5 seconds (applies Locked status), recharge to 50% energy, and flash red engine light
     /// </summary>
     public void DisableCar() {   
+        float duration = 3.5f;
+        if(GetStatusEffect(CarStatus.Meltdown)) { 
+            duration += 2f; // Meltdown cars are disabled for 5.5 seconds instead of 3.5
+            SetStatusEffect(CarStatus.Meltdown, 0f); // Clear Meltdown (its done the damage)
+        } 
         // Apply Locked status for 3.5 seconds
-        SetStatus(CarStatus.Locked, 3.5f);
+        SetStatusEffect(CarStatus.Locked, duration);
         
         // Track disable in analytics
         playerAnalytics?.RecordDisable();
@@ -196,7 +205,7 @@ public partial class CarController : MonoBehaviour
         SR.sfx?.PlaySFX(SFXEvent.CarDisabled);
         
         // Spawn world disabled visual effect
-        SR.gas?.SpawnDisabled(this);
+        SR.gas?.SpawnDisabled(this, duration);
         
         // Play announcer line if not busy (these lines shouldn't interrupt commentary)
         UCarData carData = SR.io?.GetCarFromID(carID);

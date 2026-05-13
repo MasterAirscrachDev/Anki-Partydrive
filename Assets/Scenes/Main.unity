@@ -5174,6 +5174,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169414398}
   m_CullTransparentMesh: 1
+--- !u!1001 &172423756
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263047, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701812964422263099, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
+      propertyPath: m_Name
+      value: CarObject
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5ae9cf52e8fb10c4e934dea81bd5d553, type: 3}
 --- !u!1 &175079739
 GameObject:
   m_ObjectHideFlags: 0
@@ -22019,10 +22076,12 @@ MonoBehaviour:
   grapplerPrefab: {fileID: 8499309036080371507, guid: 87dd4736093222c4f842db214c1a66e1, type: 3}
   lightningPowerPrefab: {fileID: 6057216538772743843, guid: 55be6265a07b571488ffb18adcdfb3a5, type: 3}
   rechargerPrefab: {fileID: 3640522664999417100, guid: 150953d4f995b994e9b5167b22d85d25, type: 3}
-  disabledPrefab: {fileID: 5920299987992940019, guid: b3c2f131459c8f045bd161ffb634fd6c, type: 3}
   trafficConePrefab: {fileID: 259886857333740162, guid: a8f3d1e1f9e70524db82b89f9db602ab, type: 3}
   icebergPrefab: {fileID: 6802733270398753389, guid: 32d444d4ecbee484890a9b0aca020008, type: 3}
   overdrivePrefab: {fileID: 2997543738016617262, guid: 04e2d0b460cbdb148895605091961519, type: 3}
+  disabledPrefab: {fileID: 5920299987992940019, guid: b3c2f131459c8f045bd161ffb634fd6c, type: 3}
+  nukeParticles: {fileID: 7841494285048609243, guid: 9baec62b84aeca44ca8bebf79365218f, type: 3}
+  meltdownEffectPrefab: {fileID: 7113018643679515562, guid: 12505823b1469df42a8dc9fcb3ef0059, type: 3}
 --- !u!1 &1016471929
 GameObject:
   m_ObjectHideFlags: 0
@@ -42899,3 +42958,4 @@ SceneRoots:
   - {fileID: 946625154}
   - {fileID: 1091107347}
   - {fileID: 1700031648}
+  - {fileID: 172423756}

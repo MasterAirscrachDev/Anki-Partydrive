@@ -15,7 +15,7 @@ public partial class CarController : MonoBehaviour
         }
     }
     void UseAbility() {
-        if(currentAbility == Ability.None || doingPickupAnim || GetStatus(CarStatus.Locked)){ return; } //no ability to use
+        if(currentAbility == Ability.None || doingPickupAnim || GetStatusEffect(CarStatus.Locked)){ return; } //no ability to use
         else {
             int customLights = 0;
             if(currentAbility == Ability.Missle3){ 

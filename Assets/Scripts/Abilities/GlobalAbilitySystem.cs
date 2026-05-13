@@ -14,13 +14,19 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject grapplerPrefab;
     [SerializeField] GameObject lightningPowerPrefab;
     [SerializeField] GameObject rechargerPrefab;
-    [SerializeField] GameObject disabledPrefab;
     [SerializeField] GameObject trafficConePrefab;
     [SerializeField] GameObject icebergPrefab;
     [SerializeField] GameObject overdrivePrefab;
+    [Header("Effect Only")]
+    [SerializeField] GameObject disabledPrefab;
+    [SerializeField] GameObject nukeParticles;
+    [SerializeField] GameObject meltdownEffectPrefab;
     
     // --- Hazard position tracking for AI avoidance ---
     readonly List<Transform> activeHazards = new List<Transform>();
+
+    // --- Pickup tracking for AI targeting (not implemented yet) ---
+    readonly List<Transform> activePickups = new List<Transform>();
     
     /// <summary>
     /// Register a hazard transform so AI can see it. Auto-cleaned when destroyed.
@@ -55,11 +61,12 @@ public class GlobalAbilitySystem : MonoBehaviour
         return result;
     }
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+    public void ClearEffectForCar(string carID, string tag = null) {
+        FollowWorldCar[] effects = FindObjectsByType<FollowWorldCar>(FindObjectsSortMode.None);
+        foreach(FollowWorldCar effect in effects)
+        { effect.DestoryIfForCar(carID, tag); }
     }
+
     public Sprite GetAbilityTexture(Ability ability)
     {
         foreach(AbilityTexturePair atp in abilityTextures)
@@ -273,9 +280,9 @@ public class GlobalAbilitySystem : MonoBehaviour
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject disabled = Instantiate(disabledPrefab);
         disabled.transform.position = start;
-        AbilityController ab = disabled.GetComponent<AbilityController>();
-        ab.Setup(control);
-        disabled.GetComponent<AbilityDisabled>().Setup(ab, duration);
+        FollowWorldCar fwc = disabled.GetComponent<FollowWorldCar>();
+        fwc.Setup(control.GetID());
+        Destroy(disabled, duration);
     }
     
     /// <summary>
@@ -294,7 +301,7 @@ public class GlobalAbilitySystem : MonoBehaviour
         cone.GetComponent<AbilityCone>().Setup(ab);
     }
 
-    public void SpawnIceberg(CarController control, float size = 0.35f, float duration = 4f, float speed = 2.5f) {
+    public void SpawnIceberg(CarController control, float size = 0.35f, float duration = 4f, float speed = 2.5f, bool overrideOffset = false) {
         if(icebergPrefab == null) return;
         
         Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
@@ -304,6 +311,7 @@ public class GlobalAbilitySystem : MonoBehaviour
         AbilityController ab = iceberg.GetComponent<AbilityController>();
         ab.Setup(control);
         iceberg.GetComponent<AbilityFreeze>().Setup(ab, size, duration, speed);
+        if(overrideOffset) iceberg.GetComponent<AbilityFreeze>().OverrideOffset();
     }
     public void SpawnOverdrive(CarController control) {
         if(overdrivePrefab == null) return;
@@ -315,6 +323,19 @@ public class GlobalAbilitySystem : MonoBehaviour
         AbilityController ab = overdrive.GetComponent<AbilityController>();
         ab.Setup(control);
         overdrive.GetComponent<AbilityOverdrive>().Setup(ab);
+    }
+    public void SpawnNukeParticles(Vector3 position) {
+        if(nukeParticles == null) return;
+        Destroy(Instantiate(nukeParticles, position, Quaternion.identity), 5f); // Destroy after 5 seconds to clean up
+    }
+    public void SpawnMeltdownEffect(CarController control, float maxDuration) {
+        if(meltdownEffectPrefab == null) return;
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        GameObject meltdown = Instantiate(meltdownEffectPrefab, carTransform.position, carTransform.rotation);
+        FollowWorldCar fwc = meltdown.GetComponent<FollowWorldCar>();
+        fwc.Setup(control.GetID(), "Meltdown");
+        Destroy(meltdown, maxDuration); // Destroy after maxDuration to clean up
     }
 
     [System.Serializable]
