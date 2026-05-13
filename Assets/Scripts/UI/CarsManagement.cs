@@ -37,7 +37,7 @@ public class CarsManagement : MonoBehaviour
         index++;
         //while the index is less than the number of cars, and the car at that index does not have a controller, increment the index
         //if the index is greater than the number of cars, set it to -1 and break
-        while(index < carInterface.cars.Length && cms.GetController(carInterface.cars[index].id) != null){ index++; }
+        while(index < carInterface.cars.Length && (carInterface.cars[index].cState != ConnectedState.CONNECTED || cms.GetController(carInterface.cars[index].id) != null)){ index++; }
         if(index >= carInterface.cars.Length){ index = -1; } //if the index is greater than the number of cars, set it to -1
 
 
@@ -72,14 +72,15 @@ public class CarsManagement : MonoBehaviour
             }
         }
 
+        UCarData[] connectedCars = System.Array.FindAll(carInterface.cars ?? new UCarData[0], c => c.cState == ConnectedState.CONNECTED);
         foreach (Transform child in carListParent) { Destroy(child.gameObject); }
-        carPanels = new CarPanel[carInterface.cars.Length];
-        for (int i = 0; i < carInterface.cars.Length; i++){ //for each car connected
+        carPanels = new CarPanel[connectedCars.Length];
+        for (int i = 0; i < connectedCars.Length; i++){ //for each connected car
             GameObject carItem = Instantiate(carListItemPrefab, carListParent);
             CarPanel carPanel = carItem.GetComponent<CarPanel>();
-            CarController carController = cms.GetController(carInterface.cars[i].id);
+            CarController carController = cms.GetController(connectedCars[i].id);
 
-            carPanel.Setup(carInterface.cars[i].name, carInterface.cars[i].id, carController);
+            carPanel.Setup(connectedCars[i].name, connectedCars[i].id, carController);
             carPanels[i] = carPanel;
             RectTransform carItemRect = carItem.GetComponent<RectTransform>();
             carItemRect.anchoredPosition = new Vector2(carItemRect.anchoredPosition.x, (-i * 100) - 50);
@@ -87,20 +88,23 @@ public class CarsManagement : MonoBehaviour
             if(carController != null){
                 Color color = carController.GetPlayerColor();
                 //convert the color to a int3
-                int R = (int)(color.r * 200);
-                int G = (int)(color.g * 200);
-                int B = (int)(color.b * 200);
-                //carInterface.SetCarEngineLight(carInterface.cars[i], R, G, B);
+                int R = (int)(color.r * 14);
+                int G = (int)(color.g * 14);
+                int B = (int)(color.b * 14);
+                LightData RD = LightData.L(LightChannel.RED, LightEffect.THROB, R, Mathf.Clamp(R - 3, 0, 14), 10);
+                LightData GR = LightData.L(LightChannel.GREEN, LightEffect.THROB, G, Mathf.Clamp(G - 3, 0, 14), 10);
+                LightData BL = LightData.L(LightChannel.BLUE, LightEffect.THROB, B, Mathf.Clamp(B - 3, 0, 14), 10);
+                carInterface.SetCarColoursComplex(connectedCars[i], new LightData[]{RD, GR, BL});
             }else{
                 LightData[] colors = new LightData[3];
                 colors[0] = new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 6 };
                 colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 5 };
                 colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 4 };
-                carInterface.SetCarColoursComplex(carInterface.cars[i], colors);
+                carInterface.SetCarColoursComplex(connectedCars[i], colors);
             }
         }
         RectTransform carListRect = carListParent.GetComponent<RectTransform>();
-        carListRect.sizeDelta = new Vector2(carListRect.sizeDelta.x, carInterface.cars.Length * 100);
+        carListRect.sizeDelta = new Vector2(carListRect.sizeDelta.x, connectedCars.Length * 100);
 
         buttons = FindObjectsOfType<Button>();
         //select the previously selected button

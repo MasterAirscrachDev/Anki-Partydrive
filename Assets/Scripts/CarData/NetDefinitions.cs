@@ -14,26 +14,23 @@ namespace OverdriveServer{
         }
         [System.Serializable]
         public class CarData{
-            public string name {get; set;} //Custom name
-            public uint model {get; set;} //ModelName
-            public string id {get; set;} //Bluetooth ID
-            public float offsetMM {get; set;} //Horizontal Offset mm +/-
-            public int speedMMPS {get; set;} //Speed in mm/s
-            public bool charging {get; set;} //Is On Charger (should take priority over onTrack)
-            public bool onTrack {get; set;} //Is the car on the track (doesnt seem very useful) (Addendum: goated)
-            public int batteryStatus {get; set;} //0 = normal, 1 = charged, -1 = low battery
-            public bool hasPFeatures {get; set;} //Does the car have Partydrive features (newer firmware)
+            public string id {get; set;}              //Bluetooth ID
+            public string serverName {get; set;}      //Custom name
+            public ModelName model {get; set;}        //ModelName
+            public ConnectedState cState {get; set;}  //Connection state (AVAILABLE, CONNECTED, LOST)
+            public bool charging {get; set;}          //Is On Charger (should take priority over onTrack)
+            public bool onTrack {get; set;}           //Is on the track
+            public int batteryStatus {get; set;}      //0 = normal, 1 = charged, -1 = low battery
+            public bool hasPFeatures {get; set;}      //Has Partydrive features (newer firmware)
+            public int speedMMPS {get; set;}          //Current speed in mm/s
+            public float offsetMM {get; set;}         //Current track offset in mm
         }
-        [System.Serializable]
-        public class AvailableCarData{
-            public uint model {get; set;} //ModelName
-            public string id {get; set;} //Bluetooth ID
-            public DateTime lastSeen {get; set;} //Last time the car was seen
-            public AvailableCarData(string id, uint model, DateTime lastSeen){
-                this.id = id;
-                this.model = model;
-                this.lastSeen = lastSeen;
-            }
+        public enum ConnectedState
+        {
+            AVAILABLE = 0, //The car is available to connect to, but not currently connected
+            CONNECTED = 1, //The car is currently connected to the server (you can send commands)
+            LOST = 2, //The car was connected but something went wrong (will automatically restore connection if the car appears within 30s)
+            CHARGING = 3 //The car was connected but placed on a charger — will reconnect automatically when removed from charger
         }
         [System.Serializable]
         public class TransitionData { //This is sent, but i reccommend using SegmentData instead
@@ -61,12 +58,23 @@ namespace OverdriveServer{
             public string carID {get; set;} //Car ID (Bluetooth ID)
             public int trackIndex {get; set;} //Track Index (you should have a track saved at this point)
             public int speedMMPS {get; set;} //Speed in mm/s
-            public float offsetMM {get; set;} //Offset in mm
+            public float offsetMM {get; set;} //Offset in anki mm (from the center of the track)
             public CarTrust trust {get; set;} //Car Trust (see CarTrust)
         }
         [System.Serializable]
         public enum CarTrust{
-            Delocalized = -1, Unsure = 0, Trusted = 1 //Trust levels for the car location data
+            /// <summary>
+            /// Last we knew, we were off the track
+            /// </summary>
+            Delocalized = -1, 
+            /// <summary>
+            /// Last we knew, we were on the track, somewhere.
+            /// </summary>
+            Unsure = 0, 
+            /// <summary>
+            /// Last we knew, we were on the track and we know where.
+            /// </summary>
+            Trusted = 1
         }
         [System.Serializable]
         public enum SegmentType{
@@ -128,8 +136,7 @@ namespace OverdriveServer{
         EVENT_CAR_DELOCALIZED = "car_delocalized", //Car delocalized (currently not used, see MSG_CAR_DELOCALIZED for the time being)
         EVENT_CAR_TRACKING_UPDATE = "car_tracking_update", //Car tracking update (see CarLocationData)
         EVENT_TR_DATA = "track_data", //Track data (an array of SegmentData)
-        EVENT_CAR_DATA = "car_data", //Car data (an array of CarData)
-        EVENT_AVAILABLE_CARS = "available_cars"; //Available cars data (an array of AvailableCarData)
+        EVENT_CAR_DATA = "car_data"; //Car data (an array of CarData — includes all states: AVAILABLE, CONNECTED, LOST)
 
         public const string SV_CAR_MOVE = "car_move_update", //Car move update [id:speed:offset] (speed and offset may be - meaning keep existing value)
         SV_REFRESH_CONFIGS = "refresh_configs", //Refresh configs (used to reload the car configs, name, speedbalance ect)
@@ -140,8 +147,7 @@ namespace OverdriveServer{
         SV_GET_TRACK = "get_track", //Get track (should return EVENT_TRACK_DATA with the track data)
         SV_TR_START_SCAN = "start_track_scan", //Start track scan (used to start a track scan)
         SV_TR_CANCEL_SCAN = "stop_track_scan", //Stop track scan (used to stop a track scan)
-        SV_GET_CARS = "request_cars", //Request cars (should return EVENT_CAR_DATA with the car data)
-        SV_GET_AVAILABLE_CARS = "get_available_cars", //Get available cars (should return EVENT_AVAILABLE_CARS with the available car data)
+        SV_GET_CARS = "request_cars", //Request all known cars (returns EVENT_CAR_DATA with all KnownCar states)
         SV_CONNECT_CAR = "connect_car", //Connect to a car by ID [carID] (used to connect to a specific available car)
         SV_DISCONNECT_CAR = "disconnect_car", //Disconnect from a car by ID [carID] (used to disconnect from a specific connected car)
         SV_CAR_FLASH = "car_flash", //DONT USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING || Flash car [id:path] (used to flash a car, path should be the ota file)
@@ -151,8 +157,7 @@ namespace OverdriveServer{
         SV_UPDATE_CAR_CONFIG = "update_car_config", //Update car config [id:newName:speedBalanceChange] (used to update a cars config)
         SV_CLIENT_CLOSED = "client_closed"; //Client closed (used to indicate a client has closed the connection intentionally)
         public static class UtilityMessages { //these are ids for the utility messages (parse them as strings)
-            public const string MSG_CAR_CONNECTED = "cc", //:carID:name (used to indicate a car has connected)
-            MSG_CAR_DISCONNECTED = "cd", //:carID (used to indicate a car has disconnected)
+            public const string MSG_CARS_CHANGED = "cc", //sent whenever cars list changes (add/remove/cState change) — client should request SV_GET_CARS
             MSG_CAR_DELOCALIZED = "deloc", //:carID (used to indicate a car is not on the track)
             MSG_CAR_SPEED_UPDATE = "sud", //:carID:speed:trueSpeed (Something internal has changed the speed)
             MSG_CAR_POWERUP = "pup", //:carID (a car has driven on a FnF powerup)

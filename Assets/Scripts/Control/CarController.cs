@@ -43,15 +43,15 @@ public partial class CarController : MonoBehaviour
     public void SetCard(PlayerCardSystem pcs){
         //Debug.Log("SetCard");
         this.pcs = pcs;
-        UCarData carData = SR.io.GetCarFromID(carID);
         string text = "Sitting Out";
         int model = -1;
         if(!string.IsNullOrEmpty(desiredCarID)){
-            if(carData != null){ 
-                text = carData.name; 
-                model = (int)carData.modelName;
+            int idx = SR.io.GetCarIndex(desiredCarID);
+            if(idx != -1){
+                text = SR.io.cars[idx].name;
+                model = (int)SR.io.cars[idx].modelName;
             } else {
-                text = $"Waiting for {desiredCarID}";
+                text = "Connecting...";
             }
         }
         pcs.SetCarName(text, model);
@@ -238,24 +238,35 @@ public partial class CarController : MonoBehaviour
             return;
         }
         
-        // Check if desired car is now available
+        // Check if desired car is now CONNECTED
         UCarData desiredCar = SR.io.GetCarFromID(desiredCarID);
         if(desiredCar != null){
-            // Car is available, connect to it
+            // Car is CONNECTED — bind it
             carID = desiredCarID;
             SR.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, desiredCar.modelName);
             Debug.Log($"Successfully connected to desired car: {carID}");
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
             if(pcs != null) pcs.SetCarName(desiredCar.name, (int)desiredCar.modelName);
         } else {
-            // Car not available yet, update UI to show waiting status
-            if(pcs != null) pcs.SetCarName($"Disconnected");
+            // Car not CONNECTED yet — show state-aware status
+            if(pcs != null && !string.IsNullOrEmpty(desiredCarID)){
+                int knownIdx = SR.io.GetCarIndex(desiredCarID);
+                string stateLabel = knownIdx != -1 ? SR.io.cars[knownIdx].cState switch {
+                    ConnectedState.CHARGING  => "Charging...",
+                    ConnectedState.LOST      => "Reconnecting...",
+                    ConnectedState.AVAILABLE => "Connecting...",
+                    _ => "Disconnected"
+                } : "Disconnected";
+                pcs.SetCarName(stateLabel);
+            }
         }
     }
     
     public void CheckCarExists(){
+        if(string.IsNullOrEmpty(carID)) return;
         int idx = SR.io.GetCarIndex(carID);
-        if(idx == -1){
+        // Clear carID if the car is gone entirely OR is no longer in a commandable state
+        if(idx == -1 || SR.io.cars[idx].cState != ConnectedState.CONNECTED){
             carID = "";
             if(pcs != null && !string.IsNullOrEmpty(desiredCarID)) pcs.SetCarName("Disconnected");
         }
@@ -337,13 +348,16 @@ public partial class CarController : MonoBehaviour
     public string GetDesiredCarID(){ return desiredCarID; }
     public string GetPlayerName(){ return playerName; }
     public ModelName GetCarModel(){ 
-        UCarData carData = SR.io.GetCarFromID(carID);
-        if(carData != null){
-            return carData.modelName;
+        // Use desiredCarID for a state-agnostic lookup so model info is available even when LOST/CHARGING
+        if(!string.IsNullOrEmpty(desiredCarID)){
+            int idx = SR.io.GetCarIndex(desiredCarID);
+            if(idx != -1) return SR.io.cars[idx].modelName;
         }
         return ModelName.Unknown;
     }
     public bool IsCarConnected(){ return !string.IsNullOrEmpty(carID) && carID == desiredCarID; }
+    /// <summary>Returns true if this controller has a car assigned (any state). Use instead of IsCarConnected() when you only need to know if a car is assigned, not whether it's currently commandable.</summary>
+    public bool HasDesiredCar(){ return !string.IsNullOrEmpty(desiredCarID); }
     public bool IsCarAI(){ return isAI; }
     public Ability GetCurrentAbility(){ return currentAbility; }
     public void SetLocked(bool state){ 

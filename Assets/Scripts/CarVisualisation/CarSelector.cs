@@ -191,7 +191,7 @@ public class CarSelector : MonoBehaviour
                 GameObject car = Instantiate(ModelCarPrefab, pos, Quaternion.identity);
                 
                 CarSelectionData carData = allCarData[carIndex];
-                car.GetComponent<CarModelManager>().Setup((int)carData.model, carData.isConnected ? Color.green : Color.yellow);
+                car.GetComponent<CarModelManager>().Setup((int)carData.model, carData.cState == ConnectedState.CONNECTED ? Color.green : Color.yellow);
                 car.transform.parent = slectionPlatform;
                 
                 carIndex++;
@@ -207,9 +207,6 @@ public class CarSelector : MonoBehaviour
         // Get car interface
         CarInteraface carInterface = SR.io;
         if(carInterface == null) return;
-        
-        // Refresh available cars from server
-        carInterface.RefreshAvailableCars();
         
         // Get all cars for selection
         allCarData = carInterface.GetAllCarsForSelection();
@@ -805,7 +802,7 @@ public class CarSelector : MonoBehaviour
         
         // Connect to all available cars
         foreach(CarSelectionData carData in allCarData){
-            if(!string.IsNullOrEmpty(carData.id)){
+            if(!string.IsNullOrEmpty(carData.id) && carData.cState == ConnectedState.AVAILABLE){
                 carInterface.ConnectCar(carData.id);
                 Debug.Log($"Connecting to car: {carData.id}");
             }

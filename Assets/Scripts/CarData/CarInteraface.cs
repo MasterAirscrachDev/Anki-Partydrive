@@ -11,22 +11,16 @@ using System.Linq;
 public class CarInteraface : MonoBehaviour
 {
     public UCarData[] cars;
-    public UCarAvailable[] availableCars;
     NativeWebSocket.WebSocket ws;
     bool trackValidated = false;
     public UCarData GetCarFromID(string id){
-        for (int i = 0; i < cars.Length; i++)
-        { if(cars[i].id == id){return cars[i];} }
-        //if available cars is not null, check there too
-        if(availableCars != null){
-            for (int i = 0; i < availableCars.Length; i++) {  
-                if(availableCars[i].id == id){
-                    ConnectCar(id); //connect to the car if its in the available cars list
-                    return null; //return null for now, the car will be added to the cars list when it connects
-                }
+        for (int i = 0; i < cars.Length; i++){
+            if(cars[i].id == id){
+                if(cars[i].cState == ConnectedState.CONNECTED) return cars[i];
+                if(cars[i].cState == ConnectedState.AVAILABLE) ConnectCar(id);
+                return null;
             }
         }
-        RefreshAvailableCars(); //refresh the available cars list, in case a new car has become available
         return null;
     }
     
@@ -38,8 +32,7 @@ public class CarInteraface : MonoBehaviour
         ws.OnOpen += () => { 
             Debug.Log("WebSocket connection opened"); 
             SR.ui.ServerConnected(); //show the server connected message
-            GetCars();
-            RefreshAvailableCars(); //Also get available cars
+            GetCarInfo(); //request the car data state on first connection
         };
         ws.OnError += (e) => { 
             Debug.Log($"WebSocket error: {e}"); 
@@ -64,7 +57,8 @@ public class CarInteraface : MonoBehaviour
     async Task MapTrack(){
         //get the first car that isnt on charge
         int index = 0;
-        while(cars[index].charging){ index++; }
+        while(index < cars.Length && (cars[index].cState != ConnectedState.CONNECTED || cars[index].charging)){ index++; }
+        if(index >= cars.Length){ Debug.LogWarning("[MapTrack] No connected car available for track scan"); return; }
         int fins = SR.ui.GetFinishCounter();
         SR.ui.SetScanningStatusText("Finding Finish...");
         
@@ -130,10 +124,6 @@ public class CarInteraface : MonoBehaviour
                     CarData[] carData = JsonConvert.DeserializeObject<CarData[]>(webhookData.Payload.ToString());
                     OnCarData(carData); //update the car data
                     break;
-                case EVENT_AVAILABLE_CARS:
-                    AvailableCarData[] availableCarData = JsonConvert.DeserializeObject<AvailableCarData[]>(webhookData.Payload.ToString());
-                    OnAvailableCarData(availableCarData); //update the available car data
-                    break;
                 case EVENT_TR_DATA:
                     //Debug.Log($"Received track data: {webhookData.Payload.ToString()}");
                     SegmentData[] trackData = JsonConvert.DeserializeObject<SegmentData[]>(webhookData.Payload.ToString());
@@ -151,7 +141,7 @@ public class CarInteraface : MonoBehaviour
     }
     void UtilLog(string message){
         string[] c = message.Split(':');
-        if (c[0] == MSG_CAR_CONNECTED){
+        if (c[0] == MSG_CARS_CHANGED){
             GetCarInfo();
         } else if(c[0] == MSG_TR_SCAN_UPDATE){
             bool valid = false;
@@ -180,19 +170,12 @@ public class CarInteraface : MonoBehaviour
             if(index != -1){
                 
             }
-        } else if(c[0] == MSG_CAR_DISCONNECTED){ //disconnected
-            GetCarInfo();
         } else if(c[0] == MSG_LINEUP){
             string carID = c[1];
             int remainingCars = int.Parse(c[2]);
             OnLineupEvent?.Invoke(carID, remainingCars);
         }
     }
-    public void GetCars(){ GetCarInfo(); }
-    public void RefreshAvailableCars(){ 
-        ApiCallV2(SV_GET_AVAILABLE_CARS, 0); //get the available car data
-    }
-    
     // Connect to a car by ID
     public void ConnectCar(string carID){
         if(SR.cms != null && SR.cms.ConnectionSuspended) return;
@@ -251,30 +234,20 @@ public class CarInteraface : MonoBehaviour
         colors[1] = new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 7 };
         colors[2] = new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = 14, endStrength = 0, cyclesPer10Seconds = 6 };
         for(int i = 0; i < cars.Length; i++){ 
-            //if the car was not in the previous list, send the lights
-            if(currentCars == null || currentCars.FirstOrDefault(x => x.id == cars[i].id) == null){
-                //if the car is not in the current list, send the lights
+            if(cars[i].cState == ConnectedState.CONNECTED && (currentCars == null || currentCars.FirstOrDefault(x => x.id == cars[i].id && x.cState == ConnectedState.CONNECTED) == null)){
                 StartCoroutine(SendLightsDelayed(uCars[i], colors, i * 0.05f));
             }
-        } //send the lights with a delay
-        SR.ui.SetCarsCount(cars.Length + availableCars.Length);
+        } //send party lights to newly connected cars
+        SR.ui.SetCarsCount(cars.Length);
         for (int i = 0; i < SR.cms.controllers.Count; i++)
         { SR.cms.controllers[i].CheckCarExists(); }
-    }
-    void OnAvailableCarData(AvailableCarData[] availableCarData){
-        UCarAvailable[] uAvailableCars = new UCarAvailable[availableCarData.Length];
-        for (int i = 0; i < availableCarData.Length; i++)
-        { uAvailableCars[i] = new UCarAvailable(availableCarData[i]); }
-        this.availableCars = uAvailableCars;
-        SR.ui.SetCarsCount(cars.Length + availableCars.Length);
-        //Debug.Log($"Updated available cars: {availableCarData.Length} cars found");
     }
     IEnumerator SendLightsDelayed(UCarData car, LightData[] lights, float delay){
         yield return new WaitForSeconds(delay);
         SetCarColoursComplex(car, lights);
     }
     void GetCarInfo(){
-        ApiCallV2(SV_GET_CARS, 0); //get the car data
+        ApiCallV2(SV_GET_CARS, null); //get the car data
     }
     public int GetCarIndex(string id){
         if(cars == null){ return -1; } //if cars is null, return -1 
@@ -283,47 +256,19 @@ public class CarInteraface : MonoBehaviour
         return -1;
     }
     
-    // Get all cars for selection (both connected and available)
+    // Get all known cars for selection (all states: CONNECTED, AVAILABLE, LOST, CHARGING)
     public List<CarSelectionData> GetAllCarsForSelection(){
         List<CarSelectionData> allCars = new List<CarSelectionData>();
-        
-        // Add connected cars
         if(cars != null){
             foreach(UCarData car in cars){
                 allCars.Add(new CarSelectionData{
                     id = car.id,
                     model = (uint)car.modelName,
                     name = car.name,
-                    isConnected = true
+                    cState = car.cState
                 });
             }
         }
-        
-        // Add available cars (not already connected)
-        if(availableCars != null){
-            foreach(UCarAvailable car in availableCars){
-                // Check if this car is not already in connected cars
-                bool alreadyConnected = false;
-                if(cars != null){
-                    foreach(UCarData connectedCar in cars){
-                        if(connectedCar.id == car.id){
-                            alreadyConnected = true;
-                            break;
-                        }
-                    }
-                }
-                
-                if(!alreadyConnected){
-                    allCars.Add(new CarSelectionData{
-                        id = car.id,
-                        model = car.model,
-                        name = $"Available Car ({(ModelName)car.model})",
-                        isConnected = false
-                    });
-                }
-            }
-        }
-        
         return allCars;
     }
     public delegate void LineupCallback(string carID, int remainingCars);
@@ -343,28 +288,20 @@ public class UCarData{ //used for unity (bc it cant serialize properties)
     public bool charging;
     public bool onTrack;
     public int batteryStatus;
+    public bool hasPFeatures;
+    public ConnectedState cState;
     public ModelName modelName; //used for the car model
     public UCarData(CarData data){
-        name = data.name;
+        name = data.serverName;
         id = data.id;
         offset = data.offsetMM;
         speed = data.speedMMPS;
         charging = data.charging;
         onTrack = data.onTrack;
         batteryStatus = data.batteryStatus;
-        modelName = (ModelName)data.model; //used for the car model
-    }
-}
-[System.Serializable]
-public class UCarAvailable{ //used for unity (bc it cant serialize properties)
-    public string id;
-    public uint model;
-    public float secondsSinceLastSeen;
-    public UCarAvailable(AvailableCarData data){
-        id = data.id;
-        model = data.model;
-        //convert lastSeen to seconds
-        secondsSinceLastSeen = (float)(DateTime.UtcNow - data.lastSeen.ToUniversalTime()).TotalSeconds;
+        hasPFeatures = data.hasPFeatures;
+        cState = data.cState;
+        modelName = data.model;
     }
 }
 
@@ -373,5 +310,5 @@ public class CarSelectionData{ //used for car selection in CarSelector
     public string id;
     public uint model;
     public string name;
-    public bool isConnected;
+    public ConnectedState cState;
 }
