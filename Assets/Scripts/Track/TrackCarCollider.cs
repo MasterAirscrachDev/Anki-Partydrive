@@ -37,6 +37,11 @@ public class TrackCarCollider : MonoBehaviour
             Destroy(Instantiate(spawnOnCollect, transform.position, Quaternion.identity), 3f);
         }
     }
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, 0.04f);
+    }
     public enum EType
     {
         EnergyCore = 0, ItemBox = 1, SlowTrap = 2, StunTrap = 3, SpeedBoost = 4, DamageTrap = 5,

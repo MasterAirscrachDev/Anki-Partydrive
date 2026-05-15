@@ -67,7 +67,7 @@ public partial class CarController : MonoBehaviour
 #region GAMEPLAY HELPERS
     public void UseEnergy(float amount, bool isDamage = true){
         if(GetStatusEffect(CarStatus.Locked)){ return; } // Don't use energy if car is locked/disabled
-        if(GetStatusEffect(CarStatus.Invulnerable) && isDamage){ return; } // Don't use energy for damage if car is immortal
+        if(GetStatusEffect(CarStatus.Invulnerable) && isDamage){ return; } // Don't use energy for damage if car is invulnerable
         energy -= amount;
         lastEnergyDrainTime = Time.time; //used for delayed energy recharge
         // Track energy draining for taillight flash
@@ -76,7 +76,7 @@ public partial class CarController : MonoBehaviour
             playerAnalytics?.RecordDamageTaken(amount);
         }
         if(energy < 0){ 
-            if(energy + amount > 0 && !GetStatusEffect(CarStatus.Immortal))
+            if(energy + amount > 0 && !GetStatusEffect(CarStatus.Immortal)) //cannot die from 0 energy while immortal
             { SR.cms.OnCarOutOfEnergyCarCallback(carID, this); } //call the event for no energy
             energy = 0;
         }
@@ -123,11 +123,9 @@ public partial class CarController : MonoBehaviour
     public void DoControlImmediate(){
         SR.io.ControlCar(SR.io.GetCarFromID(carID), speed, Mathf.RoundToInt(lane));
     }
-    void FixedUpdate(){
+    void FixedUpdate(){ //every 0.02 seconds, used for input tracking and control ticking
         // Track acceleration input during perfect start window (even before racing)
-        if(!isRacing && perfectStartWindowOpen && inputs.accel > 0.5f){
-            acceleratedDuringPerfectWindow = true;
-        }
+        if(!isRacing && perfectStartWindowOpen && inputs.accel > 0.5f){ acceleratedDuringPerfectWindow = true; }
         CheckAndClearLights();
         // Don't process any input or movement if not yet racing
         if(!isRacing){ 
@@ -138,27 +136,35 @@ public partial class CarController : MonoBehaviour
             return;
         }
         
-        if(inputs.accel > 0 && inputs.boost && energy > 1){
+        if(inputs.accel > 0 && inputs.boost && energy > 1){//if we are accelerating and boosting and have energy, use boost
             UseEnergy(baseBoostCost, false);
-            AddSpeedModifier(new FlatSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), 0.2f, "Boost"));
-            playerAnalytics?.AddBoostTime(TICK_RATE);
-        } else if(!inputs.boost && energy < maxEnergy){
-            if(lastEnergyDrainTime + 0.75f < Time.time){ // Only recharge if not recently drained
-                ChargeEnergy(baseEnergyGain + statEnergyRechargeMod);
-            }
+            AddSpeedModifier(new FlatSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), TICK_RATE/2, "Boost"));
+            playerAnalytics?.AddBoostTime(TICK_RATE/2);
+        } else if(!inputs.boost && energy < maxEnergy){ //if we stopped boosting and have less than max energy, start recharging
+            if(lastEnergyDrainTime + 0.75f < Time.time){  ChargeEnergy(baseEnergyGain + statEnergyRechargeMod); } // Only recharge if not recently drained
             playerAnalytics?.ResetBoost();
-        }else{ playerAnalytics?.ResetBoost(); }
+        }else{ playerAnalytics?.ResetBoost(); } // If we're not boosting, reset boost tracking for analytics
+
         if (GetStatusEffect(CarStatus.Meltdown)) { UseEnergy(0.25f);  } // Meltdown causes constant energy drain
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, inputs.accel);
-        speed = (int)Mathf.Lerp(speed, targetSpeed, (inputs.accel == 0) ? 0.021f : 0.019f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
+        bool frozen = GetStatusEffect(CarStatus.Frozen);
+        if (frozen)
+        {
+            float frozenDuration = GetStatusEffectRemainingDuration(CarStatus.Frozen) - freezeStartTime;
+            float t = Mathf.Clamp01(freezeTotalDuration / frozenDuration);
+            speed = (int)(freezeStartSpeed * (1f - Mathf.Pow(t, 4.0f)));
+        }
+        else {
+            speed = (int)Mathf.Lerp(speed, targetSpeed, (inputs.accel == 0) ? 0.021f : 0.019f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
+        }
 
-        if(inputs.accel == 0 && speed < 150){ speed = 0; } //cut speed to 0 if no input and slow speed
+        if(speed < 150){ speed = 0; } //cut speed to 0 if slow speed
         else if(inputs.accel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
-
-        if (GetStatusEffect(CarStatus.Scrambled)) { lane -= inputs.steer * (baseSteering + statSteerMod); }
-        else { lane += inputs.steer * (baseSteering + statSteerMod); }
-        
+        if (!frozen) { //if we are frozen we cannot steer at all, so skip lane changes
+            if (GetStatusEffect(CarStatus.Scrambled)) { lane -= inputs.steer * (baseSteering + statSteerMod); }
+            else { lane += inputs.steer * (baseSteering + statSteerMod); }
+        }
         
         // Get dynamic track width from the car's actual current position
         float trackHalfWidth = GetTrackHalfWidth();
@@ -172,7 +178,7 @@ public partial class CarController : MonoBehaviour
         itemBLastFrame = inputs.itemB;
         // CONTROL TICKER ==============================================================================================
         if(canTickAt <= Time.time){
-            canTickAt = Time.time + 0.4f; // Control tick every 0.1 seconds
+            canTickAt = Time.time + TICK_RATE; // Control tick
             // Check for car connection if we have a desired car but no current car
             CheckForCarConnection();
             int desiredSpeed = GetSpeedAfterModifiers(speed);

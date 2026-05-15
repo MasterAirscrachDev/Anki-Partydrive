@@ -13,7 +13,7 @@ public class AbilityOverdrive : MonoBehaviour
             DoFrozenFrontier(car);
         }
         else if(car.GetCarModel() == Nuke || car.GetCarModel() == NukePhantom){ //nuke effect
-            DoNuke(car);
+            StartCoroutine(DoNuke(car));
         }
         else{ // missile storm (temp for wip cars)
             StartCoroutine(DoMissileStorm(car));
@@ -23,6 +23,7 @@ public class AbilityOverdrive : MonoBehaviour
     void DoFrozenFrontier(CarController car)
     {
         SR.gas.SpawnIceberg(car, 1, 8, 5f, true);
+        Destroy(gameObject); // Destroy the ability object immediately since the effect is handled by the iceberg itself
     }
     IEnumerator DoMissileStorm(CarController car)
     {
@@ -44,9 +45,9 @@ public class AbilityOverdrive : MonoBehaviour
             yield return new WaitForSeconds(spawnInterval);
             elapsed += spawnInterval;
         }
-
+        Destroy(gameObject); // Destroy the ability object after the effect is done
     }
-    void DoNuke(CarController car)
+    IEnumerator DoNuke(CarController car)
     {
         SR.gas.SpawnNukeParticles(car.transform.position);
         //apply Meltdown modifier to all cars within 15 units
@@ -58,5 +59,20 @@ public class AbilityOverdrive : MonoBehaviour
                 c.SetStatusEffect(CarStatus.Meltdown, 6f);
             }
         }
+        int carCount = cars.Count -2; //dont count self and one other car
+
+        int trackLength = SR.track.GetTrackLength();
+        yield return new WaitForSeconds(2f); //wait for 2s before spawning counters
+        for(int i = 0; i < carCount; i++)
+        {
+            //get an index along the track spaced by the track length divided by the car count, with some random offset
+            int offset = Random.Range(-trackLength/10, trackLength/10) + (i * trackLength / carCount);
+            offset = (offset + trackLength) % trackLength; //wrap around the track length
+            TrackCoordinate spawn = new TrackCoordinate(offset, Random.Range(-50f, 50f), Random.Range(0f, 1f));
+            GameObject repair = SR.gas.SpawnRepair(spawn);
+            Destroy(repair, 10f); // Destroy the repair after 10 seconds to clean up
+        }
+
+        Destroy(gameObject); // Destroy the ability object immediately since the effect is handled by the particles and status effects
     }
 }

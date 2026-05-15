@@ -4,6 +4,7 @@ using UnityEngine;
 public class GlobalAbilitySystem : MonoBehaviour
 {
     [SerializeField] List<AbilityTexturePair> abilityTextures;
+    [Header("Ability Prefabs")]
     [SerializeField] GameObject missilePrefab;
     [SerializeField] GameObject MissileParticlePrefab, SeekingMissileParticlePrefab;
     [SerializeField] GameObject empPrefab;
@@ -17,6 +18,8 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject trafficConePrefab;
     [SerializeField] GameObject icebergPrefab;
     [SerializeField] GameObject overdrivePrefab;
+    [Header("Utility Prefabs")]
+    [SerializeField] GameObject repairPrefab;
     [Header("Effect Only")]
     [SerializeField] GameObject disabledPrefab;
     [SerializeField] GameObject nukeParticles;
@@ -336,6 +339,15 @@ public class GlobalAbilitySystem : MonoBehaviour
         FollowWorldCar fwc = meltdown.GetComponent<FollowWorldCar>();
         fwc.Setup(control.GetID(), "Meltdown");
         Destroy(meltdown, maxDuration); // Destroy after maxDuration to clean up
+    }
+    public GameObject SpawnRepair(TrackCoordinate position) {
+        if(repairPrefab == null) return null;
+        Vector3 worldPos = SR.track.TrackCoordinateToWorldspace(position);
+        position += 0.01f;
+        Vector3 lookAtPos = SR.track.TrackCoordinateToWorldspace(position);
+        GameObject repair = Instantiate(repairPrefab, worldPos, Quaternion.identity);
+        repair.transform.LookAt(lookAtPos);
+        return repair;
     }
 
     [System.Serializable]

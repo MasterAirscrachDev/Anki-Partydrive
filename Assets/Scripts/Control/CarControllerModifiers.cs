@@ -10,6 +10,7 @@ public partial class CarController : MonoBehaviour
     ParticleSystem SlowVFX;
     bool slowVFXInitialized = false;
     List<ActiveStatus> statusList = new List<ActiveStatus>();
+    float freezeStartTime; int freezeStartSpeed; float freezeTotalDuration;
 
 #region SPEED MODIFIERS
     public void AddSpeedModifier(SpeedModifier mod){
@@ -80,6 +81,11 @@ public partial class CarController : MonoBehaviour
             if(duration > 0){ SR.gas?.SpawnMeltdownEffect(this, duration); } // Spawn meltdown visual effect
             else { SR.gas.ClearEffectForCar(GetID(), "Meltdown"); } // Clear effect if duration is 0 or negative
         }
+        else if(status == CarStatus.Frozen) { //capture for 
+            freezeStartTime = Time.time;
+            freezeStartSpeed = speed;
+            freezeTotalDuration = duration;
+        }
     }
     /// <summary>
     /// Returns true if the given status is currently active. Lazily removes expired entries.
@@ -93,6 +99,14 @@ public partial class CarController : MonoBehaviour
             }
         }
         return false;
+    }
+    float GetStatusEffectRemainingDuration(CarStatus status){
+        for(int i = 0; i < statusList.Count; i++){
+            if(statusList[i].status == status){
+                return Mathf.Max(0, statusList[i].endTime - Time.time);
+            }
+        }
+        return 0f;
     }
 #endregion
 #region SLOW VFX CONTROL

@@ -15473,7 +15473,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cars: []
-  availableCars: []
 --- !u!114 &705508000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22079,6 +22078,7 @@ MonoBehaviour:
   trafficConePrefab: {fileID: 259886857333740162, guid: a8f3d1e1f9e70524db82b89f9db602ab, type: 3}
   icebergPrefab: {fileID: 6802733270398753389, guid: 32d444d4ecbee484890a9b0aca020008, type: 3}
   overdrivePrefab: {fileID: 2997543738016617262, guid: 04e2d0b460cbdb148895605091961519, type: 3}
+  repairPrefab: {fileID: 742896146594827123, guid: 13a41d7468bde6044883bd49de21233a, type: 3}
   disabledPrefab: {fileID: 5920299987992940019, guid: b3c2f131459c8f045bd161ffb634fd6c, type: 3}
   nukeParticles: {fileID: 7841494285048609243, guid: 9baec62b84aeca44ca8bebf79365218f, type: 3}
   meltdownEffectPrefab: {fileID: 7113018643679515562, guid: 12505823b1469df42a8dc9fcb3ef0059, type: 3}
