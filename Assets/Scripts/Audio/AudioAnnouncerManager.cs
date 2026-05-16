@@ -13,6 +13,7 @@ public class AudioAnnouncerManager : MonoBehaviour
     [Header("Live Commentary Settings")]
     [SerializeField] float minLineInterval = 7f;
     [SerializeField] float maxLineInterval = 9f;
+    [SerializeField] bool debugAnnouncer = false;
     
     // Line queue system
     private List<QueuedLine> lineQueue = new List<QueuedLine>();
@@ -302,7 +303,7 @@ public class AudioAnnouncerManager : MonoBehaviour
         // Select line with weighted randomness based on importance
         // Higher importance = more likely to be selected, but with some variance
         QueuedLine selectedLine = SelectLineWithRandomness();
-        Debug.Log($"[Announcer] Cycle ({selectedLine.line} || {selectedLine.carModel}). Queue({lineQueue.Count}): {queueContents}");
+        if(debugAnnouncer){ Debug.Log($"[Announcer] Cycle ({selectedLine.line} || {selectedLine.carModel}). Queue({lineQueue.Count}): {queueContents}"); }
         
         if(selectedLine != null)
         {

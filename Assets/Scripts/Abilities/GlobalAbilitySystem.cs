@@ -24,6 +24,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject disabledPrefab;
     [SerializeField] GameObject nukeParticles;
     [SerializeField] GameObject meltdownEffectPrefab;
+    [SerializeField] GameObject frozenEffectPrefab;
     
     // --- Hazard position tracking for AI avoidance ---
     readonly List<Transform> activeHazards = new List<Transform>();
@@ -73,12 +74,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     public Sprite GetAbilityTexture(Ability ability)
     {
         foreach(AbilityTexturePair atp in abilityTextures)
-        {
-            if(atp.ability == ability)
-            {
-                return atp.texture;
-            }
-        }
+        { if(atp.ability == ability) { return atp.texture; } }
         return null;
     }
     /// <summary>
@@ -339,6 +335,15 @@ public class GlobalAbilitySystem : MonoBehaviour
         FollowWorldCar fwc = meltdown.GetComponent<FollowWorldCar>();
         fwc.Setup(control.GetID(), "Meltdown");
         Destroy(meltdown, maxDuration); // Destroy after maxDuration to clean up
+    }
+    public void SpawnFrozenEffect(CarController control, float maxDuration) {
+        if(frozenEffectPrefab == null) return;
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        GameObject frozenEffect = Instantiate(frozenEffectPrefab, carTransform.position, carTransform.rotation);
+        FollowWorldCar fwc = frozenEffect.GetComponent<FollowWorldCar>();
+        fwc.Setup(control.GetID(), "Frozen");
+        Destroy(frozenEffect, maxDuration); // Destroy after maxDuration to clean up
     }
     public GameObject SpawnRepair(TrackCoordinate position) {
         if(repairPrefab == null) return null;

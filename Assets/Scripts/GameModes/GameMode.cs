@@ -222,7 +222,7 @@ public abstract class GameMode : MonoBehaviour
             UCarData carData = SR.io?.GetCarFromID(carID);
             if(carData != null)
             {
-                SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarLapComplete, 6, carData.modelName);
+                SR.pa?.QueueLine(CarLapComplete, 6, carData.modelName);
             }
         }
         

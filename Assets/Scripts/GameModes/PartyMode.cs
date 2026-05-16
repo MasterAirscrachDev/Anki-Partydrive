@@ -103,6 +103,7 @@ public class PartyMode : GameMode
             // Only count the lap if the car wasn't delocalized
             if(score){
                 carLaps[carID]++;
+                cms.GetController(carID)?.SetProgress(carLaps[carID] / (float)targetLaps);
             }
             else
             {

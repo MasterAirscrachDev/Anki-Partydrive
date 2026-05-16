@@ -28,6 +28,7 @@ public class AbilityLightningPower : MonoBehaviour
                 hasSounds = false; // Only play sound for the first strike to avoid overwhelming audio
             }
         }
+        Destroy(gameObject, 10f); // Destroy this ability object after 10 seconds to clean up
     }
 
     IEnumerator LightningCloudSequence(GameObject cloud, CarController target, bool hasSounds = false)

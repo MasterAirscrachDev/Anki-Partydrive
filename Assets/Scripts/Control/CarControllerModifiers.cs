@@ -85,6 +85,8 @@ public partial class CarController : MonoBehaviour
             freezeStartTime = Time.time;
             freezeStartSpeed = speed;
             freezeTotalDuration = duration;
+            if(duration > 0){ SR.gas?.SpawnFrozenEffect(this, duration); } // Spawn frozen visual effect
+            else { SR.gas.ClearEffectForCar(GetID(), "Frozen"); } // Clear effect if duration is 0 or negative
         }
     }
     /// <summary>
@@ -207,7 +209,7 @@ public partial class CarController : MonoBehaviour
         float duration = 3.5f;
         if(GetStatusEffect(CarStatus.Meltdown)) { 
             duration += 2f; // Meltdown cars are disabled for 5.5 seconds instead of 3.5
-            SetStatusEffect(CarStatus.Meltdown, 0f); // Clear Meltdown (its done the damage)
+            SetStatusEffect(CarStatus.Meltdown, -1f); // Clear Meltdown (its done the damage)
         } 
         // Apply Locked status for 3.5 seconds
         SetStatusEffect(CarStatus.Locked, duration);

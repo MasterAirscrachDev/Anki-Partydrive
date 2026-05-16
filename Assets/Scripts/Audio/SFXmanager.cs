@@ -94,6 +94,7 @@ public enum SFXEvent
     LightningStrike = 30,
     RechargerActivate = 31,
     TrafficConeHit = 32,
+    NukeExplosion = 33,
     
     // Car Sounds
     EnergyPickup = 40,

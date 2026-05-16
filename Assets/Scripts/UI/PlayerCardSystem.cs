@@ -9,7 +9,7 @@ public class PlayerCardSystem : MonoBehaviour
     [SerializeField] TMP_Text carName, positionText;
     Material statusMaterial;
     [SerializeField] RawImage statusImage;
-    [SerializeField] Image plateImage;
+    [SerializeField] Image plateImage, progressImage;
     [SerializeField] GameObject[] attachments;
     [SerializeField] CarSprite[] statusCarsArray;
     GameObject currentAttachment;
@@ -18,6 +18,7 @@ public class PlayerCardSystem : MonoBehaviour
     {
         statusMaterial = new Material(statusImage.material);
         statusImage.material = statusMaterial;
+        progressImage.fillAmount = 0f;
     }
     public void SetCarName(string name, int model = -1){
         carName.text = name;
@@ -68,6 +69,8 @@ public class PlayerCardSystem : MonoBehaviour
         //pastelize the color
         color = Color.Lerp(color, Color.white, 0.5f);
         plateImage.color = color;
+        color = Color.Lerp(color, Color.black, 0.2f);
+        progressImage.color = color;
     }
     public void ClearAttachment(){
         SetAttachment(-1);
@@ -89,6 +92,9 @@ public class PlayerCardSystem : MonoBehaviour
         Image abilityImage = currentAttachment.transform.GetChild(0).GetChild(1).GetComponent<Image>();
         abilityImage.sprite = abilitySprite;
         abilityImage.enabled = abilitySprite != null;
+    }
+    public void SetProgress(float progress){
+        progressImage.fillAmount = progress;
     }
     void OnDestroy()
     {

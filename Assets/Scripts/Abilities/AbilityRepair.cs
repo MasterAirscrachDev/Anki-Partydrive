@@ -2,13 +2,7 @@ using UnityEngine;
 
 public class AbilityRepair : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    void Update() { //this isnt very efficent but its less than 50  objects per frame so whatever
+    void Update() { //this isnt very efficent but its less than 50 objects per frame so whatever
         //sphere check with a radius of 0.04
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, 0.04f);
         foreach (var hitCollider in hitColliders)
@@ -25,6 +19,7 @@ public class AbilityRepair : MonoBehaviour
     }
     void TryRepair(string id)
     {
+        //Debug.Log($"Repair ability checking car {id} for negative status effects");
         CarController car = SR.cms.GetController(id);
         if(car != null){
             bool consumed = false;
@@ -37,9 +32,13 @@ public class AbilityRepair : MonoBehaviour
                 car.SetStatusEffect(CarStatus.Meltdown, -1);
                 consumed = true;
             }
+            if(car.GetStatusEffect(CarStatus.Frozen)){
+                car.SetStatusEffect(CarStatus.Frozen, -1);
+                consumed = true;
+            }
 
             if(consumed){
-                //Debug.Log($"Car {id} repaired by {gameObject.name}");
+                Debug.Log($"Car {id} repaired by {gameObject.name}");
                 Destroy(gameObject);
             }
         }

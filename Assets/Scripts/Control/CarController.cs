@@ -55,7 +55,7 @@ public partial class CarController : MonoBehaviour
             }
         }
         pcs.SetCarName(text, model);
-        pcs.SetEnergy((int)energy, (int)maxEnergy);
+        pcs.SetEnergy((int)energy, (int)(maxEnergy + statMaxEnergyMod));
         pcs.SetColor(playerColor);
     }
     public void UpdateInputs(InputFrame newInputs, int type){
@@ -108,6 +108,7 @@ public partial class CarController : MonoBehaviour
         if(pcs != null){ 
             pcs.ClearAttachment();
             pcs.SetPosition(0);
+            pcs.SetProgress(0f);
         }
         lights.Reset(); // Reset light timers
         
@@ -125,6 +126,7 @@ public partial class CarController : MonoBehaviour
     }
     void FixedUpdate(){ //every 0.02 seconds, used for input tracking and control ticking
         // Track acceleration input during perfect start window (even before racing)
+        bool isAccelerating = inputs.accel > 0f;
         if(!isRacing && perfectStartWindowOpen && inputs.accel > 0.5f){ acceleratedDuringPerfectWindow = true; }
         CheckAndClearLights();
         // Don't process any input or movement if not yet racing
@@ -136,7 +138,7 @@ public partial class CarController : MonoBehaviour
             return;
         }
         
-        if(inputs.accel > 0 && inputs.boost && energy > 1){//if we are accelerating and boosting and have energy, use boost
+        if(isAccelerating && inputs.boost && energy > 1){//if we are accelerating and boosting and have energy, use boost
             UseEnergy(baseBoostCost, false);
             AddSpeedModifier(new FlatSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), TICK_RATE/2, "Boost"));
             playerAnalytics?.AddBoostTime(TICK_RATE/2);
@@ -145,7 +147,7 @@ public partial class CarController : MonoBehaviour
             playerAnalytics?.ResetBoost();
         }else{ playerAnalytics?.ResetBoost(); } // If we're not boosting, reset boost tracking for analytics
 
-        if (GetStatusEffect(CarStatus.Meltdown)) { UseEnergy(0.25f);  } // Meltdown causes constant energy drain
+        if (GetStatusEffect(CarStatus.Meltdown)) { UseEnergy(0.6f);  } // Meltdown causes constant energy drain (90dmg in 3s)
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, inputs.accel);
         bool frozen = GetStatusEffect(CarStatus.Frozen);
@@ -157,10 +159,10 @@ public partial class CarController : MonoBehaviour
         }
         else {
             speed = (int)Mathf.Lerp(speed, targetSpeed, (inputs.accel == 0) ? 0.021f : 0.019f); //these 2 values are the deceleration and acceleration lerp speeds (to be experimented with)
+            if(isAccelerating && speed < 150){ speed = 150; }
         }
 
         if(speed < 150){ speed = 0; } //cut speed to 0 if slow speed
-        else if(inputs.accel > 0 && speed < 150){ speed = 150; } //snap to 150 if accelerating
         if (!frozen) { //if we are frozen we cannot steer at all, so skip lane changes
             if (GetStatusEffect(CarStatus.Scrambled)) { lane -= inputs.steer * (baseSteering + statSteerMod); }
             else { lane += inputs.steer * (baseSteering + statSteerMod); }
@@ -402,7 +404,7 @@ public partial class CarController : MonoBehaviour
         bool triggeredBigDamage = playerAnalytics?.RecordDamageDealt(amount) ?? false;
         if(triggeredBigDamage) {
             UCarData carData = SR.io?.GetCarFromID(carID);
-            if(carData != null) { SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarDealsBigDamage, 4, carData.modelName); }
+            if(carData != null) { SR.pa?.QueueLine(AudioAnnouncerManager.AnnouncerLine.CarDealsBigDamage, 5, carData.modelName); }
         }
     }
 #endregion
@@ -461,6 +463,13 @@ public partial class CarController : MonoBehaviour
         }
         //Debug.Log($"Setting lap count to {lapCount} for carID {carID} pcs:{pcs != null}");
         pcs.SetLapCount(lapCount); 
+    }
+    public void SetProgress(float progress){
+        if(pcs == null) {
+            Debug.Log($"PCS was null in SetProgress for carID {carID}");
+            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
+        }
+        pcs.SetProgress(progress);
     }
 #endregion
 

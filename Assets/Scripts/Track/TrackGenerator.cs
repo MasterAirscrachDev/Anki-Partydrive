@@ -146,6 +146,7 @@ public class TrackGenerator : MonoBehaviour
         }
         GenerateTrackObjects(false, true);
         PositionTrackCamera(true);
+        
         time = 0;
         //over 0.5s reduce bloom intensity to 1
         start = b.intensity.value;
@@ -311,6 +312,16 @@ public class TrackGenerator : MonoBehaviour
             if (trackPieces[trackPieces.Count - 1] != null)
             { trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>(); }
         }
+        if(!animateLastSegment && fullyValidated)
+        {
+            FindFirstObjectByType<GrandstandGenerator>()?.GenerateGrandstand();
+            StartCoroutine(RegenerateGrandstandDelayed());
+        }
+    }
+    IEnumerator RegenerateGrandstandDelayed()
+    {
+        yield return new WaitForSeconds(0.5f);
+        FindFirstObjectByType<GrandstandGenerator>()?.GenerateGrandstand();
     }
 
     void PreCacheSegmentLengths()

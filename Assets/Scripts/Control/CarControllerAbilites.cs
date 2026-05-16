@@ -99,7 +99,8 @@ public partial class CarController : MonoBehaviour
     {
         Ability[] rareAbilities = new Ability[] { 
             Ability.OrbitalLazer,
-            Ability.LightningPower
+            Ability.LightningPower,
+            Ability.Overdrive
         };  
         // Default ability list (balanced)
         Ability[] validAbilities = new Ability[] { 
@@ -124,10 +125,13 @@ public partial class CarController : MonoBehaviour
         Ability[] lastPlaceAbilities = new Ability[] { 
             Ability.MissleSeeking3,
             Ability.MissleSeeking3,
+            Ability.MissleSeeking3,
             Ability.CrasherBoost,
             Ability.Grappler,
             Ability.Grappler,
             Ability.IceBlast,
+            Ability.IceBlast,
+            Ability.Overdrive,
             Ability.Overdrive
         };
         

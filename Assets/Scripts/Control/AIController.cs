@@ -16,8 +16,9 @@ public class AIController : MonoBehaviour
     TrackCoordinate[] carLocations; //list of other car locations
     TrackCoordinate ourCoord, currentTarget; //current target of the car (may be null)
     float timer = 0f; //timer for the AI logic
+    int hasAbilityCycles = 0, requiredAbilityCycles = 3; //acts as an awareness system (AI must have seen the ability for a few cycles before it can use it, to avoid spamming on ability switch)
     float abilityTimer = 0f; //timer for ability usage
-    const float ABILITY_CHECK_INTERVAL = 0.5f; //how often to check if we should use an ability
+    const float ABILITY_CHECK_INTERVAL = 0.3f; //how often to check if we should use an ability
     InputFrame currentInputs; //current inputs to be sent to the car controller
     int currentTargetSpeed = 0;
     float currentTargetOffset = 0f;
@@ -73,7 +74,7 @@ public class AIController : MonoBehaviour
     {
         if(setup){ return; } //if the AI is already setup, return
         carController = GetComponent<CarController>();
-        string[] names = { "Jimmy [Bot]", "Bob [Bot]", "Doug [Bot]", "Gary [Bot]", "Jess [Bot]", "Sam [Bot]", "Kate [Bot]", "Dave [Bot]" };
+        string[] names = { "Electron [AI]", "Thermal [AI]", "Antimatter [Ai]", "Rattle [AI]", "Photon [AI]", "Revolt [AI]", "Telos [AI]", "Veeg [AI]" };
         carController.Setup(true, names[Random.Range(0, names.Length)]); //setup the car controller
         carController.SetColour(new Color(1, 0, 0)); //set the color to red
 
@@ -287,7 +288,11 @@ public class AIController : MonoBehaviour
         // Get current ability from car controller (we'll need to add a getter for this)
         // For now, we'll trigger the ability input which will use it if available
         Ability currentAbility = GetCurrentAbility();
-        if (currentAbility == Ability.None) { return; }
+        if (currentAbility == Ability.None) { hasAbilityCycles = 0; return; }
+        if(hasAbilityCycles < requiredAbilityCycles) {
+            hasAbilityCycles++;
+            return; // Wait until we've had the same ability for a few cycles to avoid spamming on ability switch
+        }
         
         // Check if we should use this ability based on its usage mode and aim mode
         if (!abilityUsageTable.TryGetValue(currentAbility, out AIAbilityUsageMode usageMode))
@@ -371,5 +376,6 @@ public class AIController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         currentInputs.itemA = false;
+        requiredAbilityCycles = Random.Range(2, 5); // Randomize required cycles for next ability use to add variability
     }
 }

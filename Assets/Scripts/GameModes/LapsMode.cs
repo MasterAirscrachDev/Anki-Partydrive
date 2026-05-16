@@ -91,7 +91,11 @@ public class LapsMode : GameMode
             if(score){
                 carLaps[carID]++;
                 try{
-                    cms.GetController(carID).SetLapCount(carLaps[carID]);
+                    CarController car = cms.GetController(carID);
+                    car.SetLapCount(carLaps[carID]);
+                    car.SetProgress(carLaps[carID] / (float)targetLaps);
+
+
                 }catch{
                     //Debug.LogWarning($"Could not set lap count for car {carID}");
                 }

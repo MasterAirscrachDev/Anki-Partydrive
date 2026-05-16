@@ -49,16 +49,13 @@ public class AbilityOverdrive : MonoBehaviour
     }
     IEnumerator DoNuke(CarController car)
     {
-        SR.gas.SpawnNukeParticles(car.transform.position);
+        SR.sfx.PlaySFX(SFXEvent.NukeExplosion);
+        Vector3 carPosition = SR.cet.GetCarVisualPosition(car.GetID());
+        SR.gas.SpawnNukeParticles(carPosition);
         //apply Meltdown modifier to all cars within 15 units
-        List<CarController> cars = SR.cms.SphereCheckControllers(car.transform.position, 15f);
+        List<CarController> cars = SR.cms.SphereCheckControllers(carPosition, 15f);
         foreach(CarController c in cars)
-        {
-            if(c.GetID() != car.GetID())
-            {
-                c.SetStatusEffect(CarStatus.Meltdown, 6f);
-            }
-        }
+        { if(c.GetID() != car.GetID()) { c.SetStatusEffect(CarStatus.Meltdown, 6f); } }
         int carCount = cars.Count -2; //dont count self and one other car
 
         int trackLength = SR.track.GetTrackLength();

@@ -8,10 +8,10 @@ public class GrandstandGenerator : MonoBehaviour
 
     void Start()
     {
-        GenerateGrandstand();
+        //GenerateGrandstand();
     }
 
-    void GenerateGrandstand()
+    public void GenerateGrandstand()
     {
         List<Vector3> outline = ComputeTrackOutline();
         if (outline == null || outline.Count == 0) return;
