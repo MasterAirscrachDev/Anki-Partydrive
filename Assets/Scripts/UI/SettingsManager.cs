@@ -50,7 +50,11 @@ public class SettingsManager : MonoBehaviour
         }
         if(currentSettings.balancedBaseStats != balancedBaseStatsToggle.isOn){ currentSettings.balancedBaseStats = balancedBaseStatsToggle.isOn; changed = true; }
         if(currentSettings.uniqueOverdrivePowers != uniqueOverdrivePowersToggle.isOn){ currentSettings.uniqueOverdrivePowers = uniqueOverdrivePowersToggle.isOn; changed = true; }
-        if(currentSettings.phoneControllerSupport != phoneControllerSupportToggle.isOn){ currentSettings.phoneControllerSupport = phoneControllerSupportToggle.isOn; changed = true; }
+        if(currentSettings.phoneControllerSupport != phoneControllerSupportToggle.isOn){ 
+            currentSettings.phoneControllerSupport = phoneControllerSupportToggle.isOn;
+            changed = true;
+            _ = SaveAndQuit(); // Changing phone controller support requires restart
+        }
         if(changed)
         {
             onSettingsChanged?.Invoke(currentSettings);
@@ -112,6 +116,12 @@ public class SettingsManager : MonoBehaviour
         save.SetVar("phoneControllerSupport", currentSettings.phoneControllerSupport);
         await fs.SaveFile("settings", save);
         Debug.Log($"Settings saved.\n{currentSettings.Log()}");
+    }
+
+    async Task SaveAndQuit()
+    {
+        await SaveSettingsAsync();
+        Application.Quit();
     }
 
     public void OnSettingsUpdated()

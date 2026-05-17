@@ -456,6 +456,12 @@ if (screen.orientation && typeof screen.orientation.lock === 'function') {
     screen.orientation.lock('landscape').catch(() => { /* not supported in all contexts */ });
 }
 
+// ── Fullscreen on first user gesture (best-effort; iOS Safari not supported) ──
+document.addEventListener('touchstart', () => {
+    const el = document.documentElement;
+    (el.requestFullscreen?.() ?? el.webkitRequestFullscreen?.())?.catch?.(() => {});
+}, { once: true, passive: true });
+
 // ── Kick off ──────────────────────────────────────────────────────────────────
 connect();
 

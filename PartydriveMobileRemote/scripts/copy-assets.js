@@ -1,6 +1,8 @@
 'use strict';
 // Copies car and ability icon PNGs from the Unity Assets folder into
-// public/cars/ and public/abilityicons/ so that pkg bundles them.
+// public/cars/ and public/abilityicons/ (for dev use), and writes
+// public/image-manifest.js with PNG data embedded as base64 so the pkg exe
+// can serve images without any pkg.assets binary-glob issues.
 
 const fs   = require('fs');
 const path = require('path');
@@ -9,58 +11,47 @@ const root = path.join(__dirname, '..');
 
 const copies = [
     {
+        key:  'cars',
         src:  path.join(root, '..', 'Assets', 'Textures', 'Cars'),
         dest: path.join(root, 'public', 'cars'),
     },
     {
+        key:  'abilityicons',
         src:  path.join(root, '..', 'Assets', 'Textures', 'AbilityIcons'),
         dest: path.join(root, 'public', 'abilityicons'),
     },
 ];
 
-for (const { src, dest } of copies) {
+const imageData = {};
+
+for (const { key, src, dest } of copies) {
     if (!fs.existsSync(src)) {
         console.warn(`[copy-assets] Source not found, skipping: ${src}`);
+        imageData[key] = [];
         continue;
     }
     fs.mkdirSync(dest, { recursive: true });
-    let count = 0;
+    const files = [];
     for (const file of fs.readdirSync(src)) {
         if (!file.toLowerCase().endsWith('.png')) continue;
-        fs.copyFileSync(path.join(src, file), path.join(dest, file));
-        count++;
+        const srcFile = path.join(src, file);
+        fs.copyFileSync(srcFile, path.join(dest, file));
+        files.push({ name: file, b64: fs.readFileSync(srcFile).toString('base64') });
     }
-    console.log(`[copy-assets] Copied ${count} PNGs  ${src} → ${dest}`);
+    imageData[key] = files;
+    console.log(`[copy-assets] Copied ${files.length} PNGs  ${src} → ${dest}`);
 }
 
-// Copy public/ web files (html/css/js) next to each build output so that the
-// pkg executable can serve them from the real filesystem at runtime.
-const publicSrc = path.join(root, 'public');
-const buildOutputDirs = [
-    path.join(root, '..', 'BUILDS'),           // Windows exe
-    path.join(root, '..', 'BUILDS', 'Server'), // Linux binary
-];
-const webExts = new Set(['.html', '.css', '.js', '.ico', '.png', '.svg', '.json']);
-
-function copyDir(src, dest) {
-    fs.mkdirSync(dest, { recursive: true });
-    let count = 0;
-    for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-        const srcPath  = path.join(src,  entry.name);
-        const destPath = path.join(dest, entry.name);
-        if (entry.isDirectory()) {
-            count += copyDir(srcPath, destPath);
-        } else if (webExts.has(path.extname(entry.name).toLowerCase())) {
-            fs.copyFileSync(srcPath, destPath);
-            count++;
-        }
-    }
-    return count;
+// Emit a JS module with all PNG data embedded.
+// require() is statically detected by pkg — no pkg.assets binary globs needed.
+const lines = ["'use strict';", 'module.exports = {'];
+for (const [key, files] of Object.entries(imageData)) {
+    lines.push(`  ${key}: [`);
+    for (const { name, b64 } of files)
+        lines.push(`    { name: ${JSON.stringify(name)}, data: Buffer.from(${JSON.stringify(b64)}, 'base64') },`);
+    lines.push('  ],');
 }
+lines.push('};');
+fs.writeFileSync(path.join(root, 'public', 'image-manifest.js'), lines.join('\n') + '\n');
+console.log('[copy-assets] Written public/image-manifest.js');
 
-for (const outDir of buildOutputDirs) {
-    if (!fs.existsSync(outDir)) continue;
-    const destPublic = path.join(outDir, 'public');
-    const n = copyDir(publicSrc, destPublic);
-    console.log(`[copy-assets] Copied ${n} web files  ${publicSrc} → ${destPublic}`);
-}

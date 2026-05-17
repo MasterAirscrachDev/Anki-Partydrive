@@ -9,7 +9,7 @@ public partial class CarController : MonoBehaviour
     [SerializeField] List<SpeedModifier> speedModifiers = new List<SpeedModifier>();
     ParticleSystem SlowVFX;
     bool slowVFXInitialized = false;
-    List<ActiveStatus> statusList = new List<ActiveStatus>();
+    Dictionary<CarStatus, float> statusList = new Dictionary<CarStatus, float>(); // status -> endTime
     float freezeStartTime; int freezeStartSpeed; float freezeTotalDuration;
 
 #region SPEED MODIFIERS
@@ -70,13 +70,7 @@ public partial class CarController : MonoBehaviour
     /// Apply a status to the car for the given duration. If the status is already active, its duration is refreshed.
     /// </summary>
     public void SetStatusEffect(CarStatus status, float duration){
-        for(int i = 0; i < statusList.Count; i++){
-            if(statusList[i].status == status){
-                statusList[i].endTime = Time.time + duration; // Refresh duration
-                return;
-            }
-        }
-        statusList.Add(new ActiveStatus(status, duration));
+        statusList[status] = Time.time + duration;
         if(status == CarStatus.Meltdown) {
             if(duration > 0){ SR.gas?.SpawnMeltdownEffect(this, duration); } // Spawn meltdown visual effect
             else { SR.gas.ClearEffectForCar(GetID(), "Meltdown"); } // Clear effect if duration is 0 or negative
@@ -93,21 +87,15 @@ public partial class CarController : MonoBehaviour
     /// Returns true if the given status is currently active. Lazily removes expired entries.
     /// </summary>
     public bool GetStatusEffect(CarStatus status){
-        for(int i = 0; i < statusList.Count; i++){
-            if(statusList[i].status == status){
-                if(statusList[i].endTime > Time.time){ return true; }
-                statusList.RemoveAt(i); // Lazily remove expired entry
-                return false;
-            }
+        if(statusList.TryGetValue(status, out float endTime)){
+            if(endTime > Time.time) return true;
+            statusList.Remove(status); // Lazily remove expired entry
         }
         return false;
     }
     float GetStatusEffectRemainingDuration(CarStatus status){
-        for(int i = 0; i < statusList.Count; i++){
-            if(statusList[i].status == status){
-                return Mathf.Max(0, statusList[i].endTime - Time.time);
-            }
-        }
+        if(statusList.TryGetValue(status, out float endTime))
+            return Mathf.Max(0, endTime - Time.time);
         return 0f;
     }
 #endregion

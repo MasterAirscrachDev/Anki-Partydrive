@@ -11,7 +11,9 @@
   },
   "pkg": {
     "assets": [
-      "public/**/*"
+      "public/index.html",
+      "public/styles.css",
+      "public/script.js"
     ]
   },
   "author": "",

@@ -36,7 +36,7 @@ public class AbilityCone : MonoBehaviour
 
     void Update()
     {
-        if (isHit) return;
+        if (isHit) { return; } 
         
         // Check if lifetime exceeded
         if (Time.time - spawnTime >= lifetime)
@@ -123,6 +123,11 @@ public class AbilityCone : MonoBehaviour
             // Debug visualization
             Debug.DrawLine(lastPosition, cone.position, Color.Lerp(Color.red, Color.green, velocity.magnitude / 10f), 8f);
             lastPosition = cone.position;
+
+            if(cone.position.y < -0.25f){ // if under ground level, destroy immediately to avoid weirdness
+                Destroy(gameObject);
+                yield break;
+            }
             
             yield return new WaitForEndOfFrame();
         }

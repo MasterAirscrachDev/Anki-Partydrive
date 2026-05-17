@@ -9,17 +9,42 @@ public class AbilityOverdrive : MonoBehaviour
     public void Setup(AbilityController ab)
     {
         CarController car = ab.GetCarController();
-        if(car.GetCarModel() == IceWave || car.GetCarModel() == x52Ice){ //frozen frontier effect
+        if(car.GetCarModel() == IceWave || car.GetCarModel() == x52Ice){ //Frozen Frontier
             DoFrozenFrontier(car);
         }
-        else if(car.GetCarModel() == Nuke || car.GetCarModel() == NukePhantom){ //nuke effect
+        else if(car.GetCarModel() == Nuke || car.GetCarModel() == NukePhantom){ //Total Meltdown
             StartCoroutine(DoNuke(car));
+        }
+        else if(car.GetCarModel() == Mammoth) { //Great Stampede
+            DoStampede(car);
+        }
+        else if(car.GetCarModel() == Groundshock) { // Shockdown
+            DoShockDown(car);
         }
         else{ // missile storm (temp for wip cars)
             StartCoroutine(DoMissileStorm(car));
         }
     }
-
+    void DoShockDown(CarController car)
+    {
+        //spawn an EMP at the car's location that damages and scrambles nearby cars
+        SR.gas.SpawnEMP(car, 0, 0.5f, 5f, 6f, 3.5f);
+        Destroy(gameObject); // Destroy the ability object immediately since the effect is handled by the EMP itself
+    }
+    void DoStampede(CarController car)
+    {
+        SR.gas.SpawnStampede(car, 20, 5f);
+        car.AddSpeedModifier(new FlatSpeedModifier(100, 5f, "Stampede"));
+        //apply a matching negative speed modifier to all other cars
+        string[] targets = SR.cet.GetActiveCars(car.GetID());
+        for(int i = 0; i < targets.Length; i++)
+        {
+            CarController targetCar = SR.cms.GetController(targets[i]);
+            if(targetCar != null)
+            { targetCar.AddSpeedModifier(new FlatSpeedModifier(-100, 5f, "Stampede")); }
+        }
+        Destroy(gameObject); // Destroy the ability object immediately since the effect is handled by the modifiers and the spawned stampede object
+    }
     void DoFrozenFrontier(CarController car)
     {
         SR.gas.SpawnIceberg(car, 1, 8, 5f, true);

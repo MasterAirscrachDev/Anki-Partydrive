@@ -18,6 +18,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject trafficConePrefab;
     [SerializeField] GameObject icebergPrefab;
     [SerializeField] GameObject overdrivePrefab;
+    [SerializeField] GameObject stampedePrefab;
     [Header("Utility Prefabs")]
     [SerializeField] GameObject repairPrefab;
     [Header("Effect Only")]
@@ -149,12 +150,12 @@ public class GlobalAbilitySystem : MonoBehaviour
         particle.transform.position = position;
         SR.sfx?.PlaySFX(SFXEvent.Explosion);
     }
-    public void SpawnEMP(CarController control) {
+    public void SpawnEMP(CarController control, int damage = 10, float slowAmount = 0.8f, float slowDuration = 3f, float scrambleDuration = 4f, float rangeScale = 1f) {
         Vector3 start = SR.cet.GetCarVisualPosition(control.GetID());
         GameObject emp = Instantiate(empPrefab, start, Quaternion.identity);
         AbilityController ab = emp.GetComponent<AbilityController>();
         ab.Setup(control);
-        ab.GetComponent<AbilityEMP>().Setup(ab);
+        ab.GetComponent<AbilityEMP>().Setup(ab, damage, slowAmount, slowDuration, scrambleDuration, rangeScale);
         SR.sfx?.PlaySFX(SFXEvent.EMPActivate);
     }
     public void SpawnDamageTrail(CarController control) {
@@ -353,6 +354,17 @@ public class GlobalAbilitySystem : MonoBehaviour
         GameObject repair = Instantiate(repairPrefab, worldPos, Quaternion.identity);
         repair.transform.LookAt(lookAtPos);
         return repair;
+    }
+    public void SpawnStampede(CarController control, int damage = 20, float duration = 3f) {
+        if(stampedePrefab == null) return;
+        
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        
+        GameObject stampede = Instantiate(stampedePrefab, carTransform.position, carTransform.rotation);
+        AbilityController ab = stampede.GetComponent<AbilityController>();
+        ab.Setup(control);
+        stampede.GetComponent<AbilityStampede>().Setup(ab, damage, duration);
     }
 
     [System.Serializable]

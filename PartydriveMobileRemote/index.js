@@ -25,16 +25,51 @@ function resolveAssetDir(publicSubDir, unityRelPath) {
 
 const carsDir         = resolveAssetDir('cars',         '../Assets/Textures/Cars');
 const abilityIconsDir = resolveAssetDir('abilityicons', '../Assets/Textures/AbilityIcons');
+const publicDir       = path.join(__dirname, 'public');
 
-// When running as a pkg executable, express.static cannot read from the virtual
-// snapshot filesystem. Prefer a real public/ folder next to the exe if present.
-const publicDir = (() => {
-    if (process.pkg) {
-        const adj = path.join(path.dirname(process.execPath), 'public');
-        if (fs.existsSync(adj)) return adj;
+// ── Static file preloader ────────────────────────────────────────────────────
+// pkg's readFileSync only works reliably when paths are resolvable at compile
+// time. Loading everything into memory at startup avoids variable-path reads
+// during request handling, which pkg cannot detect or bundle.
+const MIME_TYPES = {
+    '.html': 'text/html; charset=utf-8',
+    '.css':  'text/css; charset=utf-8',
+    '.js':   'application/javascript; charset=utf-8',
+    '.png':  'image/png',
+    '.svg':  'image/svg+xml',
+    '.ico':  'image/x-icon',
+    '.json': 'application/json',
+    '.webp': 'image/webp',
+};
+const STATIC_FILES = {};
+function addStaticFile(urlKey, filePath) {
+    try {
+        const data = fs.readFileSync(filePath);
+        STATIC_FILES[urlKey] = { mime: MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream', data };
+    } catch (e) {
+        console.warn(`[Static] Could not preload ${urlKey}: ${e.message}`);
     }
-    return path.join(__dirname, 'public');
-})();
+}
+// Root web files — literal path segments allow pkg static analysis to detect them
+addStaticFile('index.html', path.join(__dirname, 'public/index.html'));
+addStaticFile('styles.css', path.join(__dirname, 'public/styles.css'));
+addStaticFile('script.js',  path.join(__dirname, 'public/script.js'));
+// Image files — data is embedded in the JS module at prebuild time;
+// require() is statically detected by pkg so no pkg.assets binary globs needed.
+const imageManifest = require('./public/image-manifest');
+for (const { name, data } of (imageManifest.cars         || []))
+    STATIC_FILES[`cars/${name}`]         = { mime: 'image/png', data };
+for (const { name, data } of (imageManifest.abilityicons || []))
+    STATIC_FILES[`abilityicons/${name}`] = { mime: 'image/png', data };
+
+function pkgSafeStatic() {
+    return (req, res, next) => {
+        const rel   = (req.path === '/' ? 'index.html' : req.path).replace(/^\/+/, '');
+        const entry = STATIC_FILES[rel];
+        if (entry) return res.set('Content-Type', entry.mime).send(entry.data);
+        next();
+    };
+}
 
 // ── App Setup ─────────────────────────────────────────────────────────────────
 const app    = express();
@@ -193,13 +228,14 @@ function handleControllerMessage(id, msg) {
 }
 
 // ── Routes ────────────────────────────────────────────────────────────────────
-app.use(express.static(publicDir));
-app.use('/cars',         express.static(carsDir));
-app.use('/abilityicons', express.static(abilityIconsDir));
+app.use(pkgSafeStatic());
 
-// Explicit fallback for root — ensures index.html is served even if static
-// middleware fails (e.g. edge cases with some pkg/send version combinations).
-app.get('/', (req, res) => res.send(fs.readFileSync(path.join(publicDir, 'index.html'))));
+// Explicit root fallback — safety net for any edge cases.
+app.get('/', (req, res) => {
+    const entry = STATIC_FILES['index.html'];
+    if (entry) return res.set('Content-Type', entry.mime).send(entry.data);
+    res.status(500).send('Server error: index.html not loaded');
+});
 
 // /qr.png — raw PNG for Unity texture fetch
 app.get('/qr.png', async (req, res) => {
@@ -253,7 +289,4 @@ server.listen(PORT, () => {
     const ip = getLocalIP();
     log('Server', 'Partydrive Mobile Remote ready');
     log('Server', `Controller URL : http://${ip}:${PORT}`);
-    log('Server', `QR debug page  : http://${ip}:${PORT}/qr`);
-    log('Server', `Car icons      : ${carsDir}`);
-    log('Server', `Ability icons  : ${abilityIconsDir}`);
-});
+    log('Server', `QR debug page  : http://${ip}:${PORT}/qr`);});

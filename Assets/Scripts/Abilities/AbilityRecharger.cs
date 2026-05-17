@@ -42,11 +42,8 @@ public class AbilityRecharger : MonoBehaviour
         while(elapsed < totalDuration)
         {
             if(userCar != null)
-            {
-                userCar.ChargeEnergy(energyPerTick);
-            }
-            else
-            {
+            { userCar.ChargeEnergy(energyPerTick); }
+            else {
                 // User car no longer exists
                 Destroy(gameObject);
                 yield break;

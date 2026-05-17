@@ -66,7 +66,7 @@ public partial class CarController : MonoBehaviour
 #endregion
 #region GAMEPLAY HELPERS
     public void UseEnergy(float amount, bool isDamage = true){
-        if(GetStatusEffect(CarStatus.Locked)){ return; } // Don't use energy if car is locked/disabled
+        if(GetStatusEffect(CarStatus.Locked) || GetStatusEffect(CarStatus.Frozen)){ return; } // Don't use energy if car is locked/disabled
         if(GetStatusEffect(CarStatus.Invulnerable) && isDamage){ return; } // Don't use energy for damage if car is invulnerable
         energy -= amount;
         lastEnergyDrainTime = Time.time; //used for delayed energy recharge
@@ -84,6 +84,14 @@ public partial class CarController : MonoBehaviour
     public void ChargeEnergy(float amount){
         energy += amount;
         if(energy > maxEnergy + statMaxEnergyMod){ energy = maxEnergy + statMaxEnergyMod; }
+    }
+    /// <summary>
+    /// Knocks the car to the side of the track based on its current offset
+    /// </summary>
+    public void KnockToSide()
+    {
+        if(lane > 0){ lane = 65; }
+        else { lane = -65; }
     }
     public void StopCar(){
         // Clear all inputs to stop any ongoing movement
@@ -137,6 +145,8 @@ public partial class CarController : MonoBehaviour
             }
             return;
         }
+        bool frozen = GetStatusEffect(CarStatus.Frozen);
+        if(frozen){ inputs.accel = 0; inputs.steer = 0; inputs.boost = false; } // If frozen, override inputs to prevent movement
         
         if(isAccelerating && inputs.boost && energy > 1){//if we are accelerating and boosting and have energy, use boost
             UseEnergy(baseBoostCost, false);
@@ -150,7 +160,6 @@ public partial class CarController : MonoBehaviour
         if (GetStatusEffect(CarStatus.Meltdown)) { UseEnergy(0.6f);  } // Meltdown causes constant energy drain (90dmg in 3s)
 
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, inputs.accel);
-        bool frozen = GetStatusEffect(CarStatus.Frozen);
         if (frozen)
         {
             float frozenDuration = GetStatusEffectRemainingDuration(CarStatus.Frozen) - freezeStartTime;
@@ -163,10 +172,8 @@ public partial class CarController : MonoBehaviour
         }
 
         if(speed < 150){ speed = 0; } //cut speed to 0 if slow speed
-        if (!frozen) { //if we are frozen we cannot steer at all, so skip lane changes
-            if (GetStatusEffect(CarStatus.Scrambled)) { lane -= inputs.steer * (baseSteering + statSteerMod); }
-            else { lane += inputs.steer * (baseSteering + statSteerMod); }
-        }
+        if (GetStatusEffect(CarStatus.Scrambled)) { lane -= inputs.steer * (baseSteering + statSteerMod); }
+        else { lane += inputs.steer * (baseSteering + statSteerMod); }
         
         // Get dynamic track width from the car's actual current position
         float trackHalfWidth = GetTrackHalfWidth();
