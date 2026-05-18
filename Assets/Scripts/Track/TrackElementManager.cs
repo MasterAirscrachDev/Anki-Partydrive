@@ -9,30 +9,35 @@ public class TrackElementManager : MonoBehaviour
     //index in elementSlots, spawned GameObject
     List<(int, GameObject)> spawnedElements = new List<(int, GameObject)>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
     public void SpawnElements(float distribution = 0.1f)
     {
         ClearElements();
         List<TrackElementSlot> slots = new List<TrackElementSlot>();
-        List<GameObject> segments = SR.track.GetSegmentsWithTrackElementSlots();
-        //for each segment in the track
-        bool firstSegment = true;
-        foreach(GameObject segment in segments)
+        if (SR.track.IsMat())
         {
-            //roll a check to see if we should spawn for this segments element slots
-            float r = Random.Range(0f, 1f);
-            if(firstSegment)
-            { firstSegment = false; r = 0f; } //always spawn on first segment
-            if(r < distribution)
+            TrackElementSlot[] matSlots = FindObjectsByType<TrackElementSlot>(FindObjectsSortMode.None);
+            slots.AddRange(matSlots);
+        }
+        else
+        {
+            List<GameObject> segments = SR.track.GetSegmentsWithTrackElementSlots();
+            //for each segment in the track
+            bool firstSegment = true;
+            foreach(GameObject segment in segments)
             {
-                //get all element slots in the segment
-                TrackElementSlot[] segmentSlots = segment.GetComponentsInChildren<TrackElementSlot>();
-                slots.AddRange(segmentSlots);
+                //roll a check to see if we should spawn for this segments element slots
+                float r = Random.Range(0f, 1f);
+                if(firstSegment)
+                { firstSegment = false; r = 0f; } //always spawn on first segment
+                if(r < distribution)
+                {
+                    //get all element slots in the segment
+                    TrackElementSlot[] segmentSlots = segment.GetComponentsInChildren<TrackElementSlot>();
+                    slots.AddRange(segmentSlots);
+                }
             }
         }
+        
         elementSlots = slots.ToArray();
         //for each slot, spawn an element
         for(int i = 0; i < elementSlots.Length; i++)

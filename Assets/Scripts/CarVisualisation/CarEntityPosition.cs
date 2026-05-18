@@ -38,7 +38,7 @@ public class CarEntityPosition : MonoBehaviour
             }
             transform.position = targetPos;
             
-            if(Vector3.Distance(transform.position, lastPosition) > 0.01f){ //should fix weirdness when stopping
+            if(Vector3.Distance(transform.position, lastPosition) > 0.05f){ //should fix weirdness when stopping
                 transform.LookAt(lastPosition);
                 lastPosition = transform.position;
                 transform.Rotate(0, 180, 0);

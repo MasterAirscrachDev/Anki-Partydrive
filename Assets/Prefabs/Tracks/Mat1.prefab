@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &483857351311434809
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6123558816330254610}
+  - component: {fileID: 1627971153783200036}
+  m_Layer: 6
+  m_Name: TrackSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6123558816330254610
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 483857351311434809}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4164968841256695558}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1627971153783200036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 483857351311434809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &1528654557645608295
 GameObject:
   m_ObjectHideFlags: 0
@@ -45,17 +90,368 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.29552066, y: 0, z: -0.010644466}
-  - {x: -0.31208324, y: 0, z: 0.22746673}
   - {x: -0.33987978, y: 0, z: 0.46166563}
+  - {x: -0.31208324, y: 0, z: 0.22746673}
+  - {x: -0.29552066, y: 0, z: -0.010644466}
   rightPoints:
-  - {x: 0.29552063, y: 0, z: 0.010644466}
-  - {x: 0.27519757, y: 0, z: 0.276733}
   - {x: 0.24530056, y: 0, z: 0.54137653}
+  - {x: 0.27519757, y: 0, z: 0.276733}
+  - {x: 0.29552063, y: 0, z: 0.010644466}
   trackWidths:
   - 121.5
   flipped: 1
   DEBUG_RenderSmoothCurve: 0
+--- !u!1 &1854993220629878536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1274326181134345324}
+  - component: {fileID: 1278982609478582336}
+  m_Layer: 6
+  m_Name: TrackSlot (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1274326181134345324
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854993220629878536}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: -0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4727456811045233282}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1278982609478582336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854993220629878536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &1955497865493906333
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 308804335547298812}
+  - component: {fileID: 3769727707329031708}
+  m_Layer: 6
+  m_Name: TrackSlot (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &308804335547298812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955497865493906333}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4164968841256695558}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &3769727707329031708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955497865493906333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &2397859372724547492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7569093389081561073}
+  - component: {fileID: 3559276002693198957}
+  m_Layer: 6
+  m_Name: TrackSlot (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7569093389081561073
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397859372724547492}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4727456811045233282}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &3559276002693198957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397859372724547492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &2452442248024042642
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7401208928448855599}
+  - component: {fileID: 4922768695600042671}
+  m_Layer: 6
+  m_Name: TrackSlot (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7401208928448855599
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2452442248024042642}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4727456811045233282}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &4922768695600042671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2452442248024042642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &2704211588514040294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3686571923074834084}
+  - component: {fileID: 2739794048906807796}
+  m_Layer: 6
+  m_Name: TrackSlot (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3686571923074834084
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2704211588514040294}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: -0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4164968841256695558}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &2739794048906807796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2704211588514040294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &2997481691262303654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2236879354589905594}
+  - component: {fileID: 560701947852987937}
+  m_Layer: 6
+  m_Name: TrackSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2236879354589905594
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2997481691262303654}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4727456811045233282}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &560701947852987937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2997481691262303654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &3234317632245985452
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5744895442318178264}
+  m_Layer: 0
+  m_Name: PickupPoints (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5744895442318178264
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3234317632245985452}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.9924383, z: -0, w: -0.122744694}
+  m_LocalPosition: {x: 1.318, y: 0, z: 0.556}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4654354791308293304}
+  - {fileID: 4524366500313344548}
+  - {fileID: 7232384677298171753}
+  - {fileID: 2195844929270773264}
+  - {fileID: 4657947428207458438}
+  m_Father: {fileID: 7930937304942955741}
+  m_LocalEulerAnglesHint: {x: 0, y: -194.101, z: 0}
+--- !u!1 &3387474185598479422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4524366500313344548}
+  - component: {fileID: 6821901495322903155}
+  m_Layer: 6
+  m_Name: TrackSlot (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4524366500313344548
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3387474185598479422}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5744895442318178264}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &6821901495322903155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3387474185598479422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &3394009722997332088
 GameObject:
   m_ObjectHideFlags: 0
@@ -101,15 +497,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.2917161, y: 0, z: -0.0010091662}
   - {x: -0.29671603, y: 0, z: 0.48967725}
+  - {x: -0.2917161, y: 0, z: -0.0010091662}
   rightPoints:
-  - {x: 0.2917161, y: 0, z: 0.001009047}
   - {x: 0.29148135, y: 0, z: 0.49323395}
+  - {x: 0.2917161, y: 0, z: 0.001009047}
   trackWidths:
   - 121.5
   flipped: 1
   DEBUG_RenderSmoothCurve: 0
+--- !u!1 &3742984190104399771
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1831525075685561573}
+  - component: {fileID: 16660423774632122}
+  m_Layer: 6
+  m_Name: TrackSlot (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1831525075685561573
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3742984190104399771}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4164968841256695558}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &16660423774632122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3742984190104399771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &3884433470522105723
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,17 +596,62 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.2944772, y: 0, z: -0.007054448}
-  - {x: -0.29609925, y: 0, z: 0.24229178}
   - {x: -0.32407752, y: 0, z: 0.4877539}
+  - {x: -0.29609925, y: 0, z: 0.24229178}
+  - {x: -0.2944772, y: 0, z: -0.007054448}
   rightPoints:
-  - {x: 0.29447725, y: 0, z: 0.007054478}
-  - {x: 0.2885943, y: 0, z: 0.28689456}
   - {x: 0.2595497, y: 0, z: 0.5633215}
+  - {x: 0.2885943, y: 0, z: 0.28689456}
+  - {x: 0.29447725, y: 0, z: 0.007054478}
   trackWidths:
   - 121.5
   flipped: 1
   DEBUG_RenderSmoothCurve: 0
+--- !u!1 &4012153553296676527
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4654354791308293304}
+  - component: {fileID: 2106482534388933394}
+  m_Layer: 6
+  m_Name: TrackSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4654354791308293304
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4012153553296676527}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5744895442318178264}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &2106482534388933394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4012153553296676527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &4703655822754053577
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,15 +697,96 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.29410395, y: 0, z: -0.002292186}
   - {x: -0.294104, y: 0, z: 0.49282303}
+  - {x: -0.29410395, y: 0, z: -0.002292186}
   rightPoints:
-  - {x: 0.29410395, y: 0, z: 0.002292186}
   - {x: 0.294104, y: 0, z: 0.4905028}
+  - {x: 0.29410395, y: 0, z: 0.002292186}
   trackWidths:
   - 121.5
   flipped: 1
   DEBUG_RenderSmoothCurve: 0
+--- !u!1 &4908005792865238248
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2325368628260313018}
+  - component: {fileID: 5952714402337329522}
+  m_Layer: 6
+  m_Name: TrackSlot (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2325368628260313018
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4908005792865238248}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: -0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4727456811045233282}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &5952714402337329522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4908005792865238248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &5199701864230080738
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4727456811045233282}
+  m_Layer: 0
+  m_Name: PickupPoints (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4727456811045233282
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5199701864230080738}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.99177885, z: -0, w: 0.12796421}
+  m_LocalPosition: {x: -1.2, y: 0, z: 0.538}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2236879354589905594}
+  - {fileID: 7401208928448855599}
+  - {fileID: 7569093389081561073}
+  - {fileID: 1274326181134345324}
+  - {fileID: 2325368628260313018}
+  m_Father: {fileID: 7930937304942955741}
+  m_LocalEulerAnglesHint: {x: 0, y: -165.296, z: 0}
 --- !u!1 &5907655388529724334
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,21 +832,66 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.29419103, y: 0, z: -0.0058645904}
-  - {x: -0.31975287, y: 0, z: 0.37971088}
-  - {x: -0.36955458, y: 0, z: 0.7625397}
-  - {x: -0.46142697, y: 0, z: 1.1377392}
   - {x: -0.5785571, y: 0, z: 1.5067097}
+  - {x: -0.46142697, y: 0, z: 1.1377392}
+  - {x: -0.36955458, y: 0, z: 0.7625397}
+  - {x: -0.31975287, y: 0, z: 0.37971088}
+  - {x: -0.29419103, y: 0, z: -0.0058645904}
   rightPoints:
-  - {x: 0.29419103, y: 0, z: 0.005864531}
-  - {x: 0.2671915, y: 0, z: 0.43870687}
-  - {x: 0.20448577, y: 0, z: 0.8683726}
-  - {x: 0.108564705, y: 0, z: 1.2969625}
   - {x: -0.021763623, y: 0, z: 1.7061194}
+  - {x: 0.108564705, y: 0, z: 1.2969625}
+  - {x: 0.20448577, y: 0, z: 0.8683726}
+  - {x: 0.2671915, y: 0, z: 0.43870687}
+  - {x: 0.29419103, y: 0, z: 0.005864531}
   trackWidths:
   - 121.5
   flipped: 1
   DEBUG_RenderSmoothCurve: 0
+--- !u!1 &5946694705318739301
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4657947428207458438}
+  - component: {fileID: 3883828825060991345}
+  m_Layer: 6
+  m_Name: TrackSlot (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4657947428207458438
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5946694705318739301}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: -0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5744895442318178264}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &3883828825060991345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5946694705318739301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &6516205511903520863
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,15 +937,141 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.2866297, y: 0, z: 0.0025529563}
   - {x: -0.2866296, y: 0, z: 1.9311832}
+  - {x: -0.2866297, y: 0, z: 0.0025529563}
   rightPoints:
-  - {x: 0.301578, y: 0, z: 0.003173679}
   - {x: 0.30157825, y: 0, z: 1.9357677}
+  - {x: 0.301578, y: 0, z: 0.003173679}
   trackWidths:
   - 121.5
   flipped: 1
   DEBUG_RenderSmoothCurve: 0
+--- !u!1 &6924308465444225041
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2195844929270773264}
+  - component: {fileID: 2274514459131294002}
+  m_Layer: 6
+  m_Name: TrackSlot (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2195844929270773264
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6924308465444225041}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: -0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5744895442318178264}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &2274514459131294002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6924308465444225041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!1 &7358709385560321954
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4164968841256695558}
+  m_Layer: 0
+  m_Name: PickupPoints
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4164968841256695558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7358709385560321954}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.022, y: 0, z: -0.576}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6123558816330254610}
+  - {fileID: 308804335547298812}
+  - {fileID: 1831525075685561573}
+  - {fileID: 3490588325914808330}
+  - {fileID: 3686571923074834084}
+  m_Father: {fileID: 7930937304942955741}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7597103240304675238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7232384677298171753}
+  - component: {fileID: 723187400501241477}
+  m_Layer: 6
+  m_Name: TrackSlot (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7232384677298171753
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7597103240304675238}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5744895442318178264}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &723187400501241477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7597103240304675238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &7930937303074521710
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,13 +1284,16 @@ Transform:
   - {fileID: 7930937303872701881}
   - {fileID: 7930937303074521709}
   - {fileID: 6154176320672850814}
-  - {fileID: 6723993518769187958}
-  - {fileID: 635049277337173195}
-  - {fileID: 1631218375703297402}
-  - {fileID: 3508463083327424697}
-  - {fileID: 1667951429882058341}
-  - {fileID: 4006616788336406376}
   - {fileID: 7454508302542549950}
+  - {fileID: 4006616788336406376}
+  - {fileID: 1667951429882058341}
+  - {fileID: 3508463083327424697}
+  - {fileID: 1631218375703297402}
+  - {fileID: 635049277337173195}
+  - {fileID: 6723993518769187958}
+  - {fileID: 4164968841256695558}
+  - {fileID: 4727456811045233282}
+  - {fileID: 5744895442318178264}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8058483109063417249
@@ -600,25 +1341,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.294104, y: 0, z: 0.0011601746}
-  - {x: -0.20939164, y: 0, z: 0.39972723}
-  - {x: 0.027426837, y: 0, z: 0.7044956}
-  - {x: 0.34183365, y: 0, z: 0.87006915}
-  - {x: 0.70313996, y: 0, z: 0.89114195}
-  - {x: 1.0546486, y: 0, z: 0.77306044}
-  - {x: 1.3237667, y: 0, z: 0.49653518}
-  - {x: 1.4549135, y: 0, z: 0.15148354}
   - {x: 1.4339548, y: 0, z: -0.21891904}
+  - {x: 1.4549135, y: 0, z: 0.15148354}
+  - {x: 1.3237667, y: 0, z: 0.49653518}
+  - {x: 1.0546486, y: 0, z: 0.77306044}
+  - {x: 0.70313996, y: 0, z: 0.89114195}
+  - {x: 0.34183365, y: 0, z: 0.87006915}
+  - {x: 0.027426837, y: 0, z: 0.7044956}
+  - {x: -0.20939164, y: 0, z: 0.39972723}
+  - {x: -0.294104, y: 0, z: 0.0011601746}
   rightPoints:
-  - {x: 0.29410398, y: 0, z: -0.0011600554}
-  - {x: 0.31380808, y: 0, z: 0.13388246}
-  - {x: 0.38548198, y: 0, z: 0.24230662}
-  - {x: 0.48978364, y: 0, z: 0.3047865}
-  - {x: 0.6143662, y: 0, z: 0.31909955}
-  - {x: 0.73646605, y: 0, z: 0.28204662}
-  - {x: 0.82941234, y: 0, z: 0.19682664}
-  - {x: 0.8726991, y: 0, z: 0.07033205}
   - {x: 0.8652841, y: 0, z: -0.06503558}
+  - {x: 0.8726991, y: 0, z: 0.07033205}
+  - {x: 0.82941234, y: 0, z: 0.19682664}
+  - {x: 0.73646605, y: 0, z: 0.28204662}
+  - {x: 0.6143662, y: 0, z: 0.31909955}
+  - {x: 0.48978364, y: 0, z: 0.3047865}
+  - {x: 0.38548198, y: 0, z: 0.24230662}
+  - {x: 0.31380808, y: 0, z: 0.13388246}
+  - {x: 0.29410398, y: 0, z: -0.0011600554}
   trackWidths:
   - 121.5
   flipped: 1
@@ -668,26 +1409,71 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrackSpline
   leftPoints:
-  - {x: -0.29523173, y: 0, z: -0.005976245}
-  - {x: -0.22490005, y: 0, z: 0.34595996}
-  - {x: -0.01880914, y: 0, z: 0.63908416}
-  - {x: 0.30125108, y: 0, z: 0.83431906}
-  - {x: 0.656324, y: 0, z: 0.87297714}
-  - {x: 1.0207837, y: 0, z: 0.7602966}
-  - {x: 1.2913313, y: 0, z: 0.51181096}
-  - {x: 1.4457154, y: 0, z: 0.1642698}
   - {x: 1.4320204, y: 0, z: -0.2191838}
+  - {x: 1.4457154, y: 0, z: 0.1642698}
+  - {x: 1.2913313, y: 0, z: 0.51181096}
+  - {x: 1.0207837, y: 0, z: 0.7602966}
+  - {x: 0.656324, y: 0, z: 0.87297714}
+  - {x: 0.30125108, y: 0, z: 0.83431906}
+  - {x: -0.01880914, y: 0, z: 0.63908416}
+  - {x: -0.22490005, y: 0, z: 0.34595996}
+  - {x: -0.29523173, y: 0, z: -0.005976245}
   rightPoints:
-  - {x: 0.29523167, y: 0, z: 0.0059761405}
-  - {x: 0.32288688, y: 0, z: 0.12322946}
-  - {x: 0.39368534, y: 0, z: 0.22143114}
-  - {x: 0.49396518, y: 0, z: 0.27413416}
-  - {x: 0.5999327, y: 0, z: 0.28691137}
-  - {x: 0.7222965, y: 0, z: 0.25214386}
-  - {x: 0.81827533, y: 0, z: 0.16148406}
-  - {x: 0.8662823, y: 0, z: 0.044810057}
   - {x: 0.86603403, y: 0, z: -0.07756263}
+  - {x: 0.8662823, y: 0, z: 0.044810057}
+  - {x: 0.81827533, y: 0, z: 0.16148406}
+  - {x: 0.7222965, y: 0, z: 0.25214386}
+  - {x: 0.5999327, y: 0, z: 0.28691137}
+  - {x: 0.49396518, y: 0, z: 0.27413416}
+  - {x: 0.39368534, y: 0, z: 0.22143114}
+  - {x: 0.32288688, y: 0, z: 0.12322946}
+  - {x: 0.29523167, y: 0, z: 0.0059761405}
   trackWidths:
   - 121.5
   flipped: 1
   DEBUG_RenderSmoothCurve: 0
+--- !u!1 &9138565394663413133
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3490588325914808330}
+  - component: {fileID: 5537374650875706243}
+  m_Layer: 6
+  m_Name: TrackSlot (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3490588325914808330
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9138565394663413133}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: -0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4164968841256695558}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &5537374650875706243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9138565394663413133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa80f1657cad954daeaa1d014075588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0

@@ -583,8 +583,10 @@ MonoBehaviour:
   - id: 4
     sprite: {fileID: 21300000, guid: a512376714a1e1c4fb838f1b260d090e, type: 3}
   - id: 5
-    sprite: {fileID: 21300000, guid: ab4b1292fd37c314aa47d70e56e3dc15, type: 3}
+    sprite: {fileID: 21300000, guid: e1e26f37fad83084e8c743527a6710ce, type: 3}
   - id: 6
+    sprite: {fileID: 21300000, guid: ab4b1292fd37c314aa47d70e56e3dc15, type: 3}
+  - id: 7
     sprite: {fileID: 21300000, guid: fd30ac60573671c4b942e7f37513b1ba, type: 3}
   - id: 8
     sprite: {fileID: 21300000, guid: 4d28408b23d184148b6f685844a7d1fc, type: 3}

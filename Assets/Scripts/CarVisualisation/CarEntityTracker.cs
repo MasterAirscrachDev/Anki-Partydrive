@@ -17,21 +17,34 @@ public class CarEntityTracker : MonoBehaviour
         //jumpLanding doesn't have a spline either, stay on jump ramp
         SegmentType segmentType = SR.track.GetSegmentType(trackIndex);
         TrackSpline trackPiece;
-        if(segmentType == SegmentType.PreFinishLine){ //if we are on the prefinish line, we need to get the next piece of track
-            trackPiece = SR.track.GetTrackSpline(trackIndex + 1); //get the next piece of track
-        } else if(segmentType == SegmentType.JumpLanding){ //if we are on the jump landing, we need to stay on the jump ramp
-            trackPiece = SR.track.GetTrackSpline(trackIndex - 1); //get the previous piece of track
-        }else{
-            trackPiece = SR.track.GetTrackSpline(trackIndex); //get the current piece of track
+        if(SR.track.IsMat())
+        {
+                trackPiece = SR.track.GetTrackSpline(trackIndex); //get the current piece of track (mat track should always have a spline)
+                if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
+                if(trackIndex == 0 && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
+                bool countLap = entity.segmentsSinceDelocalized > 4; //only count lap if more than 4 segments since delocalisation
+                OnCarCrossedFinishLine?.Invoke(id, countLap);
+            }
         }
-        if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
+        else
+        {
+            if(segmentType == SegmentType.PreFinishLine){ //if we are on the prefinish line, we need to get the next piece of track
+                trackPiece = SR.track.GetTrackSpline(trackIndex + 1); //get the next piece of track
+            } else if(segmentType == SegmentType.JumpLanding){ //if we are on the jump landing, we need to stay on the jump ramp
+                trackPiece = SR.track.GetTrackSpline(trackIndex - 1); //get the previous piece of track
+            }else{
+                trackPiece = SR.track.GetTrackSpline(trackIndex); //get the current piece of track
+            }
+            if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
+            
+            // Check for finish line crossing BEFORE updating the spline
+            // This must happen before SetTrackSpline because finish line has no spline
+            if(segmentType == SegmentType.FinishLine && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
+                bool countLap = entity.segmentsSinceDelocalized > 4; //only count lap if more than 4 segments since delocalisation
+                OnCarCrossedFinishLine?.Invoke(id, countLap);
+            }
+        }
         
-        // Check for finish line crossing BEFORE updating the spline
-        // This must happen before SetTrackSpline because finish line has no spline
-        if(segmentType == SegmentType.FinishLine && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
-            bool countLap = entity.segmentsSinceDelocalized > 4; //only count lap if more than 4 segments since delocalisation
-            OnCarCrossedFinishLine?.Invoke(id, countLap);
-        }
         
         if(trackPiece != null && segmentType != SegmentType.FinishLine){ entity.SetTrackSpline(trackPiece, trackIndex); } //should always be true, but just in case
         entity.SetTrust(trust);

@@ -179,7 +179,7 @@ public class TrackGenerator : MonoBehaviour
         Vector3 pos = Vector3.zero;
         Vector3 lastPos = Vector3.zero;
         Vector3 forward = Vector3.forward;
-        if(segments[0].type == SegmentType.Oval || segments[0].type == SegmentType.Bottleneck || segments[0].type == SegmentType.Crossroads){
+        if(IsMat()){
             //Spawn a mat
             GameObject mat = null;
             if(segments[0].type == SegmentType.Oval){
@@ -312,7 +312,7 @@ public class TrackGenerator : MonoBehaviour
             if (trackPieces[trackPieces.Count - 1] != null)
             { trackPieces[trackPieces.Count - 1].AddComponent<SegmentSpawnAnimator>(); }
         }
-        if(!animateLastSegment && fullyValidated)
+        if(!animateLastSegment && fullyValidated && !IsMat())
         {
             FindFirstObjectByType<GrandstandGenerator>()?.GenerateGrandstand();
             StartCoroutine(RegenerateGrandstandDelayed());
@@ -498,6 +498,11 @@ public class TrackGenerator : MonoBehaviour
         else { return TrackSize.Large; }
     }
     public enum TrackSize { Small, Medium, Large }
+    public bool IsMat()
+    {
+        if (segments.Length == 0) { return false; }
+        return segments[0].type == SegmentType.Oval || segments[0].type == SegmentType.Bottleneck || segments[0].type == SegmentType.Crossroads;
+    }
 }
 public class SegmentLength
 {

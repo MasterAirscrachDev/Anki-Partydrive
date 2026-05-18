@@ -46,7 +46,9 @@ public class AbilityFreeze : MonoBehaviour
     void Update()
     {
         currentCoord = currentCoord + (speed * Time.deltaTime); // Move along the track based on speed and time
-        if(currentCoord.idx == 0){ currentCoord.idx = 1; } //index 0 doesnt exist in the world and is just a datapoint
+        if(currentCoord.idx == 0 && !SR.track.IsMat()){ 
+            currentCoord.idx = 1; 
+        } //index 0 doesnt exist for non-mat tracks, so skip it to avoid weird behavior
         Vector3 newPosition = SR.track.TrackCoordinateToWorldspace(currentCoord);
         transform.LookAt(newPosition); // Orient towards the direction of movement
         transform.Rotate(0, 180, 0); // Rotate to lay flat on the track

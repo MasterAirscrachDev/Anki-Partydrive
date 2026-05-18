@@ -172,7 +172,7 @@ namespace OverdriveServer{
         }
         public enum ModelName{
             //Drive
-            Kourai = 1, Boson = 2, Rho = 3, Katal = 4, Hadion = 5, Spektrix = 6, Corax = 7,
+            Kourai = 1, Boson = 2, Rho = 3, Katal = 4, Corax = 5, Hadion = 6, Spektrix = 7,
             //Overdrive
             Groundshock = 8, Skull = 9, Thermo = 10, Nuke = 11, Guardian = 12, Bigbang = 14, NukePhantom = 20,
             //Supertrucks
