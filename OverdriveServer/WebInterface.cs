@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using System.Runtime.InteropServices;
 using static OverdriveServer.NetStructures;
 
 namespace OverdriveServer {
@@ -19,12 +20,13 @@ namespace OverdriveServer {
             Host.CreateDefaultBuilder(args).ConfigureLogging(logging => { 
                 logging.ClearProviders(); logging.SetMinimumLevel(LogLevel.Warning); }).ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.Configure(app =>{
+                        var controlPanelPath = ControlPanelPath();
                         app.UseRouting();
                         
                         app.UseEndpoints(endpoints => {
                             // Index page
                             endpoints.MapGet("/", async context => {
-                                string page = File.ReadAllText(Path.Combine("ControlPanel", "index.html"));
+                                string page = File.ReadAllText(Path.Combine(controlPanelPath, "index.html"));
                                 context.Response.ContentType = "text/html";
                                 await context.Response.WriteAsync(page);
                             });
@@ -34,12 +36,21 @@ namespace OverdriveServer {
                         app.UseStaticFiles(new StaticFileOptions
                         {
                             FileProvider = new PhysicalFileProvider(
-                                Path.Combine(Directory.GetCurrentDirectory(), "ControlPanel")),
+                                controlPanelPath),
                             RequestPath = ""
                         });
                     }
                 );
             }
         );
+
+        private static string ControlPanelPath()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources", "ControlPanel"));
+            } else {
+                return Path.Combine(Directory.GetCurrentDirectory(), "ControlPanel");
+            }
+        }
     }
 }

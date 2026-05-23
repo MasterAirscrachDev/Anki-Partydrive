@@ -1,6 +1,7 @@
 ﻿using OverdriveServer.Tracking;
 using OverdriveServer.Bluetooth;
 using static OverdriveServer.NetStructures;
+using System.Runtime.InteropServices;
 
 namespace OverdriveServer {
     class Program {
@@ -29,6 +30,9 @@ namespace OverdriveServer {
                     helpRequested = true;
                 }
             }
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                requireClient = true; // Make it so server will close on UI exit for Mac since we have a UI
+            }
             Console.WriteLine("[Public] Overdrive Server By MasterAirscrach (Derived from: 3.2.8)");
             if(helpRequested) { DoHelp(); return; }
             if(requireClient) { Console.WriteLine("\"-client\" Server will auto-terminate on client disconnect"); }
@@ -44,7 +48,9 @@ namespace OverdriveServer {
                 e.Cancel = true;
                 await CleanupAndQuit();
             };
-
+            #if MACOS
+            MacWindow.Run(); // THIS MUST RUN LAST DUE TO BLOCKING THE THREAD
+            #endif
             await new TaskCompletionSource<bool>().Task; //Wait indefinitely
         }
         static void DoHelp() {
