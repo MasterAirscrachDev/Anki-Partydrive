@@ -47,7 +47,10 @@ namespace OverdriveServer.Bluetooth
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Console.WriteLine("BLE: INIT_SIMPLEBLE_MAC");
+                #if MACOS
+                Console.WriteLine("BLE: INIT_COREBLUETOOTH_MAC");
+                return new CoreBluetoothProvider();
+                #endif
             }
             else
             {
