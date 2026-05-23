@@ -318,9 +318,7 @@ public class TrackPathSolver
         if(sl != null)
         {
             if (sl.isStraight)
-            {
-                distanceMM = (int)sl.leftSideLength;
-            }
+            { distanceMM = (int)sl.leftSideLength; }
             else
             {
                 float trackHalfWidth = GetTrackHalfWidth(car);

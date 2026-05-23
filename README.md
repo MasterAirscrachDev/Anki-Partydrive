@@ -22,7 +22,25 @@ This is not a remake of the Anki Overdrive app, I am not making a campaign or up
 Airscrach here, i've been working with Anki Overdrive for over 3 years now reverse engineering the cars and app. I love Anki Overdrive and I want to see it continue to exist in a better state than it has been for a while now.  
 I am doing this project in my free time and I am not getting paid for it, so if you want to support the project then please consider donating to me on [Ko-fi](https://ko-fi.com/masterairscrachdev) Every little bit helps and it allows me to keep working on the project and improving it.
 
-# Where I'm at:
+# Contributors:
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://chaostree.xyz"><img src="https://chaostree.xyz/CDN/Images/Partydrive/airscrach_icon.png" width="80" alt="MasterAirscrach"><br><b>MasterAirscrach</b></a><br>
+      Created Overdrive Server and Replay Studios Partydrive
+    </td>
+    <td align="center">
+      <a href="https://toastito.co.uk"><img src="https://chaostree.xyz/CDN/Images/Partydrive/toastito_icon.png" width="80" alt="Toastito"><br><b>Toastito</b></a><br>
+      Style design, all icon and key art
+    </td>
+    <td align="center">
+      <a href="https://amymc.dev"><img src="https://chaostree.xyz/CDN/Images/Partydrive/amy_icon.png" width="80" alt="Amy"><br><b>Amy (hamsteronpotato)</b></a><br>
+      MacOS port and testing
+    </td>
+  </tr>
+</table>
+
+# Where We're at:
 ## Server
 - [x] Connect to the cars
 - [x] Read the cars' state
@@ -33,7 +51,7 @@ I am doing this project in my free time and I am not getting paid for it, so if 
 - [x] Websocket connection (Much faster data transfer, and allows for more data to be sent)
 - [x] Simple graphical web interface
 - [x] Full Light control
-- [ ] Race Mode (Full API) support (probably useless)
+- [x] Race Mode (Full API) support (avalible with latest firmware)
 ## Game
 - [x] Procedural track generation (show the real world track in a 3D game environment)
 - [x] Communication with the server (using NativeWebSocket for Unity)
@@ -48,7 +66,7 @@ I am doing this project in my free time and I am not getting paid for it, so if 
 - [X] Party Mode (Item boxes, its on the track and its there for your advantage)
 - [X] Hyperdrive (Double speed, no items, first to complete X laps wins, good luck staying on the track)
 - [ ] Cell Deduction (Your battery is dying, keep it topped up by driving over the cells on the track)
-- [ ] Juggernaut (Only the juggernaut can score points, but everyone can attack the juggernaut. first to 5 points wins)
+- [ ] Juggernaut (Only the juggernaut can score points, but everyone can attack the juggernaut. first to 5 points wins) 
 
 # Credits:
 The server is using 
@@ -59,9 +77,6 @@ and Fleck for the Websocket server.
 
 The game is using Unity for the game engine  
 and NativeWebSocket for the Websocket connection.
-
-Logo by toastito
-
 
 # Disclaimer:  
 This project is not affiliated with Anki, or new Anki (Digital Dream Labs / DDL) in any way.  

@@ -28,6 +28,11 @@ public class PlayerCardSystem : MonoBehaviour
             sprite = statusCarsArray[1].sprite; //Unknown car
             foreach(CarSprite cs in statusCarsArray){
                 if(cs.id == model){
+                    if(cs.sprite == null)
+                    {
+                        Debug.LogWarning($"Car sprite with id {model} is null. Check the PlayerCardSystem component in the inspector.");
+                        return;
+                    }
                     sprite = cs.sprite;
                     break;
                 }
