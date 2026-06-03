@@ -143,8 +143,15 @@ public class GlobalAbilitySystem : MonoBehaviour
         
         if(targetID == null) return;
         missile.GetComponent<AbilityMissile>().Setup(ab, SR.cet.GetCarRealTransform(targetID));
-        
     }
+    public void SpawnSeekingMissileFromPosition(Vector3 position, string targetID) {
+        GameObject missile = Instantiate(missilePrefab);
+        missile.transform.position = position;
+        AbilityController ab = missile.GetComponent<AbilityController>();
+        ab.Setup(null);
+        missile.GetComponent<AbilityMissile>().Setup(ab, SR.cet.GetCarRealTransform(targetID));
+    }
+
     public void SpawnMissileParticle(Vector3 position, bool seeking) {
         GameObject particle = Instantiate(seeking ? SeekingMissileParticlePrefab : MissileParticlePrefab);
         particle.transform.position = position;

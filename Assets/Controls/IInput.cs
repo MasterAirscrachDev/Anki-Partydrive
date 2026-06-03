@@ -761,6 +761,34 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Show"",
+            ""id"": ""8c7d354c-5fe0-40bf-94b0-3524f09a9f67"",
+            ""actions"": [
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""7c9e63d3-270a-481e-9450-4938c0c238d6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f9b25a4c-7474-4c6b-86c5-04a30f1d493d"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -815,6 +843,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
         m_Camera_Shift = m_Camera.FindAction("Shift", throwIfNotFound: true);
         m_Camera_Exit = m_Camera.FindAction("Exit", throwIfNotFound: true);
+        // Show
+        m_Show = asset.FindActionMap("Show", throwIfNotFound: true);
+        m_Show_Fire = m_Show.FindAction("Fire", throwIfNotFound: true);
     }
 
     ~@IInput()
@@ -822,6 +853,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Racing.enabled, "This will cause a leak and performance issues, IInput.Racing.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Menu.enabled, "This will cause a leak and performance issues, IInput.Menu.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Camera.enabled, "This will cause a leak and performance issues, IInput.Camera.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Show.enabled, "This will cause a leak and performance issues, IInput.Show.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1324,6 +1356,102 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="CameraActions" /> instance referencing this action map.
     /// </summary>
     public CameraActions @Camera => new CameraActions(this);
+
+    // Show
+    private readonly InputActionMap m_Show;
+    private List<IShowActions> m_ShowActionsCallbackInterfaces = new List<IShowActions>();
+    private readonly InputAction m_Show_Fire;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Show".
+    /// </summary>
+    public struct ShowActions
+    {
+        private @IInput m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ShowActions(@IInput wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Show/Fire".
+        /// </summary>
+        public InputAction @Fire => m_Wrapper.m_Show_Fire;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Show; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ShowActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ShowActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ShowActions" />
+        public void AddCallbacks(IShowActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ShowActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ShowActionsCallbackInterfaces.Add(instance);
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ShowActions" />
+        private void UnregisterCallbacks(IShowActions instance)
+        {
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ShowActions.UnregisterCallbacks(IShowActions)" />.
+        /// </summary>
+        /// <seealso cref="ShowActions.UnregisterCallbacks(IShowActions)" />
+        public void RemoveCallbacks(IShowActions instance)
+        {
+            if (m_Wrapper.m_ShowActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ShowActions.AddCallbacks(IShowActions)" />
+        /// <seealso cref="ShowActions.RemoveCallbacks(IShowActions)" />
+        /// <seealso cref="ShowActions.UnregisterCallbacks(IShowActions)" />
+        public void SetCallbacks(IShowActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ShowActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ShowActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ShowActions" /> instance referencing this action map.
+    /// </summary>
+    public ShowActions @Show => new ShowActions(this);
     private int m_GamepadSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -1485,5 +1613,20 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnExit(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Show" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ShowActions.AddCallbacks(IShowActions)" />
+    /// <seealso cref="ShowActions.RemoveCallbacks(IShowActions)" />
+    public interface IShowActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Fire" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFire(InputAction.CallbackContext context);
     }
 }

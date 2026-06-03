@@ -675,6 +675,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Show",
+            "id": "8c7d354c-5fe0-40bf-94b0-3524f09a9f67",
+            "actions": [
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "7c9e63d3-270a-481e-9450-4938c0c238d6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f9b25a4c-7474-4c6b-86c5-04a30f1d493d",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
