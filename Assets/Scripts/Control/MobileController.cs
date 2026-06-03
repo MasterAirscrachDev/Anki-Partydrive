@@ -66,7 +66,7 @@ public class MobileController : MonoBehaviour
     /// </summary>
     public void ApplyUiAction(string action)
     {
-        if (!isPlayerOne || currentInputMode != MobileInputMode.Menu) return;
+        if (currentInputMode != MobileInputMode.Menu) return;
 
         // ── D-pad hold tracking (drives moveInput for CarSelector) ───────────
         switch (action)
@@ -100,17 +100,20 @@ public class MobileController : MonoBehaviour
 
         moveInput = new Vector2(navX, navY);
 
-        // ── EventSystem move events (standard Unity UI panels) ───────────────
-        var es = EventSystem.current;
-        if (es != null)
+        // ── EventSystem move events — only P1 drives the shared EventSystem ──
+        if (isPlayerOne)
         {
-            EnsureSomethingSelected(es);
-            switch (action)
+            var es = EventSystem.current;
+            if (es != null)
             {
-                case "nav_up_down":    SendMoveEvent(es, MoveDirection.Up);    break;
-                case "nav_down_down":  SendMoveEvent(es, MoveDirection.Down);  break;
-                case "nav_left_down":  SendMoveEvent(es, MoveDirection.Left);  break;
-                case "nav_right_down": SendMoveEvent(es, MoveDirection.Right); break;
+                EnsureSomethingSelected(es);
+                switch (action)
+                {
+                    case "nav_up_down":    SendMoveEvent(es, MoveDirection.Up);    break;
+                    case "nav_down_down":  SendMoveEvent(es, MoveDirection.Down);  break;
+                    case "nav_left_down":  SendMoveEvent(es, MoveDirection.Left);  break;
+                    case "nav_right_down": SendMoveEvent(es, MoveDirection.Right); break;
+                }
             }
         }
     }
@@ -122,6 +125,7 @@ public class MobileController : MonoBehaviour
         // Keep moveInput current every frame (holds remain across frames)
         moveInput = new Vector2(navX, navY);
 
+        // EventSystem pulses (submit/cancel) are only fired for P1 since there is one shared EventSystem
         if (!isPlayerOne || currentInputMode != MobileInputMode.Menu) return;
         if (!confirmPulse && !cancelPulse && !altSelectPulse) return;
 

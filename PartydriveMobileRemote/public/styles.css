@@ -98,8 +98,15 @@ html, body {
     text-shadow: 0 0 12px rgba(176,38,255,.9);
 }
 
-.hud-btn {
+#hud-controls {
     margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.hud-btn {
     flex-shrink: 0;
     background: transparent;
     border: 1px solid var(--border);
@@ -297,10 +304,12 @@ html, body {
 }
 
 #ability-icon {
-    width: clamp(28px, 6vw, 48px);
-    height: clamp(28px, 6vw, 48px);
+    width: clamp(42px, 9vw, 72px);
+    height: clamp(42px, 9vw, 72px);
     object-fit: contain;
     filter: drop-shadow(0 0 6px var(--neon-purple));
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
     pointer-events: none;
 }
 #ability-icon[src=""] {
@@ -597,7 +606,7 @@ html, body {
     }
     #player-badge     { font-size: 18px; }
     #player-pos       { font-size: 20px; }
-    #ability-icon     { width: clamp(24px, 5vh, 40px); height: clamp(24px, 5vh, 40px); }
+    #ability-icon     { width: clamp(36px, 7.5vh, 60px); height: clamp(36px, 7.5vh, 60px); }
     .action-label     { font-size: 12px; }
     .steer-btn        { font-size: 24px; }
     #energy-ring-val  { font-size: clamp(12px, 2.5vh, 18px); }

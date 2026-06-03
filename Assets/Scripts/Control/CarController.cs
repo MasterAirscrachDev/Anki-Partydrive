@@ -21,7 +21,7 @@ public partial class CarController : MonoBehaviour
     // Perfect start timing
     bool perfectStartWindowOpen = false, acceleratedDuringPerfectWindow = false;
     //INPUT VALUES======
-    InputFrame inputs;
+    InputFrame inputs = InputFrame.Empty();
     bool itemALastFrame = false, itemBLastFrame = false;
     //===================
 #endregion

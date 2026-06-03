@@ -8,9 +8,10 @@ function getCarModelInfo(model) {
         { name: 'Boson',       slug: 'boson',       primary: '#C0C0C0', secondary: '#8B0000' },
         { name: 'Rho',         slug: 'rho',         primary: '#FF0000', secondary: '#250000' },
         { name: 'Katal',       slug: 'katal',       primary: '#0000FF', secondary: '#FFD700' },
+        { name: 'Corax',       slug: 'corax',       primary: '#000000', secondary: '#FFA500' },
         { name: 'Hadion',      slug: 'hadion',      primary: '#FFA500', secondary: '#000000' },
         { name: 'Spektrix',    slug: 'spektrix',    primary: '#800080', secondary: '#00FFFF' },
-        { name: 'Corax',       slug: 'corax',       primary: '#000000', secondary: '#FFA500' },
+        
         { name: 'Groundshock', slug: 'groundshock', primary: '#0000FF', secondary: '#00FFFF' },
         { name: 'Skull',       slug: 'skull',       primary: '#000000', secondary: '#FF0000' },
         { name: 'Thermo',      slug: 'thermo',      primary: '#FF0000', secondary: '#FFA500' },
@@ -164,6 +165,8 @@ function handleServerMsg(msg) {
         case 'assigned':
             playerId = msg.id;
             playerNumEl.textContent = msg.playerNumber ?? '?';
+            // Persist the assigned ID so a page reload can reclaim the same slot
+            document.cookie = `pdrive_id=${encodeURIComponent(msg.id)}; path=/; max-age=86400; SameSite=Lax`;
             break;
 
         case 'game_state':
@@ -456,11 +459,30 @@ if (screen.orientation && typeof screen.orientation.lock === 'function') {
     screen.orientation.lock('landscape').catch(() => { /* not supported in all contexts */ });
 }
 
-// ── Fullscreen on first user gesture (best-effort; iOS Safari not supported) ──
-document.addEventListener('touchstart', () => {
-    const el = document.documentElement;
-    (el.requestFullscreen?.() ?? el.webkitRequestFullscreen?.())?.catch?.(() => {});
-}, { once: true, passive: true });
+// ── Fullscreen toggle button ─────────────────────────────────────────────────────────────────
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+
+function updateFullscreenLabel() {
+    fullscreenBtn.textContent = isFullscreen() ? 'EXIT FULL' : 'FULL';
+    fullscreenBtn.classList.toggle('active', isFullscreen());
+}
+
+function toggleFullscreen() {
+    if (isFullscreen()) {
+        (document.exitFullscreen?.() ?? document.webkitExitFullscreen?.())?.catch?.(() => {});
+    } else {
+        const el = document.documentElement;
+        (el.requestFullscreen?.() ?? el.webkitRequestFullscreen?.())?.catch?.(() => {});
+    }
+}
+
+fullscreenBtn.addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange',       updateFullscreenLabel);
+document.addEventListener('webkitfullscreenchange', updateFullscreenLabel);
 
 // ── Kick off ──────────────────────────────────────────────────────────────────
 connect();

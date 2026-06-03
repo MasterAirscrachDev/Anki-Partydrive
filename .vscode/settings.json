@@ -56,5 +56,5 @@
         "scrollbar.shadow": "#00000000"
     },
     "dotnet.preferCSharpExtension": true,
-    "dotnet.defaultSolution": "Anki Partydrive.slnx"
+    "dotnet.defaultSolution": "Anki-Partydrive.slnx"
 }

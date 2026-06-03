@@ -80,10 +80,24 @@ const wss    = new WebSocket.Server({ server });
 const controllers = new Map();
 let nextId = 1;
 
+// Recently disconnected controllers (for page-reload reconnection)
+// id -> { playerNumber, disconnectedAt }
+const recentlyDisconnected = new Map();
+const RECONNECT_WINDOW_MS = 30_000; // 30 seconds
+
 // Single Unity game connection (null when not connected)
 let gameWs = null;
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
+function parseCookies(cookieHeader = '') {
+    const out = {};
+    for (const part of cookieHeader.split(';')) {
+        const [k, ...v] = part.trim().split('=');
+        if (k) out[k.trim()] = decodeURIComponent(v.join('='));
+    }
+    return out;
+}
+
 function getLocalIP() {
     for (const ifaces of Object.values(os.networkInterfaces())) {
         for (const iface of ifaces) {
@@ -109,7 +123,7 @@ wss.on('connection', (ws, req) => {
     if (req.url === '/game') {
         handleGameConnection(ws);
     } else {
-        handleControllerConnection(ws);
+        handleControllerConnection(ws, req);
     }
 });
 
@@ -158,9 +172,30 @@ function handleGameMessage(msg) {
 }
 
 // ── Controller WebSocket (mobile browsers) ────────────────────────────────────
-function handleControllerConnection(ws) {
-    const id           = `ctrl_${nextId++}`;
-    const playerNumber = nextId - 1;
+function handleControllerConnection(ws, req) {
+    // Purge stale reconnect entries
+    const now = Date.now();
+    for (const [rid, entry] of recentlyDisconnected) {
+        if (now - entry.disconnectedAt > RECONNECT_WINDOW_MS) recentlyDisconnected.delete(rid);
+    }
+
+    // Check if the browser is presenting a saved ID cookie
+    const cookies      = parseCookies(req.headers.cookie);
+    const savedId      = cookies['pdrive_id'];
+    const savedEntry   = savedId ? recentlyDisconnected.get(savedId) : null;
+    const isReconnect  = savedEntry && (now - savedEntry.disconnectedAt <= RECONNECT_WINDOW_MS);
+
+    let id, playerNumber;
+    if (isReconnect) {
+        id           = savedId;
+        playerNumber = savedEntry.playerNumber;
+        recentlyDisconnected.delete(savedId);
+        log('Controller', `${id} reconnected as Player ${playerNumber}`);
+    } else {
+        id           = `ctrl_${nextId++}`;
+        playerNumber = nextId - 1;
+        log('Controller', `${id} connected as Player ${playerNumber} (${controllers.size + 1} total)`);
+    }
 
     controllers.set(id, {
         ws,
@@ -168,9 +203,7 @@ function handleControllerConnection(ws) {
         state: { throttle: 0, steering: 0, boost: false, ability: false },
     });
 
-    log('Controller', `${id} connected (${controllers.size} total)`);
-
-    // Tell the browser its assigned ID
+    // Tell the browser its assigned ID (browser will persist as a cookie)
     safeSend(ws, { type: 'assigned', id, playerNumber });
 
     // Notify Unity
@@ -184,6 +217,8 @@ function handleControllerConnection(ws) {
 
     ws.on('close', () => {
         controllers.delete(id);
+        // Keep the ID in the reconnect window so a page reload can reclaim it
+        recentlyDisconnected.set(id, { playerNumber, disconnectedAt: Date.now() });
         log('Controller', `${id} disconnected (${controllers.size} remaining)`);
         safeSend(gameWs, { type: 'controller_disconnected', controllerId: id });
     });
