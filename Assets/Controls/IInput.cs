@@ -774,6 +774,15 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Flip"",
+                    ""type"": ""Button"",
+                    ""id"": ""dbec6cad-d15f-453f-ae1f-6848fdb0b636"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -785,6 +794,17 @@ public partial class @IInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""177c324f-cc04-4540-ac3e-240a8b81a6a2"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Flip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -846,6 +866,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         // Show
         m_Show = asset.FindActionMap("Show", throwIfNotFound: true);
         m_Show_Fire = m_Show.FindAction("Fire", throwIfNotFound: true);
+        m_Show_Flip = m_Show.FindAction("Flip", throwIfNotFound: true);
     }
 
     ~@IInput()
@@ -1361,6 +1382,7 @@ public partial class @IInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Show;
     private List<IShowActions> m_ShowActionsCallbackInterfaces = new List<IShowActions>();
     private readonly InputAction m_Show_Fire;
+    private readonly InputAction m_Show_Flip;
     /// <summary>
     /// Provides access to input actions defined in input action map "Show".
     /// </summary>
@@ -1376,6 +1398,10 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Show/Fire".
         /// </summary>
         public InputAction @Fire => m_Wrapper.m_Show_Fire;
+        /// <summary>
+        /// Provides access to the underlying input action "Show/Flip".
+        /// </summary>
+        public InputAction @Flip => m_Wrapper.m_Show_Flip;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1405,6 +1431,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Fire.started += instance.OnFire;
             @Fire.performed += instance.OnFire;
             @Fire.canceled += instance.OnFire;
+            @Flip.started += instance.OnFlip;
+            @Flip.performed += instance.OnFlip;
+            @Flip.canceled += instance.OnFlip;
         }
 
         /// <summary>
@@ -1419,6 +1448,9 @@ public partial class @IInput: IInputActionCollection2, IDisposable
             @Fire.started -= instance.OnFire;
             @Fire.performed -= instance.OnFire;
             @Fire.canceled -= instance.OnFire;
+            @Flip.started -= instance.OnFlip;
+            @Flip.performed -= instance.OnFlip;
+            @Flip.canceled -= instance.OnFlip;
         }
 
         /// <summary>
@@ -1628,5 +1660,12 @@ public partial class @IInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnFire(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Flip" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFlip(InputAction.CallbackContext context);
     }
 }
