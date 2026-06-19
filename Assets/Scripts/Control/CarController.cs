@@ -10,11 +10,12 @@ public partial class CarController : MonoBehaviour
     [SerializeField] float lane;
     [SerializeField] string carID; // Currently connected car ID
     [SerializeField] string desiredCarID; // Car ID we want to connect to
+    [SerializeField] AnimationCurve energyRecoveryCurve; // Curve to control how energy recharges over time
     bool isSetup = false;
     const float TICK_RATE = 0.4f; // Time in seconds between control ticks
-    float energy = 75, lastEnergyDrainTime, canTickAt;
+    float energy = 75, chargeRate = 0, canTickAt;
     int oldSpeed; float oldLane;
-    bool wasBoostLastFrame = false, isRacing = false, isAI = false;
+    bool isRacing = false, isAI = false;
     Color playerColor = Color.white;
     string playerName = "Player";
     public PlayerCardSystem pcs; //used to update the UI
@@ -69,7 +70,7 @@ public partial class CarController : MonoBehaviour
         if(GetStatusEffect(CarStatus.Locked) || GetStatusEffect(CarStatus.Frozen)){ return; } // Don't use energy if car is locked/disabled
         if(GetStatusEffect(CarStatus.Invulnerable) && isDamage){ return; } // Don't use energy for damage if car is invulnerable
         energy -= amount;
-        lastEnergyDrainTime = Time.time; //used for delayed energy recharge
+        chargeRate = isDamage ? -2 : -1; // 2s recharge delay after taking damage, 1s delay after using boost (non-damage energy use)
         // Track energy draining for taillight flash
         if(amount > 0 && isDamage){
             SetTailEffect(LightEffect.FLASH, 1, 7, 100, 0.8f, 2);
@@ -137,8 +138,7 @@ public partial class CarController : MonoBehaviour
         bool isAccelerating = inputs.accel > 0f;
         if(!isRacing && perfectStartWindowOpen && inputs.accel > 0.5f){ acceleratedDuringPerfectWindow = true; }
         CheckAndClearLights();
-        // Don't process any input or movement if not yet racing
-        if(!isRacing){ 
+        if(!isRacing || string.IsNullOrEmpty(carID)){ // Don't process any input or movement if not yet racing or we have no car
             if(Time.time >= canTickAt){
                 canTickAt = Time.time + TICK_RATE;       
                 CheckForCarConnection(); // Still check for car connection while waiting to race
@@ -153,7 +153,7 @@ public partial class CarController : MonoBehaviour
             AddSpeedModifier(new FlatSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), TICK_RATE/2, "Boost"));
             playerAnalytics?.AddBoostTime(TICK_RATE/2);
         } else if(!inputs.boost && energy < maxEnergy){ //if we stopped boosting and have less than max energy, start recharging
-            if(lastEnergyDrainTime + 0.75f < Time.time){  ChargeEnergy(baseEnergyGain + statEnergyRechargeMod); } // Only recharge if not recently drained
+            ChargeEnergy(energyRecoveryCurve.Evaluate(chargeRate) * statEnergyRechargeMod);
             playerAnalytics?.ResetBoost();
         }else{ playerAnalytics?.ResetBoost(); } // If we're not boosting, reset boost tracking for analytics
 
@@ -178,7 +178,7 @@ public partial class CarController : MonoBehaviour
         // Get dynamic track width from the car's actual current position
         float trackHalfWidth = GetTrackHalfWidth();
         lane = Mathf.Clamp(lane, -trackHalfWidth, trackHalfWidth); //clamp lane to track bounds
-        pcs.SetEnergy((int)energy, (int)maxEnergy);
+        pcs?.SetEnergy((int)energy, (int)maxEnergy);
 
         //use ability inputs
         if(inputs.itemA && !itemALastFrame){ UseAbility(); }
@@ -272,7 +272,13 @@ public partial class CarController : MonoBehaviour
                     ConnectedState.AVAILABLE => "Connecting...",
                     _ => "Disconnected"
                 } : "Disconnected";
-                pcs.SetCarName(stateLabel);
+                
+                // Pass model ID even during charging so the car icon displays correctly
+                if(knownIdx != -1 && SR.io.cars[knownIdx].cState == ConnectedState.CHARGING){
+                    pcs.SetCarName(stateLabel, (int)SR.io.cars[knownIdx].modelName);
+                } else {
+                    pcs.SetCarName(stateLabel);
+                }
             }
         }
     }
@@ -375,6 +381,7 @@ public partial class CarController : MonoBehaviour
     public bool HasDesiredCar(){ return !string.IsNullOrEmpty(desiredCarID); }
     public bool IsCarAI(){ return isAI; }
     public Ability GetCurrentAbility(){ return currentAbility; }
+    public float GetCurrentSpeed(){ return speed; }
     public void SetLocked(bool state){ 
         isRacing = !state; 
         //ResetCar();
@@ -402,6 +409,8 @@ public partial class CarController : MonoBehaviour
     public string GetID(){ return carID; }
     public Color GetPlayerColor(){ return playerColor; }
     public float GetEnergyPercent(){ return energy / (maxEnergy + statMaxEnergyMod); }
+    public float GetEnergy(){ return energy; }
+    public float GetMaxEnergy(){ return maxEnergy + statMaxEnergyMod; }
     public CarControllerAnalytics GetPlayerAnalytics(){ return playerAnalytics; }
     
     /// <summary>

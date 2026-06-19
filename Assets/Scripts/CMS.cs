@@ -12,6 +12,7 @@ public class CMS : MonoBehaviour
     [SerializeField] CarEntityTracker carEntityTracker;
     public readonly List<CarController> controllers = new List<CarController>();
     public string gameMode = "";
+    public bool DEMO_MODE_ENABLED = false; // Set to true only in showing builds
     List<Color> freeColors = new List<Color>();
     List<Color> usedColors = new List<Color>();
     void Start() { 
@@ -45,29 +46,55 @@ public class CMS : MonoBehaviour
             }
         }
     }
-    public void AddController(CarController controller, bool isAI = false){
+    public void AddController(CarController controller, bool isAI = false, Color? demoModeColor = null){
+        if(controllers.Contains(controller)) { return; } // Prevent duplicate adds (e.g. Setup() re-calling AddController)
         controllers.Add(controller);
+        
+        // Always update card count after adding a controller (for both players and AI)
         FindFirstObjectByType<PlayerCardmanager>()?.UpdateCardCount();
-        if(isAI){ return; } //if the controller is AI, colour is set in AIController
-        Color c = freeColors[0];
-        freeColors.RemoveAt(0);
-        usedColors.Add(c);
-        controller.SetColour(c);
-        controller.GetComponent<PlayerController>()?.TrySetGamepadColor(c);
+        
+        if(DEMO_MODE_ENABLED) {
+            // Demo mode: only AIs get PlayerCards and pull colors from the pool; players are skipped
+            if(!isAI) { return; }
+            Color c = freeColors[0];
+            freeColors.RemoveAt(0);
+            usedColors.Add(c);
+            controller.SetColour(c);
+        } else {
+            // Normal mode: all controllers get PlayerCards; only players get pool colors, AIs get red from AIController.Start
+            if(isAI) { return; }
+            Color c = freeColors[0];
+            freeColors.RemoveAt(0);
+            usedColors.Add(c);
+            controller.SetColour(c);
+            controller.GetComponent<PlayerController>()?.TrySetGamepadColor(c);
+        }
     }
-    public void AddAI(string id){
+    public void AddAI(string id, Color? demoModeColor = null){
         GameObject bot = Instantiate(botPrefab, transform.position, Quaternion.identity);
         AIController ai = bot.GetComponent<AIController>();
         ai.SetID(id);
+        // Pass the optional color to AddController for demo mode
+        AddController(ai.gameObject.GetComponent<CarController>(), true, demoModeColor);
     }
+    public void RemoveController(CarController controller){
+        Debug.Log($"Attempting to remove controller {controller.GetID()}");
+        if(controllers.Remove(controller)){
+            Destroy(controller.gameObject);
+            Debug.Log($"Removed controller {controller.GetID()}, available colors: {freeColors.Count}");
+            // Ensure PlayerCard cleanup happens after the controller is removed
+            StartCoroutine(UpdateCardCountDelayed());
+        } else {
+            Debug.LogWarning($"Attempted to remove controller {controller.GetID()}, but it was not found in the list.");
+        }
+    }
+
     public void RemoveAI(string id){
         Debug.Log($"Attempting to remove AI {id}");
         bool hasRemovedAI = false;
         foreach(CarController controller in controllers){
             if(controller.GetComponent<AIController>() != null && controller.GetComponent<AIController>().GetID() == id){
-                controllers.Remove(controller);
-                Destroy(controller.gameObject);
-                Debug.Log($"Removed AI {id}, available colors: {freeColors.Count}");
+                RemoveController(controller); // Use the new generic method
                 hasRemovedAI = true;
                 break;
             }else{
@@ -77,10 +104,12 @@ public class CMS : MonoBehaviour
         if(!hasRemovedAI){
             Debug.LogWarning($"Attempted to remove AI {id}, but no matching controller was found.");
         }
-        // Ensure PlayerCard cleanup happens after the controller is removed
-        StartCoroutine(UpdateCardCountDelayed());
     }
     
+    public void ToggleDemoMode(bool enable) {
+        // Demo mode is now a compile-time constant, this method is kept for compatibility but does nothing
+        Debug.Log($"Demo Mode {(enable ? "ENABLED" : "DISABLED")}");
+    }
     IEnumerator UpdateCardCountDelayed(){
         yield return new WaitForEndOfFrame(); // Wait one frame to ensure cleanup
         PlayerCardmanager cardManager = FindFirstObjectByType<PlayerCardmanager>();
@@ -88,6 +117,8 @@ public class CMS : MonoBehaviour
             cardManager.UpdateCardCount();
         }
     }
+    
+    // DEMO MODE LOGIC (compile-time constant - only for developers)
     public void SetGameMode(string mode){ //called from ui
         gameMode = mode; //store gamemode so we can quick return
         SR.ui.SetUILayer(mode); //go to gamemode screen

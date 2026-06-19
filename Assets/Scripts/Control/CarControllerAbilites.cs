@@ -74,9 +74,10 @@ public partial class CarController : MonoBehaviour
                 lightarr[1] = LightData.L(LightChannel.FRONT_GREEN, LightEffect.FADE, 2, 14, 10 );
                 SetHeadLights(lightarr, 0.5f, 2); customLights = 3;
             }
-            else if(currentAbility == Ability.IceBlast){ SR.gas.SpawnIceberg(this); SetAbilityImmediate(Ability.None); 
+            else if(currentAbility == Ability.IceWall){ SR.gas.SpawnIceberg(this); SetAbilityImmediate(Ability.None); 
             }
             else if(currentAbility == Ability.Overdrive){ SR.gas.SpawnOverdrive(this); SetAbilityImmediate(Ability.None); 
+            }else if(currentAbility == Ability.BubbleShield){ SR.gas.SpawnShieldBubble(this); SetAbilityImmediate(Ability.None); 
             }
             if(customLights < 3){ //batched effects or abilites without defined lights
                 if(customLights == 1) { //regular missiles
@@ -90,7 +91,7 @@ public partial class CarController : MonoBehaviour
                     LightData[] lights = new LightData[2];
                     lights[0] = new LightData{channel = LightChannel.FRONT_RED, effect= LightEffect.FLASH, startStrength= 8, endStrength = 11, cyclesPer10Seconds = 128};
                     lights[1] = new LightData{channel = LightChannel.FRONT_GREEN, effect= LightEffect.FLASH, startStrength= 4, endStrength = 11, cyclesPer10Seconds = 64};
-                    SetHeadLights(lights, 1.5f);
+                    SetHeadLights(lights, 1.5f, 2); // Added priority 2 to ensure it overrides previous ability effects
                 }
             }
         }
@@ -109,16 +110,17 @@ public partial class CarController : MonoBehaviour
             Ability.TrailDamage, Ability.TrailSlow, 
             Ability.CrasherBoost,
             Ability.Grappler,
-            Ability.Recharger,
+            Ability.BubbleShield,
             Ability.TrafficCone,
-            Ability.IceBlast
+            Ability.IceWall
         };
         
         // First place abilities (worse items)
         Ability[] firstPlaceAbilities = new Ability[] { 
             Ability.Missle3, Ability.TrailSlow, 
             Ability.EMP, Ability.TrailDamage,
-            Ability.Recharger, Ability.TrafficCone
+            Ability.BubbleShield, 
+            Ability.TrafficCone
         };
         
         // Last place abilities (better items)
@@ -129,8 +131,8 @@ public partial class CarController : MonoBehaviour
             Ability.CrasherBoost,
             Ability.Grappler,
             Ability.Grappler,
-            Ability.IceBlast,
-            Ability.IceBlast,
+            Ability.IceWall,
+            Ability.IceWall,
             Ability.Overdrive,
             Ability.Overdrive
         };
@@ -195,7 +197,7 @@ public partial class CarController : MonoBehaviour
         switch(type)
         {
             case TrackCarCollider.EType.EnergyCore:
-                ChargeEnergy((maxEnergy + statMaxEnergyMod) * 0.75f);
+                SR.gas.SpawnRecharger(this);
                 break;
             case TrackCarCollider.EType.ItemBox:
                 OnItembox();

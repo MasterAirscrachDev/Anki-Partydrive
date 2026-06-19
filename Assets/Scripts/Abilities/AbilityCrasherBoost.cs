@@ -36,7 +36,7 @@ public class AbilityCrasherBoost : MonoBehaviour
         transform.position += direction * travelSpeed * Time.deltaTime;
         
         // Check if close enough to hit
-        if(Vector3.Distance(transform.position, targetTransform.position) < 1f)
+        if(Vector3.Distance(transform.position, targetTransform.position) < 0.2f)
         { OnHitTarget(); }
     }
     

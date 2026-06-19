@@ -21,6 +21,9 @@ public class AbilityOverdrive : MonoBehaviour
         else if(car.GetCarModel() == Groundshock) { // Shockdown
             DoShockDown(car);
         }
+        else if(car.GetCarModel() == Guardian) { // Word of the Law
+            StartCoroutine(DoWordOfTheLaw(car));
+        }
         else{ // missile storm (temp for wip cars)
             StartCoroutine(DoMissileStorm(car));
         }
@@ -96,5 +99,26 @@ public class AbilityOverdrive : MonoBehaviour
         }
 
         Destroy(gameObject); // Destroy the ability object immediately since the effect is handled by the particles and status effects
+    }
+    IEnumerator DoWordOfTheLaw(CarController car)
+    {
+        //after 1.5s, engage word of the law for 8s
+        //any cars that go faster than 700 during that time get a 60% speed reduction for 4s
+        yield return new WaitForSeconds(1.5f);
+        SR.gas.SpawnGuardianEffect(car, 1f, 8f);
+        float effectDuration = 8f;
+        const int speedThreshold = 700;
+        while(effectDuration > 0) {
+            List<CarController> cars = SR.cms.controllers;
+            foreach(CarController c in cars) {
+                if(c.GetID() != car.GetID() && c.GetCurrentSpeed() > speedThreshold) {
+                    float duration = Mathf.Clamp(effectDuration, 4, 8);
+                    c.AddSpeedModifier(new PercentSpeedModifier(0.6f, duration, "WordOfTheLaw")); 
+                    SR.gas.SpawnGuardianEffect(c, 0.4f, duration);
+                }
+            }
+            yield return new WaitForSeconds(0.5f);
+            effectDuration -= 0.5f;
+        }
     }
 }

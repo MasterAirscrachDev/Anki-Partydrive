@@ -63,7 +63,7 @@ public class CarsManagement : MonoBehaviour
     public void RenderCarList(){
         //store the index of the currently selected UI element
         GameObject selected = eventSystem.currentSelectedGameObject;
-        Button[] buttons = FindObjectsOfType<Button>();
+        Button[] buttons = FindObjectsByType<Button>(FindObjectsSortMode.None);
         int selectedIndex = -1;
         for(int i = 0; i < buttons.Length; i++){
             if(buttons[i].gameObject == selected){
@@ -106,7 +106,7 @@ public class CarsManagement : MonoBehaviour
         RectTransform carListRect = carListParent.GetComponent<RectTransform>();
         carListRect.sizeDelta = new Vector2(carListRect.sizeDelta.x, connectedCars.Length * 100);
 
-        buttons = FindObjectsOfType<Button>();
+        buttons = FindObjectsByType<Button>(FindObjectsSortMode.None);
         //select the previously selected button
         if(selectedIndex != -1 && selectedIndex < buttons.Length){
             eventSystem.SetSelectedGameObject(buttons[selectedIndex].gameObject);

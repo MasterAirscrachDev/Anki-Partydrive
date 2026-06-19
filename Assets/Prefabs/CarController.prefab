@@ -50,20 +50,53 @@ MonoBehaviour:
   lane: 0
   carID: 
   desiredCarID: 
-  locked: 1
-  isAI: 0
+  energyRecoveryCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 14.860468
+      outSlope: 14.860468
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.07092669
+    - serializedVersion: 3
+      time: 0.001
+      value: 5
+      inSlope: 14.83701
+      outSlope: 14.83701
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.5
+      value: 60
+      inSlope: 81.857704
+      outSlope: 81.857704
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.04920395
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pcs: {fileID: 0}
-  speedModifiers: []
-  Iaccel: 0
-  Isteer: 0
-  Iboost: 0
-  IitemA: 0
-  IitemB: 0
   statSpeedMod: 1
   statSteerMod: 1
   statBoostMod: 1
   statMaxEnergyMod: 0
   statEnergyRechargeMod: 0
+  playerAnalytics:
+    totalDamageDealt: 0
+    totalDamageTaken: 0
+    longestBoost: 0
+    totalBoostTime: 0
+    totalAbilityPickups: 0
+    totalDisables: 0
+    recentDamageWindow: 5
 --- !u!114 &8626382670086874564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,6 +115,33 @@ MonoBehaviour:
   backSelectInput: 0
   startSelectInput: 0
   currentControlScheme: 
+  cameraMove:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 95618dd4-5cb4-4cab-bcbe-a860e5c801c5
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  cameraShift:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: da802fa0-de4e-40fa-8b19-8910afe97a8e
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  cameraExit:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c5595628-7369-4717-9257-1001a3215904
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
 --- !u!114 &3576805191090509982
 MonoBehaviour:
   m_ObjectHideFlags: 0

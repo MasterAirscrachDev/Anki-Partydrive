@@ -149,6 +149,7 @@ public class CarEntityTracker : MonoBehaviour
     /// <param name="id"></param>
     /// <returns></returns>
     public Transform GetCarVisualTransform(string id){
+        if(string.IsNullOrEmpty(id)){ return null; }
         if(trackers.ContainsKey(id)){
             return trackers[id].GetVisualTransform();
         }

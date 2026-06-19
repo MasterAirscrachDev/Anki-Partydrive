@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3576805191090509986}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3576805191090509987
 MonoBehaviour:
@@ -48,14 +48,54 @@ MonoBehaviour:
   speed: 0
   lane: 0
   carID: 
-  energy: 75
-  carsManagement: {fileID: 0}
-  Iaccel: 0
-  Isteer: 0
-  Iboost: 0
-  Idrift: 0
-  IitemA: 0
-  IitemB: 0
+  desiredCarID: 
+  energyRecoveryCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 14.860468
+      outSlope: 14.860468
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.07092669
+    - serializedVersion: 3
+      time: 0.001
+      value: 5
+      inSlope: 14.83701
+      outSlope: 14.83701
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.5
+      value: 60
+      inSlope: 81.857704
+      outSlope: 81.857704
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.04920395
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  pcs: {fileID: 0}
+  statSpeedMod: 0
+  statSteerMod: 0
+  statBoostMod: 0
+  statMaxEnergyMod: 0
+  statEnergyRechargeMod: 0
+  playerAnalytics:
+    totalDamageDealt: 0
+    totalDamageTaken: 0
+    longestBoost: 0
+    totalBoostTime: 0
+    totalAbilityPickups: 0
+    totalDisables: 0
+    recentDamageWindow: 5
 --- !u!114 &1061388307115159261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,3 +108,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c717e6747b016d64aa2ddba359aebaf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Debug: 
+  depth: 3
+  timeout: 0.4
+  setCarID: 
+  state: 0

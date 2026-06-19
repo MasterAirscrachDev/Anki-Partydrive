@@ -217,7 +217,7 @@ public class RemoteControlLink : MonoBehaviour
                         if (disconnected != null)
                         {
                             var car = disconnected.GetComponent<CarController>();
-                            if (car != null) SR.cms?.controllers.Remove(car);
+                            if (car != null) SR.cms?.RemoveController(car); // Use proper cleanup method
                             Destroy(disconnected.gameObject);
                         }
                         controllerMap.Remove(ctrlId);
@@ -325,8 +325,8 @@ public class RemoteControlLink : MonoBehaviour
             case Ability.Grappler:       return "Grappler";
             case Ability.LightningPower: return "LightningPower";
             case Ability.TrafficCone:    return "TrafficCone";
-            case Ability.BurstShield:    return "BurstShield";
-            case Ability.IceBlast:       return "IceBlast";
+            case Ability.BubbleShield:    return "BurstShield";
+            case Ability.IceWall:       return "IceBlast";
             default:                     return "None";
         }
     }

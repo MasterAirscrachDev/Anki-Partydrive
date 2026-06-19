@@ -7,7 +7,7 @@
 
 [X] AI V3 (new pathfinding, better at avoiding obstacles, better at overtaking, better at defending)
 [X] Dynamic stadium
-[ ] Improve slow vfx (why broken)
+[X] Phone Controller
 [X] Improve Car Shading (more vibrant)
 [X] Manual camera override in track options
 [X] Lock track in menu until cars are connected
@@ -19,17 +19,17 @@
 [ ] (Low Prio) Manual lineup option for larger tracks
 [ ] (Low Prio) Fix all the bugs that Dynamic lanes is causing (Low priority, only affects bottleneck)
 [ ] (Low Prio) Proper Truck Support for CarSelectionV2
-[ ] (Low Prio) Upgrade ability icons
+
 [ ] (Low Prio) Dynamic cheering crowd
 
+[ ] Improve slow vfx (why broken)
 
 [ ] (Ability) Charger Ring (shoot a ring further down the track, successfully driving through it gives +50% energy +20% boost)
 
 [ ] Car Stat Allocation
 
 [ ] (Low Prio) Fix drive mats
+- Why is Oval super whack?
+[ ] (Low Prio) Upgrade ability icons
 
-[ ] Phone Controller
- - fix player number allocation (ensure player ID order is correct when player are using both controllers and phones)
- - test functionality
 # Demo 5.0.0 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

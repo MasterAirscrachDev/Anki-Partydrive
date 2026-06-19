@@ -8,11 +8,10 @@ public partial class CarController : MonoBehaviour
 #region BASE STATS & MODIFIERS
     //BASE MODIFIERS======
     public const float maxEnergy = 100;
-    public const int maxTargetSpeed = 750;
+    public const int maxTargetSpeed = 650;
     public const int minTargetSpeed = 50;
-    public const int baseBoostSpeed = 450; //100
+    public const int baseBoostSpeed = 150; //800 speed with boost
     public const float baseBoostCost = 0.5f;
-    public const float baseEnergyGain = 0.04f;
     public const float baseSteering = 2f;
     public float statSpeedMod = 0f;
     public float statSteerMod = 0f;
@@ -25,7 +24,7 @@ public partial class CarController : MonoBehaviour
     public void SetStatModifiers(int speedModPoints, int steerModPoints, int boostModPoints, int maxEnergyModPoints, int energyRechargeModPoints){
         statSpeedMod = speedModPoints * 25f; // speed per point
         statSteerMod = steerModPoints * 0.4f; // steering per point 
-        statBoostMod = boostModPoints * 5f; // speed per point
+        statBoostMod = boostModPoints * 5f; // speed per point (20 points would be 100, capping at )
         statMaxEnergyMod = maxEnergyModPoints * 9f; // energy per point
         statEnergyRechargeMod = energyRechargeModPoints * 0.005f; // energycharge per point
     }

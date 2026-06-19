@@ -116,6 +116,9 @@ public class UIManager : MonoBehaviour
         Button[] buttons = current.GetComponentsInChildren<Button>();
         if(buttons.Length > 0){
             buttons[0].Select();
+            Debug.Log($"Selected button {buttons[0].name} in layer {UIlayer}");
+        }else{
+            Debug.Log($"No buttons found in layer {UIlayer}");
         }
     }
     public void SetCarsCount(int count){

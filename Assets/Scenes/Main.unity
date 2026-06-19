@@ -1372,7 +1372,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PARTYDRIVE DEMO 4.1.2
+  m_text: PARTYDRIVE DEMO 4.2.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
   m_sharedMaterial: {fileID: -1470650276818706409, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
@@ -5720,68 +5720,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 3452982128455003608, guid: 4be85139b73284546856c8c534ac7ec8, type: 3}
   m_PrefabInstance: {fileID: 222417902}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &226758607
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1294177484}
-    m_Modifications:
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5323821179423392609, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-      propertyPath: m_Name
-      value: SupercarMammot
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
---- !u!4 &226758608 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5257133491551152240, guid: d6e1f698e5259234db77d22d97e2c6b3, type: 3}
-  m_PrefabInstance: {fileID: 226758607}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &227838436
 GameObject:
@@ -11779,6 +11717,7 @@ MonoBehaviour:
   chargeSuspendButton: {fileID: 710943606}
   initialText: Place cars on the track
   lineupMessage: Supercars to the starting line
+  enableLastPlaceBoost: 1
   lapsSmallTrack: 30
   lapsMediumTrack: 15
   lapsLargeTrack: 8
@@ -15230,7 +15169,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -401.78, y: -364.51}
+  m_AnchoredPosition: {x: -418, y: 35}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &696667238
@@ -15466,6 +15405,7 @@ MonoBehaviour:
   botPrefab: {fileID: 3576805191090509986, guid: b979934b55fdc8c438f47e752f6b24ab, type: 3}
   carEntityTracker: {fileID: 1377473483}
   gameMode: 
+  DEMO_MODE_ENABLED: 0
 --- !u!114 &705507999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16693,7 +16633,11 @@ MonoBehaviour:
 
     Lrdsnow
 
-    LimeyFK'
+    Supporter
+
+    LimeyFK
+
+    Blue'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
   m_sharedMaterial: {fileID: -7548483605016708549, guid: 4a538e8640fdaac47938385692237fdf, type: 2}
@@ -18386,6 +18330,39 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 839492057}
   m_CullTransparentMesh: 1
+--- !u!1 &843946410
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 843946411}
+  m_Layer: 0
+  m_Name: ShowElements
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &843946411
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843946410}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 543450651985865594}
+  - {fileID: 1396659807}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &849817812
 GameObject:
   m_ObjectHideFlags: 0
@@ -22006,6 +21983,8 @@ MonoBehaviour:
     texture: {fileID: 21300000, guid: 0f96b96cf30ae0d4e9074db98aa6ab79, type: 3}
   - ability: 18
     texture: {fileID: 21300000, guid: 89fde5c2e827d044e8423795d4304778, type: 3}
+  - ability: 17
+    texture: {fileID: 21300000, guid: 50b3e24fabe05254a9eb92833e1aca97, type: 3}
   missilePrefab: {fileID: 4543867816583399193, guid: f7da4b511f556cf478a5dcc0a8755923, type: 3}
   MissileParticlePrefab: {fileID: 7737473309601183846, guid: f9f4da7d3e94a3b4c84b7efb6cbbbd05, type: 3}
   SeekingMissileParticlePrefab: {fileID: 7944397146355720411, guid: 25804fc72ca3ca24a989b03479556db2, type: 3}
@@ -22022,11 +22001,13 @@ MonoBehaviour:
   icebergPrefab: {fileID: 6802733270398753389, guid: 32d444d4ecbee484890a9b0aca020008, type: 3}
   overdrivePrefab: {fileID: 2997543738016617262, guid: 04e2d0b460cbdb148895605091961519, type: 3}
   stampedePrefab: {fileID: 2319774096448715418, guid: ddf0e455b2a54d848bfb6d6d5828b309, type: 3}
+  shieldBubblePrefab: {fileID: 1366169133550738244, guid: fe51314478c52e34598fe202c21403e8, type: 3}
   repairPrefab: {fileID: 742896146594827123, guid: 13a41d7468bde6044883bd49de21233a, type: 3}
   disabledPrefab: {fileID: 5920299987992940019, guid: b3c2f131459c8f045bd161ffb634fd6c, type: 3}
   nukeParticles: {fileID: 7841494285048609243, guid: 9baec62b84aeca44ca8bebf79365218f, type: 3}
   meltdownEffectPrefab: {fileID: 7113018643679515562, guid: 12505823b1469df42a8dc9fcb3ef0059, type: 3}
   frozenEffectPrefab: {fileID: 7121020153308335593, guid: c2570e71d8f88f44cad7d0fabd97c132, type: 3}
+  guardianEffectPrefab: {fileID: 0}
 --- !u!1 &1016471929
 GameObject:
   m_ObjectHideFlags: 0
@@ -22329,20 +22310,33 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'T0astit0
+  m_text: '<b><color=purple>MasterAirscrachDev</color></b>
 
-    -Partydrive Logo
-
-
-    Anki
-
-    -Car Sprites
-
-
-    MasterAirscrachDev
+    - Programming
 
     -
-    Everything Else
+    3D modeling
+
+
+    <b><color=purple>T0astit0</color></b>
+
+    - Partydrive Logo
+
+    -
+    Iconography
+
+
+    <b><color=purple>Amy (hamsteronpotato)</color></b>
+
+    - MacOS
+    Port
+
+
+    <b><color=purple>Anki</color></b>
+
+    - Car Sprites
+
+
 
 '
   m_isRightToLeft: 0
@@ -22371,8 +22365,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 23.5
+  m_fontSizeBase: 23.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -25029,7 +25023,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 582, y: 313.32}
+  m_SizeDelta: {x: 582, y: 529.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1142079362
 MonoBehaviour:
@@ -25089,9 +25083,9 @@ MonoBehaviour:
   m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 36
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -25847,6 +25841,7 @@ MonoBehaviour:
   chargeSuspendButton: {fileID: 849817812}
   initialText: Place cars on the track
   lineupMessage: Supercars to the starting line
+  enableLastPlaceBoost: 0
   lapsSmallTrack: 60
   lapsMediumTrack: 30
   lapsLargeTrack: 16
@@ -28395,7 +28390,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1620993045995595149, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 226758608}
+      addedObject: {fileID: 5875331937932353886}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 70cdc991b6d280a4286d52db46f9f6ca, type: 3}
 --- !u!4 &1294177484 stripped
@@ -29991,6 +29986,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3452982128455003608, guid: 4be85139b73284546856c8c534ac7ec8, type: 3}
   m_PrefabInstance: {fileID: 265808701}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1396659806
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1396659807}
+  - component: {fileID: 1396659808}
+  m_Layer: 0
+  m_Name: FlipTool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1396659807
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396659806}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 843946411}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1396659808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396659806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1b8fa81a473114fb258c12703d8b2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShowFliptool
 --- !u!1 &1397602769
 GameObject:
   m_ObjectHideFlags: 0
@@ -30712,6 +30751,7 @@ MonoBehaviour:
   chargeSuspendButton: {fileID: 924123146}
   initialText: Place cars on the track
   lineupMessage: Supercars to the starting line
+  enableLastPlaceBoost: 0
   lapsSmallTrack: 35
   lapsMediumTrack: 17
   lapsLargeTrack: 10
@@ -35216,7 +35256,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1704226859}
   m_OnClick:
     m_PersistentCalls:
@@ -37918,6 +37958,7 @@ MonoBehaviour:
   chargeSuspendButton: {fileID: 1765963580}
   initialText: Place cars on the track
   lineupMessage: Supercars to the starting line
+  enableLastPlaceBoost: 1
   lapsSmallTrack: 30
   lapsMediumTrack: 15
   lapsLargeTrack: 8
@@ -39061,6 +39102,7 @@ MonoBehaviour:
   chargeSuspendButton: {fileID: 362255486}
   initialText: Place cars on the track
   lineupMessage: Supercars to the starting line
+  enableLastPlaceBoost: 0
 --- !u!225 &1923248597
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -42222,12 +42264,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147512652224}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.64824, y: 0, z: -0.57886}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.503, y: 0, z: -0.512}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 843946411}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &543450652478016897
 Transform:
@@ -42378,7 +42420,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &919132148271175483
 GameObject:
   m_ObjectHideFlags: 0
@@ -42959,6 +43001,11 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
+--- !u!4 &5875331937932353886 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+  m_PrefabInstance: {fileID: 6598266936045084988}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6343226302867008314
 Transform:
   m_ObjectHideFlags: 0
@@ -42974,6 +43021,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3539304331812452145}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &6598266936045084988
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1294177484}
+    m_Modifications:
+    - target: {fileID: 8090166571621605999, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_Name
+      value: SupercarThermo
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8573791088475689907, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d6ed8c04f46749d4facc51891abf1d06, type: 3}
 --- !u!33 &6682549539444355626
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -43081,4 +43185,4 @@ SceneRoots:
   - {fileID: 1700031648}
   - {fileID: 1294177483}
   - {fileID: 1718489063}
-  - {fileID: 543450651985865594}
+  - {fileID: 843946411}

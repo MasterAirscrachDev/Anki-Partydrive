@@ -8,9 +8,11 @@ public class SupportPanel : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void OnEnable()
     {
-        Debug.Log($"Entered Support Panel at {Time.realtimeSinceStartup} seconds");
+        //Debug.Log($"Entered Support Panel at {Time.realtimeSinceStartup} seconds");
         playtimeSecondsAtEnterSupport = Time.realtimeSinceStartup;
         Update();
+        if(Application.isEditor)
+        { SR.ui.SetUILayer("Menu"); } //skip support panel in editor for testing purposes
     }
 
     // Update is called once per frame

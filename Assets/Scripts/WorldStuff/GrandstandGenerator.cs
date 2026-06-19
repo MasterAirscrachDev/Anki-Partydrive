@@ -171,6 +171,14 @@ public class GrandstandGenerator : MonoBehaviour
             cells.Add(new Vector2Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.z)));
             avgY += pos.y;
             count++;
+            if(child.name.Contains("JumpRamp")){
+                //the jump spans 2 cells, so add the next one too (z-1 relative to the ramp's rotation)
+                Vector3 forward = child.forward;
+                Vector2Int nextCell = new Vector2Int(Mathf.RoundToInt(pos.x + forward.x), Mathf.RoundToInt(pos.z + forward.z));
+                cells.Add(nextCell);
+                avgY += pos.y;
+                count++;
+            }
         }
         if (count == 0) return null;
         avgY /= count;

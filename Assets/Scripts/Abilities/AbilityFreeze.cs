@@ -17,6 +17,15 @@ public class AbilityFreeze : MonoBehaviour
         transform.localScale = Vector3.zero; // Start with zero scale for the grow effect
         StartCoroutine(LerpToScale(size, 0.4f)); // Grow to target size over 0.5 seconds
         currentCoord = SR.track.WorldspaceToTrackCoordinate(transform.position);
+        if(currentCoord == null)
+        {
+            currentCoord = SR.cet.GetCarTrackCoordinate(ab.GetCarController().GetID());
+            if(currentCoord == null)
+            {
+                Debug.LogError("AbilityFreeze: Failed to get track coordinate for ability position and car position!");
+                currentCoord = new TrackCoordinate(0, 0, 0);
+            }
+        }
         this.speed = speed;
         this.freezeDuration = freezeDuration;
         Destroy(gameObject, duration); // Destroy the freeze object after the duration expires

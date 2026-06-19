@@ -18,6 +18,11 @@ public abstract class GameMode : MonoBehaviour
     [SerializeField] protected string initialText = "Place cars on the track";
     [SerializeField] protected string lineupMessage = "Supercars to the starting line";
     
+        // Last Place Catch-Up Boost (Optional Feature)
+    [Header("Last Place Catch-Up Boost")]
+    [Tooltip("Enable a speed boost for the last place player based on gap to second-to-last.")]
+    [SerializeField] protected bool enableLastPlaceBoost = false;
+    
     // Core references
     protected CarEntityTracker carEntityTracker;
     protected CarInteraface carInteraface;
@@ -178,7 +183,7 @@ public abstract class GameMode : MonoBehaviour
     protected virtual IEnumerator StartListeningForFinishLine()
     {
         yield return new WaitForSeconds(3);
-        carEntityTracker.OnCarCrossedFinishLine += CarCrossedFinish;
+        carEntityTracker.OnCarCrossedFinishLine += CarCrossedFinish;        
     }
     
 
@@ -303,7 +308,10 @@ public abstract class GameMode : MonoBehaviour
     /// <summary>
     /// Called when the game actually starts (after "GO!"). Override for game start logic.
     /// </summary>
-    protected virtual void OnGameStarted(string[] activeCars) { }
+    protected virtual void OnGameStarted(string[] activeCars)
+    {
+        if(enableLastPlaceBoost) { StartCoroutine(CheckAndApplyLastPlaceBoost()); }
+    }
     
     /// <summary>
     /// Called when a car crosses the finish line. Must be implemented by derived classes.
@@ -386,10 +394,63 @@ public abstract class GameMode : MonoBehaviour
     {
         //do a final position update to ensure correct final standings are shown at end of race
         UpdatePositions();
+        //reset energy for all cars
+        SR.cms.controllers.ForEach(c => c.ChargeEnergy(1000));
     }
     
     /// <summary>
     /// Called when the mode is being cleaned up. Override for mode-specific cleanup.
     /// </summary>
     protected virtual void OnModeCleanup() { }
+    
+    #region Last Place Catch-Up Boost
+    
+    /// <summary>
+    /// Main coroutine that checks and applies boost every interval.
+    /// Contains all logic inline - no separate ApplyLastPlaceBoost method needed.
+    /// </summary>
+    protected IEnumerator CheckAndApplyLastPlaceBoost()
+    {
+        const float CHECK_INTERVAL = 2f;
+        while(gameActive)
+        {
+            yield return new WaitForSecondsRealtime(CHECK_INTERVAL);
+            
+            if(!gameActive)
+                continue;
+                
+            // Get sorted cars (1st to last)
+            List<string> sortedCars = carEntityTracker.GetSortedCarIDs();
+            if(sortedCars.Count < 2)
+                continue;
+                
+            string lastPlaceCarID = sortedCars[sortedCars.Count - 1];
+            string secondLastPlaceCarID = sortedCars[sortedCars.Count - 2];
+            
+            CarController lastPlaceController = cms?.GetController(lastPlaceCarID);
+            if(lastPlaceController == null)
+                continue;
+                
+            // Get track coordinates from SR.cet
+            TrackCoordinate lastPlaceCoord = carEntityTracker.GetCarTrackCoordinate(lastPlaceCarID);
+            TrackCoordinate secondLastPlaceCoord = carEntityTracker.GetCarTrackCoordinate(secondLastPlaceCarID);
+            
+            if(lastPlaceCoord == null || secondLastPlaceCoord == null)
+                continue;
+                
+            // Calculate gap in track index units
+            float gapSegments = lastPlaceCoord.idx - secondLastPlaceCoord.idx;
+            
+            // Determine boost percentage based on gap (hardcoded values)
+            float boostPercent = (gapSegments > 2f) ? 4f : 2f;
+                
+            // Apply speed boost for the check interval duration
+            lastPlaceController.AddSpeedModifier(
+                new PercentSpeedModifier(boostPercent, CHECK_INTERVAL, "LastPlaceCatchUp")
+            );
+        }
+    }
+    
+    #endregion
+    
 }

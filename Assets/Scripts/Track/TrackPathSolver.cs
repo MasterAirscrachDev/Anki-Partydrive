@@ -56,7 +56,7 @@ public class TrackPathSolver
         float trackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
 
         // --- Determine target speed before lane selection (state gives base speed) ---
-        int targetSpeed = 1000;
+        int targetSpeed = 650;
         bool shouldBoost = false;
         bool stoppedCarAhead = false; // track if any car ahead is slow/stopped
 
@@ -70,7 +70,7 @@ public class TrackPathSolver
         foreach (var carLoc in inputs.carLocations)
         {
             float YDistance = inputs.ourCoord.DistanceY(carLoc);
-            bool isAhead = carLoc.IsAhead(inputs.ourCoord);
+            bool isAhead = carLoc.IsOtherAhead(inputs.ourCoord);
 
             // Extend detection range for slow/stopped cars ahead
             bool carIsSlow = carLoc.speed < SLOW_SPEED_THRESHOLD;
@@ -189,7 +189,7 @@ public class TrackPathSolver
                 break;
 
             case AIState.Defence:
-                if (inputs.currentTarget != null && !inputs.currentTarget.IsAhead(inputs.ourCoord))
+                if (inputs.currentTarget != null && !inputs.currentTarget.IsOtherAhead(inputs.ourCoord))
                 {
                     // Reward lanes that block the pursuer
                     float behindOffset = inputs.currentTarget.offset;
@@ -230,15 +230,15 @@ public class TrackPathSolver
         // =====================================================================
         // SPEED SELECTION — state-driven, with hazard/stopped-car awareness
         // =====================================================================
-        switch (inputs.state)
+        switch (inputs.state) //650 is base, boosting adds 150
         {
             case AIState.Speed:
-                targetSpeed = 1000;
+                targetSpeed = 650;
                 if (!upcomingTurn && !stoppedCarAhead) shouldBoost = true;
                 break;
 
             case AIState.Target:
-                targetSpeed = upcomingTurn ? (futureTrack[0] == SegmentType.Turn ? 650 : 850) : 900;
+                targetSpeed = upcomingTurn ? (futureTrack[0] == SegmentType.Turn ? 550 : 600) : 650;
                 if (!upcomingTurn && !stoppedCarAhead) shouldBoost = true;
                 break;
 
@@ -246,18 +246,18 @@ public class TrackPathSolver
                 if (inputs.currentTarget != null)
                 {
                     float distToTarget = inputs.currentTarget.DistanceY(inputs.ourCoord);
-                    targetSpeed = distToTarget < 2.5f ? 1000 : 950;
-                    if (distToTarget < 2.5f && !upcomingTurn) shouldBoost = true;
+                    targetSpeed = distToTarget < 2.5f ? 640 : 650;
+                    if (distToTarget > 1f && !upcomingTurn) shouldBoost = true;
                 }
                 else
                 {
-                    targetSpeed = 1000;
+                    targetSpeed = 600;
                     if (!upcomingTurn) shouldBoost = true;
                 }
                 break;
 
             case AIState.Flee:
-                targetSpeed = upcomingTurn ? 500 : 700;
+                targetSpeed = upcomingTurn ? 500 : 650;
                 break;
 
             case AIState.Defence:
@@ -265,7 +265,7 @@ public class TrackPathSolver
                 break;
 
             default:
-                targetSpeed = 800;
+                targetSpeed = 620;
                 break;
         }
 
@@ -277,7 +277,7 @@ public class TrackPathSolver
             foreach (var carLoc in inputs.carLocations)
             {
                 if (carLoc.speed >= SLOW_SPEED_THRESHOLD) continue;
-                if (!carLoc.IsAhead(inputs.ourCoord)) continue;
+                if (!carLoc.IsOtherAhead(inputs.ourCoord)) continue;
                 float laneDist = Mathf.Abs(targetLane - carLoc.offset);
                 float yDist = inputs.ourCoord.DistanceY(carLoc);
                 if (laneDist < CAR_SPACING && yDist < 1.0f)
@@ -293,13 +293,14 @@ public class TrackPathSolver
         // Turn speed caps
         if (upcomingTurn && inputs.state != AIState.Defence)
         {
-            if (targetSpeed > 750) targetSpeed = 750;
+            if (targetSpeed > 640) targetSpeed = 640;
             if (futureTrack[0] == SegmentType.Turn && targetSpeed > 600) targetSpeed = 600;
             shouldBoost = false;
         }
 
         // Clamp lane to valid bounds
         targetLane = Mathf.Clamp(targetLane, -trackHalfWidth, trackHalfWidth);
+        log += $"SPD: {targetSpeed}, Lane: {targetLane:F1}, Boost: {shouldBoost}\n";
         return (targetSpeed, targetLane, shouldBoost, log);
     }
     

@@ -19,6 +19,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject icebergPrefab;
     [SerializeField] GameObject overdrivePrefab;
     [SerializeField] GameObject stampedePrefab;
+    [SerializeField] GameObject shieldBubblePrefab;
     [Header("Utility Prefabs")]
     [SerializeField] GameObject repairPrefab;
     [Header("Effect Only")]
@@ -26,6 +27,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     [SerializeField] GameObject nukeParticles;
     [SerializeField] GameObject meltdownEffectPrefab;
     [SerializeField] GameObject frozenEffectPrefab;
+    [SerializeField] GameObject guardianEffectPrefab;
     
     // --- Hazard position tracking for AI avoidance ---
     readonly List<Transform> activeHazards = new List<Transform>();
@@ -372,6 +374,29 @@ public class GlobalAbilitySystem : MonoBehaviour
         AbilityController ab = stampede.GetComponent<AbilityController>();
         ab.Setup(control);
         stampede.GetComponent<AbilityStampede>().Setup(ab, damage, duration);
+    }
+    public void SpawnShieldBubble(CarController control, float duration = 3f) {
+        if(shieldBubblePrefab == null) return;
+        
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        control.SetStatusEffect(CarStatus.Invulnerable, duration);
+        
+        GameObject shieldBubble = Instantiate(shieldBubblePrefab, carTransform.position, carTransform.rotation);
+        FollowWorldCar ab = shieldBubble.GetComponent<FollowWorldCar>();
+        ab.Setup(control.GetID(), "ShieldBubble");
+        Destroy(shieldBubble, duration); // Destroy after duration to clean up
+    }
+    public void SpawnGuardianEffect(CarController control, float size, float duration = 4f) {
+        if(guardianEffectPrefab == null) return;
+        
+        Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());
+        if(carTransform == null) return;
+        
+        GameObject guardianEffect = Instantiate(guardianEffectPrefab, carTransform.position, carTransform.rotation);
+        AbilityGuardian ag = guardianEffect.GetComponent<AbilityGuardian>();
+        ag.Setup(control.GetID(), size);
+        Destroy(guardianEffect, duration); // Destroy after duration to clean up
     }
 
     [System.Serializable]

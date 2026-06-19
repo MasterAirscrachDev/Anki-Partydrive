@@ -25,6 +25,8 @@ public class CarPanel : MonoBehaviour
                 isAI = true;
                 AIButton.GetComponentInChildren<TextMeshProUGUI>().text = "Remove AI";
             }
+            
+            // In demo mode, show player colors for AI (they get colors from pool)
             SetPlayerColor(currentController.GetPlayerColor());
         }else{
             SetPlayerColor(Color.clear);

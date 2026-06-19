@@ -165,13 +165,14 @@ public class TrackCoordinate
 
         return Mathf.Abs(ourDist - otherDist);
     }
-    public bool IsAhead(TrackCoordinate other)
+    ///<summary>
+    ///Is the car closer ahead of us or behind us on the track? (accounts for track looping)
+    ///</summary>
+    public bool IsOtherAhead(TrackCoordinate other)
     {
         //check if we are ahead of the other car
         if (idx == other.idx)
-        {
-            return progression > other.progression;
-        }
+        { return progression > other.progression; }
         int trackLength = SR.track.GetTrackLength();
         //check if we are ahead of the other car (in the future 50% of the track)
         int distanceAB = (other.idx - idx + trackLength) % trackLength;

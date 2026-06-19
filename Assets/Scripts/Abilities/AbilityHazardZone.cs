@@ -8,13 +8,12 @@ public class AbilityHazardZone : MonoBehaviour
     [SerializeField] int speedModifier = 0; //can be negative or positive
     [SerializeField] float speedModifierDuration = 1f;
     [SerializeField] string modifierTag = "HazardZone";
-    float hazardRange;
+    [SerializeField] float hazardRange = 0.1f;
     CarController owner;
     List<CarController> affectedControllers = new List<CarController>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void Setup(float hazardRange, float lifetime, CarController owner)
+    public void Setup(float lifetime, CarController owner)
     {
-        this.hazardRange = hazardRange;
         this.owner = owner;
         SR.gas?.RegisterHazard(transform);
         Destroy(gameObject, lifetime);
@@ -48,5 +47,20 @@ public class AbilityHazardZone : MonoBehaviour
             if(speedModifier != 0)
             { hit.AddSpeedModifier(new FlatSpeedModifier(speedModifier, speedModifierDuration, modifierTag)); }
         }
+    }
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        // CMS.CubeCheckControllers checks: Mathf.Abs(forwardDist) <= size/2 && sideDist <= size/2
+        // This creates a cube of size x, y, z = hazardRange, hazardRange, hazardRange
+        // Center the cube along forward axis and draw with equal dimensions on all axes
+
+        hazardRange = Mathf.Max(hazardRange, 0.1f); // Ensure a minimum size for visibility
+
+        //Debug.Log($"Drawing hazard gizmo at {transform.position} with range {hazardRange}");
+        
+        Vector3 cubeCenter = transform.position; // Center at ability position, not offset forward
+        
+        Gizmos.DrawWireCube(cubeCenter, new Vector3(hazardRange, hazardRange, hazardRange));
     }
 }

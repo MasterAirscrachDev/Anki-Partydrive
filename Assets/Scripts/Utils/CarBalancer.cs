@@ -93,6 +93,7 @@ public class CarBalancer : MonoBehaviour
         Debug.Log($"CarBalancer setup for {carData.name}");
         SubTrack(true);
         SubFinishLine(true);
+        SR.ui.SelectFirstButtonInCurrentLayer();
     }
     void Update(){
         if(timeout > 0){ timeout -= Time.deltaTime; return; }
@@ -113,6 +114,7 @@ public class CarBalancer : MonoBehaviour
                     saveButton.gameObject.SetActive(true);
                     backButton.gameObject.SetActive(true);
                     recalibrateButton.interactable = true;
+                    SR.ui.SelectFirstButtonInCurrentLayer();
                     step = -1;
                     return;
                 }
@@ -128,6 +130,7 @@ public class CarBalancer : MonoBehaviour
                 recalibrateButton.gameObject.SetActive(true);
                 saveButton.gameObject.SetActive(true);
                 backButton.gameObject.SetActive(true);
+                SR.ui.SelectFirstButtonInCurrentLayer();
                 //car should now be lining up at this point
                 timeout = 2.1f;
                 step = 2;

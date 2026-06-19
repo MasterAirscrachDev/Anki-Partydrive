@@ -5,7 +5,6 @@ public class AbilityTrailEmitter : MonoBehaviour
     [SerializeField] GameObject trailPrefab;
     [SerializeField] float emitterLifetime = 2.5f;
     [SerializeField] float emitDistance = 0.1f;
-    [SerializeField] float hazardRange = 0.1f;
     [SerializeField] float lifetime = 3f;
     Vector3 lastEmitPosition;
     AbilityController abilityController;
@@ -25,7 +24,7 @@ public class AbilityTrailEmitter : MonoBehaviour
             trail.transform.position = transform.position;
             trail.transform.Rotate(Vector3.up, transform.eulerAngles.y);
             AbilityHazardZone hazard = trail.GetComponent<AbilityHazardZone>();
-            hazard.Setup(hazardRange, lifetime, abilityController.GetCarController());
+            hazard.Setup(lifetime, abilityController.GetCarController());
             lastEmitPosition = transform.position;
         }
     }

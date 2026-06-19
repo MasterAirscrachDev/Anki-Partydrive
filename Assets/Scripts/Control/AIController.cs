@@ -45,7 +45,8 @@ public class AIController : MonoBehaviour
         { Ability.Grappler, AIAbilityUsageMode.Ahead },
         { Ability.LightningPower, AIAbilityUsageMode.Any },
         { Ability.TrafficCone, AIAbilityUsageMode.Any },
-        { Ability.IceBlast, AIAbilityUsageMode.Ahead },
+        { Ability.IceWall, AIAbilityUsageMode.Ahead },
+        { Ability.BubbleShield, AIAbilityUsageMode.Any },
     };
     
     // Aim mode table — Narrow abilities need lane alignment, Wide/Any do not
@@ -67,7 +68,8 @@ public class AIController : MonoBehaviour
         { Ability.Grappler, AIAbilityAimMode.Wide },
         { Ability.LightningPower, AIAbilityAimMode.Any },
         { Ability.TrafficCone, AIAbilityAimMode.Narrow },
-        { Ability.IceBlast, AIAbilityAimMode.Narrow },
+        { Ability.IceWall, AIAbilityAimMode.Narrow },
+        { Ability.BubbleShield, AIAbilityAimMode.Any },
     };
     // Start is called before the first frame update
     void Start()
@@ -76,7 +78,12 @@ public class AIController : MonoBehaviour
         carController = GetComponent<CarController>();
         string[] names = { "Electron [AI]", "Thermal [AI]", "Antimatter [Ai]", "Rattle [AI]", "Photon [AI]", "Revolt [AI]", "Telos [AI]", "Veeg [AI]" };
         carController.Setup(true, names[Random.Range(0, names.Length)]); //setup the car controller
-        carController.SetColour(new Color(1, 0, 0)); //set the color to red
+        
+        // In demo mode, color was already assigned from the pool by CMS.AddController
+        // In normal mode, AIs use a fixed red
+        if(SR.cms == null || !SR.cms.DEMO_MODE_ENABLED) {
+            carController.SetColour(new Color(1, 0, 0));
+        }
 
         setup = true; //set the setup variable to true
         FindFirstObjectByType<CarEntityTracker>().UpdateAIOpponentLocations(); //update the AI opponent locations
@@ -241,7 +248,7 @@ public class AIController : MonoBehaviour
         
         foreach (var carLoc in carLocations)
         {
-            if (carLoc.IsAhead(ourCoord))
+            if (carLoc.IsOtherAhead(ourCoord))
             {
                 carsAhead++;
             }
@@ -342,7 +349,7 @@ public class AIController : MonoBehaviour
                 // Use when there's a car ahead of us; narrow aim also requires lane alignment
                 foreach (var carLoc in carLocations)
                 {
-                    if (!carLoc.IsAhead(ourCoord) || ourCoord.DistanceY(carLoc) >= 3f) continue;
+                    if (!carLoc.IsOtherAhead(ourCoord) || ourCoord.DistanceY(carLoc) >= 3f) continue;
                     if (!needsLaneCheck || ourCoord.DistanceX(carLoc) < NARROW_HIT_WIDTH) { return true; }
                 }
                 return false;
@@ -351,7 +358,7 @@ public class AIController : MonoBehaviour
                 // Use when there's a car behind us; narrow aim also requires lane alignment
                 foreach (var carLoc in carLocations)
                 {
-                    if (!ourCoord.IsAhead(carLoc) || ourCoord.DistanceY(carLoc) >= 2f) continue;
+                    if (!ourCoord.IsOtherAhead(carLoc) || ourCoord.DistanceY(carLoc) >= 2f) continue;
                     if (!needsLaneCheck || ourCoord.DistanceX(carLoc) < NARROW_HIT_WIDTH) { return true; }
                 }
                 return false;
