@@ -15405,7 +15405,7 @@ MonoBehaviour:
   botPrefab: {fileID: 3576805191090509986, guid: b979934b55fdc8c438f47e752f6b24ab, type: 3}
   carEntityTracker: {fileID: 1377473483}
   gameMode: 
-  DEMO_MODE_ENABLED: 0
+  DEMO_MODE_ENABLED: 1
 --- !u!114 &705507999
 MonoBehaviour:
   m_ObjectHideFlags: 0

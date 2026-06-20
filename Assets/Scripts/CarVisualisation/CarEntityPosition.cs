@@ -34,7 +34,7 @@ public class CarEntityPosition : MonoBehaviour
             Vector3 targetPos;
             targetPos = trackSpline.GetPoint(trackpos);
             if(!showOnTrack){
-                targetPos.y -= 20; //hide the car
+                targetPos.y -= 1; //hide the car
             }
             transform.position = targetPos;
             
@@ -44,7 +44,7 @@ public class CarEntityPosition : MonoBehaviour
                 transform.Rotate(0, 180, 0);
             }
         }else if(!showOnTrack){ //if we are not on the track, hide the car
-            transform.position = new Vector3(0, -10, 0); //hide the car
+            transform.position = new Vector3(0, -1, 0); //hide the car
         }
         
         // Reset progression when reaching the end of a segment

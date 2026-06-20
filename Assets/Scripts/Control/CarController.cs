@@ -457,34 +457,22 @@ public partial class CarController : MonoBehaviour
 #region UI UPDATE FUNCTIONS
     int currentPosition = 0;
     
-    public void SetPosition(int position){ 
+    public void SetPosition(int position){
         currentPosition = position;
-        if(pcs == null) {
-            Debug.Log($"PCS was null in SetPosition for carID {carID}");
-            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
-        }
+        if(pcs == null) { return; }
         pcs.SetPosition(position); }
-    
+
     public int GetPosition() { return currentPosition; }
-    public void SetTimeTrialTime(float time){ 
-        if(pcs == null) {
-            Debug.Log($"PCS was null in SetTimeTrialTime for carID {carID}");
-            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
-        }
-        pcs.SetTimeTrialTime(time); 
+    public void SetTimeTrialTime(float time){
+        if(pcs == null) { return; }
+        pcs.SetTimeTrialTime(time);
     }
-    public void SetLapCount(int lapCount){ 
-        if(pcs == null) {
-            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
-        }
-        //Debug.Log($"Setting lap count to {lapCount} for carID {carID} pcs:{pcs != null}");
-        pcs.SetLapCount(lapCount); 
+    public void SetLapCount(int lapCount){
+        if(pcs == null) { return; }
+        pcs.SetLapCount(lapCount);
     }
     public void SetProgress(float progress){
-        if(pcs == null) {
-            Debug.Log($"PCS was null in SetProgress for carID {carID}");
-            FindFirstObjectByType<PlayerCardmanager>().UpdateCardCount(); //try to get the card again
-        }
+        if(pcs == null) { return; }
         pcs.SetProgress(progress);
     }
 #endregion

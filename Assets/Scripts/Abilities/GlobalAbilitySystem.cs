@@ -178,6 +178,7 @@ public class GlobalAbilitySystem : MonoBehaviour
     }
     public void SpawnSlowTrail(CarController control) {
         Transform model = SR.cet.GetCarVisualTransform(control.GetID());
+        if(model == null) return;
         GameObject trail = Instantiate(slowTrailPrefab, model.position, model.rotation);
         trail.transform.parent = model;
         AbilityController ab = trail.GetComponent<AbilityController>();

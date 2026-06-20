@@ -11,8 +11,6 @@ public class SupportPanel : MonoBehaviour
         //Debug.Log($"Entered Support Panel at {Time.realtimeSinceStartup} seconds");
         playtimeSecondsAtEnterSupport = Time.realtimeSinceStartup;
         Update();
-        if(Application.isEditor)
-        { SR.ui.SetUILayer("Menu"); } //skip support panel in editor for testing purposes
     }
 
     // Update is called once per frame
