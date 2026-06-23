@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentTruck: {fileID: 0}
-  rotationSensitivity: 3
+  rotationSensitivity: 6
 --- !u!33 &5520633235390078029
 MeshFilter:
   m_ObjectHideFlags: 0

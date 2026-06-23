@@ -163,8 +163,8 @@ public partial class CarController : MonoBehaviour
         int targetSpeed = (int)Mathf.Lerp(minTargetSpeed, maxTargetSpeed + statSpeedMod, inputs.accel);
         if (frozen)
         {
-            float frozenDuration = GetStatusEffectRemainingDuration(CarStatus.Frozen) - freezeStartTime;
-            float t = Mathf.Clamp01(freezeTotalDuration / frozenDuration);
+            float elapsed = Time.time - freezeStartTime;
+            float t = Mathf.Clamp01(elapsed / freezeTotalDuration);
             speed = (int)(freezeStartSpeed * (1f - Mathf.Pow(t, 4.0f)));
         }
         else {
@@ -262,6 +262,7 @@ public partial class CarController : MonoBehaviour
             SR.pa.PlayLine(AudioAnnouncerManager.AnnouncerLine.CarSelected, desiredCar.modelName);
             Debug.Log($"Successfully connected to desired car: {carID}");
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
+            SetDefaultEngineLight();
             if(pcs != null) pcs.SetCarName(desiredCar.name, (int)desiredCar.modelName);
         } else {
             // Car not CONNECTED yet — show state-aware status
@@ -315,6 +316,7 @@ public partial class CarController : MonoBehaviour
             carID = data.id;
             ResetSlowVFX(); // Reset VFX for new car
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
+            SetDefaultEngineLight();
             if(pcs != null) pcs.SetCarName(data.name, (int)data.modelName);
             ApplyBaseStats(data);
             Debug.Log($"Immediately connected to car: {carID}");
@@ -349,6 +351,7 @@ public partial class CarController : MonoBehaviour
         if(carData != null){
             carID = id;
             FindFirstObjectByType<CarEntityTracker>().SetCarColorByID(carID, playerColor);
+            SetDefaultEngineLight();
             if(pcs != null) pcs.SetCarName(carData.name, (int)carData.modelName);
             ApplyBaseStats(carData);
             Debug.Log($"Immediately connected to car: {carID}");

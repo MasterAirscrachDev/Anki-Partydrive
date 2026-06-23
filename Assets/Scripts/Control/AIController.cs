@@ -76,8 +76,8 @@ public class AIController : MonoBehaviour
     {
         if(setup){ return; } //if the AI is already setup, return
         carController = GetComponent<CarController>();
-        string[] names = { "Electron [AI]", "Thermal [AI]", "Antimatter [Ai]", "Rattle [AI]", "Photon [AI]", "Revolt [AI]", "Telos [AI]", "Veeg [AI]" };
-        carController.Setup(true, names[Random.Range(0, names.Length)]); //setup the car controller
+        string[] names = { "Electron", "Thermal", "Antimatter", "Rattle", "Photon", "Revolt", "Telos", "Veeg", "Viper", "Blitz", "Nova", "Rogue", "Shadow", "Zenith" };
+        carController.Setup(true, $"{names[Random.Range(0, names.Length)]} [AI]"); //setup the car controller
         
         // In demo mode, color was already assigned from the pool by CMS.AddController
         // In normal mode, AIs use a fixed red
@@ -212,7 +212,13 @@ public class AIController : MonoBehaviour
         
         // Update AI state based on position
         UpdateAIStateBasedOnPosition();
-        
+
+        // Set current target to the closest car directly ahead
+        currentTarget = carLocations
+            .Where(c => c.IsOtherAhead(ourCoord))
+            .OrderBy(c => ourCoord.DistanceY(c))
+            .FirstOrDefault();
+
         PathingInputs inputs = new PathingInputs
         {
             currentTargetSpeed = currentTargetSpeed,

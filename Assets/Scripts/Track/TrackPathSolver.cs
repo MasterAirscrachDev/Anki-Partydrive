@@ -174,18 +174,6 @@ public class TrackPathSolver
         switch (inputs.state)
         {
             case AIState.Persuit:
-                if (inputs.currentTarget != null)
-                {
-                    // Bonus for lanes that let us overtake the target
-                    float targetOff = inputs.currentTarget.offset;
-                    for (int l = 0; l < CANDIDATE_LANES.Length; l++)
-                    {
-                        float distFromTarget = Mathf.Abs(CANDIDATE_LANES[l] - targetOff);
-                        // Reward lanes one car-width away from target (good overtaking position)
-                        if (distFromTarget > CAR_SPACING * 0.8f && distFromTarget < CAR_SPACING * 2f)
-                            laneScores[l] += 20f;
-                    }
-                }
                 break;
 
             case AIState.Defence:
@@ -213,6 +201,25 @@ public class TrackPathSolver
                     }
                 }
                 break;
+        }
+
+        // --- Global overtake bonus (all states) ---
+        // For every car ahead within detection range, reward lanes in a good passing position.
+        // Closer cars get a larger bonus so the AI commits harder when blocked.
+        foreach (var carLoc in inputs.carLocations)
+        {
+            if (!carLoc.IsOtherAhead(inputs.ourCoord)) continue;
+            float yDist = inputs.ourCoord.DistanceY(carLoc);
+            float detectionRange = 0.2f + carLoc.BACK_DISTANCE;
+            if (yDist > detectionRange) continue;
+
+            float overtakeBonus = Mathf.Lerp(40f, 10f, yDist / detectionRange); // closer = more urgent
+            for (int l = 0; l < CANDIDATE_LANES.Length; l++)
+            {
+                float distFromCar = Mathf.Abs(CANDIDATE_LANES[l] - carLoc.offset);
+                if (distFromCar > CAR_SPACING * 0.8f && distFromCar < CAR_SPACING * 2f)
+                    laneScores[l] += overtakeBonus;
+            }
         }
 
         // --- Pick the best lane ---

@@ -60,6 +60,19 @@ public partial class CarController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         SetHeadLights(lightData, duration, priority);
     }
+    public void SetDefaultEngineLight(){
+        UCarData carData = SR.io.GetCarFromID(carID);
+        if(carData == null) return;
+        int r = Mathf.RoundToInt(playerColor.r * 14f);
+        int g = Mathf.RoundToInt(playerColor.g * 14f);
+        int b = Mathf.RoundToInt(playerColor.b * 14f);
+        LightData[] lightArr = new LightData[3]{
+            new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = r, endStrength = Mathf.RoundToInt(r * 0.8f), cyclesPer10Seconds = 4 },
+            new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = g, endStrength = Mathf.RoundToInt(g * 0.8f), cyclesPer10Seconds = 4 },
+            new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = b, endStrength = Mathf.RoundToInt(b * 0.8f), cyclesPer10Seconds = 4 }
+        };
+        SR.io.SetCarColoursComplex(carData, lightArr);
+    }
     void SetEngineLight(LightData[] lightData, float duration, int priority = 1){
         bool valid = lights.SetEngineTime(duration, priority);
         if(!valid){ return; }
@@ -112,18 +125,7 @@ public partial class CarController : MonoBehaviour
         SR.io.SetCarColoursComplex(carData, lightArr);
         if (engine)
         {
-            int r = Mathf.RoundToInt(playerColor.r * 14f);
-            int g = Mathf.RoundToInt(playerColor.g * 14f);
-            int b = Mathf.RoundToInt(playerColor.b * 14f);
-            int endR = Mathf.RoundToInt(r * 0.8f);
-            int endG = Mathf.RoundToInt(g * 0.8f);
-            int endB = Mathf.RoundToInt(b * 0.8f);
-            lightArr = new LightData[3]{
-                new LightData{ channel = LightChannel.RED, effect = LightEffect.THROB, startStrength = r, endStrength = endR, cyclesPer10Seconds = 4 },
-                new LightData{ channel = LightChannel.GREEN, effect = LightEffect.THROB, startStrength = g, endStrength = endG, cyclesPer10Seconds = 4 },
-                new LightData{ channel = LightChannel.BLUE, effect = LightEffect.THROB, startStrength = b, endStrength = endB, cyclesPer10Seconds = 4 }
-            };
-            SR.io.SetCarColoursComplex(carData, lightArr);
+            SetDefaultEngineLight();
         }
 
     }

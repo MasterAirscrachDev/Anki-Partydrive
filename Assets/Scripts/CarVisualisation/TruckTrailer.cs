@@ -3,7 +3,7 @@ using UnityEngine;
 public class TruckTrailer : MonoBehaviour
 {
     [SerializeField] Transform parentTruck;
-    [SerializeField] float rotationSensitivity = 3f;
+    [SerializeField] float rotationSensitivity = 6f;
     
     Vector3 hitchOffset;
     Vector3 previousPosition;
@@ -24,6 +24,10 @@ public class TruckTrailer : MonoBehaviour
         {
             Destroy(gameObject, 0.1f);
             return;
+        }else if (parentTruck.gameObject.activeInHierarchy == false)
+        {
+            Destroy(gameObject, 0.1f);
+            return;
         }
 
         // Move to parent position with preserved hitch offset
@@ -38,7 +42,7 @@ public class TruckTrailer : MonoBehaviour
         {
             // Calculate the angle change based on movement direction
             Vector3 normalizedMovement = movementDirection / distanceTraveled;
-            Vector3 currentForward = transform.forward;
+            Vector3 currentForward = -transform.forward;
             
             // Get the signed angle between current forward and movement direction
             float angleChange = Vector3.SignedAngle(currentForward, normalizedMovement, Vector3.up);
