@@ -153,6 +153,7 @@ public partial class CarController : MonoBehaviour
             AddSpeedModifier(new FlatSpeedModifier(Mathf.RoundToInt(baseBoostSpeed + statBoostMod), TICK_RATE/2, "Boost"));
             playerAnalytics?.AddBoostTime(TICK_RATE/2);
         } else if(!inputs.boost && energy < maxEnergy){ //if we stopped boosting and have less than max energy, start recharging
+            chargeRate += Time.fixedDeltaTime;
             ChargeEnergy(energyRecoveryCurve.Evaluate(chargeRate) * statEnergyRechargeMod);
             playerAnalytics?.ResetBoost();
         }else{ playerAnalytics?.ResetBoost(); } // If we're not boosting, reset boost tracking for analytics

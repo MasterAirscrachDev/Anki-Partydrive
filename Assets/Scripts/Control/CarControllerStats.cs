@@ -8,7 +8,7 @@ public partial class CarController : MonoBehaviour
 #region BASE STATS & MODIFIERS
     //BASE MODIFIERS======
     public const float maxEnergy = 100;
-    public const int maxTargetSpeed = 650;
+    public const int maxTargetSpeed = 750;
     public const int minTargetSpeed = 50;
     public const int baseBoostSpeed = 150; //800 speed with boost
     public const float baseBoostCost = 0.5f;

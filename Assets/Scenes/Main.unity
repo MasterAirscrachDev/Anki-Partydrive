@@ -15401,7 +15401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76482c4a71f29004e8abe10541d9aacd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSupporter: 0
+  isSupporter: 1
   botPrefab: {fileID: 3576805191090509986, guid: b979934b55fdc8c438f47e752f6b24ab, type: 3}
   carEntityTracker: {fileID: 1377473483}
   gameMode: 
@@ -42265,7 +42265,7 @@ Transform:
   m_GameObject: {fileID: 919132147512652224}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.503, y: 0, z: -0.512}
+  m_LocalPosition: {x: -0.38, y: 0, z: -3.34}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -56,7 +56,7 @@ public class TrackPathSolver
         float trackHalfWidth = GetTrackHalfWidth(inputs.ourCoord);
 
         // --- Determine target speed before lane selection (state gives base speed) ---
-        int targetSpeed = 650;
+        int targetSpeed = CarController.maxTargetSpeed; // default to max, will be adjusted by state and hazards below
         bool shouldBoost = false;
         bool stoppedCarAhead = false; // track if any car ahead is slow/stopped
 
@@ -230,15 +230,15 @@ public class TrackPathSolver
         // =====================================================================
         // SPEED SELECTION — state-driven, with hazard/stopped-car awareness
         // =====================================================================
-        switch (inputs.state) //650 is base, boosting adds 150
+        switch (inputs.state) // is base, boosting adds 150
         {
             case AIState.Speed:
-                targetSpeed = 650;
+                targetSpeed = CarController.maxTargetSpeed;
                 if (!upcomingTurn && !stoppedCarAhead) shouldBoost = true;
                 break;
 
             case AIState.Target:
-                targetSpeed = upcomingTurn ? (futureTrack[0] == SegmentType.Turn ? 550 : 600) : 650;
+                targetSpeed = upcomingTurn ? (futureTrack[0] == SegmentType.Turn ? Mathf.RoundToInt(CarController.maxTargetSpeed * 0.7f) : Mathf.RoundToInt(CarController.maxTargetSpeed * 0.8f)) : CarController.maxTargetSpeed;
                 if (!upcomingTurn && !stoppedCarAhead) shouldBoost = true;
                 break;
 
@@ -246,26 +246,26 @@ public class TrackPathSolver
                 if (inputs.currentTarget != null)
                 {
                     float distToTarget = inputs.currentTarget.DistanceY(inputs.ourCoord);
-                    targetSpeed = distToTarget < 2.5f ? 640 : 650;
+                    targetSpeed = distToTarget < 2.5f ? Mathf.RoundToInt(CarController.maxTargetSpeed * 0.9f) : CarController.maxTargetSpeed;
                     if (distToTarget > 1f && !upcomingTurn) shouldBoost = true;
                 }
                 else
                 {
-                    targetSpeed = 600;
+                    targetSpeed = Mathf.RoundToInt(CarController.maxTargetSpeed * 0.8f);
                     if (!upcomingTurn) shouldBoost = true;
                 }
                 break;
 
             case AIState.Flee:
-                targetSpeed = upcomingTurn ? 500 : 650;
+                targetSpeed = upcomingTurn ? Mathf.RoundToInt(CarController.maxTargetSpeed * 0.7f) : CarController.maxTargetSpeed;
                 break;
 
             case AIState.Defence:
-                targetSpeed = upcomingTurn ? 500 : 650;
+                targetSpeed = upcomingTurn ? Mathf.RoundToInt(CarController.maxTargetSpeed * 0.7f) : CarController.maxTargetSpeed;
                 break;
 
             default:
-                targetSpeed = 620;
+                targetSpeed = Mathf.RoundToInt(CarController.maxTargetSpeed * 0.88f);
                 break;
         }
 
@@ -293,8 +293,10 @@ public class TrackPathSolver
         // Turn speed caps
         if (upcomingTurn && inputs.state != AIState.Defence)
         {
-            if (targetSpeed > 640) targetSpeed = 640;
-            if (futureTrack[0] == SegmentType.Turn && targetSpeed > 600) targetSpeed = 600;
+            int tspedcap = Mathf.RoundToInt(CarController.maxTargetSpeed * 0.68f);
+            int tspedcapTight = Mathf.RoundToInt(CarController.maxTargetSpeed * 0.6f);
+            if (targetSpeed > tspedcap) targetSpeed = tspedcap;
+            if (futureTrack[0] == SegmentType.Turn && targetSpeed > tspedcapTight) targetSpeed = tspedcapTight;
             shouldBoost = false;
         }
 
