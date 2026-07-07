@@ -4,7 +4,8 @@ using UnityEngine;
 
 /// <summary>
 /// cms(Car Management System), cet(Car Entity Tracker), gas(Global Ability System),
-/// tem(Track Element Manager), ui(UI Manager), track(Track Generator), io(Car Interface), pa(Audio Announcer), sfx(SFX Manager)
+/// tem(Track Element Manager), ui(UI Manager), track(Track Generator), io(Car Interface), pa(Audio Announcer), sfx(SFX Manager),
+/// wes(World Entity Sync)
 /// </summary>
 public class SR : MonoBehaviour
 {
@@ -48,6 +49,10 @@ public class SR : MonoBehaviour
     /// SFX Manager for 2D sound effects
     /// </summary>
     public static SFXManager sfx;
+    /// <summary>
+    /// World Entity Sync for AR phone support
+    /// </summary>
+    public static WorldEntitySync wes;
     void Awake()
     {
         cms = FindFirstObjectByType<CMS>();
@@ -60,5 +65,6 @@ public class SR : MonoBehaviour
         pa = FindFirstObjectByType<AudioAnnouncerManager>();
         cameraController = FindFirstObjectByType<CameraController>();
         sfx = FindFirstObjectByType<SFXManager>();
+        wes = FindFirstObjectByType<WorldEntitySync>();
     }
 }

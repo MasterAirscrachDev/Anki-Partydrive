@@ -1,21 +1,62 @@
-using UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class AbilityGrappler : MonoBehaviour
+public class AbilityGrappler : MonoBehaviour, IWorldEntity
 {
     Transform targetTransform;
     string targetID;
     string userID;
     [SerializeField] LineRenderer grapplerLine;
     bool abilityActive = false;
-    
+
+    string _entityId;
+    public string EntityId => _entityId;
+    public string EntityType => "AbilityGrappler";
+
+    void Awake()
+    {
+        _entityId = Guid.NewGuid().ToString();
+    }
+
+    void Start()
+    {
+        SR.wes?.Register(this);
+    }
+
+    void OnDestroy()
+    {
+        SR.wes?.Unregister(_entityId);
+    }
+
+    public WorldEntityData GetEntityData()
+    {
+        var extras = new Dictionary<string, string>
+        {
+            ["userId"] = userID ?? "",
+            ["targetId"] = targetID ?? ""
+        };
+        if (abilityActive && targetTransform != null)
+        {
+            Vector3 uPos = SR.cet.GetCarVisualPosition(userID);
+            Vector3 tPos = targetTransform.position;
+            extras["ux"] = uPos.x.ToString("F3");
+            extras["uy"] = uPos.y.ToString("F3");
+            extras["uz"] = uPos.z.ToString("F3");
+            extras["tx"] = tPos.x.ToString("F3");
+            extras["ty"] = tPos.y.ToString("F3");
+            extras["tz"] = tPos.z.ToString("F3");
+        }
+        return WorldEntityData.Build(_entityId, EntityType, transform, userID, extras);
+    }
+
     public void Setup(Transform target, string targetCarID, string userCarID)
     {
         targetTransform = target;
         targetID = targetCarID;
         userID = userCarID;
-        
-        // Setup line renderer if it exists
+
         if(grapplerLine != null)
         {
             grapplerLine.positionCount = 2;
@@ -29,74 +70,62 @@ public class AbilityGrappler : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
-        // Check if user has overtaken the target - if so, end the ability early
+
         if(HasUserOvertakenTarget())
         {
             EndAbilityEarly();
             return;
         }
-        
-        // Update line renderer to connect user car to target car
+
         if(grapplerLine != null)
         {
             Vector3 userPos = SR.cet.GetCarVisualPosition(userID);
             Vector3 targetPos = targetTransform.position;
-            
+
             grapplerLine.SetPosition(0, userPos);
             grapplerLine.SetPosition(1, targetPos);
         }
     }
-    
+
     bool HasUserOvertakenTarget()
     {
-        // Get track coordinates for both cars
         TrackCoordinate userCoord = SR.cet.GetCarTrackCoordinate(userID);
         TrackCoordinate targetCoord = SR.cet.GetCarTrackCoordinate(targetID);
-        
+
         if(userCoord == null || targetCoord == null) return false;
-        
-        // Compare positions - user is ahead if their combined position value is higher
+
         double userPosition = (userCoord.idx * 1000.0) + userCoord.progression;
         double targetPosition = (targetCoord.idx * 1000.0) + targetCoord.progression;
-        
+
         return userPosition > targetPosition;
     }
-    
+
     void EndAbilityEarly()
     {
         abilityActive = false;
-        
-        // Remove the speed modifiers early
+
         CarController userCar = SR.cms.GetController(userID);
         CarController targetCar = SR.cms.GetController(targetID);
         if(userCar != null) {
-            userCar.AddSpeedModifier(new PercentSpeedModifier(1, 0, "GrapplerBoost")); 
-        } // Override with 0 duration
+            userCar.AddSpeedModifier(new PercentSpeedModifier(1, 0, "GrapplerBoost"));
+        }
         if(targetCar != null) {
-            targetCar.AddSpeedModifier(new PercentSpeedModifier(1, 0, "GrapplerSlow")); 
-        } // Override with 0 duration
-        
+            targetCar.AddSpeedModifier(new PercentSpeedModifier(1, 0, "GrapplerSlow"));
+        }
+
         Destroy(gameObject);
     }
-    
+
     void OnHitTarget()
     {
-        // Get both car controllers
         CarController userCar = SR.cms.GetController(userID);
         CarController targetCar = SR.cms.GetController(targetID);
-        
+
         if(userCar != null && targetCar != null)
         {
             abilityActive = true;
-            
-            // Apply 20% boost to user for 8s
             userCar.AddSpeedModifier(new PercentSpeedModifier(1.2f, 8f, "GrapplerBoost"));
-            
-            // Apply 30% reduction to target for 8s
             targetCar.AddSpeedModifier(new PercentSpeedModifier(0.7f, 8f, "GrapplerSlow"));
-            
-            // Destroy the grappler after the effect duration
             StartCoroutine(DestroyAfterDuration(8f));
         } else { Destroy(gameObject); }
     }

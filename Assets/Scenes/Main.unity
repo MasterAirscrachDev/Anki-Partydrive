@@ -1372,7 +1372,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PARTYDRIVE DEMO 4.2.0
+  m_text: PARTYDRIVE DEMO 4.2.1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
   m_sharedMaterial: {fileID: -1470650276818706409, guid: 00c1038e167773e469eb60f3db02d45e, type: 2}
@@ -6675,7 +6675,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &314132433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15538,6 +15538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 803553872}
   - component: {fileID: 803553873}
+  - component: {fileID: 803553874}
   m_Layer: 0
   m_Name: STATIC MAP ELEMENTS
   m_TagString: Untagged
@@ -15589,6 +15590,18 @@ MonoBehaviour:
   skyboxMaterial: {fileID: 2100000, guid: f0fabd642ab3d8e4e82589a3e65fdf7c, type: 2}
   daySkybox: {fileID: 2800000, guid: 1837d36c2589fa34bb49af4d612574a1, type: 3}
   nightSkybox: {fileID: 2800000, guid: d3c16f82ee1eca74e8f80444143360a0, type: 3}
+--- !u!114 &803553874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803553871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbca783299f755b42873bc02c069949a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldEntitySync
 --- !u!1 &806409751
 GameObject:
   m_ObjectHideFlags: 0

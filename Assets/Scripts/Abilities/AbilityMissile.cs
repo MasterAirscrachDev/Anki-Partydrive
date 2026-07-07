@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityMissile : MonoBehaviour
+public class AbilityMissile : MonoBehaviour, IAbilityExtras
 {
     [SerializeField] Transform target;
     Vector3 fixedTargetPosition;
@@ -13,16 +13,16 @@ public class AbilityMissile : MonoBehaviour
     [SerializeField] float explosionRadius = 0.25f;
     float lifetime = 0;
     AbilityController abilityController;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     public void Setup(AbilityController ab, Transform targetTransform, float explosionRadius = 0.25f)
     {
         abilityController = ab;
+        ab.SetEntityType("AbilityMissile");
         SR.sfx?.PlaySFX(SFXEvent.SeekingMissileLaunch);
         this.explosionRadius = explosionRadius;
         target = targetTransform;
         if(target == null){
             Debug.LogError("AbilityMissile Setup called with null target Transform");
-            //pick a random point in a flat 2unit radius circle around current position
             Vector2 randomCircle = Random.insideUnitCircle * 2f;
             fixedTargetPosition = transform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
         }
@@ -31,47 +31,54 @@ public class AbilityMissile : MonoBehaviour
     public void Setup(AbilityController ab, Vector3 targetPosition, float explosionRadius = 0.25f)
     {
         abilityController = ab;
+        ab.SetEntityType("AbilityMissile");
         SR.sfx?.PlaySFX(SFXEvent.MissileLaunch);
         this.explosionRadius = explosionRadius;
         fixedTargetPosition = targetPosition;
         SetHeadMaterial(false);
     }
+
+    public void PopulateExtras(Dictionary<string, string> extras)
+    {
+        bool isSeeking = target != null;
+        Vector3 tp = isSeeking ? target.position : fixedTargetPosition;
+        extras["tx"] = tp.x.ToString("F3");
+        extras["ty"] = tp.y.ToString("F3");
+        extras["tz"] = tp.z.ToString("F3");
+        extras["seeking"] = isSeeking ? "1" : "0";
+    }
+
     void SetHeadMaterial(bool seeking){
         Material[] mats = GetComponent<Renderer>().materials;
         mats[1] = seeking ? seekingMaterial : normalMaterial;
         GetComponent<Renderer>().materials = mats;
     }
 
-    // Update is called once per frame
     void Update()
     {
         bool isSeeking = target != null;
         Debug.DrawRay(transform.position, transform.forward * 0.1f, isSeeking ? Color.bisque : Color.red, 5f);
-        
+
         lifetime += Time.deltaTime;
         transform.Translate(Vector3.forward * speedCurve.Evaluate(lifetime) * Time.deltaTime);
 
         Vector3 targetPosition = target != null ? target.position : fixedTargetPosition;
-        //Debug.DrawRay(targetPosition, Vector3.up * 2f, Color.green, 5f);
         float flatDist = GetFlatDistanceToTarget(targetPosition);
-        if(flatDist > 1f){ //we are not close enough to dive
-            targetPosition.y += 0.5f; //aim slightly above the target to create a diving arc
+        if(flatDist > 1f){
+            targetPosition.y += 0.5f;
         }
 
-        //rotate towards target
         Vector3 directionToTarget = targetPosition - transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(directionToTarget, Vector3.forward);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, handlingCurve.Evaluate(lifetime) * Time.deltaTime);
 
-        if(transform.position.y < 0f && lifetime > 0.2f){ //dont instantly explode on spawn
+        if(transform.position.y < 0f && lifetime > 0.2f){
             List<CarController> hits = SR.cms.SphereCheckControllers(transform.position, explosionRadius);
             foreach(CarController hit in hits){
                 hit.UseEnergy(damage);
-                // Report damage back to the ability owner
                 abilityController?.ReportDamage(damage);
             }
             SR.gas.SpawnMissileParticle(transform.position, target != null);
-
             Destroy(gameObject);
         }
     }

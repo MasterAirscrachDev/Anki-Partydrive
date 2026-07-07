@@ -64,6 +64,7 @@ public class TrackElementManager : MonoBehaviour
             }
         }
         element.GetComponent<TrackCarCollider>().SetElementValue(index);
+        element.AddComponent<TrackElementEntity>().Setup(slot.type.ToString());
         spawnedElements.Add((index, element));
     }
     IEnumerator RespawnElementAfterDelay(int slotIndex)
