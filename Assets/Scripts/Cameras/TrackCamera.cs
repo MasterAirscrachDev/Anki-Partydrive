@@ -79,13 +79,15 @@ public class TrackCamera : MonoBehaviour
             transform.rotation = Quaternion.Euler(70, targetRotation - 3, 0);
             PullCameraToTrack();
             overrideActive = false; // Reset override after applying track update
-        }catch(System.Exception ex)
-        {
-            Debug.LogError($"Error in TrackCamera.TrackUpdated: {ex.Message}");
-            return;
+        }catch(System.Exception ex) {
+            Debug.LogError($"Error in TrackCamera.TrackUpdated: {ex.Message}"); return;
         }
-        
-        
+    }
+    public void ForceMatPosition(int mat)
+    {
+        camSize = 1.8f;
+        transform.position = new Vector3(0.53f, 3.98f, 1.83f);
+        transform.rotation = Quaternion.Euler(65.674f, -174.518f, 4.15f);
     }
     public void PullCameraToTrack(){
         if(overrideActive && overrideTransform != null){

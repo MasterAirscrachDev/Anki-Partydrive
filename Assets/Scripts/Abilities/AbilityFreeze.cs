@@ -5,13 +5,12 @@ using System.Collections.Generic;
 public class AbilityFreeze : MonoBehaviour
 {
     // 1 is full track width, 0.35 is regular car width
-    float speed = 0.3f; // How fast the freeze effect moves along the track
     float freezeDuration = 3f; // How long the freeze effect lasts on cars
     TrackCoordinate currentCoord;
     AbilityController abilityController;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void Setup(AbilityController ab, float size = 0.35f, float duration = 4f, float speed = 0.3f, float freezeDuration = 3f)
+    public void Setup(AbilityController ab, float size = 0.35f, float duration = 4f, int speed = 500, float freezeDuration = 3f)
     {
         abilityController = ab;
         transform.localScale = Vector3.zero; // Start with zero scale for the grow effect
@@ -26,7 +25,7 @@ public class AbilityFreeze : MonoBehaviour
                 currentCoord = new TrackCoordinate(0, 0, 0);
             }
         }
-        this.speed = speed;
+        currentCoord.speed = speed; // How fast the freeze effect moves along the track
         this.freezeDuration = freezeDuration;
         Destroy(gameObject, duration); // Destroy the freeze object after the duration expires
     }
@@ -42,11 +41,10 @@ public class AbilityFreeze : MonoBehaviour
         Vector3 targetScale = new Vector3(target, target, target);
         float elapsed = 0f;
 
-        while (elapsed < duration)
-        {
+        while (elapsed < duration) {
             transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsed / duration);
             elapsed += Time.deltaTime;
-            yield return null;
+            yield return new WaitForEndOfFrame();
         }
         transform.localScale = targetScale; // Ensure it ends at the exact target scale
     }
@@ -54,10 +52,15 @@ public class AbilityFreeze : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentCoord = currentCoord + (speed * Time.deltaTime); // Move along the track based on speed and time
         if(currentCoord.idx == 0 && !SR.track.IsMat()){ 
             currentCoord.idx = 1; 
         } //index 0 doesnt exist for non-mat tracks, so skip it to avoid weird behavior
+        currentCoord.Progress(TrackPathSolver.GetProgress(SR.track.GetSegmentType(currentCoord.idx), SR.track.GetSegmentID(currentCoord.idx), SR.track.GetSegmentReversed(currentCoord.idx), currentCoord, Time.deltaTime));
+        if(currentCoord.progression >= 1){
+            currentCoord.idx++;
+            if(currentCoord.idx > SR.track.GetTrackLength())
+            { currentCoord.idx = 0; }
+        }
         Vector3 newPosition = SR.track.TrackCoordinateToWorldspace(currentCoord);
         transform.LookAt(newPosition); // Orient towards the direction of movement
         transform.Rotate(0, 180, 0); // Rotate to lay flat on the track

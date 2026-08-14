@@ -50,6 +50,7 @@ public class CarEntityPosition : MonoBehaviour
         // Reset progression when reaching the end of a segment
         if(trackpos.progression >= 1){
             trackpos.progression = 1;
+            //Debug.Log($"reached end of idx:{trackpos.idx}");
             //trackpos.progression = 0; //reset the progression
             // Note: Track index update will come from server position updates
         }
@@ -58,6 +59,7 @@ public class CarEntityPosition : MonoBehaviour
     /// Set the track spline for the car entity. idx must be trusted by server
     /// </summary>
     public void SetTrackSpline(TrackSpline trackSpline, int idx){
+        //Debug.Log($"{id} set to idx:{idx}");
         if(idx != trackpos.idx){ //only update if the track spline is different
             UpdateTrackSpline(trackSpline, idx);
             trackpos.SetIdx(idx);

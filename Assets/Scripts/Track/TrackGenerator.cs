@@ -123,12 +123,12 @@ public class TrackGenerator : MonoBehaviour
         }
         if(specialTrack > 0)
         {
-            Debug.Log("Positioning camera for special track type " + specialTrack);
+            Debug.Log($"Positioning camera for special track type {specialTrack}");
             Vector3 fixedCenter = new Vector3(0.57f,0f,3.024f);
             Vector2 fixedSize = new Vector2(4.52f,2.75f);
             float overrideRotation = 189f;
-
-            trackCamera.TrackUpdated(fixedCenter, fixedSize, overrideRotation);
+            trackCamera.ForceMatPosition(specialTrack);
+            //trackCamera.TrackUpdated(fixedCenter, fixedSize, overrideRotation);
         }
     }
     IEnumerator OnFinalGenerate()

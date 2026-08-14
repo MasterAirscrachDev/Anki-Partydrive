@@ -311,7 +311,7 @@ public class GlobalAbilitySystem : MonoBehaviour
         cone.GetComponent<AbilityCone>().Setup(ab);
     }
 
-    public void SpawnIceberg(CarController control, float size = 0.35f, float duration = 4f, float speed = 2.5f, bool overrideOffset = false) {
+    public void SpawnIceberg(CarController control, float size = 0.35f, float duration = 4f, int speed = 500, bool overrideOffset = false) {
         if(icebergPrefab == null) return;
         
         Transform carTransform = SR.cet.GetCarVisualTransform(control.GetID());

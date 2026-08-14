@@ -334,7 +334,7 @@ public class TrackPathSolver
                 float trackHalfWidth = GetTrackHalfWidth(car);
                 float offset = car.offset / trackHalfWidth; //scale offset to -1 to 1 based on actual track width
                 if(reversed){ offset = -offset;  } //reverse the offset if the segment is reversed
-                distanceMM = (int)Mathf.Lerp(sl.leftSideLength, sl.rightSideLength, offset); //scale distance to 280 to 640
+                distanceMM = (int)Mathf.Lerp(sl.leftSideLength, sl.rightSideLength, (offset + 1f) * 0.5f); //scale distance to 280 to 640
             }
         }
         else
@@ -344,10 +344,9 @@ public class TrackPathSolver
                 float trackHalfWidth = GetTrackHalfWidth(car);
                 float offset = car.offset / trackHalfWidth; //scale offset to -1 to 1 based on actual track width
                 if(reversed){ offset = -offset;  } //reverse the offset if the segment is reversed
-                distanceMM = (int)Mathf.Lerp(280, 640, offset); //scale distance to 280 to 640
+                distanceMM = (int)Mathf.Lerp(280, 640, (offset + 1f) * 0.5f); //scale distance to 280 to 640
             } 
         }
-        //distanceMM = Mathf.RoundToInt(distanceMM * 0.95f); //tolerance
         //speed is in mm/s
         return (((float)car.speed / distanceMM) * 1.01f) * deltaTime;
     }

@@ -19,12 +19,15 @@ public class CarEntityTracker : MonoBehaviour
         TrackSpline trackPiece;
         if(SR.track.IsMat())
         {
-                trackPiece = SR.track.GetTrackSpline(trackIndex); //get the current piece of track (mat track should always have a spline)
-                if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
-                if(trackIndex == 0 && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
-                    bool countLap = entity.segmentsSinceDelocalized > 4; //only count lap if more than 4 segments since delocalisation
-                    OnCarCrossedFinishLine?.Invoke(id, countLap);
-                }
+            //trackIndex++;
+            //if(trackIndex > 7){ trackIndex = 0; }
+
+            trackPiece = SR.track.GetTrackSpline(trackIndex); //get the current piece of track (mat track should always have a spline)
+            if(entity == null){ entity = AddTracker(id); } //create a new tracker if it doesn't exist
+            if(trackIndex == 0 && trust == CarTrust.Trusted){ //if we are on the finish line, we have finished the lap
+                bool countLap = entity.segmentsSinceDelocalized > 4; //only count lap if more than 4 segments since delocalisation
+                OnCarCrossedFinishLine?.Invoke(id, countLap);
+            }
         }
         else
         {

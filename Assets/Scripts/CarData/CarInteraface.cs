@@ -30,7 +30,7 @@ public class CarInteraface : MonoBehaviour
         ws = new NativeWebSocket.WebSocket("ws://localhost:7118/");
 
         ws.OnOpen += () => { 
-            Debug.Log("WebSocket connection opened"); 
+            //Debug.Log("WebSocket connection opened"); 
             SR.ui.ServerConnected(); //show the server connected message
             GetCarInfo(); //request the car data state on first connection
         };
@@ -40,7 +40,7 @@ public class CarInteraface : MonoBehaviour
                 SR.ui.NoServerWarning(); //show the no server warning
             }
         }; //Unable to connect to the remote server (if server missing)
-        ws.OnClose += (e) => { Debug.Log($"WebSocket connection closed: {e}"); };
+        ws.OnClose += (e) => { /*Debug.Log($"WebSocket connection closed: {e}");*/ };
         ws.OnMessage += (bytes) => { ProcessWebhookData(System.Text.Encoding.UTF8.GetString(bytes)); };
 
         ws.Connect();
