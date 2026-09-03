@@ -572,8 +572,6 @@ MonoBehaviour:
   statusCarsArray:
   - id: -1
     sprite: {fileID: 21300000, guid: 34c94a3b2488d5b4ba706743296578b9, type: 3}
-  - id: 20
-    sprite: {fileID: 21300000, guid: 7ad2946ba81bac2429343f72a3d17520, type: 3}
   - id: 1
     sprite: {fileID: 21300000, guid: ac6a98dfaff4b7b498ad08bc8f85a553, type: 3}
   - id: 2
@@ -599,7 +597,7 @@ MonoBehaviour:
   - id: 12
     sprite: {fileID: 21300000, guid: 47b0685b8e9a1374e82c8ff3b098a70f, type: 3}
   - id: 13
-    sprite: {fileID: 21300000, guid: 59ef3e0d5494e68408a0bbac3703f045, type: 3}
+    sprite: {fileID: 21300000, guid: 3fd8173ce6e104143badeea4f556a56f, type: 3}
   - id: 14
     sprite: {fileID: 21300000, guid: 8e27d787726c8c64f80fc1a796df2729, type: 3}
   - id: 15
@@ -612,6 +610,8 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 121a9ff1f535a13408baacd4373761aa, type: 3}
   - id: 19
     sprite: {fileID: 21300000, guid: 0294097eccb6ea34ca7d220ad060c72a, type: 3}
+  - id: 20
+    sprite: {fileID: 21300000, guid: 7ad2946ba81bac2429343f72a3d17520, type: 3}
   - id: 20
     sprite: {fileID: 21300000, guid: 7ad2946ba81bac2429343f72a3d17520, type: 3}
 --- !u!1 &6394766113155357540

@@ -50,7 +50,7 @@ public class AbilityOverdrive : MonoBehaviour
     }
     void DoFrozenFrontier(CarController car)
     {
-        SR.gas.SpawnIceberg(car, 1, 8, 500, true);
+        SR.gas.SpawnIceberg(car, 1, 8, 900, true);
         Destroy(gameObject); // Destroy the ability object immediately since the effect is handled by the iceberg itself
     }
     IEnumerator DoMissileStorm(CarController car)

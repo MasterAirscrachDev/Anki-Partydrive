@@ -9,7 +9,26 @@ public class TrackPathSolver
     static float GetTrackHalfWidth(TrackCoordinate coord)
     {
         TrackSpline spline = SR.track.GetTrackSpline(coord.idx);
-        if (spline == null) return 0; // FailCase
+        if (spline == null)
+        {
+            // PreFinishLine and JumpLanding have no spline of their own — they share the
+            // neighbouring piece's. Car coordinates keep the raw segment index, so resolve it the
+            // same way CarEntityTracker.SetPosition does when it places a car.
+            SegmentType type = SR.track.GetSegmentType(coord.idx);
+            if (type == SegmentType.PreFinishLine)
+            { spline = SR.track.GetTrackSpline(coord.idx + 1); } //part of the finish line piece
+            else if (type == SegmentType.JumpLanding && coord.idx > 0)
+            { spline = SR.track.GetTrackSpline(coord.idx - 1); } //part of the jump ramp piece
+
+            if (spline == null)
+            {
+                // Anything else splineless means the index has gone somewhere it shouldn't.
+                // Never return 0 — callers divide by this and clamp lane targets to it, so a zero
+                // silently pins every car to the centre lane (or produces NaN in GetProgress).
+                Debug.LogError($"TrackPathSolver: no spline at track index {coord.idx} ({type}) - falling back to modular track width");
+                return 67.5f;
+            }
+        }
         return spline.GetWidth(coord.progression);
     }
     

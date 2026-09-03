@@ -18,7 +18,11 @@ public class AbilityFreeze : MonoBehaviour
         currentCoord = SR.track.WorldspaceToTrackCoordinate(transform.position);
         if(currentCoord == null)
         {
-            currentCoord = SR.cet.GetCarTrackCoordinate(ab.GetCarController().GetID());
+            // Clone: GetCarTrackCoordinate hands back the car's *live* coordinate object (it's a
+            // class, not a struct). Using it directly would drive the wall at whatever speed the
+            // car happens to be doing — and corrupt the car's own position, since both would be
+            // calling Progress() on the same instance.
+            currentCoord = SR.cet.GetCarTrackCoordinate(ab.GetCarController().GetID())?.Clone();
             if(currentCoord == null)
             {
                 Debug.LogError("AbilityFreeze: Failed to get track coordinate for ability position and car position!");
@@ -52,15 +56,29 @@ public class AbilityFreeze : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentCoord.idx == 0 && !SR.track.IsMat()){ 
-            currentCoord.idx = 1; 
+        if(currentCoord.idx == 0 && !SR.track.IsMat()){
+            currentCoord.idx = 1;
+            currentCoord.progression = 0;
         } //index 0 doesnt exist for non-mat tracks, so skip it to avoid weird behavior
-        currentCoord.Progress(TrackPathSolver.GetProgress(SR.track.GetSegmentType(currentCoord.idx), SR.track.GetSegmentID(currentCoord.idx), SR.track.GetSegmentReversed(currentCoord.idx), currentCoord, Time.deltaTime));
-        if(currentCoord.progression >= 1){
-            currentCoord.idx++;
-            if(currentCoord.idx > SR.track.GetTrackLength())
-            { currentCoord.idx = 0; }
+
+        // We should never be positioned on a splineless segment: index 0 (PreFinishLine) is skipped
+        // above and everything else has a spline. If we land on one, the index has gone somewhere it
+        // shouldn't — GetProgress would divide by a zero track width and hand back NaN from here on,
+        // so fail loudly instead of limping along on a poisoned coordinate.
+        if(SR.track.GetTrackSpline(currentCoord.idx) == null){
+            Debug.LogError($"AbilityFreeze: no spline at track index {currentCoord.idx} ({SR.track.GetSegmentType(currentCoord.idx)}) - aborting ability");
+            Destroy(gameObject);
+            return;
         }
+
+        float step = TrackPathSolver.GetProgress(SR.track.GetSegmentType(currentCoord.idx), SR.track.GetSegmentID(currentCoord.idx), SR.track.GetSegmentReversed(currentCoord.idx), currentCoord, Time.deltaTime);
+
+        // Use the += operator rather than Progress(): it carries the leftover distance into the
+        // next segment and wraps the index correctly. Progress() clamps at 1 and never resets,
+        // which left the old code incrementing idx on every single frame once the wall had
+        // finished its first segment.
+        currentCoord += step;
+
         Vector3 newPosition = SR.track.TrackCoordinateToWorldspace(currentCoord);
         transform.LookAt(newPosition); // Orient towards the direction of movement
         transform.Rotate(0, 180, 0); // Rotate to lay flat on the track
